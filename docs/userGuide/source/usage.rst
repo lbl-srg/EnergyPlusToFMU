@@ -25,7 +25,7 @@ following items need to be observed.
    Otherwise, the simulation will stop with an error. [#f2]_
 
 3. EnergyPlus contains the object ``RunPeriod`` and ``RunPeriod:CustomRange``. 
-   The start and end day of these objects are ignored [#f3]_. However,
+   The start and end day of these objects are ignored. [#f3]_ However,
    the entry ``Day of Week for Start Day`` will be used. For example, 
    consider the following IDF snippet:
 
@@ -44,7 +44,8 @@ following items need to be observed.
       Yes,               !- Use Weather File Rain Indicators
       Yes;               !- Use Weather File Snow Indicators
 
-   Then, January 2 is a Monday. Hence, if an FMU is simulated with 
+   This IDF snippet declares January 2 to be a Monday. 
+   Hence, if an FMU is simulated with 
    start time equal to 3 days, then the first day of the simulation
    will be Tuesday.
 
