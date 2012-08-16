@@ -14,10 +14,12 @@ following items need to be observed.
    otherwise the simuluation stops with an error. [#f1]_
 2. The ``Number of Timesteps per Hour`` in EnergyPlus must be equal
    to the sampling time of the FMU. For example, consider the following
-   EnergyPlus IDF snippet::
+   EnergyPlus IDF snippet:
+
+   .. code-block:: idf
 
      Timestep, 
-     6; !- Number of Timesteps per Hour
+     6;        !- Number of Timesteps per Hour
 
    Then, a tool that imports the FMU must synchronize it every 10 minutes.
    Otherwise, the simulation will stop with an error. [#f2]_
@@ -25,20 +27,22 @@ following items need to be observed.
 3. EnergyPlus contains the object ``RunPeriod`` and ``RunPeriod:CustomRange``. 
    The start and end day of these objects are ignored [#f3]_. However,
    the entry ``Day of Week for Start Day`` will be used. For example, 
-   consider the following IDF snippet::
+   consider the following IDF snippet:
 
-      RunPeriod, ! Winter Simulation
+   .. code-block:: idf
+
+      RunPeriod,         ! Winter Simulation
       Winter Simulation, !- Name
-      1, !- Begin Month
-      2, !- Begin Day of Month
-      3, !- End Month
-      31, !- End Day of Month
-      Monday, !- Day of Week for Start Day
-      Yes, !- Use Weather File Holidays and Special Days
-      Yes, !- Use Weather File Daylight Saving Period
-      No, !- Apply Weekend Holiday Rule
-      Yes, !- Use Weather File Rain Indicators
-      Yes; !- Use Weather File Snow Indicators
+      1,                 !- Begin Month
+      2,                 !- Begin Day of Month
+      3,                 !- End Month
+      31,                !- End Day of Month
+      Monday,            !- Day of Week for Start Day
+      Yes,               !- Use Weather File Holidays and Special Days
+      Yes,               !- Use Weather File Daylight Saving Period
+      No,                !- Apply Weekend Holiday Rule
+      Yes,               !- Use Weather File Rain Indicators
+      Yes;               !- Use Weather File Snow Indicators
 
    Then, January 2 is a Monday. Hence, if an FMU is simulated with 
    start time equal to 3 days, then the first day of the simulation
