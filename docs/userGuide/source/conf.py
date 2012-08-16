@@ -196,3 +196,27 @@ latex_documents = [
 
 # If false, no module index is generated.
 #latex_use_modindex = True
+
+def setup(app):
+    from sphinx.highlighting import lexers
+
+    from pygments.lexer import RegexLexer, bygroups
+    from pygments.token import Comment, Text, Number
+
+    class IDFLexer(RegexLexer):
+        name = 'IDF'
+        aliases = ['idf']
+        filenames = ['*.idf']
+
+        tokens = {
+            'root': [
+                (r'( *\d+|\.)', Number),
+                (r'(\w+)', Text),
+                (r'( )', Text),
+                (r'(, *|; *)', Text),
+                (r'(!.*)$', Comment),
+                ]
+            }
+    lexers['idf'] = IDFLexer()
+
+highlight_language = 'idf'
