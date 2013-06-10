@@ -53,6 +53,12 @@ following items need to be observed.
    no communication occurs between
    the FMU and the master program. Thus, inputs from the co-simulation 
    master program to EnergyPlus remain constant during these times.
+   
+5. A tool that imports the FMU needs to make sure that the version of EnergyPlus which has been used to export the FMU
+   is available otherwise the simulation will fail with an error. [#f4]_
+   
+6. A tool that imports the FMU must have the version of EnergyPlus which has been used to export the FMU on the system path. 
+   Otherwise, the simulation will fail to start with an error.
 
 
 .. rubric:: Footnotes
@@ -67,3 +73,5 @@ following items need to be observed.
          than one minute.
 .. [#f3] This is because a tool that imports an FMU has its own definition 
          of start time and stop time.
+
+.. [#f4] This is because the FMU implement the FMI for co-simulation in Tool Coupling scenario.
