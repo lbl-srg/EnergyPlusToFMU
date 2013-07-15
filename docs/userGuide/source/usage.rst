@@ -7,8 +7,7 @@ Usage
 
 fixme: describe how to use the software
 
-When the Functional Mockup Unit that contains an EnergyPlus model, the
-following items need to be observed.
+Following items need to be observed when importing an FMU that contains EnergyPlus:
 
 1. A tool that imports the FMU must start and stop the simulation at midnight, 
    otherwise the simuluation stops with an error. [#f1]_
@@ -55,10 +54,15 @@ following items need to be observed.
    master program to EnergyPlus remain constant during these times.
    
 5. A tool that imports the FMU needs to make sure that the version of EnergyPlus which has been used to export the FMU
-   is available otherwise the simulation will fail with an error. [#f4]_
+   is (a) installed and (b) on the system path. Otherwise, the simulation will fail with an error. [#f4]_
    
-6. A tool that imports the FMU must have the version of EnergyPlus which has been used to export the FMU on the system path. 
-   Otherwise, the simulation will fail to start with an error.
+6. A tool that imports the FMU must have the version of EnergyPlus which has been used to export the FMU on the system path. Otherwise, the simulation will fail to start with an error.
+   
+7. The simulation results of the FMU are in the folder where the FMU has been unzipped.
+
+   
+8. The weather file which comes along with an FMU is used to determine if the year is a leap year. It no weather file 
+   is included in the FMU, then the assumption is that the year is not a leap year.
 
 
 .. rubric:: Footnotes

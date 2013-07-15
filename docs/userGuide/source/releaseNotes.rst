@@ -13,4 +13,4 @@ First release.
 Known limitations
 ^^^^^^^^^^^^^^^^^
 
-fixme
+      Multiple RunPeriods are not supported
