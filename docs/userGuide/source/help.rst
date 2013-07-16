@@ -2,7 +2,7 @@ Help
 ====
 
 Before submitting a bug report, 
- * check (fixme: update link) https://corbu.lbl.gov/trac/bie/report/1 if the bug is already known, and
+ * check https://corbu.lbl.gov/trac/fmu/browser/EnergyPlus#export/trunk if the bug is already known, and
  * make sure that it is a bug of the FMU implementation and not a bug of the EnergyPlus model. EnergyPlus bugs should be isolated so that they do not require use of an FMU, and then sent to the EnergyPlus help desk at http://energyplus.helpserve.com/
  
 When submitting a bug report, please provide:
@@ -10,5 +10,5 @@ When submitting a bug report, please provide:
  * A description of the expected and the observed results.
  * Information about the operating system and the EnergyPlus version.
 
-To report the bug, send email to (fixme: update link) https://groups.google.com/group/modelica-buildings. This is an open group and everyone can join it. No invitation is needed. 
+To report the bug, send email to https://groups.google.com/group/energyplustofmu. This is an open group and everyone can join it. No invitation is needed. 
 
