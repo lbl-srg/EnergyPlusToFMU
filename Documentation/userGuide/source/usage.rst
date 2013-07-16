@@ -5,8 +5,6 @@
 Usage
 =====
 
-fixme: describe how to use the software
-
 Following items need to be observed when importing an FMU that contains EnergyPlus:
 
 1. A tool that imports the FMU must start and stop the simulation at midnight, 
