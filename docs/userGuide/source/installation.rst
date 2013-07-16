@@ -12,7 +12,7 @@ This chapter describes how to install, configure and uninstall the EnergyPlusToF
 Software requirements
 ^^^^^^^^^^^^^^^^^^^^^
 EnergyPlusToFMU has been tested on Linux Ubuntu 12.04, Windows XP Professional, and Mac OS X (fixme).
-To export EnergyPlus as an FMU, EnergyPlusToFMu needs following tools to be installed
+To export EnergyPlus as an FMU, EnergyPlusToFMu needs following tools to be installed:
 
 1. Python 2.7
 2. C and C++ compilers
