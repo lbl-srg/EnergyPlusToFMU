@@ -32,3 +32,4 @@ Configuration
 
 Uninstallation
 ^^^^^^^^^^^^^^
+To uninstall EnergyPlusToFMU, simply delete the directory where it has been unzipped.
