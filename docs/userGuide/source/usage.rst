@@ -60,7 +60,6 @@ Following items need to be observed when importing an FMU that contains EnergyPl
    
 7. The simulation results of the FMU are in the folder where the FMU has been unzipped.
 
-   
 8. The weather file which comes along with an FMU is used to determine if the year is a leap year. It no weather file 
    is included in the FMU, then the assumption is that the year is not a leap year.
 

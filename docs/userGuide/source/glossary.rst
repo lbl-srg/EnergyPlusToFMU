@@ -3,7 +3,7 @@ Glossary
 
 .. glossary::
 
-   Functional Mockup Unit
+   Functional Mock-up Unit
       A simulation model or program which implements the FMI standard is called FMU (Functional Mock-up Unit). 
       An FMU comes along with a small set of easy to use C-functions (FMI functions) whose input and return arguments are defined by the FMI standard}. 
       These C-functions can be provided in source and/or binary form. The FMI functions are called by a simulator to create one or more instances of the FMU. 
@@ -14,7 +14,7 @@ Glossary
       additional files such as tables, images or documentation that might be relevant for the model.
 
 
-   Functional Mockup Interface
+   Functional Mock-up Interface
       The Functional Mock-up Interface (FMI) is the result of the Information Technology for European Advancement (ITEA2) project MODELISAR. 
       The FMI standard is a tool independent standard to support both model exchange and co-simulation of dynamic models using a combination of XML-files, 
       C-header files, and C-code in source or binary form. 
