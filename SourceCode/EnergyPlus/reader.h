@@ -21,13 +21,14 @@
 
 // file names used for preprocessing of idf file
 
+
 ///////////////////////////////////////////////////////////////////////////////
 /// This function creates the input file to be used for the run.
 ///
-///\param t_start_FMU FMU start time.
-///\param t_stop_FMU FMU stop time.
-///\param t_start_FMU FMU model ID.
-///\param resources_p Path to resources folder
+///\param t_start_FMU The FMU start time.
+///\param t_stop_FMU The FMU stop time.
+///\param t_start_FMU The FMU model ID.
+///\param resources_p The path to resources folder
 ///////////////////////////////////////////////////////////////////////////////
 int createRunInFile (fmiReal t_start_FMU, fmiReal t_stop_FMU, fmiString modelID, char * resources_p);
 
@@ -35,6 +36,8 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_stop_FMU, fmiString modelID,
 /// This function finds a file with a specific extension in a folder. 
 /// It returns the name of the found file with its extension.
 ///
+///\param path The path to file.
+///\param pattern The pattern to search.
 ///\return The name of the file found with extension. 
 ///        Otherwise, return 1 to indicate error. 
 ///////////////////////////////////////////////////////////////////////////////

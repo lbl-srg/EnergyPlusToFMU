@@ -176,7 +176,7 @@ int write_socket_cfg(int portNum, const char* hostName)
 ////////////////////////////////////////////////////////////////////////////////////
 /// copy resources file into the calculation folder
 ///
-///\param str the resource file.
+///\param str The path to the resource file.
 ///\return 0 if no error occurred.
 ////////////////////////////////////////////////////////////////////////////////////
 static int copy_res (fmiString str)
@@ -197,6 +197,8 @@ static int copy_res (fmiString str)
 
 ////////////////////////////////////////////////////////////////////////////////////
 /// start simulation
+///
+///\param c The FMU instance.
 ///\return 0 if no error occurred.
 ////////////////////////////////////////////////////////////////////////////////////
 int start_sim(fmiComponent c)
@@ -279,7 +281,7 @@ static const char* fmiStatusToString(fmiStatus status){
 ///////////////////////////////////////////////////////////////////////////////
 /// FMU logger
 ///
-///\param c FMI component.
+///\param c The FMU instance.
 ///\param instanceName FMI string.
 ///\param status FMI status.
 ///\param category FMI string.
@@ -329,13 +331,16 @@ DllExport const char* fmiGetVersion()
 ////////////////////////////////////////////////////////////////
 ///  This method is used to instantiated the FMU
 ///
-///\param instanceName modelIdentifier.
-///\param fmuLocation fmuLocation.
-///\param fmumimeType fmumimeType.
-///\param timeout communication timeout value in milli-seconds.
-///\param visible flag to executes the FMU in windowless mode.
-///\param interactive flag to execute the FMU in interactive mode.
-///\param loggingOn flag to enable or disable debug.
+///\param instanceName The modelIdentifier.
+///\param fmuGUID The GUID.
+///\param fmuLocation The FMU Location.
+///\param fmumimeType The fmu mimeType.
+///\param timeout The communication timeout value in milli-seconds.
+///\param visible The flag to executes the FMU in windowless mode.
+///\param interactive The flag to execute the FMU in interactive mode.
+///\param functions The callbacks functions.
+///\param loggingOn The flag to enable or disable debug.
+///\return FMU instance if no error occured.
 ////////////////////////////////////////////////////////////////
 DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	fmiString fmuGUID, fmiString fmuLocation,
@@ -358,12 +363,16 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	insNum++;
 	retValIns=insNum;
 
+	
+	// set the debug for the FMU instance
+	setDebug (loggingOn);
+
 	// save current folder for late comparison
 	strncpy (preInstanceName, instanceName, strlen(instanceName));
 
 	// check whether the path to the resources folder has been provided
 	if((fmuLocation == NULL) || (strlen(fmuLocation) == 0)) {
-		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "The path"
+		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The path"
 			" to the resources folder: %s is not specified!\n", fmuLocation);
 		exit(1);
 	}
@@ -378,7 +387,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// change the directory to make sure that FMUs are not overwritten
 	retVal = chdir(fmuLocation);
 	if (retVal!=0){
-		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "The path"
+		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The path"
 			" to the resources folder: %s is not valid!\n", fmuLocation);
 		exit(1);
 	}
@@ -390,7 +399,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// get model description of the FMU
 	fmuInstances[_c->index]->md = parse(xml_file_p);
 	if (!fmuInstances[_c->index]->md) {
-		fprintf(stderr, "Failed to get the modelDescription\n");
+		fprintf(stderr, "fmiInstantiateSlave: Failed to get the modelDescription\n");
 		exit(1);
 	}
 
@@ -400,11 +409,11 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// copy model ID to FMU
 	fmuInstances[_c->index]->mID = (char *)calloc(sizeof(char), strlen (mID) + 1);
 	strcpy(fmuInstances[_c->index]->mID, mID);
-	printfDebug("The FMU modelIdentifier is %s.\n", mID);
+	printfDebug("fmiInstantiateSlave: The FMU modelIdentifier is %s.\n", mID);
 
 	// get the model GUID of the FMU
 	mGUID = getString(fmuInstances[_c->index]->md, att_guid);
-	printfDebug("The FMU modelGUID is %s.\n", mGUID);
+	printfDebug("fmiInstantiateSlave: The FMU modelGUID is %s.\n", mGUID);
 
 	fmuInstances[_c->index]->mGUID = (char *)calloc(sizeof(char), strlen (mGUID) + 1);
 	strcpy(fmuInstances[_c->index]->mGUID, mGUID);
@@ -412,7 +421,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// check whether the model is exported for FMI version 1.0
 	if(strcmp(getString(fmuInstances[_c->index]->md, att_fmiVersion), FMIVERSION) != 0){
 
-		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "Wrong FMI version"
+		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: Wrong FMI version"
 			" FMI version 1.0 is currently supported!\n");
 		exit(1);
 	}
@@ -420,7 +429,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// check whether GUIDs are consistent with modelDescription file
 	if(strcmp(fmuGUID, mGUID) != 0)
 	{
-		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "The given"
+		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The given"
 			" GUID %s is not equal to the GUID of the binary"
 			" (%s)!\n", fmuGUID, mGUID);
 		exit(1);
@@ -431,9 +440,6 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	fmuInstances[_c->index]->interactive = interactive; 
 	fmuInstances[_c->index]->loggingOn = loggingOn;
 
-	// set the debug for the FMU instance
-	setDebug (fmuInstances[_c->index]->loggingOn );
-
 	// free xml_file_p;
 	free (xml_file_p);
 	// assign number to be used in initialize
@@ -443,10 +449,10 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 ////////////////////////////////////////////////////////////////
 ///  This method is used to initialize the FMU
 ///
-///\param c FMU instance.
-///\param tStart simulation start time.
-///\param StopTimeDefined stop time define.
-///\param tStop simulation stop time.
+///\param c The FMU instance.
+///\param tStart The simulation start time.
+///\param StopTimeDefined The stop time define.
+///\param tStop simulation The stop time.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
@@ -477,6 +483,9 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 #ifndef _MSC_VER
 	mode_t process_mask = umask(0);
 #endif 
+
+	// set the debug for the FMU instance
+	setDebug (fmuInstances[_c->index]->loggingOn);
 
 	// save start of the simulation time step
 	fmuInstances[_c->index]->tStartFMU = tStart;
@@ -514,7 +523,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	}
 	if (retVal!=0){
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-			"The path to the resources folder: %s is not valid!\n", fmuInstances[_c->index]->fmuLocation);
+			"fmiInitializeSlave: The path to the resources folder: %s is not valid!\n", fmuInstances[_c->index]->fmuLocation);
 		return fmiFatal;
 	}
 	fmuInstances[_c->index]->preInIni = fmuInstances[_c->index]->index;
@@ -527,7 +536,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	if (WSAStartup(wVersionRequested, &wsaData)!= 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName , fmiFatal, 
-			"Fatal Error", "WSAStartup failed with error %ld!\n", WSAGetLastError());
+			"Fatal Error", "fmiInitializeSlave: WSAStartup failed with error %ld!\n", WSAGetLastError());
 		WSACleanup();
 		return fmiFatal;
 	}
@@ -535,7 +544,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	if (LOBYTE(wsaData.wVersion)!= 2 || HIBYTE(wsaData.wVersion)!= 2 )
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-			"Fatal Error", "Could not find a usable WinSock DLL for WinSock version %u.%u!\n",
+			"Fatal Error", "fmiInitializeSlave: Could not find a usable WinSock DLL for WinSock version %u.%u!\n",
 			LOBYTE(wsaData.wVersion),HIBYTE(wsaData.		wVersion));
 		WSACleanup();
 		return fmiFatal;
@@ -547,12 +556,12 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	if (fmuInstances[_c->index]->sockfd == INVALID_SOCKET)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-			"Fatal Error", "Opening socket failed"
+			"Fatal Error", "fmiInitializeSlave: Opening socket failed"
 			" sockfd = %d!\n", fmuInstances[_c->index]->sockfd);
 		return fmiFatal;
 	}
 
-	printfIntDebug("The sockfd is %d.\n", fmuInstances[_c->index]->sockfd);
+	printfIntDebug("fmiInitializeSlave: The sockfd is %d.\n", fmuInstances[_c->index]->sockfd);
 	// initialize socket structure server address information
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;                 // Address family to use
@@ -563,7 +572,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	if (bind(fmuInstances[_c->index]->sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == SOCKET_ERROR)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-			"Fatal Error", "bind() failed!\n");
+			"Fatal Error", "fmiInitializeSlave: bind() failed!\n");
 		closeipcFMU (&(fmuInstances[_c->index]->sockfd));
 		return fmiFatal;
 	}
@@ -572,51 +581,51 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	sockLength = sizeof(server_addr);
 	if ( getsockname (fmuInstances[_c->index]->sockfd, (struct sockaddr *)&server_addr, &sockLength)) {
 		fmuLogger(0,  fmuInstances[_c->index]->instanceName, fmiFatal,
-			"Fatal Error", "Get socket name failed!\n");
+			"Fatal Error", "fmiInitializeSlave: Get socket name failed!\n");
 		return fmiFatal;
 	}
 
 	// get the port number
 	port_num= ntohs(server_addr.sin_port);
-	printfIntDebug("The port number is %d.\n", port_num);
+	printfIntDebug("fmiInitializeSlave: The port number is %d.\n", port_num);
 
 	// get the hostname information
 	gethostname(ThisHost, MAXHOSTNAME);
 	if  ((hp = gethostbyname(ThisHost)) == NULL ) {
 		fmuLogger(0,  fmuInstances[_c->index]->instanceName, fmiFatal, 
-			"Fatal Error", "Get host by name failed!\n");
+			"Fatal Error", "fmiInitializeSlave: Get host by name failed!\n");
 		return fmiFatal;
 	}
 
 	// write socket cfg file
 	retVal = write_socket_cfg (port_num, ThisHost);
-	printfDebug("This hostname is %s.\n", ThisHost);
+	printfDebug("fmiInitializeSlave: This hostname is %s.\n", ThisHost);
 	if  (retVal != 0) {
 		fmuLogger(0,  fmuInstances[_c->index]->instanceName, fmiFatal, 
-			"Fatal Error", "Write socket cfg failed!\n");
+			"Fatal Error", "fmiInitializeSlave: Write socket cfg failed!\n");
 		return fmiFatal;
 	}
 	// listen to the port
 	if (listen(fmuInstances[_c->index]->sockfd, 1) == SOCKET_ERROR)
 	{
-		fmuLogger(0,  fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "listen() failed!\n");
+		fmuLogger(0,  fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiInitializeSlave: listen() failed!\n");
 		closeipcFMU (&(fmuInstances[_c->index]->sockfd));
 		return fmiFatal;
 	}
-	printfIntDebug("TCPServer Server waiting for clients on port: %d.\n", port_num);
+	printfIntDebug("fmiInitializeSlave: TCPServer Server waiting for clients on port: %d.\n", port_num);
 
 #ifndef _MSC_VER
 
 	fmuInstances[_c->index]->pid = fork();
 	if (fmuInstances[_c->index]->pid < 0)
 	{
-		perror("Fork failed!\n");
+		perror("fmiInitializeSlave: Fork failed!\n");
 		exit(1);
 	}
 	if (fmuInstances[_c->index]->pid != 0 )
 	{
 		fmuInstances[_c->index]->newsockfd = accept(fmuInstances[_c->index]->sockfd, NULL, NULL);
-		printDebug ("The connection has been accepted!\n");
+		printDebug ("fmiInitializeSlave: The connection has been accepted!\n");
 	}
 #endif
 
@@ -630,18 +639,18 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	{
 		fmuInstances[_c->index]->numInVar = getNumInputVariablesInFMU (fmuInstances[_c->index]->md);
 	}
-	printfIntDebug("The number of input variables is %d!\n", fmuInstances[_c->index]->numInVar);
+	printfIntDebug("fmiInitializeSlave: The number of input variables is %d!\n", fmuInstances[_c->index]->numInVar);
 
 	// get the number of output variables of the FMU
 	if (fmuInstances[_c->index]->numOutVar ==-1)
 	{
 		fmuInstances[_c->index]->numOutVar =  getNumOutputVariablesInFMU (fmuInstances[_c->index]->md);
 	}
-	printfIntDebug("The number of output variables is %d!\n", fmuInstances[_c->index]->numOutVar);
+	printfIntDebug("fmiInitializeSlave: The number of output variables is %d!\n", fmuInstances[_c->index]->numOutVar);
 
 	if ( (fmuInstances[_c->index]->numInVar + fmuInstances[_c->index]->numOutVar) == 0){
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-			"The FMU has no input and output variables. Please check the model description file!\n");
+			"fmiInitializeSlave: The FMU has no input and output variables. Please check the model description file!\n");
 		return fmiFatal;
 	}
 
@@ -657,8 +666,8 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		if  (retVal != 0) {
 
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-				"Fatal Error", "The Slave could not be initialized!\n");
-			fprintf(stderr, "Can't create input file cfg!\n");
+				"Fatal Error", "fmiInitializeSlave: The Slave could not be initialized!\n");
+			fprintf(stderr, "fmiInitializeSlave: Can't create input file cfg!\n");
 			return fmiFatal;
 		}
 #ifndef _MSC_VER
@@ -686,8 +695,8 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		retVal = copy_res (varcfg_p);
 		if  (retVal != 0) {
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-				"Fatal Error", "The Slave could not be initialized!\n");
-			fprintf(stderr, "Can't find variables.cfg in resources folder. check if the variables.cfg exists!\n");
+				"Fatal Error", "fmiInitializeSlave: The Slave could not be initialized!\n");
+			fprintf(stderr, "fmiInitializeSlave: Can't find variables.cfg in resources folder. Check if variables.cfg exists!\n");
 			return fmiFatal;
 		}
 		// free resources folder path
@@ -701,7 +710,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		retVal = start_sim(c);
 #ifdef _MSC_VER
 		fmuInstances[_c->index]->newsockfd = accept(fmuInstances[_c->index]->sockfd, NULL, NULL);
-		printDebug ("The connection has been accepted!\n");
+		printDebug ("fmiInitializeSlave: The connection has been accepted!\n");
 #endif
 		// check whether the simulation could start successfully
 #ifndef _MSC_VER
@@ -710,8 +719,8 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		if  (retVal > 0) {
 #endif
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-				"Fatal Error", "The Slave could not be initialized!");
-			fprintf(stderr, "Can't start EnergyPlus. check if EnergyPlus is installed and on the system path!\n");
+				"Fatal Error", "fmiInitializeSlave: The Slave could not be initialized!");
+			fprintf(stderr, "fmiInitializeSlave: Can't start EnergyPlus. Check if EnergyPlus is installed and on the system path!\n");
 			return fmiFatal;
 		}
 
@@ -731,10 +740,10 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 ////////////////////////////////////////////////////////////////
 ///  This method is used to do the time stepping the FMU
 ///
-///\param c FMU instance.
-///\param currentCommunicationPoint communication point.
-///\param communicationStepSize communication step size.
-///\param newStep flag to accept or refect communication step.
+///\param c The FMU instance.
+///\param currentCommunicationPoint The communication point.
+///\param communicationStepSize The communication step size.
+///\param newStep The flag to accept or refect communication step.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal communicationStepSize, fmiBoolean newStep)
@@ -768,8 +777,8 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 			else
 			{
 				fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-					"The Slave could not be initialized!\n");
-				fprintf(stderr, "Can't read time step file!\n");
+					"fmiDoStep: The Slave could not be initialized!\n");
+				fprintf(stderr, "fmiDoStep: Can't read time step file!\n");
 				return fmiFatal;
 			}
 		}
@@ -778,14 +787,14 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		if (fmuInstances[_c->index]->firstCallDoStep && (fabs(fmuInstances[_c->index]->curComm - 
 			fmuInstances[_c->index]->tStartFMU) > 1e-10))
 		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal", 
+			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
 				"fmiDoStep: An error occured in a previous call. First communication time != tStart from fmiInitialize!\n");
 			return fmiFatal;
 		}
 		// check if FMU needs to reject time step
 		if(!newStep)
 		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal", 
+			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
 				"fmiDoStep: FMU can not reject time steps.");
 			return fmiFatal;
 		}
@@ -794,14 +803,14 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		if (fmuInstances[_c->index]->communicationStepSize == 0)
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-				"Fatal", "fmiDoStep: An error occured in a previous call. CommunicationStepSize cannot be null!\n");
+				"Fatal Error", "fmiDoStep: An error occured in a previous call. CommunicationStepSize cannot be null!\n");
 			return fmiFatal;
 		}
 
 		// check whether the communication step size is different from time step in input file
 		if ( fabs(fmuInstances[_c->index]->communicationStepSize - (3600/fmuInstances[_c->index]->timeStepIDF)) > 1e-10)
 		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal", "fmiDoStep:"
+			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep:"
 				" An error occured in a previous call. CommunicationStepSize is different from time step in input file!\n");
 			return fmiFatal;
 		}
@@ -809,7 +818,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		// check whether communication point is valid
 		if ((fmuInstances[_c->index]->curComm) < 0 || ((fmuInstances[_c->index]->firstCallDoStep == 0) 
 			&& (fmuInstances[_c->index]->curComm > fmuInstances[_c->index]->nexComm))){
-				fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal", "fmiDoStep:"
+				fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep:"
 					" An error occured in a previous call. Communication point must be positive and monoton increasing!\n");
 				return fmiFatal;
 		}
@@ -828,7 +837,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		if (fmuInstances[_c->index]->curComm == fmuInstances[_c->index]->tStopFMU){
 			// set the communication flags to 1 to send stop signal to EnergyPlus
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-				"fmiWarning", "fmiDoStep: Current communication point: %f of FMU instance: %s "
+				"Warning", "fmiDoStep: Current communication point: %f of FMU instance: %s "
 				"is equals to end of simulation: %f. Simulation will terminate!\n", 
 				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->instanceName, fmuInstances[_c->index]->tStopFMU);
 			fmiFreeSlaveInstance (c);
@@ -861,7 +870,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 			&& !fmuInstances[_c->index]->readReady) 
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
-				"fmiError", "fmiDoStep: An error occured in a previous call. "
+				"Error", "fmiDoStep: An error occured in a previous call. "
 				"All outputs of FMU instance %s are not get before first call of fmiDoStep. "
 				"Please call fmiGetReal before doing the first step!\n", 
 				fmuInstances[_c->index]->instanceName);
@@ -873,7 +882,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 			&& !fmuInstances[_c->index]->writeReady) 
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
-				"fmiError", "fmiDoStep: An error occured in a previous call. "
+				"Error", "fmiDoStep: An error occured in a previous call. "
 				"All inputs of FMU instance %s are not set before first call of fmiDoStep. "
 				"Please call fmiSetReal before doing the first step!\n", 
 				fmuInstances[_c->index]->instanceName);
@@ -885,7 +894,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 			&& !fmuInstances[_c->index]->readReady) 
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
-				"fmiError", "fmiDoStep: An error occured in a previous call. All outputs of FMU instance %s are not get!\n", 
+				"Error", "fmiDoStep: An error occured in a previous call. All outputs of FMU instance %s are not get!\n", 
 				fmuInstances[_c->index]->instanceName);
 			return fmiError;
 		}
@@ -895,7 +904,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 			&& !fmuInstances[_c->index]->writeReady) 
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
-				"fmiError", "fmiDoStep: An error occured in a previous call. All inputs of FMU instance %s are not set!\n", 
+				"Error", "fmiDoStep: An error occured in a previous call. All inputs of FMU instance %s are not set!\n", 
 				fmuInstances[_c->index]->instanceName);
 			return fmiError;
 		}
@@ -935,8 +944,8 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 ////////////////////////////////////////////////////////////////
 ///  This method is used to cancel a step in the FMU
 ///
-///\param c FMU instance.
-///\return fmiWarning if error occurred.
+///\param c The FMU instance.
+///\return fmiWarning if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiCancelStep(fmiComponent c)
 {
@@ -944,7 +953,7 @@ DllExport fmiStatus fmiCancelStep(fmiComponent c)
 	if (fmuInstances[_c->index]->pid != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-			"Warning", "The function fmiCancelStep(..) is not provided!\n");
+			"Warning", "fmiCancelStep: The function fmiCancelStep(..) is not provided!\n");
 		return fmiWarning;
 	}
 	return fmiWarning;
@@ -953,7 +962,8 @@ DllExport fmiStatus fmiCancelStep(fmiComponent c)
 ////////////////////////////////////////////////////////////////
 ///  This method is used to terminate the FMU instance
 ///
-///\param c FMU instance.
+///\param c The FMU instance.
+///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 {
@@ -1019,8 +1029,8 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 ////////////////////////////////////////////////////////////////
 ///  This method is used to reset the FMU instance
 ///
-///\param c FMU instance.
-///\return fmiWarning if error occurred.
+///\param c The FMU instance.
+///\return fmiWarning if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiResetSlave(fmiComponent c)
 {
@@ -1028,7 +1038,7 @@ DllExport fmiStatus fmiResetSlave(fmiComponent c)
 	if (fmuInstances[_c->index]->pid != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiResetSlave(..): is not provided!\n");
+			"fmiResetSlave: fmiResetSlave(..): is not provided!\n");
 		return fmiWarning;
 	}
 	return fmiWarning;
@@ -1037,7 +1047,7 @@ DllExport fmiStatus fmiResetSlave(fmiComponent c)
 ////////////////////////////////////////////////////////////////
 ///  This method is used to free the FMU instance
 ///
-///\param c FMU instance.
+///\param c The FMU instance.
 ////////////////////////////////////////////////////////////////
 DllExport void fmiFreeSlaveInstance(fmiComponent c)
 {
@@ -1116,8 +1126,8 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 ////////////////////////////////////////////////////////////////
 ///  This method is used to set the debug logging in the FMU
 ///
-///\param c FMU instance.
-///\param loggingOn LoginggOn activate/deactivate.
+///\param c The FMU instance.
+///\param loggingOn The loginggOn activate/deactivate.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetDebugLogging  (fmiComponent c, fmiBoolean loggingOn)
@@ -1134,10 +1144,10 @@ DllExport fmiStatus fmiSetDebugLogging  (fmiComponent c, fmiBoolean loggingOn)
 ////////////////////////////////////////////////////////////////
 ///  This method is used to set reals in the FMU instance
 ///
-///\param c FMU instance.
-///\param fmiValueReference value reference.
-///\param nvr number of variables to set.
-///\param value values of variables to set.
+///\param c The FMU instance.
+///\param fmiValueReference The value reference.
+///\param nvr The number of variables to set.
+///\param value The values of variables to set.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiReal value[])
@@ -1195,10 +1205,10 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 ////////////////////////////////////////////////////////////////
 ///  This method is used to set integers in the FMU instance
 ///
-///\param c FMU instance.
-///\param fmiValueReference value reference.
-///\param nvr number of variables to set.
-///\param value values of variables to set.
+///\param c The FMU instance.
+///\param fmiValueReference The value reference.
+///\param nvr The number of variables to set.
+///\param value The values of variables to set.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger value[])
@@ -1209,7 +1219,7 @@ DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], 
 		if(nvr>0)
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-				"fmiSetInteger(..) was called. The FMU does not contain integer variables to set!\n");
+				"fmiSetInteger: fmiSetInteger(..) was called. The FMU does not contain integer variables to set!\n");
 			return fmiError;
 		}
 		return fmiOK;
@@ -1220,10 +1230,10 @@ DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], 
 ////////////////////////////////////////////////////////////////
 ///  This method is used to set booleans in the FMU instance
 ///
-///\param c FMU instance.
-///\param fmiValueReference value reference.
-///\param nvr number of variables to set.
-///\param value values of variables to set.
+///\param c The FMU instance.
+///\param fmiValueReference The value reference.
+///\param nvr The number of variables to set.
+///\param value The values of variables to set.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiBoolean value[])
@@ -1234,7 +1244,7 @@ DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], 
 		if(nvr>0)
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-				"fmiSetBoolean(..) was called. The FMU does not contain boolean variables to set!\n");
+				"fmiSetBoolean: fmiSetBoolean(..) was called. The FMU does not contain boolean variables to set!\n");
 			return fmiError;
 		}
 		return fmiOK;
@@ -1245,10 +1255,10 @@ DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], 
 ////////////////////////////////////////////////////////////////
 ///  This method is used to set strings in the FMU instance
 ///
-///\param c FMU instance.
-///\param fmiValueReference value reference.
-///\param nvr number of variables to set.
-///\param value values of variables to set.
+///\param c The FMU instance.
+///\param fmiValueReference The value reference.
+///\param nvr The number of variables to set.
+///\param value The values of variables to set.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiString value[])
@@ -1259,7 +1269,7 @@ DllExport fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], s
 		if(nvr>0)
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
-				"Error", "fmiSetString(..) was called. The FMU does not contain string variables to set!\n");
+				"Error", "fmiSetString: fmiSetString(..) was called. The FMU does not contain string variables to set!\n");
 			return fmiError;
 		}
 		return fmiOK;
@@ -1270,10 +1280,10 @@ DllExport fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], s
 ////////////////////////////////////////////////////////////////
 ///  This method is used to get reals from the FMU instance
 ///
-///\param c FMU instance.
-///\param fmiValueReference value reference.
-///\param nvr number of variables to get.
-///\param value values of variables to get.
+///\param c The FMU instance.
+///\param fmiValueReference The value reference.
+///\param nvr The number of variables to get.
+///\param value The values of variables to get.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
@@ -1339,10 +1349,10 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 ////////////////////////////////////////////////////////////////
 ///  This method is used to get integers from the FMU instance
 ///
-///\param c FMU instance.
-///\param fmiValueReference value reference.
-///\param nvr number of variables to get.
-///\param value values of variables to get.
+///\param c The FMU instance.
+///\param fmiValueReference The value reference.
+///\param nvr The number of variables to get.
+///\param value The values of variables to get.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiInteger value[])
@@ -1353,7 +1363,7 @@ DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], 
 		if(nvr>0)
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-				"fmiGetInteger(..) was called. The FMU does not contain integer variables to get!\n");
+				"fmiGetInteger: fmiGetInteger(..) was called. The FMU does not contain integer variables to get!\n");
 			return fmiError;
 		}
 		return fmiOK;
@@ -1364,10 +1374,10 @@ DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], 
 ////////////////////////////////////////////////////////////////
 ///  This method is used to get booleans from the FMU instance
 ///
-///\param c FMU instance.
-///\param fmiValueReference value reference.
-///\param nvr number of variables to get.
-///\param value values of variables to get.
+///\param c The FMU instance.
+///\param fmiValueReference The value reference.
+///\param nvr The number of variables to get.
+///\param value The values of variables to get.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiBoolean value[])
@@ -1378,7 +1388,7 @@ DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], 
 		if(nvr>0)
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-				"fmiGetBoolean(..) was called. The FMU does not contain boolean variables to get!\n");
+				"fmiGetBoolean: fmiGetBoolean(..) was called. The FMU does not contain boolean variables to get!\n");
 			return fmiError;
 		}
 		return fmiOK;
@@ -1389,10 +1399,10 @@ DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], 
 ////////////////////////////////////////////////////////////////
 ///  This method is used to get strings from the FMU instance
 ///
-///\param c FMU instance.
-///\param fmiValueReference value reference.
-///\param nvr number of variables to get.
-///\param value values of variables to get.
+///\param c The FMU instance.
+///\param fmiValueReference The value reference.
+///\param nvr The number of variables to get.
+///\param value The values of variables to get.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetString (fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiString  value[])
@@ -1403,7 +1413,7 @@ DllExport fmiStatus fmiGetString (fmiComponent c, const fmiValueReference vr[], 
 		if(nvr>0)
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
-				"Error", "fmiGetString(..) was called. The FMU does not contain string variables to get!\n");
+				"Error", "fmiGetString: fmiGetString(..) was called. The FMU does not contain string variables to get!\n");
 			return fmiError;
 		}
 		return fmiOK;
@@ -1415,12 +1425,12 @@ DllExport fmiStatus fmiGetString (fmiComponent c, const fmiValueReference vr[], 
 ///  This method is used to get real output
 ///  derivatives from the FMU instance
 ///
-///\param c FMU instance.
-///\param fmiValueReference value reference.
-///\param nvr number of variables to get.
-///\param order order of the derivatives.
-///\param value values of variables to get.
-///\return fmiWarning if error occurred.
+///\param c The FMU instance.
+///\param fmiValueReference The value reference.
+///\param nvr The number of variables to get.
+///\param order The order of the derivatives.
+///\param value The values of variables to get.
+///\return fmiWarning if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], fmiReal value[])
 {
@@ -1428,7 +1438,7 @@ DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueRe
 	if (fmuInstances[_c->index]->pid != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetRealOutputDerivatives(): Real Output Derivatives are not provided!\n");
+			"fmiGetRealOutputDerivatives: fmiGetRealOutputDerivatives(): Real Output Derivatives are not provided!\n");
 		return fmiWarning;
 	}
 	return fmiWarning;
@@ -1438,12 +1448,12 @@ DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueRe
 ///  This method is used to set real input
 ///  derivatives from the FMU instance
 ///
-///\param c FMU instance.
-///\param fmiValueReference value reference.
-///\param nvr number of variables to set.
-///\param order order of the derivatives.
-///\param value values of variables to set.
-///\return fmiWarning if error occurred.
+///\param c The FMU instance.
+///\param fmiValueReference The value reference.
+///\param nvr The number of variables to set.
+///\param order The order of the derivatives.
+///\param value The values of variables to set.
+///\return fmiWarning if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])
 {
@@ -1451,7 +1461,7 @@ DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueRef
 	if (fmuInstances[_c->index]->pid != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiSetRealInputDerivatives(): Real Input Derivatives are not provided!\n");
+			"fmiSetRealInputDerivatives: fmiSetRealInputDerivatives(): Real Input Derivatives are not provided!\n");
 		return fmiWarning;
 	}
 	return fmiWarning;
@@ -1460,10 +1470,10 @@ DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueRef
 ////////////////////////////////////////////////////////////////
 ///  This method is used to get FMU status
 ///
-///\param c FMU instance.
-///\param fmiStatusKind status information.
-///\param value status value.
-///\return fmiDiscard.
+///\param c The FMU instance.
+///\param fmiStatusKind The status information.
+///\param value The status value.
+///\return fmiWarning if no error occured.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatus* value)
 {
@@ -1471,7 +1481,7 @@ DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatu
 	if (fmuInstances[_c->index]->pid != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetStatus(): is not provided!\n");
+			"fmiGetStatus: fmiGetStatus(): is not provided!\n");
 		return fmiWarning;
 	}
 	return fmiWarning;
@@ -1480,10 +1490,10 @@ DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatu
 ////////////////////////////////////////////////////////////////
 ///  This method is used to get fmiGetReal status
 ///
-///\param c FMU instance.
-///\param fmiStatusKind status information.
-///\param value status value.
-///\return fmiDiscard.
+///\param c The FMU instance.
+///\param fmiStatusKind The status information.
+///\param value The status value.
+///\return fmiWarning if no error occured.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiReal* value)
 {
@@ -1491,7 +1501,7 @@ DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiR
 	if (fmuInstances[_c->index]->pid != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetRealStatus(): is not provided!\n");
+			"fmiGetRealStatus: fmiGetRealStatus(): is not provided!\n");
 		return fmiWarning;
 	}
 	return fmiWarning;
@@ -1500,10 +1510,10 @@ DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiR
 ////////////////////////////////////////////////////////////////
 ///  This method is used to get fmiGetInteger status
 ///
-///\param c FMU instance.
-///\param fmiStatusKind status information.
-///\param value status value.
-///\return fmiDiscard.
+///\param c The FMU instance.
+///\param fmiStatusKind The status information.
+///\param value The status value.
+///\return fmiWarning if no error occured.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, fmiInteger* value)
 {
@@ -1512,7 +1522,7 @@ DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, f
 
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetIntegerStatus(): is not provided!\n");
+			"fmiGetIntegerStatus: fmiGetIntegerStatus(): is not provided!\n");
 		return fmiWarning;
 	}
 	return fmiWarning;
@@ -1520,10 +1530,10 @@ DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, f
 ////////////////////////////////////////////////////////////////
 ///  This method is used to get fmiGetBoolean status
 ///
-///\param c FMU instance.
-///\param fmiStatusKind status information.
-///\param value status value.
-///\return fmiDiscard.
+///\param c The FMU instance.
+///\param fmiStatusKind The status information.
+///\param value The status value.
+///\return fmiWarning if no error occured.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, fmiBoolean* value)
 {
@@ -1531,18 +1541,18 @@ DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, f
 	if (fmuInstances[_c->index]->pid != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetBooleanStatus(): is not provided!\n");
+			"fmiGetBooleanStatus: fmiGetBooleanStatus(): is not provided!\n");
 		return fmiWarning;
 	}
-	return fmiDiscard;
+	return fmiWarning;
 }
 ////////////////////////////////////////////////////////////////
 ///  This method is used to get fmiGetString status
 ///
-///\param c FMU instance.
-///\param fmiStatusKind status information.
-///\param value status value.
-///\return fmiDiscard.
+///\param c The FMU instance.
+///\param fmiStatusKind The status information.
+///\param value The status value.
+///\return fmiWarning if no error occured.
 ////////////////////////////////////////////////////////////////
 
 DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, fmiString* value)
@@ -1551,7 +1561,7 @@ DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, f
 	if (fmuInstances[_c->index]->pid != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetStringStatus(): is not provided!\n");
+			"fmiGetStringStatus: fmiGetStringStatus(): is not provided!\n");
 		return fmiWarning;
 	}
 	return fmiWarning;

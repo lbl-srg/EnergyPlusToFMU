@@ -54,7 +54,8 @@ const char* OLDDAYWEEK    = "oldDayWeek.txt";
 ///////////////////////////////////////////////////////////////////////////////
 /// This function calculates the modulo of tow doubles. 
 ///
-///
+///\param a First input.
+///\param b Second input.
 ///\return The modulo of two doubles. 
 ///////////////////////////////////////////////////////////////////////////////
 static double modulus(double a, double b)
@@ -67,6 +68,8 @@ static double modulus(double a, double b)
 /// This function finds a file with a specific extension in a folder. 
 /// It returns the name of the found file with its extension.
 ///
+///\param path The path to file.
+///\param pattern The pattern to search.
 ///\return The name of the file found with extension. 
 ///        Otherwise, return 1 to indicate error. 
 ///////////////////////////////////////////////////////////////////////////////
@@ -163,8 +166,10 @@ void findFileDelete()
 ///////////////////////////////////////////////////////////////////////////////
 /// This function creates the input file to be used for the run.
 ///
-///\param fname The filename.
-///\return fmiOK if no error occurred.
+///\param t_start_FMU The FMU start time.
+///\param t_stop_FMU The FMU stop time.
+///\param t_start_FMU The FMU model ID.
+///\param resources_p The path to resources folder
 ///////////////////////////////////////////////////////////////////////////////
 int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, char * resources_p)
 {
@@ -770,7 +775,6 @@ static int getCurrentDay(double time_s, int month, int leapyear){
 				else
 				{	
 					day = (int)(time_s/86400) - num_days;
-					//day = ( day>1 ? day : 1 ); 
 				}
 			}
 		}
@@ -786,7 +790,6 @@ static int getCurrentDay(double time_s, int month, int leapyear){
 				}
 				else {
 					day = (int)(time_s/86400) - num_days;
-					//day = ( day>1 ? day : 1 ); 
 				}
 			}
 		}
