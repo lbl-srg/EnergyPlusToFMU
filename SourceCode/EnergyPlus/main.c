@@ -127,6 +127,20 @@ idfFmu_t **fmuInstances;
 static int fmuLocCoun = 0;
 #define DELTA 10
 
+////////////////////////////////////////////////////////////////////////////////////
+/// Replace forward slash with backward slash
+///
+///\param s The input string.
+///\param s The character to find.
+///\param s The character to replace.
+////////////////////////////////////////////////////////////////////////////////////
+void replace_char (char *s, const char find, const char replace) {
+	while (*s != 0) {
+		if (*s == find)
+			*s = replace;
+		s++;
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 /// create a list of pointer to FMUs
@@ -354,6 +368,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	fmiString mGUID;
 
 	char *xml_file_p;
+	char tmpResLoc[5];
 
 	fmiComponent c = (fmiComponent)calloc(1, sizeof(struct idfFmu_t));
 	idfFmu_t* _c = (idfFmu_t*)c;
@@ -378,23 +393,54 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	}
 	// copy instanceName to the FMU
 	strcpy(fmuInstances[_c->index]->instanceName, instanceName);
+	
+	// copy first 5 characters of fmuLocation
+	strncpy (tmpResLoc, fmuLocation, 5);
 
 	// allocate memory for fmuLocation 
 	fmuInstances[_c->index]->fmuLocation = (char *)calloc(sizeof(char), strlen (fmuLocation) + 1);
-	// copy the fmuLocation to the FMU
-	strcpy(fmuInstances[_c->index]->fmuLocation, fmuLocation);
+
+	// extract the URI information from the fmuResourceLocation path
+	if ((strncmp (tmpResLoc, "file", 4)== 0) || ((strncmp (tmpResLoc, "http", 4)== 0) && strncmp(tmpResLoc, "https", 5)!= 0))
+	{
+		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 7, strlen(fmuLocation + 7));
+		printfDebug ("fmiInstantiateSlave: Path to fmuLocation without file:// or http:// %s\n", 
+			fmuInstances[_c->index]->fmuLocation);
+	}
+	else if ((strncmp (tmpResLoc, "ftp", 3)== 0) || (strncmp (tmpResLoc, "fmi", 3)== 0))
+	{
+		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 6, strlen(fmuLocation + 6));
+		printfDebug ("fmiInstantiateSlave: Path to fmuLocationPath without ftp:// or fmi:// %s\n", 
+			fmuInstances[_c->index]->fmuLocation);
+	}
+	else if ((strncmp (tmpResLoc, "https", 5)== 0))
+	{
+		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 8, strlen(fmuLocation + 8));
+		printfDebug ("fmiInstantiateSlave: Path to fmuLocation without https:// %s\n", fmuInstances[_c->index]->fmuLocation);
+	}
+
+	else
+	{
+		strcpy(fmuInstances[_c->index]->fmuLocation, fmuLocation);
+		printfDebug ("fmiInstantiateSlave: Path to fmuLocation %s\n", fmuInstances[_c->index]->fmuLocation);
+	}
+#ifdef _MSC_VER
+	// replace eventual forward slash with backslash on Windows
+	replace_char (fmuInstances[_c->index]->fmuLocation, '//', '\\');
+#endif
+	printfDebug ("fmiInstantiateSlave: Path to fmuLocation used in the program %s\n", fmuInstances[_c->index]->fmuLocation);
 
 	// change the directory to make sure that FMUs are not overwritten
-	retVal = chdir(fmuLocation);
+	retVal = chdir(fmuInstances[_c->index]->fmuLocation);
 	if (retVal!=0){
 		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The path"
-			" to the resources folder: %s is not valid!\n", fmuLocation);
+			" to the resources folder: %s is not valid!\n", fmuInstances[_c->index]->fmuLocation);
 		exit(1);
 	}
 
 	// create path to xml file
-	xml_file_p = (char *)calloc(sizeof(char), strlen (fmuLocation) + strlen (XML_FILE) + 1);
-	sprintf(xml_file_p, "%s%s", fmuLocation, XML_FILE);
+	xml_file_p = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->fmuLocation) + strlen (XML_FILE) + 1);
+	sprintf(xml_file_p, "%s%s", fmuInstances[_c->index]->fmuLocation, XML_FILE);
 
 	// get model description of the FMU
 	fmuInstances[_c->index]->md = parse(xml_file_p);
@@ -443,6 +489,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// free xml_file_p;
 	free (xml_file_p);
 	// assign number to be used in initialize
+	
 	return(c); 
 }
 
@@ -1566,7 +1613,6 @@ DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, f
 	}
 	return fmiWarning;
 }
-
 
 /*
 
