@@ -24,9 +24,8 @@ To export EnergyPlus as an FMU, four objects have been added to the EnergyPlus d
 These objects are described in the Input/Output reference of the EnergyPlus manual 
 (http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf) 
 
-
-Configuring an EnergyPlus model using the ``Schedule`` object
--------------------------------------------------------------
+Configuring an EnergyPlus model which uses the ``Schedule`` object
+------------------------------------------------------------------
 
 Suppose, we would like to export an EnergyPlus model of a room with 
 an ideal HVAC system, that delivers sensible and latent heat gains as schedules
@@ -125,9 +124,8 @@ To define the outputs of the FMU, we use:
 	QLatent,                 !- FMU Variable Name
 	0;                       !- Initial Value
 
-
-Configuring an EnergyPlus model using the ``EMS Actuator`` object
------------------------------------------------------------------
+Configuring an EnergyPlus model which uses the ``EMS Actuator`` object
+----------------------------------------------------------------------
 
 Suppose, we would like to export an EnergyPlus model of a room with a window 
 model which has a shading controller which actuates a blind as function of 
@@ -191,8 +189,8 @@ To define the output of the FMU, we use:
 	6;                                           !- Initial Value
 
 
-Configuring an EnergyPlus model using the ``EMS Variable`` object
------------------------------------------------------------------
+Configuring an EnergyPlus model which uses the ``EMS Variable`` object
+----------------------------------------------------------------------
 
 This configuration is almost the same as in the previous example with the only 
 difference being that the shading actuation signal will be mapped to an EMS variable

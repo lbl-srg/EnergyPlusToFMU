@@ -21,7 +21,6 @@ Contents
    usage
    mathematics
    bestPractice
-   examples
    development
    help
    glossary
