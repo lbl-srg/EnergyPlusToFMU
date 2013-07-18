@@ -25,8 +25,8 @@ These objects are described in the Input/Output reference of the EnergyPlus manu
 (http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf) 
 
 
-Configuring an EnergyPlus model with ``ExternalInterface:FunctionalMockupUnitExport:To:Schedule``
--------------------------------------------------------------------------------------------------
+Configuring an EnergyPlus model using the ``Schedule`` object
+-------------------------------------------------------------
 
 Suppose, we would like to export an EnergyPlus model of a room with 
 an ideal HVAC system, that delivers sensible and latent heat gains as schedules
@@ -117,8 +117,8 @@ To define the outputs of the FMU, we use:
  | ``0;                       !- Initial Value``
 
 
-Configuring an EnergyPlus model with ``ExternalInterface:FunctionalMockupUnitExport:To:Actuator``
--------------------------------------------------------------------------------------------------
+Configuring an EnergyPlus model using the ``Actuator`` object
+-------------------------------------------------------------
 
 Suppose, we would like to export an EnergyPlus model of a room with a window 
 model which has a shading controller which actuates a blind as function of 
@@ -174,8 +174,8 @@ To define the output of the FMU, we use:
  | ``6;                                   !- Initial Value``
 
 
-Configuring an EnergyPlus model with ``ExternalInterface:FunctionalMockupUnitExport:To:Variable``
--------------------------------------------------------------------------------------------------
+Configuring an EnergyPlus model using the ``EMS Variable`` object
+-----------------------------------------------------------------
 
 This configuration is almost the same as in the previous example with the only 
 difference being that the shading actuation signal will be mapped to an EMS variable
