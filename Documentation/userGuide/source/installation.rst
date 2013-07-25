@@ -37,9 +37,9 @@ Installation
 
 To install the EnergyPlusToFMU package:
 
-1. Download the installation file (EnergyPlusToFMU-1.0.zip) from the download page.
+1. Download the installation file from the :doc:`download` page. 
 
-2. Unzip the installation file into any folder (hereafter referred to as the "intallation directory").
+2. Unzip the installation file into any folder (hereafter referred to as the "installation directory").
 
 Minimally, the installation directory should contain the following subdirectories:
 

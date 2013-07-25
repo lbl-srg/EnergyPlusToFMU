@@ -5,8 +5,8 @@
 Release Notes
 =============
 
-Version 1.0
------------
+Version 0.1.0
+-------------
 
-First release.
+Support of FMI version 1.0 for co-simulation.
 

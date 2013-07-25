@@ -17,6 +17,7 @@ Contents
 
    releaseNotes
    introduction
+   download
    installation
    usage
    mathematics
