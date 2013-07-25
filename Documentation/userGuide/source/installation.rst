@@ -17,7 +17,7 @@ Software requirements
 
 To export an EnergyPlus simulation as an FMU, EnergyPlusToFMU needs:
 
-1. Python 2.6 or higher.
+1. Python 2.6 or 2.7.
 
 2. A C compiler and linker.
 
@@ -85,18 +85,86 @@ In order to run the compiler and linker, EnergyPlusToFMU uses the following batc
 |                      | into an executable (i.e. a stand-alone application).  |
 +----------------------+-------------------------------------------------------+
 
-The contents of these batch files depends on the operating system, the compiler/linker environment (e.g., gcc or Microsoft Visual Studio), and the options desired (e.g., a 32-bit or 64-bit FMU).
-Therefore to configure your installation may require selecting and modifying these files, according to your particular needs.
+The EnergyPlusToFMU installation includes default versions of these batch files.
+However, the exact contents of these batch files depends on:
+
+1. The operating system.
+
+2. The compiler/linker environment (e.g., gcc or Microsoft Visual Studio).
+
+3. The options desired (e.g., a 32-bit or 64-bit FMU).
+
+Therefore configuring your installation may require modifying these files, according to your particular needs.
 
 First, identify the appropriate subdirectory where these batch files reside.
 As shown above, the ``Scripts/EnergyPlusToFMU`` directory contains a batch subdirectory for each of the supported platforms.
 
-Note that the Python runtime detects your platform.
-That means if you are running Python on an emulator or virtual machine (for example, Cygwin in Windows, or using Parallels on a Mac), you should look in the subdirectory corresponding to the emulated operating system.
+Note that Python detects your platform when it runs.
+Therefore if you are using an emulator or virtual machine (for example, Cygwin under Windows, or a Windows virtual machine on a Mac), you should look in the subdirectory corresponding to the emulated operating system.
 
-Each system-specific batch subdirectory already includes sample batch files.
-These cover some common cases.
-hoho mention ones in TXT, vs ones in BAT.
+Each system-specific batch subdirectory includes sample batch files.
+In addition to the default versions, some alternate versions may also be present.
+The alternate versions can be identified in two ways:
+(1) the file extension is ``.txt``, rather than ``.bat``;
+and
+(2) the file base name identifies the associated options.
+For example, a file ``compile-c-gcc-32bit.txt`` is a version of ``compile-c.bat``, which is specific to the gcc compiler/linker environment, and which generates 32-bit object files even on a 64-bit machine.
+
+Note that the default batch file is an exact copy of one of the alternate versions.
+For example, in the ``batch-dos`` subdirectory, the default batch file ``compile-c.bat`` is the same as ``compile-c-mvs10.txt`` (the version for Microsoft Visual Studio 10).
+Therefore the installation defines fewer unique batch files than it at first appears.
+
+
+Testing and modifying the batch files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The included batch files cover some common cases.
+With luck, you can simply run the EnergyPlusToFMU build process (FIXME: insert link when have a page), and everything will work as expected.
+
+On the other hand, the default batch files may not work on your system.
+Furthermore, you may want to modify or replace the default versions, for example to use a different compiler/linker environment, or to add a compilation option of interest.
+
+This section describes how to check your batch files, and gives hints on how to edit them if necessary.
+Unfortunately, it is beyond the scope of this document to give full instructions on installing and using developer tools such as compilers and linkers.
+
+While modifying the batch files, keep these points in mind:
+
+- Only changes to the batch files named in the table above matter to the EnergyPlusToFMU tools.
+  Thus, editing ``compile-c-gcc.txt`` will have no effect on building the FMU.
+  Only ``compile-c.bat`` affects the EnergyPlusToFMU tools.
+
+- If a provided batch file does not work, it may simply be a matter of changing the directory
+  path hard-wired in the batch file.
+  For example, the batch files that invoke Microsoft Visual Studio on Windows machines
+  list several known locations for finding the Visual Studio program files.
+  If your machine differs only in the installed location of Visual Studio, then editing
+  the batch file to point it to the correct path may be all that is needed.
+
+- Unix-like environments, including Linux and MacOS, may define ``cc`` as a link to the standard
+  C compiler, and ``c++`` as a link to the standard C++ compiler.
+
+- On most systems, the compiler also can drive the linker, filling in appropriate options.
+  Therefore once you have identified your system's compiler, try the same tool in the linker batch files.
+
+- The batch file that runs the C compiler, ``compile-c.bat``, has to distinguish
+  whether or not your compiler/linker environment provides the non-standard ``memmove()`` function.
+
+  - This function is standard for C++, so many C environments provide it as well.
+    However, yours may not.
+
+  - If your C compiler/linker environment does provide ``memmove()``, then the batch
+    file should pass the compiler the macro definition ``HAVE_MEMMOVE``.
+    The included batch files show how to define a macro for the given compiler.
+
+  - If, on the other hand, your C compiler/linker environment does not provide
+    ``memmove()``, then do not define the macro, and a version of the function will be provided.
+  
+  - If you are not sure whether or not your system provides the function, simply watch
+    for any errors during the linking stage.
+    If you fail to define ``HAVE_MEMMOVE`` when you should, the linker will complain about
+    duplicate definitions of ``memmove()``.
+    If, on the other hand, you define ``HAVE_MEMMOVE`` when you should not, the linker will
+    complain about not being able to find a ``memmove()`` implementation.
 
 
 Uninstallation
