@@ -11,5 +11,5 @@ When submitting a bug report, please provide:
  * Information about the operating system and the EnergyPlus version.
 
 To report the bug, send email to https://groups.google.com/group/energyplustofmu. This is an open group and everyone can join it. No invitation is needed. 
-fixeme: needs to create this group
+fixme: needs to create this group
 
