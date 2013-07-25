@@ -48,13 +48,13 @@ Minimally, the installation directory should contain the following subdirectorie
   - ``EnergyPlusToFMU``
     (Python scripts that create an FMU from an IDF file)
 
-    - ``script-dos``
+    - ``batch-dos``
       (batch files specific to Windows)
 
-    - ``script-linux``
+    - ``batch-linux``
       (shell scripts specific to Linux)
 
-    - ``script-macos``
+    - ``batch-macos``
       (shell scripts specific to Mac OS X)
 
 - ``SourceCode``
@@ -85,18 +85,18 @@ In order to run the compiler and linker, EnergyPlusToFMU uses the following batc
 |                      | into an executable (i.e. a stand-alone application).  |
 +----------------------+-------------------------------------------------------+
 
-The contents of these batch files depends on the operating system, the compiler and linker (e.g., gcc versus Microsoft), and the options desired (e.g., a 32-bit or 64-bit FMU).
-Therefore the configuration step involves selecting and modifying these files, according to your particular needs.
-
-The EnergyPlusToFMU installation includes some sample batch files.
-These cover some common cases.
-However, configuring EnergyPlusToFMU for your system may require changing one of more of the provided batch files.
+The contents of these batch files depends on the operating system, the compiler/linker environment (e.g., gcc or Microsoft Visual Studio), and the options desired (e.g., a 32-bit or 64-bit FMU).
+Therefore to configure your installation may require selecting and modifying these files, according to your particular needs.
 
 First, identify the appropriate subdirectory where these batch files reside.
-As shown above, the ``Scripts/EnergyPlusToFMU`` directory contains a subdirectory for each of the supported platforms.
+As shown above, the ``Scripts/EnergyPlusToFMU`` directory contains a batch subdirectory for each of the supported platforms.
 
 Note that the Python runtime detects your platform.
 That means if you are running Python on an emulator or virtual machine (for example, Cygwin in Windows, or using Parallels on a Mac), you should look in the subdirectory corresponding to the emulated operating system.
+
+Each system-specific batch subdirectory already includes sample batch files.
+These cover some common cases.
+hoho mention ones in TXT, vs ones in BAT.
 
 
 Uninstallation

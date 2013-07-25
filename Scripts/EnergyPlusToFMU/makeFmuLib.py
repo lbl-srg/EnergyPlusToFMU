@@ -67,7 +67,7 @@ def printCompileCBatchInfo():
   print '-- The batch file should compile C source code files'
   print '-- The batch file should accept one argument, the name (including path) of the source code file to compile'
   print '-- The batch file should leave the resulting object file in the working directory'
-  print '-- Place the batch file in the system-specific script directory'
+  print '-- Place the batch file in the system-specific batch directory'
   #
   # End fcn printCompileCBatchInfo().
 
@@ -80,7 +80,7 @@ def printLinkCLibBatchInfo():
   print '-- The batch file should accept at least two arguments, in this order:'
   print '  ** the name of the output shared library'
   print '  ** the name(s) of the object files to link'
-  print '-- Place the batch file in the system-specific script directory'
+  print '-- Place the batch file in the system-specific batch directory'
   #
   # End fcn printLinkCLibBatchInfo().
 
@@ -93,7 +93,7 @@ def printLinkCExeBatchInfo():
   print '-- The batch file should accept at least two arguments, in this order:'
   print '  ** the name of the output executable'
   print '  ** the name(s) of the object files to link'
-  print '-- Place the batch file in the system-specific script directory'
+  print '-- Place the batch file in the system-specific batch directory'
   #
   # End fcn printLinkCExeBatchInfo().
 
@@ -275,38 +275,38 @@ def makeFmuSharedLib(showDiagnostics, litter, modelIdName):
   #
   # Choose system-specific values.
   platformName = sys.platform
-  systemScriptDirName = None
+  systemBatchDirName = None
   fmuSharedLibName = None
   #
   if( platformName.startswith('win') ):
     platformName = 'win'
-    systemScriptDirName = 'script-dos'
+    systemBatchDirName = 'batch-dos'
     fmuSharedLibName = modelIdSanitizedName +'.dll'
   elif( platformName.startswith('linux')
     or platformName.startswith('cygwin') ):
     platformName = 'linux'
-    systemScriptDirName = 'script-linux'
+    systemBatchDirName = 'batch-linux'
     fmuSharedLibName = 'lib' +modelIdSanitizedName +'.so'
   elif( platformName.startswith('darwin') ):
     platformName = 'macos'
-    systemScriptDirName = 'script-macos'
+    systemBatchDirName = 'batch-macos'
     fmuSharedLibName = 'lib' +modelIdSanitizedName +'.dylib'
   else:
     quitWithError('Unknown platform {' +platformName +'}', False)
   #
   if( showDiagnostics ):
-    printDiagnostic('Using system-specific scripts from subdirectory {' +systemScriptDirName +'}')
-  if( not os.path.isdir(systemScriptDirName) ):
-    quitWithError('Missing system-specific script directory {' +os.path.join(scriptDirName, systemScriptDirName) +'}', False)
+    printDiagnostic('Using system-specific scripts from batch directory {' +systemBatchDirName +'}')
+  if( not os.path.isdir(systemBatchDirName) ):
+    quitWithError('Missing system-specific batch directory {' +os.path.join(scriptDirName, systemBatchDirName) +'}', False)
   #
   # Form names of system-specific scripts.
-  compileCBatchFileName = os.path.join(systemScriptDirName, g_compileCBatchFileName)
+  compileCBatchFileName = os.path.join(systemBatchDirName, g_compileCBatchFileName)
   findFileOrQuit('compiler batch', compileCBatchFileName)
   #
-  linkCLibBatchFileName = os.path.join(systemScriptDirName, g_linkCLibBatchFileName)
+  linkCLibBatchFileName = os.path.join(systemBatchDirName, g_linkCLibBatchFileName)
   findFileOrQuit('linker batch', linkCLibBatchFileName)
   #
-  linkCExeBatchFileName = os.path.join(systemScriptDirName, g_linkCExeBatchFileName)
+  linkCExeBatchFileName = os.path.join(systemBatchDirName, g_linkCExeBatchFileName)
   findFileOrQuit('linker batch', linkCExeBatchFileName)
   #
   # Insert model identifier into source code files.
@@ -364,7 +364,7 @@ def makeFmuSharedLib(showDiagnostics, litter, modelIdName):
   #
   # Find size of memory address used in {fmuSharedLibName}.
   #   Note both the library and {getAddressSizeExeName} were compiled using the
-  # same compiler script.
+  # same compiler batch file.
   if( showDiagnostics ):
     printDiagnostic('Running utility application {' +getAddressSizeExeName +'}')
   try:

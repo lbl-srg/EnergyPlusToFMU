@@ -64,7 +64,7 @@ def printCompileCppBatchInfo():
   print '-- The batch file should compile C++ source code files'
   print '-- The batch file should accept one argument, the name (including path) of the source code file to compile'
   print '-- The batch file should leave the resulting object file in the working directory'
-  print '-- Place the batch file in the system-specific script directory'
+  print '-- Place the batch file in the system-specific batch directory'
   #
   # End fcn printCompileCppBatchInfo().
 
@@ -77,7 +77,7 @@ def printLinkCppExeBatchInfo():
   print '-- The batch file should accept at least two arguments, in this order:'
   print '  ** the name of the output executable'
   print '  ** the name(s) of the object files to link'
-  print '-- Place the batch file in the system-specific script directory'
+  print '-- Place the batch file in the system-specific batch directory'
   #
   # End fcn printLinkCppExeBatchInfo().
 
@@ -181,26 +181,26 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild, exportPrepExeName):
     os.chdir(scriptDirName)
   #
   # Choose subdirectory for system-specific scripts.
-  systemScriptDirName = sys.platform
-  if( systemScriptDirName.startswith('win') ):
-    systemScriptDirName = 'script-dos'
-  elif( systemScriptDirName.startswith('linux')
-    or systemScriptDirName.startswith('cygwin') ):
-    systemScriptDirName = 'script-linux'
-  elif( systemScriptDirName.startswith('darwin')
-    or systemScriptDirName.startswith('freebsd') ):
-    systemScriptDirName = 'script-macos'
+  systemBatchDirName = sys.platform
+  if( systemBatchDirName.startswith('win') ):
+    systemBatchDirName = 'batch-dos'
+  elif( systemBatchDirName.startswith('linux')
+    or systemBatchDirName.startswith('cygwin') ):
+    systemBatchDirName = 'batch-linux'
+  elif( systemBatchDirName.startswith('darwin')
+    or systemBatchDirName.startswith('freebsd') ):
+    systemBatchDirName = 'batch-macos'
   else:
-    quitWithError('Unknown platform {' +systemScriptDirName +'}', False)
+    quitWithError('Unknown platform {' +systemBatchDirName +'}', False)
   #
   if( showDiagnostics ):
-    printDiagnostic('Using system-specific scripts from subdirectory {' +systemScriptDirName +'}')
-  if( not os.path.isdir(systemScriptDirName) ):
-    quitWithError('Missing system-specific script directory {' +os.path.join(scriptDirName, systemScriptDirName) +'}', False)
+    printDiagnostic('Using system-specific scripts from batch directory {' +systemBatchDirName +'}')
+  if( not os.path.isdir(systemBatchDirName) ):
+    quitWithError('Missing system-specific batch directory {' +os.path.join(scriptDirName, systemBatchDirName) +'}', False)
   #
   # Form names of system-specific scripts.
-  compileCppBatchFileName = os.path.join(systemScriptDirName, g_compileCppBatchFileName)
-  linkCppExeBatchFileName = os.path.join(systemScriptDirName, g_linkCppExeBatchFileName)
+  compileCppBatchFileName = os.path.join(systemBatchDirName, g_compileCppBatchFileName)
+  linkCppExeBatchFileName = os.path.join(systemBatchDirName, g_linkCppExeBatchFileName)
   findFileOrQuit('compiler batch', compileCppBatchFileName)
   findFileOrQuit('linker batch', linkCppExeBatchFileName)
   #
