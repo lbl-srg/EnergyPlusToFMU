@@ -5,8 +5,7 @@
 #
 #   Compile the source code file(s) named as command-line arguments.
 # ** Use gcc/c.
-# ** Release version.
-# ** Force 32-bit.
+# ** Native address size.
 
 
 #--- Command-line invocation.
@@ -30,4 +29,4 @@ fi
 #   Note if the C system library implements memmove(), then #define HAVE_MEMMOVE.
 # This is necessary for compiling Expat.
 #
-gcc -c -fast -m32  -DHAVE_MEMMOVE  "$@"
+gcc -c -O3  -DHAVE_MEMMOVE  "$@"

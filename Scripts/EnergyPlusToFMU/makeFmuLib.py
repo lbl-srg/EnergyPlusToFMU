@@ -43,10 +43,11 @@ g_linkCExeBatchFileName = 'link-c-exe.bat'
 def printCmdLineUsage():
   #
   print 'USAGE:', os.path.basename(__file__),  \
-    '[-d]  <path-to-idf-file>'
+    '[-d]  [-L]  <path-to-idf-file>'
   #
   print '-- Create a shared library that runs an EnergyPlus IDF file as an FMU'
   print '-- Option -d, print diagnostics'
+  print '-- Option -L, litter, that is, do not clean up intermediate files'
   #
   print
   printCompileCBatchInfo()
@@ -253,7 +254,7 @@ def poundDefineModelId(showDiagnostics, origFileName, modelIdName, modFileName):
 # ** {modelIdName}, base name for shared library.  Note the name may be
 # "sanitized" since it also has to be a valid function name in the C language.
 #
-def makeFmuSharedLib(showDiagnostics, modelIdName):
+def makeFmuSharedLib(showDiagnostics, litter, modelIdName):
   #
   if( showDiagnostics ):
     printDiagnostic('Begin creating shared FMU library for model {' +modelIdName +'}')
@@ -289,7 +290,7 @@ def makeFmuSharedLib(showDiagnostics, modelIdName):
   elif( platformName.startswith('darwin') ):
     platformName = 'macos'
     systemScriptDirName = 'script-macos'
-    fmuSharedLibName = 'lib' +modelIdSanitizedName +'.so'
+    fmuSharedLibName = 'lib' +modelIdSanitizedName +'.dylib'
   else:
     quitWithError('Unknown platform {' +platformName +'}', False)
   #
@@ -343,10 +344,14 @@ def makeFmuSharedLib(showDiagnostics, modelIdName):
     quitWithError('Unable to import {utilManageCompileLink.py}', False)
   #
   # Build {fmuSharedLibName}.
-  utilManageCompileLink.manageCompileLink(showDiagnostics, True,
+  utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
     compileCBatchFileName, linkCLibBatchFileName, srcFileNameList, fmuSharedLibName)
   #
-  # Clean up temporaries.
+  # Delete {modMainName}.
+  #   Note always do this, regardless of {litter}, since the file is in the
+  # source tree, rather than in the script directory or the user's working
+  # directory (it has to be in the source tree, in order for the include
+  # paths to make sense).
   deleteFile(modMainName)
   #
   # Make executable to determine size of memory address, in bits.
@@ -354,7 +359,7 @@ def makeFmuSharedLib(showDiagnostics, modelIdName):
   if( showDiagnostics ):
     printDiagnostic('Building utility application {' +getAddressSizeExeName +'}')
   srcFileNameList = ['../../SourceCode/utility-src/get-address-size.c']
-  utilManageCompileLink.manageCompileLink(showDiagnostics, True,
+  utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
     compileCBatchFileName, linkCExeBatchFileName, srcFileNameList, getAddressSizeExeName)
   #
   # Find size of memory address used in {fmuSharedLibName}.
@@ -378,6 +383,13 @@ def makeFmuSharedLib(showDiagnostics, modelIdName):
     getAddressSizeExeName = findFileOrQuit('utility application', getAddressSizeExeName)
     quitWithError('Failed to run utility application {' +getAddressSizeExeName +'}: reason unknown', False)
   #
+  # Clean up intermediates.
+  if( not litter ):
+    if( showDiagnostics ):
+      printDiagnostic('Cleaning up intermediate files')
+    # deleteFile(modMainName)  # Done above.
+    deleteFile(getAddressSizeExeName)
+  #
   # Jump back to starting directory.
   if( scriptDirName != origWorkDirName ):
     if( showDiagnostics ):
@@ -400,6 +412,7 @@ if __name__ == '__main__':
   #
   # Set defaults for command-line options.
   showDiagnostics = False
+  litter = False
   #
   # Get command-line options.
   lastIdx = len(sys.argv) - 1
@@ -408,6 +421,8 @@ if __name__ == '__main__':
     currArg = sys.argv[currIdx]
     if( currArg.startswith('-d') ):
       showDiagnostics = True
+    elif( currArg.startswith('-L') ):
+      litter = True
     else:
       quitWithError('Bad command-line option {' +currArg +'}', True)
     # Here, processed option at {currIdx}.
@@ -423,6 +438,6 @@ if __name__ == '__main__':
     quitWithError('Expecting model identifier, got what looks like a command-line option {' +modelIdName +'}', True)
   #
   # Run.
-  (fmuSharedLibName, fmuBinDirName) = makeFmuSharedLib(showDiagnostics, modelIdName)
+  (fmuSharedLibName, fmuBinDirName) = makeFmuSharedLib(showDiagnostics, litter, modelIdName)
   if( showDiagnostics ):
     printDiagnostic('Created shared library {' +fmuSharedLibName +'} for FMU binary subdirectory {' +fmuBinDirName +'}')

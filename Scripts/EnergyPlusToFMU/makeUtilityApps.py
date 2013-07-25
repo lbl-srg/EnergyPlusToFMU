@@ -43,10 +43,11 @@ g_linkCppExeBatchFileName = 'link-cpp-exe.bat'
 def printCmdLineUsage():
   #
   print 'USAGE:', os.path.basename(__file__),  \
-    '[-d]'
+    '[-d]  [-L]'
   #
   print '-- Create an executable that extracts FMU-related information from an EnergyPlus IDF file'
   print '-- Option -d, print diagnostics'
+  print '-- Option -L, litter, that is, do not clean up intermediate files'
   #
   print
   printCompileCppBatchInfo()
@@ -156,11 +157,17 @@ def deleteFile(fileName):
 # file names.  It uses paths relative to the directory where this file resides,
 # and relies on there being no problematic characters in the path names.
 #
-def makeExportPrepApp(showDiagnostics, forceRebuild, exportPrepExeName):
+def makeExportPrepApp(showDiagnostics, litter, forceRebuild, exportPrepExeName):
   #
   # Form executable name.
   if( exportPrepExeName is None ):
-    exportPrepExeName = 'idf-to-fmu-export-prep.exe'
+    exportPrepExeName = 'idf-to-fmu-export-prep'
+    # Choose different extension for Windows/DOS.  This is a convenience, to
+    # allow two executables to stay in place when running in a virtual machine.
+    if( sys.platform.startswith('win') ):
+      exportPrepExeName = exportPrepExeName +'.exe'
+    else:
+      exportPrepExeName = exportPrepExeName +'.app'
   if( showDiagnostics ):
     printDiagnostic('Begin creating executable {' +exportPrepExeName +'}')
   #
@@ -238,8 +245,11 @@ def makeExportPrepApp(showDiagnostics, forceRebuild, exportPrepExeName):
     quitWithError('Unable to import {utilManageCompileLink.py}', False)
   #
   # Build executable.
-  utilManageCompileLink.manageCompileLink(showDiagnostics, forceRebuild,
+  utilManageCompileLink.manageCompileLink(showDiagnostics, litter, forceRebuild,
     compileCppBatchFileName, linkCppExeBatchFileName, srcFileNameList, exportPrepExeName)
+  #
+  # Clean up intermediates.
+  #   Nothing to do-- no intermediates generated at this level of work.
   #
   # Jump back to starting directory.
   if( scriptDirName != origWorkDirName ):
@@ -263,6 +273,7 @@ if __name__ == '__main__':
   #
   # Set defaults for command-line options.
   showDiagnostics = False
+  litter = False
   #
   # Get command-line options.
   lastIdx = len(sys.argv) - 1
@@ -271,10 +282,12 @@ if __name__ == '__main__':
     currArg = sys.argv[currIdx]
     if( currArg.startswith('-d') ):
       showDiagnostics = True
+    elif( currArg.startswith('-L') ):
+      litter = True
     else:
       quitWithError('Bad command-line option {' +currArg +'}', True)
     # Here, processed option at {currIdx}.
     currIdx += 1
   #
   # Run.
-  exportPrepExeName = makeExportPrepApp(showDiagnostics, True, None)
+  exportPrepExeName = makeExportPrepApp(showDiagnostics, litter, True, None)

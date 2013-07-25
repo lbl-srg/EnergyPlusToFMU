@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE BCVTB-variables SYSTEM "variables.dtd">
+<!-- This is file 'variables.cfg' for input 'fmux-Exercise1A-new.idf'. -->
+<BCVTB-variables>
+  <!-- Note these are not really BCVTB-related.  We are bootstrapping BCVTB capabilities to support FMU export. -->
+  <!-- Note the order of these elements determines the data order in the exchange vectors. -->
+  <variable  source="Ptolemy">
+    <EnergyPlus  schedule="ExternalSchedule1"/>
+  </variable>
+  <variable  source="EnergyPlus">
+    <EnergyPlus  name="Environment"  type="Outdoor Dry Bulb"/>
+  </variable>
+  <variable  source="EnergyPlus">
+    <EnergyPlus  name="ZONE ONE"  type="Zone Mean Air Temperature"/>
+  </variable>
+  <variable  source="EnergyPlus">
+    <EnergyPlus  name="Environment"  type="Outdoor Relative Humidity"/>
+  </variable>
+</BCVTB-variables>

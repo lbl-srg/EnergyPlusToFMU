@@ -5,8 +5,7 @@
 #
 #   Compile the source code file(s) named as command-line arguments.
 # ** Use gcc/c++.
-# ** Debug version.
-# ** Force 32-bit.
+# ** Native address size.
 
 
 #--- Command-line invocation.
@@ -27,4 +26,4 @@ fi
 
 #--- Compile.
 #
-g++ -c -g -m32  "$@"
+g++ -c -g  "$@"

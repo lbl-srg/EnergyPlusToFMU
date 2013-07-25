@@ -6,7 +6,7 @@
 #   Link the object file(s) named as command-line arguments.
 # ** Make a shared library.
 # ** Use gcc/c.
-# ** Native address size.
+# ** Force 32-bit.
 
 
 #--- Command-line invocation.
@@ -32,4 +32,4 @@ shift 1
 
 #--- Link.
 #
-gcc -dynamiclib  -o "${outputName}"  "$@"
+gcc -shared -m32 -lm  -o "${outputName}"  "$@"

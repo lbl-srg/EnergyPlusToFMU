@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is file 'modelDescription.xml' for input 'fmux-EMSWindowShadeControl.idf'. -->
+<fmiModelDescription  fmiVersion="1.0"
+  modelName="fmux-EMSWindowShadeControl.idf"
+  modelIdentifier="fmux-EMSWindowShadeControl"
+  guid="1369f5b77ee7e4f6663a6c5296a3fd00"
+  description="Automatically generated from EnergyPlus input file fmux-EMSWindowShadeControl.idf"
+  generationTool="[[name of the program that generated this file]]"
+  generationDateAndTime="[[yyyy-mm-ddThh:mm:ssZ]]"
+  variableNamingConvention="flat"
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="0">
+  <!-- Note guid is an md5 checksum of the IDF file. -->
+  <!-- Exposed model variables. -->
+  <ModelVariables>
+    <!-- Note valueReferences are (1, 2, 3...) for causality="input" (to E+). -->
+    <!-- Note valueReferences are (10001, 10002, 10003...) for "output" (from E+). -->
+    <!-- Note the order of valueReferences should match the order of elements in file 'variables.cfg'. -->
+    <ScalarVariable  name="bldgShadeSig"  valueReference="1"
+      variability="continuous"  causality="input"
+      description="IDF line 1290">
+      <Real  start="1"/>
+    </ScalarVariable>
+    <ScalarVariable  name="bldgShadeSigPlus"  valueReference="10001"
+      variability="continuous"  causality="output"
+      description="IDF line 1325">
+      <Real/>
+    </ScalarVariable>
+  </ModelVariables>
+  <!-- Implementation details for co-simulation. -->
+  <Implementation>
+    <!-- EnergyPlus provided as tool (as opposed to source code or DLL). -->
+    <CoSimulation_Tool>
+      <Capabilities
+        canHandleVariableCommunicationStepSize="false"
+        canHandleEvents="false"
+        canRejectSteps="false"
+        canInterpolateInputs="false"
+        maxOutputDerivativeOrder="0"
+        canRunAsynchronuously="false"
+        canSignalEvents="false"
+        canBeInstantiatedOnlyOncePerProcess="false"
+        canNotUseMemoryManagementFunctions="true"/>
+      <Model
+        entryPoint="fmu://resources/fmux-EMSWindowShadeControl.idf"
+        manualStart="false"
+        type="text/plain">
+        <File  file="fmu://resources/variables.cfg"/>
+        <File  file="fmu://resources/[[weather file named as command-line argument, if any]]"/>
+      </Model>
+    </CoSimulation_Tool>
+  </Implementation>
+</fmiModelDescription>

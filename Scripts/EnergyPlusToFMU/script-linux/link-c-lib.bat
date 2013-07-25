@@ -4,10 +4,9 @@
 #--- Purpose.
 #
 #   Link the object file(s) named as command-line arguments.
-# ** Use gcc/c.
 # ** Make a shared library.
-# ** Release version.
-# ** Force 32-bit.
+# ** Use gcc/c.
+# ** Native address size.
 
 
 #--- Command-line invocation.
@@ -33,4 +32,4 @@ shift 1
 
 #--- Link.
 #
-gcc -shared -m32 -lm  -o "${outputName}"  "$@"
+gcc -shared -lm  -o "${outputName}"  "$@"

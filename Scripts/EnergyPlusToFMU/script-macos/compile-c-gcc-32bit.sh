@@ -5,7 +5,6 @@
 #
 #   Compile the source code file(s) named as command-line arguments.
 # ** Use gcc/c.
-# ** Debug version.
 # ** Force 32-bit.
 
 
@@ -30,4 +29,4 @@ fi
 #   Note if the C system library implements memmove(), then #define HAVE_MEMMOVE.
 # This is necessary for compiling Expat.
 #
-gcc -c -g -m32  -DHAVE_MEMMOVE  "$@"
+gcc -c -fast -m32  -DHAVE_MEMMOVE  "$@"

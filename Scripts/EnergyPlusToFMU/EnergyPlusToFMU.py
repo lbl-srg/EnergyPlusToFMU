@@ -31,13 +31,14 @@
 def printCmdLineUsage():
   #
   print 'USAGE:', os.path.basename(__file__),  \
-    '[-i path-to-idd-file]  [-w path-to-weather-file]  [-d]  <path-to-idf-file>'
+    '[-i path-to-idd-file]  [-w path-to-weather-file]  [-d]  [-L]  <path-to-idf-file>'
   #
   print '-- Export an EnergyPlus model as a Functional Mockup Unit (FMU) for co-simulation'
   print '-- Option -i, use the named Input Data Dictionary'
   print '   Lacking -i, read environment variable {ENERGYPLUS_DIR}, and use {ENERGYPLUS_DIR/bin/Energy+.idd}'
   print '-- Option -w, use the named weather file'
   print '-- Option -d, print diagnostics'
+  print '-- Option -L, litter, that is, do not clean up intermediate files'
   # hoho add -V to set version number of FMI standard.  Currently 1.0 is only one supported.
   #
   # End fcn printCmdLineUsage().
@@ -169,7 +170,7 @@ def findIddFileViaEnvDir():
 
 #--- Fcn to export an EnergyPlus IDF file as an FMU.
 #
-def exportEnergyPlusAsFMU(showDiagnostics, iddFileName, wthFileName, idfFileName):
+def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idfFileName):
   #
   if( showDiagnostics ):
     printDiagnostic('Begin exporting IDF file {' +idfFileName +'} as an FMU')
@@ -222,7 +223,7 @@ def exportEnergyPlusAsFMU(showDiagnostics, iddFileName, wthFileName, idfFileName
   OUT_variablesFileName = 'variables.cfg'
   deleteFile(OUT_variablesFileName)
   #
-  OUT_workZipFileName = 'temp-delete-me.zip'
+  OUT_workZipFileName = modelIdName +'.zip'
   deleteFile(OUT_workZipFileName)
   #
   OUT_fmuFileName = modelIdName +'.fmu'
@@ -231,10 +232,10 @@ def exportEnergyPlusAsFMU(showDiagnostics, iddFileName, wthFileName, idfFileName
   # Create export-prep application.
   #   The resulting executable will extract FMU-related information from an
   # EnergyPlus IDF file.
-  #   Do not force a rebuild.  Accept the name hard-coded in fcn makeExportPrepApp().
+  #   Do not force a rebuild.  Accept the name returned by fcn makeExportPrepApp().
   if( showDiagnostics ):
     printDiagnostic('Checking for export-prep application')
-  exportPrepExeName = makeUtilityApps.makeExportPrepApp(showDiagnostics, False, None)
+  exportPrepExeName = makeUtilityApps.makeExportPrepApp(showDiagnostics, litter, False, None)
   #
   # Run the export-prep application.
   if( showDiagnostics ):
@@ -248,9 +249,7 @@ def exportEnergyPlusAsFMU(showDiagnostics, iddFileName, wthFileName, idfFileName
     quitWithError('Failed to extract FMU information from IDF file {' +idfFileName +'}', False)
   #
   # Create the shared library.
-  (OUT_fmuSharedLibName, fmuBinDirName) = makeFmuLib.makeFmuSharedLib(showDiagnostics, modelIdName)
-  if( showDiagnostics ):
-    printDiagnostic('Created shared library {' +OUT_fmuSharedLibName +'} for FMU binary subdirectory {' +fmuBinDirName +'}')
+  (OUT_fmuSharedLibName, fmuBinDirName) = makeFmuLib.makeFmuSharedLib(showDiagnostics, litter, modelIdName)
   findFileOrQuit('shared library', OUT_fmuSharedLibName)
   #
   # Create zip file that will become the FMU.
@@ -259,7 +258,6 @@ def exportEnergyPlusAsFMU(showDiagnostics, iddFileName, wthFileName, idfFileName
     import zlib
     if( showDiagnostics ):
       printDiagnostic('Creating zip file {' +OUT_workZipFileName +'}, with compression on')
-    # hoho test ladder of logic by throwing an error here.
     workZipFile = zipfile.ZipFile(OUT_workZipFileName, 'w', zipfile.ZIP_DEFLATED)
   except:
     # Here, either didn't find zlib, or couldn't create zip file.
@@ -273,18 +271,11 @@ def exportEnergyPlusAsFMU(showDiagnostics, iddFileName, wthFileName, idfFileName
   # Populate zip file.
   #   Note fcn addToZipFile() closes the zip file if it encounters an error.
   addToZipFile(workZipFile, OUT_modelDescFileName, None, None)
-  deleteFile(OUT_modelDescFileName)
-  #
   addToZipFile(workZipFile, idfFileName, 'resources', modelIdName+'.idf')
-  #
   addToZipFile(workZipFile, OUT_variablesFileName, 'resources', None)
-  deleteFile(OUT_variablesFileName)
-  #
   if( wthFileName is not None ):
     addToZipFile(workZipFile, wthFileName, 'resources', None)
-  #
   addToZipFile(workZipFile, OUT_fmuSharedLibName, os.path.join('binaries',fmuBinDirName), None)
-  deleteFile(OUT_fmuSharedLibName)
   #
   # Finish up zip file.
   if( showDiagnostics ):
@@ -292,6 +283,15 @@ def exportEnergyPlusAsFMU(showDiagnostics, iddFileName, wthFileName, idfFileName
   workZipFile.close()
   findFileOrQuit('zip', OUT_workZipFileName)
   os.rename(OUT_workZipFileName, OUT_fmuFileName)
+  #
+  # Clean up intermediates.
+  if( not litter ):
+    if( showDiagnostics ):
+      printDiagnostic('Cleaning up intermediate files')
+    # deleteFile(exportPrepExeName)  # Keep this executable, since it does not vary from run to run (i.e., not really intermediate).
+    deleteFile(OUT_modelDescFileName)
+    deleteFile(OUT_variablesFileName)
+    deleteFile(OUT_fmuSharedLibName)
   #
   # Return to original directory.
   if( scriptDirFullName != origWorkDirFullName ):
@@ -311,6 +311,7 @@ if __name__ == '__main__':
   iddFileName = None
   wthFileName = None
   showDiagnostics = False
+  litter = False
   #
   # Get command-line options.
   lastIdx = len(sys.argv) - 1
@@ -329,6 +330,8 @@ if __name__ == '__main__':
         printDiagnostic('Setting WTH file to {' +wthFileName +'}')
     elif( currArg.startswith('-d') ):
       showDiagnostics = True
+    elif( currArg.startswith('-L') ):
+      litter = True
     else:
       quitWithError('Bad command-line option {' +currArg +'}', True)
     # Here, processed option at {currIdx}.
@@ -357,4 +360,4 @@ if __name__ == '__main__':
       printDiagnostic('Setting IDD file to {' +iddFileName +'}')
   #
   # Run.
-  exportEnergyPlusAsFMU(showDiagnostics, iddFileName, wthFileName, idfFileName)
+  exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idfFileName)

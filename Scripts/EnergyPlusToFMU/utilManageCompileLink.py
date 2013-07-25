@@ -157,6 +157,32 @@ def cleanDir(showDiagnostics, dirDesc, dirName):
   # End fcn cleanDir().
 
 
+#--- Fcn to remove an existing directory.
+#
+#   Assume the directory has no subdirectories.
+#
+def deleteDir(showDiagnostics, dirDesc, dirName):
+  #
+  if( showDiagnostics ):
+    printDiagnostic('Removing ' +dirDesc +' directory {' +dirName +'}')
+  #
+  if( not os.path.isdir(dirName) ):
+    quitWithError('Expecting a directory called {' +dirName +'}')
+  #
+  # Remove files.
+  for theEntryName in os.listdir(dirName):
+    theEntryFullName = os.path.abspath(os.path.join(dirName, theEntryName))
+    deleteFile(theEntryFullName)
+  #
+  # Remove directory.
+  try:
+    os.rmdir(dirName)
+  except:
+    quitWithError('Unable to delete directory {' +dirName +'}')
+  #
+  # End fcn deleteDir().
+
+
 #--- Fcn to compile a source code file.
 #
 #   Return object file name.
@@ -204,7 +230,7 @@ def runCompiler(showDiagnostics, compileBatchFileName, srcFileName, objDirName):
 #   Note this fcn doesn't escape characters, such as spaces, in directory and
 # file names.  The caller must take care of these issues.
 #
-def manageCompileLink(showDiagnostics, forceRebuild,
+def manageCompileLink(showDiagnostics, litter, forceRebuild,
   compileBatchFileName, linkBatchFileName, srcFileNameList, outputFileName):
   #
   if( showDiagnostics ):
@@ -230,15 +256,7 @@ def manageCompileLink(showDiagnostics, forceRebuild,
   # Name the build directory.
   #   Put it in the working directory (which may differ from both the directory
   # for {outputFileName}, and the directory where this script file resides).
-  objDirName = 'obj-' +os.path.basename(outputFileName)
-  if( objDirName.endswith('.exe')
-    or objDirName.endswith('.dll')
-    or objDirName.endswith('.lib') ):
-    objDirName = objDirName[:-4]
-  elif( objDirName.endswith('.so') ):
-    objDirName = objDirName[:-3]
-  elif( objDirName.endswith('.a') ):
-    objDirName = objDirName[:-2]
+  objDirName = 'obj-' +os.path.basename(outputFileName).replace('.', '-')
   #
   # Create or clean the build directory.
   cleanDir(showDiagnostics, 'object', objDirName)
@@ -258,6 +276,12 @@ def manageCompileLink(showDiagnostics, forceRebuild,
   subprocess.call([linkBatchFileName, outputFileName] +objFileNameList)
   if( not os.path.isfile(outputFileName) ):
     quitWithError('Failed to link object files into {' +outputFileName +'}')
+  #
+  # Clean up intermediates.
+  if( not litter ):
+    if( showDiagnostics ):
+      printDiagnostic('Cleaning up intermediate files')
+    deleteDir(showDiagnostics, 'object', objDirName)
   #
   return( outputFileName )
   #

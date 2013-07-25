@@ -4,9 +4,8 @@
 #--- Purpose.
 #
 #   Link the object file(s) named as command-line arguments.
+# ** Make a shared library.
 # ** Use gcc/c.
-# ** Make an executable.
-# ** Release version.
 # ** Force 32-bit.
 
 
@@ -33,4 +32,4 @@ shift 1
 
 #--- Link.
 #
-gcc -m32 -lm  -o "${outputName}"  "$@"
+gcc -dynamiclib -m32  -o "${outputName}"  "$@"

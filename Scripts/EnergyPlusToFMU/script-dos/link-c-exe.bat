@@ -4,8 +4,9 @@
 ::--- Purpose.
 ::
 ::   Link the object file(s) named as command-line arguments.
-:: ** Use Microsoft Visual Studio 10.
 :: ** Make an executable.
+:: ** Use Microsoft Visual Studio 10/C.
+:: ** Native address size.
 
 
 ::--- Set up command environment.

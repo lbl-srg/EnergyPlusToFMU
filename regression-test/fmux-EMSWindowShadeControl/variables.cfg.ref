@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE BCVTB-variables SYSTEM "variables.dtd">
+<!-- This is file 'variables.cfg' for input 'fmux-EMSWindowShadeControl.idf'. -->
+<BCVTB-variables>
+  <!-- Note these are not really BCVTB-related.  We are bootstrapping BCVTB capabilities to support FMU export. -->
+  <!-- Note the order of these elements determines the data order in the exchange vectors. -->
+  <variable  source="Ptolemy">
+    <EnergyPlus  variable="yShade"/>
+  </variable>
+  <variable  source="EnergyPlus">
+    <EnergyPlus  name="EMS"  type="Erl Shading Control Status"/>
+  </variable>
+</BCVTB-variables>

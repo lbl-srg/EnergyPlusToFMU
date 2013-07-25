@@ -4,9 +4,8 @@
 ::--- Purpose.
 ::
 ::   Compile the source code file named as a command-line argument.
-:: ** Assume a C++ file.
-:: ** Use Microsoft Visual Studio 10.
-:: ** Debug version.
+:: ** Use Microsoft Visual Studio 10/C.
+:: ** Native address size.
 
 
 ::--- Set up command environment.
@@ -36,7 +35,10 @@ IF "%1"=="" (
 
 ::--- Compile.
 ::
-cl /c /nologo /Od /RTC1 /TP /EHsc  %1
+::   Note if the C system library implements memmove(), then #define HAVE_MEMMOVE.
+:: This is necessary for compiling Expat.
+::
+cl /c /nologo /O2 /TC  /DHAVE_MEMMOVE  %1
 IF ERRORLEVEL 1 (
   ECHO Failed to compile %1
   GOTO done

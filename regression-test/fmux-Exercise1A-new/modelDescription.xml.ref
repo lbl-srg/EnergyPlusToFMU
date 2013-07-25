@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is file 'modelDescription.xml' for input 'fmux-Exercise1A-new.idf'. -->
+<fmiModelDescription  fmiVersion="1.0"
+  modelName="fmux-Exercise1A-new.idf"
+  modelIdentifier="fmux-Exercise1A-new"
+  guid="04923f6496148b8e058a100e2cc1a4b8"
+  description="Automatically generated from EnergyPlus input file fmux-Exercise1A-new.idf"
+  generationTool="[[name of the program that generated this file]]"
+  generationDateAndTime="[[yyyy-mm-ddThh:mm:ssZ]]"
+  variableNamingConvention="flat"
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="0">
+  <!-- Note guid is an md5 checksum of the IDF file. -->
+  <!-- Exposed model variables. -->
+  <ModelVariables>
+    <!-- Note valueReferences are (1, 2, 3...) for causality="input" (to E+). -->
+    <!-- Note valueReferences are (10001, 10002, 10003...) for "output" (from E+). -->
+    <!-- Note the order of valueReferences should match the order of elements in file 'variables.cfg'. -->
+    <ScalarVariable  name="EpModelSchedule1"  valueReference="1"
+      variability="continuous"  causality="input"
+      description="IDF line 443">
+      <Real  start="0"/>
+    </ScalarVariable>
+    <ScalarVariable  name="outDryBulb"  valueReference="10001"
+      variability="continuous"  causality="output"
+      description="IDF line 449">
+      <Real/>
+    </ScalarVariable>
+    <ScalarVariable  name="TRoom"  valueReference="10002"
+      variability="continuous"  causality="output"
+      description="IDF line 454">
+      <Real/>
+    </ScalarVariable>
+    <ScalarVariable  name="outRelHum"  valueReference="10003"
+      variability="continuous"  causality="output"
+      description="IDF line 459">
+      <Real/>
+    </ScalarVariable>
+  </ModelVariables>
+  <!-- Implementation details for co-simulation. -->
+  <Implementation>
+    <!-- EnergyPlus provided as tool (as opposed to source code or DLL). -->
+    <CoSimulation_Tool>
+      <Capabilities
+        canHandleVariableCommunicationStepSize="false"
+        canHandleEvents="false"
+        canRejectSteps="false"
+        canInterpolateInputs="false"
+        maxOutputDerivativeOrder="0"
+        canRunAsynchronuously="false"
+        canSignalEvents="false"
+        canBeInstantiatedOnlyOncePerProcess="false"
+        canNotUseMemoryManagementFunctions="true"/>
+      <Model
+        entryPoint="fmu://resources/fmux-Exercise1A-new.idf"
+        manualStart="false"
+        type="text/plain">
+        <File  file="fmu://resources/variables.cfg"/>
+        <File  file="fmu://resources/[[weather file named as command-line argument, if any]]"/>
+        <!-- hoho Thinking about weather file raises question of whether there will be a conflict when try to run two instances of E+ at the same time.
+        -- Question is whether the symbolic links to the input files will clash.
+        -- Also note that BASH script for running EnergyPlus is broken in several ways (doesn't actually read environment variables, can't specify path to weather file directly).
+        -->
+      </Model>
+    </CoSimulation_Tool>
+  </Implementation>
+</fmiModelDescription>

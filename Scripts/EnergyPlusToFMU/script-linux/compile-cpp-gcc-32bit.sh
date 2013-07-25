@@ -5,7 +5,6 @@
 #
 #   Compile the source code file(s) named as command-line arguments.
 # ** Use gcc/c++.
-# ** Debug version.
 # ** Force 32-bit.
 
 
