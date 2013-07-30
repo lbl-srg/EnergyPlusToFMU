@@ -19,6 +19,7 @@ Contents
    introduction
    download
    installation
+   build
    usage
    mathematics
    bestPractice

@@ -120,7 +120,7 @@ Testing and modifying the batch files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The included batch files cover some common cases.
-With luck, you can simply run the EnergyPlusToFMU build process (FIXME: insert link when have a page), and everything will work as expected.
+With luck, you can simply run the EnergyPlusToFMU build process described in :doc:`build`, and everything will work as expected.
 
 However, the default batch files may not work on your system.
 Even if they do, you may want to modify or replace the default versions, for example to use a different compiler/linker environment, or to add a compilation option of interest.
