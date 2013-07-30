@@ -111,6 +111,7 @@ char *findNameFile(char *path, char *pattern)
 void findFileDelete()      
 {
 	struct stat stat_p;
+	int res;
 
 	// delete temporary files
 	if (!stat (TEMP1, &stat_p))
@@ -161,6 +162,10 @@ void findFileDelete()
 	{
 		remove(EPBAT);
 	}
+	// cleanup .idf files
+	res = system ("rm -f *.idf");
+	// cleanup .epw files
+	res = system ("rm -f *.epw");
 }    
 
 ///////////////////////////////////////////////////////////////////////////////
