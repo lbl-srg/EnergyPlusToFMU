@@ -60,8 +60,9 @@ Following items need to be observed when importing an FMU that contains EnergyPl
    which has been used to export the FMU on the system path. Otherwise, 
    the simulation will fail to start with an error.
    
-7. The simulation results of the FMU are in the folder where the FMU 
-   has been unzipped.
+7. The simulation results are saved in a folder of the current working directory.
+   The name of the results folder is Output_FMUExport_xxx, where xxx is the model   
+   identifier of the FMU.
 
 8. The weather file which comes along with an FMU is used to determine 
    if the year is a leap year. It no weather file 
