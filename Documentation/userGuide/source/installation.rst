@@ -107,12 +107,13 @@ In addition to the default versions, some alternate versions may also be present
 The alternate versions can be identified in two ways:
 (1) the file extension is ``.txt``, rather than ``.bat``;
 and
-(2) the file base name identifies the associated options.
-For example, a file ``compile-c-gcc-32bit.txt`` is a version of ``compile-c.bat``, which is specific to the gcc compiler/linker environment, and which generates 32-bit object files even on a 64-bit machine.
+(2) the file name identifies the associated options.
+For example, a file ``compile-c-gcc-32bit.txt`` is one possible version of ``compile-c.bat``.
+It is specific to the gcc compiler/linker environment, and it generates 32-bit object files even on a 64-bit machine.
 
-Note that the default batch file is an exact copy of one of the alternate versions.
+Note that the default batch file is an exact copy of one of the supplied alternate versions.
 For example, in the ``batch-dos`` subdirectory, the default batch file ``compile-c.bat`` is the same as ``compile-c-mvs10.txt`` (the version for Microsoft Visual Studio 10).
-Therefore the installation defines fewer unique batch files than it at first appears.
+Therefore the installation has fewer unique batch files than it at first appears.
 
 
 Testing and modifying the batch files
@@ -121,16 +122,16 @@ Testing and modifying the batch files
 The included batch files cover some common cases.
 With luck, you can simply run the EnergyPlusToFMU build process (FIXME: insert link when have a page), and everything will work as expected.
 
-On the other hand, the default batch files may not work on your system.
-Furthermore, you may want to modify or replace the default versions, for example to use a different compiler/linker environment, or to add a compilation option of interest.
+However, the default batch files may not work on your system.
+Even if they do, you may want to modify or replace the default versions, for example to use a different compiler/linker environment, or to add a compilation option of interest.
 
 This section describes how to check your batch files, and gives hints on how to edit them if necessary.
 Unfortunately, it is beyond the scope of this document to give full instructions on installing and using developer tools such as compilers and linkers.
 
 While modifying the batch files, keep these points in mind:
 
-- Only changes to the batch files named in the table above matter to the EnergyPlusToFMU tools.
-  Thus, editing ``compile-c-gcc.txt`` will have no effect on building the FMU.
+- The EnergyPlusToFMU tools only use the batch files named in the table above.
+  Thus, editing ``compile-c-gcc.txt`` will have no effect on how the FMU gets made.
   Only ``compile-c.bat`` affects the EnergyPlusToFMU tools.
 
 - If a provided batch file does not work, it may simply be a matter of changing the directory
@@ -140,31 +141,64 @@ While modifying the batch files, keep these points in mind:
   If your machine differs only in the installed location of Visual Studio, then editing
   the batch file to point it to the correct path may be all that is needed.
 
-- Unix-like environments, including Linux and MacOS, may define ``cc`` as a link to the standard
-  C compiler, and ``c++`` as a link to the standard C++ compiler.
-
 - On most systems, the compiler also can drive the linker, filling in appropriate options.
   Therefore once you have identified your system's compiler, try the same tool in the linker batch files.
 
-- The batch file that runs the C compiler, ``compile-c.bat``, has to distinguish
-  whether or not your compiler/linker environment provides the non-standard ``memmove()`` function.
+- The batch file that runs the C compiler, ``compile-c.bat``, has to indicate
+  whether or not your C compiler/linker environment provides the ``memmove()`` function.
 
-  - This function is standard for C++, so many C environments provide it as well.
-    However, yours may not.
+  - While the ``memmove()`` function is non-standard in C, it is standard for C++.
+    Therefore many C environments provide it as well.
+    However, yours may not (all the environments we have tested do provide it).
 
   - If your C compiler/linker environment does provide ``memmove()``, then the batch
     file should pass the compiler the macro definition ``HAVE_MEMMOVE``.
     The included batch files show how to define a macro for the given compiler.
 
   - If, on the other hand, your C compiler/linker environment does not provide
-    ``memmove()``, then do not define the macro, and a version of the function will be provided.
-  
+    ``memmove()``, then do not define the macro in the compiler batch file.
+    A version of the function will be provided.
+
   - If you are not sure whether or not your system provides the function, simply watch
     for any errors during the linking stage.
     If you fail to define ``HAVE_MEMMOVE`` when you should, the linker will complain about
     duplicate definitions of ``memmove()``.
     If, on the other hand, you define ``HAVE_MEMMOVE`` when you should not, the linker will
     complain about not being able to find a ``memmove()`` implementation.
+
+The following tips apply to Unix-like environments, including Linux and MacOS:
+
+- Unix-like environments often define ``cc`` as a link to the standard
+  C compiler, and ``c++`` as a link to the standard C++ compiler.
+
+- If you have a standard compiler on your search path, the ``which`` command will locate
+  it.
+  For example, entering the command::
+  
+  > which gcc
+  
+  will return the path to the ``gcc`` compiler, provided your system has it, and provided
+  it is on the search path.
+  Here, ``>`` represents the command prompt.
+  If, on the other hand, you do not have gcc, or you have it but it is not on the search
+  path, then ``> which gcc`` will return nothing.
+
+- If you believe you have a compiler, but cannot find it on your search path, try for example one of::
+
+  > find /usr/ -name gcc
+  > find /bin/ -name gcc
+  > find /opt/ -name gcc
+  > find / -name gcc
+
+  The first three commands search directories where developer tools commonly are found.
+  The last command searches the entire directory tree (and may take quite a while).
+
+- Entering::
+
+  > apropos compiler
+
+  at the command prompt will search your help files for information pertinent to compilers.
+  Unfortunately, it may return many entries unrelated to compiling C and C++ source code.
 
 
 Uninstallation
