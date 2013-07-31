@@ -6,10 +6,6 @@
 Mathematical Description
 ========================
 
-Note: In FMU, :math:`x(t_i)` is the value of :math:`x(\cdot)` for
-:math:`t \in [t_i, \, t_{i+1})`, but in EnergyPlus, I believe 
-that discrete variables are not yet updated when the data are exchanged.
-
 This section describes the algorithm for exchanging data between EnergyPlus, packaged as an FMU, and an external program.
 
 Suppose we have a system with two simulation programs.  Let simulation program 1 be EnergyPlus, the slave simulation program, which is packaged as an FMU for co-simulation; and let simulation program 2 be the master simulation program which supports the import of FMU for co-simulation. Suppose each program solves an initial-value ordinary differential equation that is coupled to the differential equations of the other program. 
