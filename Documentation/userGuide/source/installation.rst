@@ -116,8 +116,8 @@ For example, in the ``batch-dos`` subdirectory, the default batch file ``compile
 Therefore the installation has fewer unique batch files than it at first appears.
 
 
-Testing and modifying the batch files
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Checking the batch files
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 The included batch files cover some common cases.
 With luck, you can simply run the EnergyPlusToFMU build process described in :doc:`build`, and everything will work as expected.
@@ -125,80 +125,109 @@ With luck, you can simply run the EnergyPlusToFMU build process described in :do
 However, the default batch files may not work on your system.
 Even if they do, you may want to modify or replace the default versions, for example to use a different compiler/linker environment, or to add a compilation option of interest.
 
-This section describes how to check your batch files, and gives hints on how to edit them if necessary.
+This section describes a quick check of the current batch files ``compile-c.bat`` and ``link-c-exe.bat``.
+Once these two batch files work, then it should not be difficult to make the other compiler and linker batch files work.
+
+The check is to build one of the EnergyPlusToFMU supporting applications and to see whether it runs.
+To perform the check, open a command window (that is, get a DOS prompt on Windows, or a shell command prompt on either Linux or MacOS).
+The follow instructions represent the command prompt like this:
+
+.. code-block:: none
+
+  >
+
+However, your system may use a different symbol (for example, "``$``") as the prompt.
+Furthermore, the prompt may include the name of your system, or the name of the current subdirectory.
+
+
+Modifying the batch files
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This section gives hints on editing your batch files.
 Unfortunately, it is beyond the scope of this document to give full instructions on installing and using developer tools such as compilers and linkers.
 
-While modifying the batch files, keep these points in mind:
+The EnergyPlusToFMU tools only use the batch files named in the table above.
+Thus, editing ``compile-c-gcc.txt`` will have no effect on how the FMU gets made.
+Only ``compile-c.bat`` affects the EnergyPlusToFMU tools.
 
-- The EnergyPlusToFMU tools only use the batch files named in the table above.
-  Thus, editing ``compile-c-gcc.txt`` will have no effect on how the FMU gets made.
-  Only ``compile-c.bat`` affects the EnergyPlusToFMU tools.
+If a provided batch file does not work, it may simply be a matter of changing the directory path hard-wired in the batch file.
+For example, the batch files that invoke Microsoft Visual Studio on Windows machines list several known locations for finding the Visual Studio program files.
+If your machine differs only in the installed location of Visual Studio, then editing the batch file to point it to the correct path may be all that is needed.
 
-- If a provided batch file does not work, it may simply be a matter of changing the directory
-  path hard-wired in the batch file.
-  For example, the batch files that invoke Microsoft Visual Studio on Windows machines
-  list several known locations for finding the Visual Studio program files.
-  If your machine differs only in the installed location of Visual Studio, then editing
-  the batch file to point it to the correct path may be all that is needed.
+On most systems, the compiler also can act as the linker (or call the linker, filling in appropriate options).
+Therefore once you have identified your system's compiler, try naming the same tool in the linker batch files.
 
-- On most systems, the compiler also can drive the linker, filling in appropriate options.
-  Therefore once you have identified your system's compiler, try the same tool in the linker batch files.
+The batch file that runs the C compiler, ``compile-c.bat``, must indicate whether or not your C compiler/linker environment provides the ``memmove()`` function.
 
-- The batch file that runs the C compiler, ``compile-c.bat``, has to indicate
-  whether or not your C compiler/linker environment provides the ``memmove()`` function.
+- While the ``memmove()`` function is non-standard in C, it is standard for C++.
+  Therefore many C environments provide it as well.
+  However, yours may not (all the environments we have tested do provide it).
 
-  - While the ``memmove()`` function is non-standard in C, it is standard for C++.
-    Therefore many C environments provide it as well.
-    However, yours may not (all the environments we have tested do provide it).
+- If your C compiler/linker environment does provide ``memmove()``, then the batch
+  file should pass the compiler the macro definition ``HAVE_MEMMOVE``.
+  The included batch files show how to define a macro for the given compiler.
 
-  - If your C compiler/linker environment does provide ``memmove()``, then the batch
-    file should pass the compiler the macro definition ``HAVE_MEMMOVE``.
-    The included batch files show how to define a macro for the given compiler.
+- If, on the other hand, your C compiler/linker environment does not provide
+  ``memmove()``, then do not define the macro in the compiler batch file.
+  A version of the function will be provided.
 
-  - If, on the other hand, your C compiler/linker environment does not provide
-    ``memmove()``, then do not define the macro in the compiler batch file.
-    A version of the function will be provided.
+- If you are not sure whether or not your system provides the function, simply watch
+  for any errors during the linking stage.
+  If you fail to define ``HAVE_MEMMOVE`` when you should, the linker will complain about
+  duplicate definitions of ``memmove()``.
+  If, on the other hand, you define ``HAVE_MEMMOVE`` when you should not, the linker will
+  complain about not being able to find a ``memmove()`` implementation.
 
-  - If you are not sure whether or not your system provides the function, simply watch
-    for any errors during the linking stage.
-    If you fail to define ``HAVE_MEMMOVE`` when you should, the linker will complain about
-    duplicate definitions of ``memmove()``.
-    If, on the other hand, you define ``HAVE_MEMMOVE`` when you should not, the linker will
-    complain about not being able to find a ``memmove()`` implementation.
 
-The following tips apply to Unix-like environments, including Linux and MacOS:
+Identifying a compiler/linker on Unix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Unix-like environments often define ``cc`` as a link to the standard
-  C compiler, and ``c++`` as a link to the standard C++ compiler.
+The following tips for finding the compiler/linker apply to Unix-like environments, including Linux and MacOS.
 
-- If you have a standard compiler on your search path, the ``which`` command will locate
-  it.
-  For example, entering the command::
-  
+Unix-like environments often define ``cc`` as a link to the standard C compiler, and ``c++`` as a link to the standard C++ compiler.
+
+If you have a standard compiler on your search path, the ``which`` command will locate it.
+For example, entering the command:
+
+.. code-block:: none
+
   > which gcc
   
-  will return the path to the ``gcc`` compiler, provided your system has it, and provided
-  it is on the search path.
-  Here, ``>`` represents the command prompt.
-  If, on the other hand, you do not have gcc, or you have it but it is not on the search
-  path, then ``> which gcc`` will return nothing.
+will return the path to the ``gcc`` compiler, provided your system has it, and provided it is on the search path.
+Here, ``>`` represents the command prompt.
+If, on the other hand, you do not have gcc (or if you have it, but it is not on the search path), then ``which gcc`` will return nothing.
 
-- If you believe you have a compiler, but cannot find it on your search path, try for example one of::
+If you believe you have a certain compiler, but cannot find it on your search path, try the ``find`` command.
+For example, to locate the ``icc`` compiler, try:
 
-  > find /usr/ -name gcc
-  > find /bin/ -name gcc
-  > find /opt/ -name gcc
-  > find / -name gcc
+.. code-block:: none
 
-  The first three commands search directories where developer tools commonly are found.
-  The last command searches the entire directory tree (and may take quite a while).
+  > find /usr/ -name icc
+  > find /bin/ -name icc
+  > find /opt/ -name icc
+  > find / -name icc
 
-- Entering::
+The first three commands search specific directories that commonly contain developer tools.
+The last command searches the entire directory tree (and may take quite a while).
+
+The ``find`` command accepts wildcards
+Put them in quote marks, in order to prevent the shell from operating on the wildcard.
+For example:
+
+.. code-block:: none
+
+  > find /usr/ -name "*icc*"
+
+searches the ``/usr/`` directory for any file whose name contains the string "icc".
+
+Finally, the ``apropos`` command may help:
+
+.. code-block:: none
 
   > apropos compiler
 
-  at the command prompt will search your help files for information pertinent to compilers.
-  Unfortunately, it may return many entries unrelated to compiling C and C++ source code.
+at the command prompt will search your help files for information pertinent to compilers.
+Unfortunately, it may return many entries unrelated to compiling C and C++ source code.
 
 
 Uninstallation
