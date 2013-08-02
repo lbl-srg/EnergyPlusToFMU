@@ -38,6 +38,7 @@
 #include<sys/stat.h>
 #include <process.h>
 #include <windows.h>
+#include <direct.h>
 //This is the sleeptime
 #define TS 1000
 #else
@@ -202,10 +203,12 @@ static int copy_res (fmiString str,  fmiString des)
 	tmp_str = (char*)(calloc(sizeof(char), strlen(str) + strlen (des) + 30));
 
 #ifdef _MSC_VER
-	sprintf(tmp_str, "xcopy %s %s /Y /I", str, des);
+	//"\"" are quotes needed for path with spaces in the names
+	sprintf(tmp_str, "xcopy %s%s %s%s%s /Y /I", "\"", str, "\"", des, "\"");
 #else
-	sprintf(tmp_str, "cp %s %s --force", str, des);
+	sprintf(tmp_str, "cp %s%s %s%s%s --force", "\"", str,  "\"", des, "\"");
 #endif
+	printfDebug ("Command executes to copy content of resources folder: %s\n", tmp_str);
 	retVal = system (tmp_str);
 	free (tmp_str);
 	return 0;
@@ -243,9 +246,9 @@ static int removeFMUDir (fmiString str)
 	tmp_str = (char*)(calloc(sizeof(char), strlen(str) + 30));
 
 #ifdef _MSC_VER
-	sprintf(tmp_str, "rmdir /s /q %s", str);
+	sprintf(tmp_str, "rmdir /s /q %s%s%s", "\"", str, "\"");
 #else
-	sprintf(tmp_str, "rm -rf %s", str);
+	sprintf(tmp_str, "rm -rf %s%s%s", "\"", str, "\"");
 #endif
 	retVal = system (tmp_str);
 	free (tmp_str);
@@ -399,7 +402,7 @@ DllExport const char* fmiGetVersion()
 ///\param loggingOn The flag to enable or disable debug.
 ///\return FMU instance if no error occured.
 ////////////////////////////////////////////////////////////////
-	
+
 DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	fmiString fmuGUID, fmiString fmuLocation,
 	fmiString mimetype, fmiReal timeout, fmiBoolean visible,
@@ -435,7 +438,11 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	strncpy (preInstanceName, instanceName, strlen(instanceName));
 
 	// get current working directory
+#ifdef _MSC_VER
+	if (_getcwd(cwd, sizeof(cwd)) == NULL)
+#else
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
+#endif
 	{
 		perror("getcwd() error");
 	}
@@ -449,12 +456,12 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 #ifdef _MSC_VER
 	sprintf(fmuOutput, "%s%s%s%s", cwd,"\\", "Output_EPExport_", instanceName);
 #else
-	sprintf(fmuOutput, "%s%s%s%s", cwd,"/", "Output_EPExport_", instanceName);
+	sprintf(fmuOutput, "%s%s%s%s", cwd,"//", "Output_EPExport_", instanceName);
 #endif
 	// check if directory exists and deletes it 
 	errDir = (stat(fmuOutput, &st) == 0);
 	if(errDir) {
-	removeFMUDir (fmuOutput);
+		removeFMUDir (fmuOutput);
 	}
 
 	// check whether the path to the resources folder has been provided
@@ -465,7 +472,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	}
 	// copy instanceName to the FMU
 	strcpy(fmuInstances[_c->index]->instanceName, instanceName);
-	
+
 	// copy first 5 characters of fmuLocation
 	strncpy (tmpResLoc, fmuLocation, 5);
 
@@ -505,9 +512,9 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	resources_p = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->fmuLocation) + strlen (RESOURCES) + 1);
 	sprintf(resources_p, "%s%s", fmuInstances[_c->index]->fmuLocation, RESOURCES);
 
-	// copy content of resources folder in created output directory
-	tmpResCon = (char *)calloc(sizeof(char), strlen (resources_p) + strlen ("*.*") + 1);
-	sprintf(tmpResCon, "%s%s", resources_p, "*.*");
+	// create content of resources folder in created output directory
+	tmpResCon = (char *)calloc(sizeof(char), strlen (resources_p) + strlen ("\"*.*") + 1);
+	sprintf(tmpResCon, "%s%s", resources_p, "\"*.*");
 
 	//create the output directory
 	retVal = create_res (fmuOutput);
@@ -515,18 +522,22 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 #ifdef _MSC_VER
 	sprintf(fmuOutput, "%s%s", fmuOutput,"\\");
 #else
-	sprintf(fmuOutput, "%s%s", fmuOutput,"/");
+	sprintf(fmuOutput, "%s%s", fmuOutput,"//");
 #endif
 
 	// copy the resources folder into the output directory
-    retVal = copy_res (tmpResCon, fmuOutput);
+	retVal = copy_res (tmpResCon, fmuOutput);
 
 	// reallocate memory for fmuLocation and assign it to the folder created
 	fmuInstances[_c->index]->fmuCalLocation = (char *)calloc(sizeof(char), strlen (fmuOutput) + 1);
 	strcpy(fmuInstances[_c->index]->fmuCalLocation, fmuOutput);
 
 	// change the directory to make sure that FMUs are not overwritten
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+#else
 	retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
+#endif
 	if (retVal!=0){
 		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The path"
 			" to the resources folder: %s is not valid!\n", fmuInstances[_c->index]->fmuCalLocation);
@@ -604,11 +615,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
 {
 	int retVal;
-	char *resources_p;
-	char *varcfg_p;
 	idfFmu_t* _c = (idfFmu_t *)c;
-	char cwd[256];
-
 
 #ifdef _MSC_VER
 	int sockLength;
@@ -666,8 +673,12 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 
 	// change the directory to make sure that FMUs are not overwritten
 	if (fmuInstances[_c->index]->firstCallIni || fmuInstances[_c->index]->preInIni!= fmuInstances[_c->index]->index) {
+#ifdef _MSC_VER
+		retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+#else
 		retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
-		
+#endif
+
 	}
 	if (retVal!=0){
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
@@ -894,7 +905,11 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		fmuInstances[_c->index]->simTimSen = fmuInstances[_c->index]->curComm;
 		if (fmuInstances[_c->index]->firstCallDoStep || (fmuInstances[_c->index]->index!=fmuInstances[_c->index]->preInDoStep)){
 			// change the directory to make sure that FMUs are not overwritten
+#ifdef _MSC_VER
+			retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+#else
 			retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
+#endif
 		}
 		// save previous index of doStep
 		fmuInstances[_c->index]->preInDoStep = fmuInstances[_c->index]->index;
@@ -1120,7 +1135,11 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 		}
 		if (fmuInstances[_c->index]->firstCallTerm || (fmuInstances[_c->index]->index!=fmuInstances[_c->index]->preInTerm)){
 			// change the directory to make sure that FMUs are not overwritten
+#ifdef _MSC_VER
+			retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+#else
 			retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
+#endif
 		}
 		// save previous index of doStep
 		fmuInstances[_c->index]->preInTerm = fmuInstances[_c->index]->index;
@@ -1207,7 +1226,11 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 
 		if (fmuInstances[_c->index]->firstCallFree || (fmuInstances[_c->index]->index!=fmuInstances[_c->index]->preInFree)){
 			// change the directory to make sure that FMUs are not overwritten
+#ifdef _MSC_VER
+			retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+#else
 			retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
+#endif
 		}
 		// save previous index of doStep
 		fmuInstances[_c->index]->preInFree = fmuInstances[_c->index]->index;
@@ -1294,7 +1317,11 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 
 		if (fmuInstances[_c->index]->firstCallSetReal || (fmuInstances[_c->index]->index!=fmuInstances[_c->index]->preInSetReal)){
 			// change the directory to make sure that FMUs are not overwritten
+#ifdef _MSC_VER
+			retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+#else
 			retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
+#endif
 		}
 		// save previous index of doStep
 		fmuInstances[_c->index]->preInSetReal = fmuInstances[_c->index]->index;
@@ -1316,6 +1343,7 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 					vrTemp = getValueReference(svTemp);
 					if (vrTemp == vr[i]){
 						fmuInstances[_c->index]->inVec[vr[i]-1] = value[vr[i]-1]; 
+						//fmuInstances[_c->index]->inVec[vr[i]-1] = 0;
 						fmuInstances[_c->index]->setCounter++;
 					}
 				}
@@ -1431,7 +1459,11 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 
 		if (fmuInstances[_c->index]->firstCallGetReal || (fmuInstances[_c->index]->index!=fmuInstances[_c->index]->preInGetReal)){
 			// change the directory to make sure that FMUs are not overwritten
+#ifdef _MSC_VER
+			retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+#else
 			retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
+#endif
 		}
 		// save previous index of doStep
 		fmuInstances[_c->index]->preInGetReal = fmuInstances[_c->index]->index;
@@ -1698,6 +1730,7 @@ DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, f
 	}
 	return fmiWarning;
 }
+
 
 /*
 
