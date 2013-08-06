@@ -21,8 +21,8 @@ Following items need to be observed when importing an FMU that contains EnergyPl
    Then, a tool that imports the FMU must synchronize it every 10 minutes.
    Otherwise, the simulation will stop with an error. [#f2]_
 
-3. EnergyPlus contains the object ``RunPeriod`` and ``RunPeriod:CustomRange``. 
-   The start and end day of these objects are ignored. [#f3]_ However,
+3. EnergyPlus contains the object ``RunPeriod``. 
+   The start and end day of this object is ignored. [#f3]_ However,
    the entry ``Day of Week for Start Day`` will be used. For example, 
    consider the following IDF snippet:
 
@@ -53,20 +53,22 @@ Following items need to be observed when importing an FMU that contains EnergyPl
    
 5. A tool that imports the FMU needs to make sure that the version of 
    EnergyPlus which has been used to export the FMU
-   is (a) installed and (b) on the system path. Otherwise, 
-   the simulation will fail with an error. [#f4]_
+   is (a) installed and (b) added to the ``system path environment variable``. Otherwise, 
+   the simulation will fail with an error. If EnergyPlus has been properly added to the 
+   ``system path environment variable``, then it can be started from any DOS prompt on 
+   Windows, command shell console on Linux, or Terminal window on Mac OS by 
+   typing ``RunEPlus.bat`` on Windows and ``runenergyplus`` on Linux or Mac OS. [#f4]_
    
-6. A tool that imports the FMU can call the fmiDoStep() method only after all inputs of	
-   the FMU are set and all outputs are got.
+6. A tool that imports the FMU can call the ``fmiDoStep()`` method only after all inputs 
+   of the FMU are set and all outputs are got.
    
 7. The simulation results are saved in a folder of the current working directory.
-   The name of the results folder is Output_FMUExport_xxx, where xxx is the FMU model   
-   instanceName as defined in the FMI specifications.
+   The name of the results folder is ``Output_FMUExport_xxx``, where ``xxx`` is the FMU 
+   model ``instanceName`` as defined in the FMI specifications.
 
 8. The weather file which comes along with an FMU is used to determine 
-   if the year is a leap year. It no weather file 
-   is included in the FMU, then the assumption is 
-   that the year is not a leap year.
+   if the year is a ``leap year``. It no weather file is included in the FMU, then the 
+   assumption is that the year is not a ``leap year``.
 
 
 .. rubric:: Footnotes
