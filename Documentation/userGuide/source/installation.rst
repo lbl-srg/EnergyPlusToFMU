@@ -115,7 +115,7 @@ Note that Python detects your platform when it runs.
 Therefore if you are using an emulator or virtual machine (for example, Cygwin under Windows, or a Windows virtual machine on a Mac), you should look in the subdirectory corresponding to the emulated operating system.
 
 Each system-specific batch subdirectory includes sample batch files.
-In addition to the default versions, some alternate versions may also be present.
+In addition to the default versions, some alternate versions also may be present.
 The alternate versions can be identified in two ways:
 (1) the file extension is "``.txt``", rather than "``.bat``";
 and
@@ -135,13 +135,13 @@ The included batch files cover some common cases.
 With luck, you can simply run the EnergyPlusToFMU build process described in :doc:`build`, and everything will work as expected.
 
 This section describes how to check the current version of batch file ``compile-c.bat``.
-The following section describes how to check ``link-c-exe.bat``.
+A later section describes `checking link-c-exe.bat`_.
 Once these batch files work, then it should not be difficult to make the other compiler and linker batch files work.
 
-The check is to build one of the EnergyPlusToFMU supporting applications and to see whether it runs.
-If successful, the application checks whether your compiler generates 32-bit or 64-bit executables.
+The check is to build one of the EnergyPlusToFMU supporting applications, and to make sure it runs.
+If successful, the application determines whether your compiler generates 32-bit or 64-bit executables.
 
-To check the batch file, open a command window (e.g., a DOS prompt on Windows, a shell command prompt on Linux, or a Terminal window on MacOS).
+To check the compiler batch file, open a command window (e.g., a DOS prompt on Windows, a command shell on Linux, or a Terminal window on MacOS).
 The instructions that follow represent the command window like this:
 
 .. code-block:: none
@@ -191,16 +191,17 @@ Unfortunately, the compiler batch file can fail.
 Reasons for failure fall into a few broad categories:
 
 - You do not have permission to run the batch file.
-  When you try to run the batch file as shown above, watch for output like
+  When you run the batch file, watch for output like
   "Permission denied" from the operating system.
   See `Troubleshooting permissions`_ below.
 
 - The source code file is not on the specified path.
-  When you try to run the batch file as shown above, watch for output like
+  When you run the batch file, watch for output like
   "No such file or directory", along with the name of the source code file.
   Check the `installation directory`_ structure, as specified above.
 
 - The commands in the batch file are wrong for your system.
+  This is the most likely cause of failure.
   The subsections below give hints on providing an appropriate ``compile-c.bat``
   batch file.
 
@@ -211,23 +212,23 @@ Successfully compiling ``get-address-size.c`` does not completely test the compi
 In particular:
 
 - Batch file ``compile-c.bat`` must specify whether or not your compiler/linker
-  environment provides a function called ``memmove()``.
-  The simple application being tested here does not use ``memmove()``, so this
+  environment provides a function called ``memmove``.
+  The simple application being tested here does not use ``memmove``, so this
   aspect of the compiler batch file is not checked.
   See `Troubleshooting the memmove function`_ below.
 
 - Batch file ``compile-cpp.bat`` must be configured for the C++ language, rather
   than the C language.
-  Compared to ``compile-c.bat``, often no particular changes are required (but
-  see the examples in the standard distribution).
+  Often no particular changes are required compared to ``compile-c.bat``
+  See the sample batch files in the standard distribution.
 
 
 Checking link-c-exe.bat
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Once you have successfully compiled source code file ``get-address-size.c`` into an object file ``get-address-size.o``, the next step is to link the object file into a runnable program, or executable.
+Once you have successfully compiled source code file ``get-address-size.c`` into an object file ``get-address-size.o``, the next step is to link the object file into an executable (i.e., a runnable program).
 
-Still working in the same batch file subdirectory, run the linker batch file:
+Working in the same subdirectory where you built the object file, run the linker batch file:
 
 .. code-block:: none
 
@@ -238,22 +239,26 @@ Still working in the same batch file subdirectory, run the linker batch file:
   #   Note the "./" before the name of the batch file.
   > ./link-c-exe.bat  test.exe  get-address-size.o
 
-In response, the linker should produce an executable called ``text.exe``, in the current directory:
+In response, the linker should produce an executable called ``test.exe``, in the current directory, and you should be able to run the executable:
 
 .. code-block:: none
 
-  # Windows:
+  # Windows (32-bit example):
   > dir  *.exe
   test.exe
+  > test.exe
+  32
 
-  # Linux, MacOS:
+  # Linux, MacOS (64-bit example):
   > ls  *.exe
   test.exe
+  > ./test.exe
+  64
 
 Again, the batch file may not work, for a few broad reasons:
 
 - You do not have permission to run the batch file.
-  When you try to run the batch file as shown above, watch for output like
+  When you run the batch file, watch for output like
   "Permission denied" from the operating system.
   See `Troubleshooting permissions`_ below.
 
@@ -277,8 +282,8 @@ In particular:
 
 - Building ``test.exe`` uses a single object file, ``get-address-size.o``.
   The linker batch file must be able to handle a list of object files.
-  The provided batch files have been tested, and all do this correctly.
-  Since this is a function of the operating system, rather than the linker,
+  The provided batch files all do this correctly.
+  Since proper behavior depends on the operating system, rather than on the linker,
   no problems should arise here.
 
 In all cases, comparing the batch files provided by the ``EnergyPlusToFMU`` installation may help solve some of these problems.
@@ -287,7 +292,7 @@ In all cases, comparing the batch files provided by the ``EnergyPlusToFMU`` inst
 Modifying the batch files
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This section gives hints on editing your batch files, in case the default versions do not work on your system, or in case you want to modify or replace the default versions (for example, to change the optimization level, or to use a different compiler/linker altogether).
+This section gives general hints on editing your batch files, in case the default versions do not work on your system, or in case you want to modify or replace the default versions (for example, to change the optimization level, or to use a different compiler/linker altogether).
 
 Unfortunately, it is beyond the scope of this document to give full instructions on installing and using developer tools such as compilers and linkers.
 
@@ -322,31 +327,30 @@ For example, entering the command:
   > which gcc
   
 will return the path to the ``gcc`` compiler, provided your system has it, and provided it is on the search path.
-Here, ``>`` represents the command prompt.
-If, on the other hand, you do not have gcc (or if you have it, but it is not on the search path), then ``which gcc`` will return nothing.
+If you do not have gcc, or if you have gcc but it is not on the search path, then ``which gcc`` will return nothing.
 
 If you believe you have a certain compiler, but cannot find it on your search path, try the ``find`` command.
 For example, to locate the ``icc`` compiler, try:
 
 .. code-block:: none
 
-  > find /usr/ -name icc
-  > find /bin/ -name icc
-  > find /opt/ -name icc
+  > find /usr -name icc
+  > find /bin -name icc
+  > find /opt -name icc
   > find / -name icc
 
-The first three commands search specific directories that commonly contain developer tools.
+The first three commands search specific directories that commonly contain developer tools (your system may not have all of these directories).
 The last command searches the entire directory tree (and may take quite a while).
 
-The ``find`` command accepts wildcards
+The ``find`` command accepts wildcards.
 Put them in quote marks, in order to prevent the shell from operating on the wildcard.
 For example:
 
 .. code-block:: none
 
-  > find /usr/ -name "*icc*"
+  > find /usr -name "*icc*"
 
-searches the ``/usr/`` directory for any file whose name contains the string "icc".
+searches the ``/usr`` directory for any file whose name contains the string "icc".
 
 Finally, the ``apropos`` command may help:
 
@@ -354,7 +358,7 @@ Finally, the ``apropos`` command may help:
 
   > apropos compiler
 
-at the command prompt will search your help files for information pertinent to compilers.
+will search your help files for information pertaining to compilers.
 Unfortunately, it may return many entries unrelated to compiling C and C++ source code.
 
 
@@ -376,7 +380,7 @@ To check the permissions:
   -rwxr--r--  ...  compile-cpp.bat
 
 All five of the default batch files should have "``-rwx``" at the beginning of the permissions block (indicating you are allowed to read, write, and execute/run the file).
-If not, then give the file execute permission:
+If not, then set the permissions:
 
 .. code-block:: none
 
@@ -389,31 +393,31 @@ and try running the compiler batch file again.
 Troubleshooting the memmove function
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The batch file that runs the C compiler, ``compile-c.bat``, needs to indicate whether or not your C compiler/linker environment provides a non-standard function called ``memmove()``.
+The batch file that runs the C compiler, ``compile-c.bat``, needs to indicate whether or not your C compiler/linker environment provides a non-standard function called ``memmove``.
+While ``memmove`` is non-standard in C, it is standard for C++.
+Therefore many C environments provide it as well.
+However, yours may not.
 
-- While ``memmove()`` is non-standard in C, it is standard for C++.
-  Therefore many C environments provide it as well.
-  However, yours may not.
+If your C compiler/linker environment does provide ``memmove``, then the batch file should pass the compiler the macro definition ``HAVE_MEMMOVE``.
+The included batch files show how to define a macro for various compilers.
 
-- If your C compiler/linker environment does provide ``memmove()``, then the batch
-  file should pass the compiler the macro definition ``HAVE_MEMMOVE``.
-  The included batch files show how to define a macro for various compilers.
+If, on the other hand, your C compiler/linker environment does not provide ``memmove``, then do not define the macro in the compiler batch file.
 
-- If, on the other hand, your C compiler/linker environment does not provide
-  ``memmove()``, then do not define the macro in the compiler batch file.
-
-- If you are not sure whether or not your system provides the function, simply watch
-  for any errors while building your first FMU.
-  If you fail to define ``HAVE_MEMMOVE`` when your system has it, the linker will
-  complain about duplicate definitions of ``memmove()``.
-  If, on the other hand, you define ``HAVE_MEMMOVE`` when your system does not have
-  it, the linker will complain about not being able to find ``memmove()``.
+If you are not sure whether or not your system provides the function, simply watch for any errors while building your first FMU.
+If you fail to define ``HAVE_MEMMOVE`` when your system has it, the linker will complain about duplicate definitions of ``memmove``.
+If, on the other hand, you define ``HAVE_MEMMOVE`` when your system does not have it, the linker will complain about not being able to find ``memmove``.
 
 
 Troubleshooting missing libraries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TODO: Fill in here.
+The linker batch files may have to use special flags to indicate which libraries to link against.
+In general, if you need to link against a library, it will be to provide a standard function, such as ``printf``, that is called by the EnergyPlusToFMU source code.
+If a linker batch file fails, and the linker emits an error message indicating it cannot find a particular function, then consult your development environment's documentation to determine which libraries it may need.
+
+Note that specifying libraries is often somewhat arcane.
+For example, on Unix-like systems, to link a library ``libm.a`` typically requires the linker flag ``-lm``.
+Furthermore, the order in which libraries are linked can matter, and you may need to add another flag to indicate the path(s) where the linker should search for libraries.
 
 
 Uninstallation
