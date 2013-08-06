@@ -5,10 +5,6 @@
 Installation and configuration
 ==============================
 
-
-Introduction
-^^^^^^^^^^^^
-
 This chapter describes how to install, configure and uninstall the EnergyPlusToFMU tools.
 
 
@@ -56,7 +52,7 @@ Minimally, the installation directory should contain the following subdirectorie
     - ``batch-linux``
       (shell scripts specific to Linux)
 
-    - ``batch-macos``
+    - ``batch-darwin``
       (shell scripts specific to Mac OS X)
 
 - ``SourceCode``
@@ -163,6 +159,9 @@ For example:
 
   # Linux:
   > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-linux
+
+  # MacOS:
+  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-darwin
 
 Next, run the compiler batch file:
 

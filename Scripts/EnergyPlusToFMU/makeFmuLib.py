@@ -288,8 +288,8 @@ def makeFmuSharedLib(showDiagnostics, litter, modelIdName):
     systemBatchDirName = 'batch-linux'
     fmuSharedLibName = 'lib' +modelIdSanitizedName +'.so'
   elif( platformName.startswith('darwin') ):
-    platformName = 'macos'
-    systemBatchDirName = 'batch-macos'
+    platformName = 'darwin'
+    systemBatchDirName = 'batch-darwin'
     fmuSharedLibName = 'lib' +modelIdSanitizedName +'.dylib'
   else:
     quitWithError('Unknown platform {' +platformName +'}', False)

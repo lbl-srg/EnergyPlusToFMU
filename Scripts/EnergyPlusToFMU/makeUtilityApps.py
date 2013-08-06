@@ -189,7 +189,7 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild, exportPrepExeName):
     systemBatchDirName = 'batch-linux'
   elif( systemBatchDirName.startswith('darwin')
     or systemBatchDirName.startswith('freebsd') ):
-    systemBatchDirName = 'batch-macos'
+    systemBatchDirName = 'batch-darwin'
   else:
     quitWithError('Unknown platform {' +systemBatchDirName +'}', False)
   #
