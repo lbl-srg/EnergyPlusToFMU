@@ -286,11 +286,11 @@ def makeFmuSharedLib(showDiagnostics, litter, modelIdName):
     or platformName.startswith('cygwin') ):
     platformName = 'linux'
     systemBatchDirName = 'batch-linux'
-    fmuSharedLibName = 'lib' +modelIdSanitizedName +'.so'
+    fmuSharedLibName = modelIdSanitizedName +'.so'
   elif( platformName.startswith('darwin') ):
     platformName = 'darwin'
     systemBatchDirName = 'batch-darwin'
-    fmuSharedLibName = 'lib' +modelIdSanitizedName +'.dylib'
+    fmuSharedLibName = modelIdSanitizedName +'.dylib'
   else:
     quitWithError('Unknown platform {' +platformName +'}', False)
   #
