@@ -226,7 +226,7 @@ static int create_res (fmiString str)
 	int retVal;
 	tmp_str = (char*)(calloc(sizeof(char), strlen(str) + 10));
 
-	sprintf(tmp_str, "mkdir %s", str);
+	sprintf(tmp_str, "mkdir %s%s%s", "\"", str, "\"");
 	retVal = system (tmp_str);
 	free (tmp_str);
 	return 0;
