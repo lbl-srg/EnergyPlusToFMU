@@ -1,6 +1,11 @@
 //--- Virtual file reader for input parameter and weather data.
 
 
+//--- Copyright notice.
+//
+//   Please see the header file.
+
+
 //--- Includes.
 
 #include <cstdlib>

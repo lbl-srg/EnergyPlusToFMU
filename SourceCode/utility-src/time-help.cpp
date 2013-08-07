@@ -1,6 +1,11 @@
 //--- Utilities for time calculations.
 
 
+//--- Copyright notice.
+//
+//   Please see the header file.
+
+
 //--- Includes.
 //
 #include <stdio.h>

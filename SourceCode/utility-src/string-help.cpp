@@ -1,6 +1,11 @@
 //--- String utilities.
 
 
+//--- Copyright notice.
+//
+//   Please see the header file.
+
+
 //--- Includes.
 //
 #include <algorithm>

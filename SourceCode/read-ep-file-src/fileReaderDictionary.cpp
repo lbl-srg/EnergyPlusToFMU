@@ -1,6 +1,11 @@
 //--- File reader for EnergyPlus input data dictionary (IDD) file.
 
 
+//--- Copyright notice.
+//
+//   Please see the header file.
+
+
 //--- Includes.
 #include <string>
 using std::string;

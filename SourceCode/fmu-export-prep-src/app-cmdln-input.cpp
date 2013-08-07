@@ -1,6 +1,11 @@
 //--- Get inputs for command-line app to export an EnergyPlus simulation as an FMU.
 
 
+//--- Copyright notice.
+//
+//   Please see the header file.
+
+
 //--- Includes.
 //
 #include <assert.h>

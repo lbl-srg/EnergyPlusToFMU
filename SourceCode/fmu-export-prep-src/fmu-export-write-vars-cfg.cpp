@@ -1,6 +1,11 @@
 //--- Write file variables.cfg needed to export an EnergyPlus simulation as an FMU.
 
 
+//--- Copyright notice.
+//
+//   Please see the header file.
+
+
 //--- Includes.
 //
 #include <string>
@@ -86,7 +91,7 @@ void varsCfg_write(std::ostream& outStream,
       fmuIdfData._toVar_epName[idx].c_str());
     }
   //
-  //-- Write tags corresponding to {fromVar} data exchange.  
+  //-- Write tags corresponding to {fromVar} data exchange.
   datCt = (int)fmuIdfData._fromVar_idfLineNo.size();
   for( idx=0; idx<datCt; ++idx )
     {

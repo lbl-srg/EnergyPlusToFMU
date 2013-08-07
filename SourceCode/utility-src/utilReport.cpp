@@ -1,6 +1,11 @@
 //--- Reporting functions.
 
 
+//--- Copyright notice.
+//
+//   Please see the header file.
+
+
 //--- Includes.
 //
 #include <ctime>

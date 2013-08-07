@@ -1,9 +1,9 @@
 //--- Compute MD5 checksums.
 
 
-//--- Copyright information.
+//--- Copyright notice.
 //
-//   See the associated header file.
+//   Please see the header file.
 
 
 //--- Includes.

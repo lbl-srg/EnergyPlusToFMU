@@ -174,13 +174,14 @@ Next, run the compiler batch file:
   #   Note the "./" before the name of the batch file.
   > ./compile-c.bat  ../../../SourceCode/utility-src/get-address-size.c
 
-In response, the compiler should produce an object file called ``get-address-size.o``, in the current directory:
+In response, the compiler should produce an object file in the current directory.
+The object file should be called ``get-address-size.obj`` on Windows, and ``get-address-size.o`` on Unix-like systems.
 
 .. code-block:: none
 
   # Windows:
-  > dir  *.o
-  get-address-size.o
+  > dir  *.obj
+  get-address-size.obj
 
   # Linux, MacOS:
   > ls  *.o
@@ -225,14 +226,14 @@ In particular:
 Checking link-c-exe.bat
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Once you have successfully compiled source code file ``get-address-size.c`` into an object file ``get-address-size.o``, the next step is to link the object file into an executable (i.e., a runnable program).
+Once you have successfully compiled source code file ``get-address-size.c`` into an object file, the next step is to link the object file into an executable (i.e., a runnable program).
 
 Working in the same subdirectory where you built the object file, run the linker batch file:
 
 .. code-block:: none
 
   # Windows:
-  > link-c-exe.bat  test.exe  get-address-size.o
+  > link-c-exe.bat  test.exe  get-address-size.obj
 
   # Linux, MacOS:
   #   Note the "./" before the name of the batch file.
@@ -279,7 +280,7 @@ In particular:
   This may require providing different switches or flags to the linker, than
   used in ``link-c-exe.bat``.
 
-- Building ``test.exe`` uses a single object file, ``get-address-size.o``.
+- Building ``test.exe`` uses a single object file.
   The linker batch file must be able to handle a list of object files.
   The provided batch files all do this correctly.
   Since proper behavior depends on the operating system, rather than on the linker,

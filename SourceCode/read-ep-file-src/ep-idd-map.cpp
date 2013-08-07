@@ -1,6 +1,11 @@
 //--- Work with EnergyPlus input data dictionary (IDD) key-descriptor pairs.
 
 
+//--- Copyright notice.
+//
+//   Please see the header file.
+
+
 //--- Includes.
 //
 #include "ep-idd-map.h"

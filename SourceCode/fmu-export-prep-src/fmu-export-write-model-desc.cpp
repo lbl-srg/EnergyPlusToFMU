@@ -1,6 +1,11 @@
 //--- Write file modelDescription.xml needed to export an EnergyPlus simulation as an FMU.
 
 
+//--- Copyright notice.
+//
+//   Please see the header file.
+
+
 //--- Includes.
 //
 #include <cstdio>
@@ -151,7 +156,7 @@ void modelDescXml_write(std::ostream& outStream,
   valRef = 10001;  // hoho  Should test against unlikely case that have 10001 {toEP} variables.
   double dummyInitValue = 0.0;
   //
-  //-- Write tags corresponding to {fromVar} data exchange.  
+  //-- Write tags corresponding to {fromVar} data exchange.
   datCt = (int)fmuIdfData._fromVar_idfLineNo.size();
   for( idx=0; idx<datCt; ++idx, ++valRef )
     {

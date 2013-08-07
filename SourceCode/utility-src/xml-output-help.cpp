@@ -1,6 +1,11 @@
 //--- Utilities for producing XML output.
 
 
+//--- Copyright notice.
+//
+//   Please see the header file.
+
+
 //--- Includes.
 //
 #include "xml-output-help.h"

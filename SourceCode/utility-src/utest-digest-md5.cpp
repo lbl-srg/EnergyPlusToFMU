@@ -6,9 +6,9 @@
 /// \brief  Unit test for digest-md5.c.
 
 
-//--- Copyright information.
+//--- Copyright notice.
 //
-//   See the associated header file.
+//   Please see the header file.
 
 
 //--- Includes.
