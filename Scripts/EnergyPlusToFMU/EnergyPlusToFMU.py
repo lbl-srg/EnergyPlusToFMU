@@ -35,7 +35,7 @@ def printCmdLineUsage():
   #
   print '-- Export an EnergyPlus model as a Functional Mockup Unit (FMU) for co-simulation'
   print '-- Option -i, use the named Input Data Dictionary'
-  print '   Lacking -i, read environment variable {ENERGYPLUS_DIR}, and use {ENERGYPLUS_DIR/bin/Energy+.idd}'
+  print '   Lacking -i, read environment variable {ENERGYPLUS_DIR}, and use {ENERGYPLUS_DIR/Energy+.idd}'
   print '-- Option -w, use the named weather file'
   print '-- Option -d, print diagnostics'
   print '-- Option -L, litter, that is, do not clean up intermediate files'
@@ -155,11 +155,7 @@ def findIddFileViaEnvDir():
   if( not os.path.isdir(epDirName) ):
     return(False, 'Environment variable {ENERGYPLUS_DIR} refers to missing directory ' +epDirName)
   #
-  binDirName = os.path.join(os.path.abspath(binDirName), 'bin')
-  if( not os.path.isdir(binDirName) ):
-    return(False, 'Missing EnergyPlus directory ' +binDirName)
-  #
-  iddFileName = os.path.join(binDirName, 'Energy+.idd')
+  iddFileName = os.path.join(epDirName, 'Energy+.idd')
   if( not os.path.isfile(iddFileName) ):
     return(False, 'Missing IDD file ' +iddFileName)
   #

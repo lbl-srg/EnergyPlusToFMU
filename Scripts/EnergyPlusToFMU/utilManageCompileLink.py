@@ -144,7 +144,7 @@ def ensureDir(showDiagnostics, dirDesc, dirName):
 
 #--- Fcn to clean up an existing directory, or create it.
 #
-def cleanDir(showDiagnostics, dirDesc, dirName):
+def ensureCleanDir(showDiagnostics, dirDesc, dirName):
   #
   if( ensureDir(showDiagnostics, dirDesc, dirName) ):
     # Here, {dirName} already existed; need to clean it up.
@@ -154,7 +154,7 @@ def cleanDir(showDiagnostics, dirDesc, dirName):
       theEntryFullName = os.path.abspath(os.path.join(dirName, theEntryName))
       deleteFile(theEntryFullName)
   #
-  # End fcn cleanDir().
+  # End fcn ensureCleanDir().
 
 
 #--- Fcn to remove an existing directory.
@@ -237,7 +237,7 @@ def manageCompileLink(showDiagnostics, litter, forceRebuild,
     printDiagnostic('Begin compile-link build of {' +outputFileName +'}')
   #
   # Short-circuit work if possible.
-  # hoho  Consider being make-like, and only rebuilding object files that are old
+  #   TODO: Consider being make-like, by only rebuilding object files that are old
   # compared to sources, and only rebuilding output that is old compared to
   # object files.
   if(  os.path.isfile(outputFileName) and (not forceRebuild) ):
@@ -245,13 +245,13 @@ def manageCompileLink(showDiagnostics, litter, forceRebuild,
       printDiagnostic('Output file {' +outputFileName + '} already exists; doing nothing')
     return
   #
-  # Delete expected outputs if they already exist.
+  # Delete expected output if it already exists.
   #   To prevent confusion in case of an error.
   deleteFile(outputFileName)
   #
   # Form names of system-specific scripts.
   findFileOrQuit('compiler batch', compileBatchFileName)
-  findFileOrQuit('linker batch', linkBatchFileName)  # hoho Should figure out a way to dump the printLinkBatchInfo() information.
+  findFileOrQuit('linker batch', linkBatchFileName)  # TODO: Figure out a way to dump the printLinkBatchInfo() information.
   #
   # Name the build directory.
   #   Put it in the working directory (which may differ from both the directory
@@ -259,7 +259,7 @@ def manageCompileLink(showDiagnostics, litter, forceRebuild,
   objDirName = 'obj-' +os.path.basename(outputFileName).replace('.', '-')
   #
   # Create or clean the build directory.
-  cleanDir(showDiagnostics, 'object', objDirName)
+  ensureCleanDir(showDiagnostics, 'object', objDirName)
   #
   # Compile sources.
   if( showDiagnostics ):
@@ -267,7 +267,7 @@ def manageCompileLink(showDiagnostics, litter, forceRebuild,
   objFileNameList = list()
   for srcFileName in srcFileNameList:
     objFileName = runCompiler(showDiagnostics, compileBatchFileName, srcFileName, objDirName)
-    objFileNameList.append(objDirName +os.path.sep +objFileName)
+    objFileNameList.append(os.path.join(objDirName, objFileName))
   #
   # Link objects into {outputFileName}.
   if( showDiagnostics ):

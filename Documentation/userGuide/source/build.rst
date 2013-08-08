@@ -100,7 +100,7 @@ The EnergyPlusToFMU tool supports a number of options:
 | -i <path-to-idd-file>     | Use the named Input Data Dictionary.               |
 |                           | If you do not specify this option, the tool reads  |
 |                           | environment variable ``ENERGYPLUS_DIR``, and uses  |
-|                           | data dictionary ``ENERGYPLUS_DIR/bin/Energy+.idd`` |
+|                           | data dictionary ``ENERGYPLUS_DIR/Energy+.idd``     |
 |                           | (for most EnergyPlus users, this environment       |
 |                           | variable, and the IDD file, typically already      |
 |                           | exist).                                            |
@@ -130,7 +130,7 @@ For example:
 .. code-block:: none
 
   # Windows:
-  > python  EnergyPlusToFMU.py  -i C:\eplus\bin\Energy+.idd  test.idf
+  > python  EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  test.idf
 
   > python  EnergyPlusToFMU.py  -d  test.idf
 
@@ -139,3 +139,9 @@ Troubleshooting
 ^^^^^^^^^^^^^^^
 
 TODO: fill in
+
+Note bash set env variable by
+
+.. code-block:: none
+
+  > export  ENERGYPLUS_DIR="/Applications/EnergyPlus-8-0-0"
