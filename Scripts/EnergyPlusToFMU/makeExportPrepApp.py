@@ -170,43 +170,44 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   if( showDiagnostics ):
     printDiagnostic('Begin creating executable {' +exportPrepExeName +'}')
   #
-  # Set working directory to same directory as this script file.
-  #   To allow using relative paths, including import of other modules.
-  origWorkDirName = os.path.abspath(os.getcwd())
+  # Get directory of this script file.
   scriptDirName = os.path.abspath(os.path.dirname(__file__))
-  if( scriptDirName != origWorkDirName ):
-    if( showDiagnostics ):
-      printDiagnostic('Jumping to script directory {' +scriptDirName +'}')
-    os.chdir(scriptDirName)
   #
-  # Choose subdirectory for system-specific scripts.
-  systemBatchDirName = sys.platform
-  if( systemBatchDirName.startswith('win') ):
+  # Choose system-specific values.
+  platformName = sys.platform
+  systemBatchDirName = None
+  #
+  if( platformName.startswith('win') ):
+    platformName = 'win'
     systemBatchDirName = 'batch-dos'
-  elif( systemBatchDirName.startswith('linux')
-    or systemBatchDirName.startswith('cygwin') ):
+  elif( platformName.startswith('linux')
+    or platformName.startswith('cygwin') ):
+    platformName = 'linux'
     systemBatchDirName = 'batch-linux'
-  elif( systemBatchDirName.startswith('darwin')
-    or systemBatchDirName.startswith('freebsd') ):
+  elif( platformName.startswith('darwin') ):
+    platformName = 'darwin'
     systemBatchDirName = 'batch-darwin'
   else:
-    quitWithError('Unknown platform {' +systemBatchDirName +'}', False)
+    quitWithError('Unknown platform {' +platformName +'}', False)
   #
   if( showDiagnostics ):
     printDiagnostic('Using system-specific scripts from batch directory {' +systemBatchDirName +'}')
+  #
+  systemBatchDirName = os.path.join(scriptDirName, systemBatchDirName)
   if( not os.path.isdir(systemBatchDirName) ):
-    quitWithError('Missing system-specific batch directory {' +os.path.join(scriptDirName, systemBatchDirName) +'}', False)
+    quitWithError('Missing system-specific batch directory {' +systemBatchDirName +'}', False)
   #
   # Form names of system-specific scripts.
   compileCppBatchFileName = os.path.join(systemBatchDirName, g_compileCppBatchFileName)
-  linkCppExeBatchFileName = os.path.join(systemBatchDirName, g_linkCppExeBatchFileName)
   findFileOrQuit('compiler batch', compileCppBatchFileName)
+  #
+  linkCppExeBatchFileName = os.path.join(systemBatchDirName, g_linkCppExeBatchFileName)
   findFileOrQuit('linker batch', linkCppExeBatchFileName)
   #
   # Assemble names of source files.
   srcFileNameList = list()
   #
-  srcDirName = '../../SourceCode/fmu-export-prep-src'
+  srcDirName = os.path.join(scriptDirName, '../../SourceCode/fmu-export-prep-src')
   for theRootName in ['app-cmdln-input',
     'app-cmdln-version',
     'fmu-export-idf-data',
@@ -216,7 +217,7 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
     ]:
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.cpp'))
   #
-  srcDirName = '../../SourceCode/read-ep-file-src'
+  srcDirName = os.path.join(scriptDirName, '../../SourceCode/read-ep-file-src')
   for theRootName in ['ep-idd-map',
     'fileReader',
     'fileReaderData',
@@ -224,7 +225,7 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
     ]:
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.cpp'))
   #
-  srcDirName = '../../SourceCode/utility-src'
+  srcDirName = os.path.join(scriptDirName, '../../SourceCode/utility-src')
   for theRootName in ['digest-md5',
     'file-help',
     'string-help',
@@ -234,10 +235,11 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
     ]:
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.cpp'))
   #
-  # Access scripts from {utilManageCompileLink}.
-  #   Note deferred this import until have error-reporting mechanism in place,
-  # and until made sure were in the expected directory.
-  findFileOrQuit('utility script', 'utilManageCompileLink.py')
+  # Load modules expect to find in same directory as this script file.
+  if( scriptDirName not in sys.path ):
+    sys.path.append(scriptDirName)
+  #
+  findFileOrQuit('utility script', os.path.join(scriptDirName,'utilManageCompileLink.py'))
   try:
     import utilManageCompileLink
   except:
@@ -249,12 +251,6 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   #
   # Clean up intermediates.
   #   Nothing to do-- no intermediates generated at this level of work.
-  #
-  # Jump back to starting directory.
-  if( scriptDirName != origWorkDirName ):
-    if( showDiagnostics ):
-      printDiagnostic('Jumping back to original directory {' +origWorkDirName +'}')
-    os.chdir(origWorkDirName)
   #
   return( exportPrepExeName )
   #

@@ -265,14 +265,8 @@ def makeFmuSharedLib(showDiagnostics, litter,
   if( showDiagnostics and (modelIdSanitizedName != modelIdName) ):
     printDiagnostic('Converting model identifier from {' +modelIdName +'} to {' +modelIdSanitizedName +'}')
   #
-  # Set working directory to same directory as this script file.
-  #   To allow using relative paths, including import of other modules.
-  origWorkDirName = os.path.abspath(os.getcwd())
+  # Get directory of this script file.
   scriptDirName = os.path.abspath(os.path.dirname(__file__))
-  if( scriptDirName != origWorkDirName ):
-    if( showDiagnostics ):
-      printDiagnostic('Jumping to script directory {' +scriptDirName +'}')
-    os.chdir(scriptDirName)
   #
   # Choose system-specific values.
   platformName = sys.platform
@@ -297,6 +291,8 @@ def makeFmuSharedLib(showDiagnostics, litter,
   #
   if( showDiagnostics ):
     printDiagnostic('Using system-specific scripts from batch directory {' +systemBatchDirName +'}')
+  #
+  systemBatchDirName = os.path.join(scriptDirName, systemBatchDirName)
   if( not os.path.isdir(systemBatchDirName) ):
     quitWithError('Missing system-specific batch directory {' +os.path.join(scriptDirName, systemBatchDirName) +'}', False)
   #
@@ -311,15 +307,16 @@ def makeFmuSharedLib(showDiagnostics, litter,
   findFileOrQuit('linker batch', linkCExeBatchFileName)
   #
   # Insert model identifier into source code files.
-  modMainName = '../../SourceCode/EnergyPlus/temp-' +modelIdSanitizedName +'.c'
-  poundDefineModelId(showDiagnostics, '../../SourceCode/EnergyPlus/main.c', modelIdSanitizedName, modMainName)
+  origMainName = os.path.join(scriptDirName, '../../SourceCode/EnergyPlus/main.c')
+  modMainName  = os.path.join(scriptDirName, '../../SourceCode/EnergyPlus', 'temp-'+modelIdSanitizedName+'.c')
+  poundDefineModelId(showDiagnostics, origMainName, modelIdSanitizedName, modMainName)
   #
   # Assemble names of source files.
   srcFileNameList = list()
   #
   srcFileNameList.append(modMainName)
   #
-  srcDirName = '../../SourceCode/EnergyPlus'
+  srcDirName = os.path.join(scriptDirName, '../../SourceCode/EnergyPlus')
   for theRootName in ['reader',
     'stack',
     'util',
@@ -328,17 +325,18 @@ def makeFmuSharedLib(showDiagnostics, litter,
     ]:
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
   #
-  srcDirName = '../../SourceCode/Expat/lib'
+  srcDirName = os.path.join(scriptDirName, '../../SourceCode/Expat/lib')
   for theRootName in ['xmlparse',
     'xmlrole',
     'xmltok'  # Note {xmltok.c} directly #includes {xmltok_impl.c} and {xmltok_ns.c}, so they don't need to be in this list.
     ]:
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
   #
-  # Access scripts from {utilManageCompileLink}.
-  #   Note deferred this import until have error-reporting mechanism in place,
-  # and until made sure were in the expected directory.
-  findFileOrQuit('utility script', 'utilManageCompileLink.py')
+  # Load modules expect to find in same directory as this script file.
+  if( scriptDirName not in sys.path ):
+    sys.path.append(scriptDirName)
+  #
+  findFileOrQuit('utility script', os.path.join(scriptDirName,'utilManageCompileLink.py'))
   try:
     import utilManageCompileLink
   except:
@@ -359,7 +357,9 @@ def makeFmuSharedLib(showDiagnostics, litter,
   getAddressSizeExeName = 'util-get-address-size.exe'
   if( showDiagnostics ):
     printDiagnostic('Building utility application {' +getAddressSizeExeName +'}')
-  srcFileNameList = ['../../SourceCode/utility-src/get-address-size.c']
+  srcFileNameList = [
+    os.path.join(scriptDirName, '../../SourceCode/utility-src/get-address-size.c')
+    ]
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
     compileCBatchFileName, linkCExeBatchFileName, srcFileNameList, getAddressSizeExeName)
   #
@@ -390,12 +390,6 @@ def makeFmuSharedLib(showDiagnostics, litter,
       printDiagnostic('Cleaning up intermediate files')
     # deleteFile(modMainName)  # Done above.
     deleteFile(getAddressSizeExeName)
-  #
-  # Jump back to starting directory.
-  if( scriptDirName != origWorkDirName ):
-    if( showDiagnostics ):
-      printDiagnostic('Jumping back to original directory {' +origWorkDirName +'}')
-    os.chdir(origWorkDirName)
   #
   return( (fmuSharedLibName, fmuBinDirName) )
   #

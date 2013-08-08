@@ -39,7 +39,7 @@ def printCmdLineUsage():
   print '-- Option -w, use the named weather file'
   print '-- Option -d, print diagnostics'
   print '-- Option -L, litter, that is, do not clean up intermediate files'
-  # hoho add -V to set version number of FMI standard.  Currently 1.0 is only one supported.
+  # TODO: Add -V to set version number of FMI standard.  Currently 1.0 is only one supported.
   #
   # End fcn printCmdLineUsage().
 
@@ -180,24 +180,20 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
   else:
     wthFileName = findFileOrQuit('WTH', wthFileName)
   #
-  # Set working directory to same directory as this script file.
-  #   To allow using relative paths, rather than calling os.path.abspath() on
-  # everything.
-  origWorkDirFullName = os.path.abspath(os.getcwd())
-  scriptDirFullName = os.path.abspath(os.path.dirname(__file__))
-  if( scriptDirFullName != origWorkDirFullName ):
-    if( showDiagnostics ):
-      printDiagnostic('Jumping to script directory {' +scriptDirFullName +'}')
-    os.chdir(scriptDirFullName)
+  # Get directory of this script file.
+  scriptDirName = os.path.abspath(os.path.dirname(__file__))
   #
   # Load modules expect to find in same directory as this script file.
-  findFileOrQuit('utility script', 'makeFmuLib.py')
+  if( scriptDirName not in sys.path ):
+    sys.path.append(scriptDirName)
+  #
+  findFileOrQuit('utility script', os.path.join(scriptDirName, 'makeFmuLib.py'))
   try:
     import makeFmuLib
   except:
     quitWithError('Unable to import {makeFmuLib.py}', False)
   #
-  findFileOrQuit('utility script', 'makeExportPrepApp.py')
+  findFileOrQuit('utility script', os.path.join(scriptDirName, 'makeExportPrepApp.py'))
   try:
     import makeExportPrepApp
   except:
@@ -288,10 +284,6 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
     deleteFile(OUT_modelDescFileName)
     deleteFile(OUT_variablesFileName)
     deleteFile(OUT_fmuSharedLibName)
-  #
-  # Return to original directory.
-  if( scriptDirFullName != origWorkDirFullName ):
-    os.chdir(origWorkDirFullName)
   #
   # End fcn exportEnergyPlusAsFMU().
 
