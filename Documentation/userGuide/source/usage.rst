@@ -62,9 +62,9 @@ Following items need to be observed when importing an FMU that contains EnergyPl
 6. A tool that imports the FMU can call the ``fmiDoStep()`` method only after all inputs 
    of the FMU are set and all outputs are got.
    
-7. The simulation results are saved in a folder of the current working directory.
-   The name of the results folder is ``Output_FMUExport_xxx``, where ``xxx`` is the FMU 
-   model ``instanceName`` as defined in the FMI specifications.
+7. The simulation results are saved in a result folder which is created in the current 
+   working directory. The name of the result folder is ``Output_FMUExport_xxx``, where 
+   ``xxx`` is the FMU model ``instanceName`` as defined in the FMI specifications.
 
 8. The weather file which comes along with an FMU is used to determine 
    if the year is a ``leap year``. It no weather file is included in the FMU, then the 
