@@ -254,7 +254,8 @@ def poundDefineModelId(showDiagnostics, origFileName, modelIdName, modFileName):
 # ** {modelIdName}, base name for shared library.  Note the name may be
 # "sanitized" since it also has to be a valid function name in the C language.
 #
-def makeFmuSharedLib(showDiagnostics, litter, modelIdName):
+def makeFmuSharedLib(showDiagnostics, litter,
+  modelIdName):
   #
   if( showDiagnostics ):
     printDiagnostic('Begin creating shared FMU library for model {' +modelIdName +'}')

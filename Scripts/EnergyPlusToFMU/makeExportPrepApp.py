@@ -157,17 +157,16 @@ def deleteFile(fileName):
 # file names.  It uses paths relative to the directory where this file resides,
 # and relies on there being no problematic characters in the path names.
 #
-def makeExportPrepApp(showDiagnostics, litter, forceRebuild, exportPrepExeName):
+def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   #
   # Form executable name.
-  if( exportPrepExeName is None ):
-    exportPrepExeName = 'idf-to-fmu-export-prep'
-    # Choose different extension for Windows/DOS.  This is a convenience, to
-    # allow two executables to stay in place when running in a virtual machine.
-    if( sys.platform.startswith('win') ):
-      exportPrepExeName = exportPrepExeName +'.exe'
-    else:
-      exportPrepExeName = exportPrepExeName +'.app'
+  exportPrepExeName = 'idf-to-fmu-export-prep'
+  # Choose different extension for Windows/DOS.  This is a convenience, to
+  # allow two executables to stay in place when running in a virtual machine.
+  if( sys.platform.startswith('win') ):
+    exportPrepExeName = exportPrepExeName +'.exe'
+  else:
+    exportPrepExeName = exportPrepExeName +'.app'
   if( showDiagnostics ):
     printDiagnostic('Begin creating executable {' +exportPrepExeName +'}')
   #
@@ -290,7 +289,7 @@ if __name__ == '__main__':
     currIdx += 1
   #
   # Run.
-  exportPrepExeName = makeExportPrepApp(showDiagnostics, litter, True, None)
+  exportPrepExeName = makeExportPrepApp(showDiagnostics, litter, True)
 
 
 #--- Copyright notice.

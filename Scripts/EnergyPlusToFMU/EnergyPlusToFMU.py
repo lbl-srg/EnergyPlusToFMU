@@ -197,11 +197,11 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
   except:
     quitWithError('Unable to import {makeFmuLib.py}', False)
   #
-  findFileOrQuit('utility script', 'makeUtilityApps.py')
+  findFileOrQuit('utility script', 'makeExportPrepApp.py')
   try:
-    import makeUtilityApps
+    import makeExportPrepApp
   except:
-    quitWithError('Unable to import {makeUtilityApps.py}', False)
+    quitWithError('Unable to import {makeExportPrepApp.py}', False)
   #
   # Get valid model identifier.
   modelIdName = os.path.basename(idfFileName)
@@ -228,10 +228,10 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
   # Create export-prep application.
   #   The resulting executable will extract FMU-related information from an
   # EnergyPlus IDF file.
-  #   Do not force a rebuild.  Accept the name returned by fcn makeExportPrepApp().
+  #   Do not force a rebuild.
   if( showDiagnostics ):
     printDiagnostic('Checking for export-prep application')
-  exportPrepExeName = makeUtilityApps.makeExportPrepApp(showDiagnostics, litter, False, None)
+  exportPrepExeName = makeExportPrepApp.makeExportPrepApp(showDiagnostics, litter, False)
   #
   # Run the export-prep application.
   if( showDiagnostics ):
