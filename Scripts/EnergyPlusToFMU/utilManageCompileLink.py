@@ -185,19 +185,19 @@ def deleteDir(showDiagnostics, dirDesc, dirName):
 
 #--- Fcn to compile a source code file.
 #
+#   Perform work in the current working directory.
 #   Return object file name.
 #
-def runCompiler(showDiagnostics, compileBatchFileName, srcFileName, objDirName):
+def runCompiler(showDiagnostics, compileBatchFileName, srcFileName):
   #
   if( showDiagnostics ):
     printDiagnostic('Compiling {' +os.path.basename(srcFileName) +'}')
-  srcFileName = findFileOrQuit('source code', srcFileName)
   #
   try:
     subprocess.call([compileBatchFileName, srcFileName])
   except:
-    # Check failure due to missing {compileBatchFileName} before complain about
-    # unknown problem.
+    # Check failure due to missing files, before complain about unknown problem.
+    srcFileName = findFileOrQuit('source', srcFileName)
     compileBatchFileName = findFileOrQuit('compiler batch', compileBatchFileName)
     quitWithError('Failed to run compiler batch file {' +compileBatchFileName +
       '} on source code file {' +srcFileName +'}: reason unknown')
@@ -209,16 +209,6 @@ def runCompiler(showDiagnostics, compileBatchFileName, srcFileName, objDirName):
     objFileName = objFileBaseName +'.o'
     if( not os.path.isfile(objFileName) ):
       quitWithError('Failed to create object file for source code file {' +srcFileName +'}')
-  #
-  # Move object file to directory {objDirName}.
-  ensureDir(showDiagnostics, 'object', objDirName)
-  destObjFileName = os.path.join(objDirName, objFileName)
-  if( os.path.isfile(destObjFileName) ):
-    quitWithError('Object file {' +objFileName +'} already exists in directory {' +objDirName +'}')
-  try:
-    os.rename(objFileName, destObjFileName)
-  except:
-    quitWithError('Unable to move object file {' +objFileName +'} to directory {' +objDirName +'}: reason unknown')
   #
   return( objFileName )
   #
@@ -249,53 +239,72 @@ def manageCompileLink(showDiagnostics, litter, forceRebuild,
   #   To prevent confusion in case of an error.
   deleteFile(outputFileName)
   #
-  # Form names of system-specific scripts.
-  findFileOrQuit('compiler batch', compileBatchFileName)
-  findFileOrQuit('linker batch', linkBatchFileName)  # TODO: Figure out a way to dump the printLinkBatchInfo() information.
+  # Get absolute paths of all inputs, prior to changing directory.
+  #   Note for strings, which are immutable, can re-assign to same name without
+  # affecting caller.  However, for lists, need to assign to a new variable.
+  compileBatchFileName = findFileOrQuit('compiler batch', compileBatchFileName)
+  linkBatchFileName = findFileOrQuit('linker batch', linkBatchFileName)  # TODO: Figure out a way to dump the printLinkBatchInfo() information.
+  srcFileAbsNameList = list()
+  for srcFileName in srcFileNameList:
+    srcFileAbsNameList.append(findFileOrQuit('source',srcFileName))
+  outputFileName = os.path.abspath(outputFileName)
   #
   # Name the build directory.
-  #   Put it in the working directory (which may differ from both the directory
-  # for {outputFileName}, and the directory where this script file resides).
-  objDirName = 'obj-' +os.path.basename(outputFileName).replace('.', '-')
+  #   Put it in the caller's current working directory (which may differ from
+  # both the directory for {outputFileName}, and the directory where this
+  # script file resides).
+  bldDirName = 'bld-' +os.path.basename(outputFileName).replace('.', '-')
   #
   # Create or clean the build directory.
-  ensureCleanDir(showDiagnostics, 'object', objDirName)
+  ensureCleanDir(showDiagnostics, 'build', bldDirName)
+  #
+  # Jump to build directory.
+  #   Want all compiler and linker output in the build directory, in order to
+  # keep things organized, and to be able to do a complete cleanup.
+  if( showDiagnostics ):
+    printDiagnostic('Jumping to build directory {' +bldDirName +'}')
+  origDirName = os.path.abspath(os.getcwd())
+  bldDirName = os.path.abspath(bldDirName)
+  os.chdir(bldDirName)
   #
   # Compile sources.
   if( showDiagnostics ):
     printDiagnostic('Compiling files using {' +compileBatchFileName +'}')
   objFileNameList = list()
-  for srcFileName in srcFileNameList:
-    objFileName = runCompiler(showDiagnostics, compileBatchFileName, srcFileName, objDirName)
-    objFileNameList.append(os.path.join(objDirName, objFileName))
+  for srcFileName in srcFileAbsNameList:
+    objFileName = runCompiler(showDiagnostics, compileBatchFileName, srcFileName)
+    objFileNameList.append(os.path.join(bldDirName, objFileName))
   #
   # Link objects into {outputFileName}.
+  #   But keep it in the build directory.
+  outputFileBaseName = os.path.basename(outputFileName)
   if( showDiagnostics ):
     printDiagnostic('Linking object files using {' +linkBatchFileName +'}')
-    printDiagnostic('Linking to create {' +outputFileName +'}')
-  subprocess.call([linkBatchFileName, outputFileName] +objFileNameList)
-  if( not os.path.isfile(outputFileName) ):
-    quitWithError('Failed to link object files into {' +outputFileName +'}')
+    printDiagnostic('Linking to create {' +outputFileBaseName +'}')
+  subprocess.call([linkBatchFileName, outputFileBaseName] +objFileNameList)
+  if( not os.path.isfile(outputFileBaseName) ):
+    quitWithError('Failed to link object files into {' +outputFileBaseName +'}')
+  #
+  # Move output file to destination directory.
+  try:
+    if( showDiagnostics ):
+      printDiagnostic('Moving output file {' +outputFileBaseName +'} to directory {' +os.path.dirname(outputFileName) +'}')
+    os.rename(outputFileBaseName, outputFileName)
+  except:
+    quitWithError('Unable to move output file {' +outputFileBaseName +'} to directory {' +os.path.dirname(outputFileName) +'}: reason unknown')
+  #
+  # Return to original directory.
+  os.chdir(origDirName)
   #
   # Clean up intermediates.
   if( not litter ):
     if( showDiagnostics ):
       printDiagnostic('Cleaning up intermediate files')
-    deleteDir(showDiagnostics, 'object', objDirName)
+    deleteDir(showDiagnostics, 'build', bldDirName)
   #
   return( outputFileName )
   #
   # End fcn manageCompileLink().
-
-
-#--- Run if called from command line.
-#
-#   If called from command line, {__name__} is "__main__".  Otherwise,
-# {__name__} is base name of the script file, without ".py".
-#
-if __name__ == '__main__':
-  #
-  quitWithError('Do not run from command line: call fcn manageCompileLink() directly')
 
 
 #--- Copyright notice.
