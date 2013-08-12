@@ -206,6 +206,7 @@ To define the output of the FMU, we use:
 	6;                       !- Initial Value
 
 Please see the Input/Output reference of the EnergyPlus manual 
+
 (http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf) 
 for more details.
 
