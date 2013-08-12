@@ -205,8 +205,12 @@ static int copy_res (fmiString str,  fmiString des)
 #ifdef _MSC_VER
 	//"\"" are quotes needed for path with spaces in the names
 	sprintf(tmp_str, "xcopy %s%s %s%s%s /Y /I", "\"", str, "\"", des, "\"");
+#elif __linux__
+	sprintf(tmp_str, "cp -f %s%s %s%s%s", "\"", str,  "\"", des, "\"");
+#elif __APPLE__
+	sprintf(tmp_str, "cp -f %s%s %s%s%s", "\"", str,  "\"", des, "\"");
 #else
-	sprintf(tmp_str, "cp %s%s %s%s%s --force", "\"", str,  "\"", des, "\"");
+	printfDebug ("Cannot execute %s! The FMU export is only supported on Windows, Linux and Mac OS!\n", tmp_str);
 #endif
 	printfDebug ("Command executes to copy content of resources folder: %s\n", tmp_str);
 	retVal = system (tmp_str);
@@ -835,7 +839,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 				char *str;
 				mkdir ("WeatherData", S_IRWXU | S_IRWXG | S_IRWXO);
 				str = (char *)calloc(sizeof(char), strlen (FRUNWEAFILE) + strlen ("WeatherData/") + 50);
-				sprintf(str, "cp %s %s --force", FRUNWEAFILE, "WeatherData/");
+				sprintf(str, "cp -f %s %s", FRUNWEAFILE, "WeatherData/");
 				retVal = system (str);
 				free(str);
 			}
