@@ -3,6 +3,17 @@ Glossary
 
 .. glossary::
 
+   Dymola
+      Dymola, Dynamic Modeling Laboratory, is a complete tool for modeling and simulation of integrated and complex systems.
+      
+
+
+   Functional Mock-up Interface
+      The Functional Mock-up Interface (FMI) is the result of the Information Technology for European Advancement (ITEA2) project  :term:`MODELISAR`. 
+      The FMI standard is a tool independent standard to support both model exchange and co-simulation of dynamic models using a combination of XML-files, 
+      C-header files, and C-code in source or binary form. 
+      
+
    Functional Mock-up Unit
       A simulation model or program which implements the FMI standard is called FMU (Functional Mock-up Unit). 
       An FMU comes along with a small set of easy to use C-functions (FMI functions) whose input and return arguments are defined by the FMI standard}. 
@@ -12,9 +23,21 @@ Glossary
       shared libraries, which contain the implementation of the FMI functions and/or source code of the FMI functions,
       an XML-file, also called the model description file, which contains the variable definitions as well as meta-information of the model,
       additional files such as tables, images or documentation that might be relevant for the model.
+      
+   Modelica
+      Modelica is a non-proprietary, object-oriented, equation based language to conveniently model complex physical systems containing, 
+      e.g., mechanical, electrical, electronic, hydraulic, thermal, control, electric power or process-oriented subcomponents.
+
+   MODELISAR
+      MODELISAR is an ITEA 2 (Information Technology for European Advancement) European project aiming to improve the design of systems and of embedded software in vehicles.
+      
+   Ptolemy II
+      Ptolemy II is an open-source software framework supporting experimentation with actor-oriented design. Actors are 
+      software components that execute concurrently and communicate through messages sent via interconnected ports.
 
 
-   Functional Mock-up Interface
-      The Functional Mock-up Interface (FMI) is the result of the Information Technology for European Advancement (ITEA2) project MODELISAR. 
-      The FMI standard is a tool independent standard to support both model exchange and co-simulation of dynamic models using a combination of XML-files, 
-      C-header files, and C-code in source or binary form. 
+   PyFMI
+      PyFMI is a package for loading and interacting with Functional Mock-Up Units (FMUs), which are compiled dynamic models compliant with the Functional Mock-Up Interface (FMI).
+      
+   Python
+      Python is a dynamic programming language that is used in a wide variety of application domains.

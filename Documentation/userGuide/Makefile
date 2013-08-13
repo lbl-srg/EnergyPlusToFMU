@@ -90,6 +90,11 @@ doctest:
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
+	      
+release-html:
+	#-mkdir release
+	#-mkdir release/userGuide
+	-cp -R $(BUILDDIR)/html/*.* release/userGuide
 
 dist:   clean latex html linkcheck copytowww
 
