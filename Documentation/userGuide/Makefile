@@ -94,9 +94,12 @@ doctest:
 release-html:
 	#-mkdir release
 	#-mkdir release/userGuide
+	@echo "Copy html files to the release folder."
 	-cp -R $(BUILDDIR)/html/*.* release/userGuide
 
 dist:   clean latex html linkcheck copytowww
 
 copytowww:
-	scp -r release/* simulationresearch.lbl.gov:/usr/local/www/gundog/fmu/EnergyPlus/export/Documentation/userGuide/
+	@echo "Sent files to the server excluding .svn."
+	rsync -av --exclude '*.svn' release/* thierry@simulationresearch.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
+	#scp -r release/* thierry@simulationresearch.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
