@@ -1,0 +1,198 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>User Guide &mdash; FMU Export of EnergyPlus User Guide</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="FMU Export of EnergyPlus User Guide" href="#" />
+    <link rel="next" title="1. Release Notes" href="releaseNotes.html" /> 
+  </head>
+  <body>
+<div class="headerStyle">
+<img src="_static/lbl-logo.png" alt="LBL logo" />
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="releaseNotes.html" title="1. Release Notes"
+             accesskey="N">next</a> |</li>
+    <li><a href="http://simulationresearch.lbl.gov/fmu">Home</a> |
+    <a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/Documentation/userGuide">User Guide</a></li>
+    </br>
+<!--    
+        <li><a href="#">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">User Guide</a><ul>
+<li><a class="reference internal" href="#contents">Contents</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="releaseNotes.html"
+                        title="next chapter">1. Release Notes</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="user-guide">
+<h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<p>This user guide provides instructions for how to use the free open-source
+software that exports EnergyPlus as a Functional Mockup Unit (FMU) for
+co-simulation.</p>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="releaseNotes.html">1. Release Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releaseNotes.html#version-0-1-0">1.1. Version 0.1.0</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">3. Download</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="download.html#release-0-1-0-xxx-2013">3.1. Release 0.1.0 (xxx, 2013)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="download.html#id2">3.1.1. Download</a></li>
+<li class="toctree-l3"><a class="reference internal" href="download.html#release-notes">3.1.2. Release notes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">4. Installation and configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#software-requirements">4.1. Software requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-directory">4.2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#configuration">4.3. Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#checking-compile-c-bat">4.4. Checking compile-c.bat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#checking-link-c-exe-bat">4.5. Checking link-c-exe.bat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#modifying-the-batch-files">4.6. Modifying the batch files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#finding-a-compiler-linker-on-unix">4.7. Finding a compiler/linker on Unix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-permissions">4.8. Troubleshooting permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-the-memmove-function">4.9. Troubleshooting the memmove function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-missing-libraries">4.10. Troubleshooting missing libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#uninstallation">4.11. Uninstallation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="build.html">5. Creating an FMU</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="build.html#basic-command-line-use">5.1. Basic command-line use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build.html#output">5.2. Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build.html#advanced-use">5.3. Advanced use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build.html#setting-environment-variables">5.4. Setting environment variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build.html#troubleshooting">5.5. Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">6. Usage of EnergyPlus as an FMU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mathematics.html">7. Mathematical Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bestPractice.html">8. Best Practice</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-schedule-object">8.1. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">Schedule</span></tt> object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-ems-actuator-object">8.2. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">EMS</span> <span class="pre">Actuator</span></tt> object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-ems-variable-object">8.3. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">EMS</span> <span class="pre">Variable</span></tt> object</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">9. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="help.html">10. Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="help.html#known-issues">11. Known Issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="help.html#release-0-1-0">11.1. Release 0.1.0</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">12. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">13. Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="disclaimer.html">14. Disclaimers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="legal.html">15. Copyright and License</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="releaseNotes.html" title="1. Release Notes"
+             >next</a> |</li>
+    <li><a href="http://simulationresearch.lbl.gov/fmu">Home</a> |
+    <a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/Documentation/userGuide">User Guide</a></li>
+    </br>
+<!--    
+        <li><a href="#">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-2013, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

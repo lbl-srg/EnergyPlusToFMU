@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5. Creating an FMU &mdash; FMU Export of EnergyPlus User Guide</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="FMU Export of EnergyPlus User Guide" href="index.html" />
+    <link rel="next" title="6. Usage of EnergyPlus as an FMU" href="usage.html" />
+    <link rel="prev" title="4. Installation and configuration" href="installation.html" /> 
+  </head>
+  <body>
+<div class="headerStyle">
+<img src="_static/lbl-logo.png" alt="LBL logo" />
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="usage.html" title="6. Usage of EnergyPlus as an FMU"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="4. Installation and configuration"
+             accesskey="P">previous</a> |</li>
+    <li><a href="http://simulationresearch.lbl.gov/fmu">Home</a> |
+    <a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/Documentation/userGuide">User Guide</a></li>
+    </br>
+<!--    
+        <li><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">5. Creating an FMU</a><ul>
+<li><a class="reference internal" href="#basic-command-line-use">5.1. Basic command-line use</a></li>
+<li><a class="reference internal" href="#output">5.2. Output</a></li>
+<li><a class="reference internal" href="#advanced-use">5.3. Advanced use</a></li>
+<li><a class="reference internal" href="#setting-environment-variables">5.4. Setting environment variables</a></li>
+<li><a class="reference internal" href="#troubleshooting">5.5. Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">4. Installation and configuration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="next chapter">6. Usage of EnergyPlus as an FMU</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/build.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="creating-an-fmu">
+<span id="build"></span><h1>5. Creating an FMU<a class="headerlink" href="#creating-an-fmu" title="Permalink to this headline">¶</a></h1>
+<p>This chapter describes how to build a Functional Mockup Unit, starting from an EnergyPlus IDF file.
+It assumes you have already followed the <a class="reference internal" href="installation.html"><em>Installation and configuration</em></a> instructions, and that you have already created an IDF file following the <a class="reference internal" href="bestPractice.html"><em>Best Practice</em></a> guidelines.</p>
+<div class="section" id="basic-command-line-use">
+<h2>5.1. Basic command-line use<a class="headerlink" href="#basic-command-line-use" title="Permalink to this headline">¶</a></h2>
+<p>To build an FMU, open a command window (e.g., a DOS prompt on Windows, a command shell on Linux, or a Terminal window on MacOS).
+The instructions that follow represent the command window like this:</p>
+<div class="highlight-none"><div class="highlight"><pre># This is a comment.
+&gt; (This is the command prompt, where you enter a command)
+(If shown, this is sample output in response to the command)
+</pre></div>
+</div>
+<p>Note that your system may use a different symbol than &#8220;<tt class="docutils literal"><span class="pre">&gt;</span></tt>&#8221; as the command prompt (for example, &#8220;<tt class="docutils literal"><span class="pre">$</span></tt>&#8221;).
+Furthermore, the prompt may include information such as the name of your system, or the name of the current subdirectory.</p>
+<p>The basic invocation of the EnergyPlusToFMU tool is:</p>
+<div class="highlight-none"><div class="highlight"><pre>&gt; python  &lt;path-to-scripts-subdir&gt;EnergyPlusToFMU.py  &lt;path-to-idf-file&gt;
+</pre></div>
+</div>
+<p>For example:</p>
+<div class="highlight-none"><div class="highlight"><pre># Windows:
+&gt; python  scriptDir\EnergyPlusToFMU.py  test.idf
+
+# Linux, MacOS:
+&gt; python  scriptDir/EnergyPlusToFMU.py  test.idf
+</pre></div>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">scriptDir</span></tt> is the path to the scripts directory of the EnergyPlusToFMU tools.
+Typically this is the <tt class="docutils literal"><span class="pre">Scripts/EnergyPlusToFMU</span></tt> subdirectory of the installation directory.
+See <a class="reference internal" href="installation.html"><em>Installation and configuration</em></a> for the expected structure.</p>
+<p>The <tt class="docutils literal"><span class="pre">&lt;path-to-idf-file&gt;</span></tt> also can include an absolute or relative path.
+For example:</p>
+<div class="highlight-none"><div class="highlight"><pre># Windows:
+&gt; python  scriptDir\EnergyPlusToFMU.py  ..\all-idfs\test.idf
+
+# Linux, MacOS:
+&gt; python  scriptDir/EnergyPlusToFMU.py  ../all-idfs/test.idf
+</pre></div>
+</div>
+<p>For readability, the rest of these instructions omit the full paths to the script and input files.</p>
+</div>
+<div class="section" id="output">
+<h2>5.2. Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p>The main output from running <tt class="docutils literal"><span class="pre">EnergyPlusToFMU.py</span></tt> consists of an FMU, named after the IDF file (e.g., <tt class="docutils literal"><span class="pre">test.fmu</span></tt> in the examples given above).
+The FMU should appear in your current working directory, that is, in the directory from which you entered the command.</p>
+<p>The FMU should be complete and self-contained.
+Any secondary output from running the EnergyPlusToFMU tools can be deleted safely.</p>
+<p>Secondary output includes:</p>
+<ul class="simple">
+<li>A utility executable, called <tt class="docutils literal"><span class="pre">idf-to-fmu-export-prep.exe</span></tt> on Windows, and
+<tt class="docutils literal"><span class="pre">idf-to-fmu-export-prep.app</span></tt> on Linux and MacOS (the different names allow
+dual-boot users to work in the same directory).
+This executable will appear in your current working directory.
+If you delete this application, it will be rebuilt on the next run of the tool.</li>
+<li>Compiled Python files, with the extension &#8220;<tt class="docutils literal"><span class="pre">.pyc</span></tt>&#8221;.
+They should appear in the script directory.
+These files merely speed up Python the next time you run the EnergyPlusToFMU
+tools, and may be deleted.</li>
+</ul>
+<p>If the EnergyPlusToFMU tool fails, you may also see intermediate files, including:</p>
+<ul class="simple">
+<li>Configuration files for the FMU (<tt class="docutils literal"><span class="pre">variables.cfg</span></tt> and <tt class="docutils literal"><span class="pre">modelDescription.xml</span></tt>).</li>
+<li>A utility executable <tt class="docutils literal"><span class="pre">util-get-address-size.exe</span></tt>.
+This program gets rebuilt every time you run the EnergyPlusToFMU tools
+(in case you have modified the compiler/linker batch files as described
+in <a class="reference internal" href="installation.html"><em>Installation and configuration</em></a>).</li>
+<li>Build directories (named like <tt class="docutils literal"><span class="pre">bld-...</span></tt>).</li>
+<li>A shared library (named like <tt class="docutils literal"><span class="pre">test.dll</span></tt> or <tt class="docutils literal"><span class="pre">test.so</span></tt> or <tt class="docutils literal"><span class="pre">test.dylib</span></tt>,
+depending on the platform).</li>
+<li>An log file, <tt class="docutils literal"><span class="pre">output.log</span></tt>, containing error messages from <tt class="docutils literal"><span class="pre">idf-to-fmu-export-prep.exe</span></tt>.</li>
+</ul>
+<p>Note that the FMU is simply a zip file.
+This means you can open and inspect its contents (it may help to change the &#8220;<tt class="docutils literal"><span class="pre">.fmu</span></tt>&#8221; extension to &#8220;<tt class="docutils literal"><span class="pre">.zip</span></tt>&#8221; in order to do so).</p>
+</div>
+<div class="section" id="advanced-use">
+<h2>5.3. Advanced use<a class="headerlink" href="#advanced-use" title="Permalink to this headline">¶</a></h2>
+<p>The EnergyPlusToFMU tool supports a number of options:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">option &lt;argument&gt;</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-i &lt;path-to-idd-file&gt;</td>
+<td>Use the named Input Data Dictionary.
+If you do not specify this option, the tool reads
+environment variable <tt class="docutils literal"><span class="pre">ENERGYPLUS_DIR</span></tt>, and uses
+data dictionary <tt class="docutils literal"><span class="pre">ENERGYPLUS_DIR/Energy+.idd</span></tt>
+(for most EnergyPlus users, this environment
+variable, and the IDD file, typically already
+exist).</td>
+</tr>
+<tr class="row-odd"><td>-w &lt;path-to-weather-file&gt;</td>
+<td>Include the named weather file in the FMU.</td>
+</tr>
+<tr class="row-even"><td>-d</td>
+<td>Print diagnostics.
+Produces a status line for every major action
+taken by the EnergyPlusToFMU tools.
+This option may be helpful for troubleshooting.</td>
+</tr>
+<tr class="row-odd"><td>-L</td>
+<td>Litter, that is, do not clean up intermediate
+files.
+Typically the EnergyPlusToFMU tools will delete
+most of the intermediate files that ultimately get
+packaged into the FMU.
+This option allows you to easily inspect
+intermediate output.</td>
+</tr>
+</tbody>
+</table>
+<p>All these options must be supplied before the name of the IDF file.
+However, they may be provided in any order.
+If you repeat an option like <tt class="docutils literal"><span class="pre">-i</span></tt> or <tt class="docutils literal"><span class="pre">-w</span></tt>, the last one specified will be used.</p>
+<p>For example:</p>
+<div class="highlight-none"><div class="highlight"><pre># Windows:
+&gt; python  EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  test.idf
+
+&gt; python  EnergyPlusToFMU.py  -d  test.idf
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-environment-variables">
+<h2>5.4. Setting environment variables<a class="headerlink" href="#setting-environment-variables" title="Permalink to this headline">¶</a></h2>
+<p>To set the <tt class="docutils literal"><span class="pre">ENERGYPLUS_DIR</span></tt> environment variable:</p>
+<div class="highlight-none"><div class="highlight"><pre># Windows:
+&gt; set  ENERGYPLUS_DIR=&#39;/Applications/EnergyPlus-8-0-0&#39;
+
+# Bash shell on Linux, MacOS:
+&gt; export  ENERGYPLUS_DIR=&#39;/Applications/EnergyPlus-8-0-0&#39;
+
+# C shell on Linux, MacOS:
+&gt; setenv  ENERGYPLUS_DIR  &#39;/Applications/EnergyPlus-8-0-0&#39;
+</pre></div>
+</div>
+</div>
+<div class="section" id="troubleshooting">
+<h2>5.5. Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+<p>The main indicator that <tt class="docutils literal"><span class="pre">EnergyPlusToFMU.py</span></tt> has run correctly is the appearance of an FMU in your current working directory.
+If you do not get an FMU, there should be some error output, indicating the nature of the problem.</p>
+<p>With luck, the error message will be explicit enough to guide you to the source of the problem.
+If not, consider the following hints.</p>
+<p>If you have successfully made an FMU in the past, the problem is most likely with your IDF file.
+Try running the export-preparation appication directly on your IDF file:</p>
+<div class="highlight-none"><div class="highlight"><pre># Windows:
+&gt; idf-to-fmu-export-prep.exe  Energy+.idd  test.idf
+
+# Linux, MacOS:
+#   Note the &quot;./&quot; before the name of the application.
+&gt; ./idf-to-fmu-export-prep.app  Energy+.idd  test.idf
+</pre></div>
+</div>
+<p>Note that you must explicitly name the IDD file, as this executable does not attempt to read the <tt class="docutils literal"><span class="pre">ENERGYPLUS_DIR</span></tt> environment variable.</p>
+<p>If it encounters no problems, the export-preparation application should produce two files, <tt class="docutils literal"><span class="pre">modelDescription.xml</span></tt> and <tt class="docutils literal"><span class="pre">variables.cfg</span></tt>.
+Otherwise, it should produce an error message, which should also be echoed to an output file <tt class="docutils literal"><span class="pre">output.log</span></tt>.</p>
+<p>Note that the export-preparation application only looks at the IDF in a very shallow way.
+Your IDF file may have modeling errors that will cause EnergyPlus to fail, but that the export-preparation application will not log.</p>
+<p>If you do not find the export-preparation application in your working directory, if means the EnergyPlusToFMU tool did not even advance as far as creating the application.
+Therefore you should check the configuration, according to the instructions in <a class="reference internal" href="installation.html"><em>Installation and configuration</em></a>.</p>
+<p>If the export-preparation application runs, then try turning on option <tt class="docutils literal"><span class="pre">-d</span></tt> when running <tt class="docutils literal"><span class="pre">EnergyPlusToFMU.py</span></tt>.
+By announcing each major step before it is taken, this option can help localize where, exactly, the problem occurs.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="usage.html" title="6. Usage of EnergyPlus as an FMU"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="4. Installation and configuration"
+             >previous</a> |</li>
+    <li><a href="http://simulationresearch.lbl.gov/fmu">Home</a> |
+    <a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/Documentation/userGuide">User Guide</a></li>
+    </br>
+<!--    
+        <li><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-2013, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

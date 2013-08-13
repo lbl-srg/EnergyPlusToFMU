@@ -1,0 +1,223 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6. Usage of EnergyPlus as an FMU &mdash; FMU Export of EnergyPlus User Guide</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="FMU Export of EnergyPlus User Guide" href="index.html" />
+    <link rel="next" title="7. Mathematical Description" href="mathematics.html" />
+    <link rel="prev" title="5. Creating an FMU" href="build.html" /> 
+  </head>
+  <body>
+<div class="headerStyle">
+<img src="_static/lbl-logo.png" alt="LBL logo" />
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="mathematics.html" title="7. Mathematical Description"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="build.html" title="5. Creating an FMU"
+             accesskey="P">previous</a> |</li>
+    <li><a href="http://simulationresearch.lbl.gov/fmu">Home</a> |
+    <a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/Documentation/userGuide">User Guide</a></li>
+    </br>
+<!--    
+        <li><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="build.html"
+                        title="previous chapter">5. Creating an FMU</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mathematics.html"
+                        title="next chapter">7. Mathematical Description</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/usage.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="usage-of-energyplus-as-an-fmu">
+<span id="usage"></span><h1>6. Usage of EnergyPlus as an FMU<a class="headerlink" href="#usage-of-energyplus-as-an-fmu" title="Permalink to this headline">¶</a></h1>
+<p>Following items need to be observed when importing an FMU that contains EnergyPlus:</p>
+<ol class="arabic">
+<li><p class="first">A tool that imports the FMU must start and stop the simulation at midnight.
+<a class="footnote-reference" href="#f1" id="id1">[1]</a></p>
+</li>
+<li><p class="first">The <tt class="docutils literal"><span class="pre">Number</span> <span class="pre">of</span> <span class="pre">Timesteps</span> <span class="pre">per</span> <span class="pre">Hour</span></tt> in EnergyPlus must be equal
+to the sampling time of the FMU. For example, consider the following
+EnergyPlus IDF snippet:</p>
+<div class="highlight-text"><div class="highlight"><pre>Timestep,
+6;        !- Number of Timesteps per Hour
+</pre></div>
+</div>
+<p>Then, a tool that imports the FMU must synchronize it every 10 minutes.
+Otherwise, the simulation will stop with an error. <a class="footnote-reference" href="#f2" id="id2">[2]</a></p>
+</li>
+<li><p class="first">EnergyPlus contains the object <tt class="docutils literal"><span class="pre">RunPeriod</span></tt>.
+The start and end day of this object is ignored. <a class="footnote-reference" href="#f3" id="id3">[3]</a> However,
+the entry <tt class="docutils literal"><span class="pre">Day</span> <span class="pre">of</span> <span class="pre">Week</span> <span class="pre">for</span> <span class="pre">Start</span> <span class="pre">Day</span></tt> will be used. For example,
+consider the following IDF snippet:</p>
+<div class="highlight-text"><div class="highlight"><pre>RunPeriod,         ! Winter Simulation
+Winter Simulation, !- Name
+1,                 !- Begin Month
+2,                 !- Begin Day of Month
+3,                 !- End Month
+31,                !- End Day of Month
+Monday,            !- Day of Week for Start Day
+Yes,               !- Use Weather File Holidays and Special Days
+Yes,               !- Use Weather File Daylight Saving Period
+No,                !- Apply Weekend Holiday Rule
+Yes,               !- Use Weather File Rain Indicators
+Yes;               !- Use Weather File Snow Indicators
+</pre></div>
+</div>
+<p>This IDF snippet declares January 2 to be a Monday.
+Hence, if an FMU is simulated with
+start time equal to 3 days, then the first day of the simulation
+will be Tuesday.</p>
+</li>
+<li><p class="first">During the warm-up period and the autosizing of EnergyPlus,
+no communication occurs between the FMU and the master program.
+Thus, inputs from the co-simulation master program to EnergyPlus
+remain constant during these times.</p>
+</li>
+<li><p class="first">A tool that imports the FMU needs to make sure that the version of
+EnergyPlus which has been used to export the FMU
+is (a) installed and (b) added to the <tt class="docutils literal"><span class="pre">system</span> <span class="pre">path</span> <span class="pre">environment</span> <span class="pre">variable</span></tt>. Otherwise,
+the simulation will fail with an error. If EnergyPlus has been properly added to the
+<tt class="docutils literal"><span class="pre">system</span> <span class="pre">path</span> <span class="pre">environment</span> <span class="pre">variable</span></tt>, then it can be started from any DOS prompt on
+Windows, command shell console on Linux, or Terminal window on Mac OS by
+typing <tt class="docutils literal"><span class="pre">RunEPlus.bat</span></tt> on Windows and <tt class="docutils literal"><span class="pre">runenergyplus</span></tt> on Linux or Mac OS. <a class="footnote-reference" href="#f4" id="id4">[4]</a></p>
+</li>
+<li><p class="first">A tool that imports the FMU can call the <tt class="docutils literal"><span class="pre">fmiDoStep()</span></tt> method only after all inputs
+of the FMU are set and all outputs are got.</p>
+</li>
+<li><p class="first">The simulation results are saved in a result folder which is created in the current
+working directory. The name of the result folder is <tt class="docutils literal"><span class="pre">Output_FMUExport_xxx</span></tt>, where
+<tt class="docutils literal"><span class="pre">xxx</span></tt> is the FMU model <tt class="docutils literal"><span class="pre">instanceName</span></tt> as defined in the FMI specifications.</p>
+</li>
+<li><p class="first">The weather file which comes along with an FMU is used to determine
+if the year is a <tt class="docutils literal"><span class="pre">leap</span> <span class="pre">year</span></tt>. It no weather file is included in the FMU, then the
+assumption is that the year is not a <tt class="docutils literal"><span class="pre">leap</span> <span class="pre">year</span></tt>.</p>
+</li>
+</ol>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>This is because EnergyPlus requires simulation to start and end at
+midnight.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>This is because the External Interface in EnergyPlus synchronizes
+the data at the zone time step which is constant throughout
+the simulation. Synchronizing the
+data at the system time step would not avoid this problem because
+in EnergyPlus, the system time step cannot be smaller
+than one minute.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td>This is because a tool that imports an FMU has its own definition
+of start time and stop time.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[4]</a></td><td>This is because the FMU implements the FMI for co-simulation
+in the <a class="reference external" href="https://svn.modelica.org/fmi/branches/public/specifications/FMI_for_CoSimulation_v1.0.pdf">Tool Coupling</a> scenario.</td></tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="mathematics.html" title="7. Mathematical Description"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="build.html" title="5. Creating an FMU"
+             >previous</a> |</li>
+    <li><a href="http://simulationresearch.lbl.gov/fmu">Home</a> |
+    <a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/Documentation/userGuide">User Guide</a></li>
+    </br>
+<!--    
+        <li><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-2013, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

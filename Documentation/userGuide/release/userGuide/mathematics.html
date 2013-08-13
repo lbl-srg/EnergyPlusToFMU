@@ -1,0 +1,162 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>7. Mathematical Description &mdash; FMU Export of EnergyPlus User Guide</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="FMU Export of EnergyPlus User Guide" href="index.html" />
+    <link rel="next" title="8. Best Practice" href="bestPractice.html" />
+    <link rel="prev" title="6. Usage of EnergyPlus as an FMU" href="usage.html" /> 
+  </head>
+  <body>
+<div class="headerStyle">
+<img src="_static/lbl-logo.png" alt="LBL logo" />
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="bestPractice.html" title="8. Best Practice"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="6. Usage of EnergyPlus as an FMU"
+             accesskey="P">previous</a> |</li>
+    <li><a href="http://simulationresearch.lbl.gov/fmu">Home</a> |
+    <a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/Documentation/userGuide">User Guide</a></li>
+    </br>
+<!--    
+        <li><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="previous chapter">6. Usage of EnergyPlus as an FMU</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="bestPractice.html"
+                        title="next chapter">8. Best Practice</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/mathematics.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="mathematical-description">
+<span id="mathematics"></span><h1>7. Mathematical Description<a class="headerlink" href="#mathematical-description" title="Permalink to this headline">¶</a></h1>
+<p>This section describes the algorithm for exchanging data between EnergyPlus, packaged as an FMU, and an external program.</p>
+<p>Suppose we have a system with two simulation programs.  Let simulation program 1 be EnergyPlus, the slave simulation program, which is packaged as an FMU for co-simulation; and let simulation program 2 be the master simulation program which supports the import of FMU for co-simulation. Suppose each program solves an initial-value ordinary differential equation that is coupled to the differential equations of the other program.</p>
+<p>Let   denote the number of time steps and let   denote the time steps. We will use the subscripts 1 and 2 to denote the state variable and the function that computes the next state variable of the simulator 1 and 2, respectively.
+Then program 1 computes, for  the sequence</p>
+<blockquote>
+<div><span class="math">\(x_{1}(k+1) = f_{1}(x_{1}(k), x_{2}(k))\)</span></div></blockquote>
+<p>and, similarly, program 2 computes the sequence</p>
+<blockquote>
+<div><span class="math">\(x_{2}(k+1) = f_{2}(x_{2}(k), x_{1}(k))\)</span></div></blockquote>
+<p>with initial conditions <span class="math">\(x_{1}(0) = x_{1,0}\)</span> and <span class="math">\(x_{2}(0) = x_{2,0}\)</span>.</p>
+<p>To advance from time <span class="math">\(k\)</span> to <span class="math">\(k+1\)</span>, each program uses its own integration algorithm. At the end of the time step, program 1 sends its new state <span class="math">\(x_{1}(k+1)\)</span> to program 2, and receives the state <span class="math">\(x_{2}(k+1)\)</span> from program 2.
+The same procedure is done with the program 2. Program 2, which is the master simulation program, imports the FMU, and manages the data-exchange between the two programs.
+In comparison to numerical methods of differential equations, this scheme resembles an explicit Euler integration, which is an integration algorithm that solves an ordinary differential equation with specified initial values,</p>
+<blockquote>
+<div><p><span class="math">\(dx/dt = h(x)\)</span>,</p>
+<p><span class="math">\(x(0)  = x_{0}\)</span>,</p>
+</div></blockquote>
+<p>on the time interval <span class="math">\(t \in [0, 1]\)</span>, the following sequence:</p>
+<p>Step 0: Initialize counter k=0 and number of steps.</p>
+<blockquote>
+<div>Set initial state <span class="math">\(x(k) = x_{0}\)</span> and set time step  <span class="math">\(\Delta t = 1/N\)</span>.</div></blockquote>
+<p>Step 1: Compute new state  <span class="math">\(x(k+1) = x(k) + h(x(k)) \Delta t\)</span>.</p>
+<p>Replace k by k+1.</p>
+<p>Step 2: If k=N stop, else go to Step 1.</p>
+<p>However, this scheme does not require each simulation tool to use explicit Euler for its internal time-stepping; the analogy to explicit Euler applies only to the data exchange between programs.  In the situation where the differential equation is solved using co-simulation, the above algorithm becomes</p>
+<p>Step 0: Initialize counter <span class="math">\(k=0\)</span> and number of steps.</p>
+<blockquote>
+<div>Set initial state <span class="math">\(x_{1}(k) = x_{1,0}\)</span> and <span class="math">\(x_{2}(k) = x_{2,0}\)</span>. Set the time step  <span class="math">\(\Delta t = 1/N\)</span>.</div></blockquote>
+<p>Step 1: Compute new states</p>
+<blockquote>
+<div><p><span class="math">\(x_{1}(k+1) = x_{1}(k) + f_{1}(x_{1}(k), x_{2}(k)) \Delta t\)</span>, and</p>
+<p><span class="math">\(x_{2}(k+1) = x_{2}(k) + f_{2}(x_{2}(k), x_{1}(k)) \Delta t\)</span>.</p>
+</div></blockquote>
+<p>Replace <span class="math">\(k\)</span> by <span class="math">\(k+1\)</span>.</p>
+<p>Step 2: If <span class="math">\(k=N\)</span> stop, else go to Step 1.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="bestPractice.html" title="8. Best Practice"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="6. Usage of EnergyPlus as an FMU"
+             >previous</a> |</li>
+    <li><a href="http://simulationresearch.lbl.gov/fmu">Home</a> |
+    <a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/Documentation/userGuide">User Guide</a></li>
+    </br>
+<!--    
+        <li><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012-2013, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
