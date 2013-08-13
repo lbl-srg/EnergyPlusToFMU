@@ -99,4 +99,4 @@ release-html:
 dist:   clean latex html linkcheck copytowww
 
 copytowww:
-	scp -r build/html/* simulationresearch.lbl.gov:/usr/local/www/gundog/fmu/EnergyPlus/export/Documentation/release/
+	scp -r release/* simulationresearch.lbl.gov:/usr/local/www/gundog/fmu/EnergyPlus/export/Documentation/userGuide/
