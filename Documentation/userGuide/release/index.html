@@ -8,10 +8,10 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>2. Introduction &mdash; FMU Export User Guide</title>
+    <title>Introduction &mdash; FMU Export User Guide</title>
     
-    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="userGuide/_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="userGuide/_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -22,9 +22,9 @@
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="userGuide/_static/jquery.js"></script>
+    <script type="text/javascript" src="userGuide/_static/underscore.js"></script>
+    <script type="text/javascript" src="userGuide/_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="FMU Export User User Guide" href="index.html" />
     <link rel="next" title="3. Download" href="download.html" />
@@ -32,7 +32,7 @@
   </head>
   <body>
 <div class="headerStyle">
-<img src="_static/lbl-logo.png" alt="LBL logo" />
+<img src="userGuide/_static/lbl-logo.png" alt="LBL logo" />
 </div>
 
     <div class="related">
@@ -51,13 +51,12 @@
     </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-<img src="img/eplus-fmu.png" alt="some_text"> </center>
+<img src="userGuide/_img/eplus-fmu.png" alt="some_text"> </center>
 <br/>
 <br>
- <strong><big>News</big></strong> <br>
- xxx, 2013: Released <a href="userGuide/download.html">version 0.1.0</a> <br>
- xxx, 2013: Google group created <a class="https" href="https://groups.google.com/group/energyplus-fmu">energyplus-fmu</a>  <br>
- <br>
+ <strong><big>News</big></strong> <br/>
+ 15. September, 2013: </br> Released <a href="userGuide/download.html">version 0.1.0</a>
+
 
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -68,14 +67,24 @@
           <div class="body">
 
   <div class="section" id="introduction">
-<span id="id1"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h1>
 <p>This user manual explains how to install, and use EnergyPlusToFMU.
 EnergyPlusToFMU is a software package written in <a class="reference internal" href="glossary.html#term-python"><em class="xref std std-term">Python</em></a> which allows users to export the whole building simulation program EnergyPlus as a <a class="reference internal" href="glossary.html#term-functional-mock-up-unit"><em class="xref std std-term">Functional Mock-up Unit</em></a> (FMU) for co-simulation with <a class="reference internal" href="glossary.html#term-functional-mock-up-interface"><em class="xref std std-term">Functional Mock-up Interface</em></a> (FMI)
 for co-simulation <a class="reference external" href="https://svn.modelica.org/fmi/branches/public/specifications/FMI_for_CoSimulation_v1.0.pdf">version 1.0</a> Application Programming Interface.
 This FMU can then be imported into a variety of simulation programs that support the import of the <a class="reference internal" href="glossary.html#term-functional-mock-up-interface"><em class="xref std std-term">Functional Mock-up Interface</em></a> for co-simulation. This capability allows for instance to model the envelope of a building in
 EnergyPlus, export the model as an FMU, import and link the model with an HVAC system model developed in a system simulation tool such as  <a class="reference internal" href="glossary.html#term-modelica"><em class="xref std std-term">Modelica</em></a>/<a class="reference internal" href="glossary.html#term-dymola"><em class="xref std std-term">Dymola</em></a>.</p>
 </div>
-<img src="img/pid-fmu.png" alt="some_text"> </center>
+<img src="userGuide/_img/pid-fmu.png" alt="some_text"> </center>
+
+<h2 id="License">License</h2>
+<span class="anchor" id="line-48"></span><p class="line862">EnergyPlusToFMU is available under the following <a href="userGuide/legal.html">open-source license</a>. <span class="anchor" id="line-49"></span><span class="anchor" id="line-50"></span><p class="line867">
+
+<h2 id="Contact">Contact</h2>
+<span class="anchor" id="line-51"></span><p class="line862">For help, send email at <a class="https" href="https://groups.google.com/group/energyplus-fmu">https://groups.google.com/group/energyplus-fmu</a>. This is an open group and everyone can join it. No invitation is needed. <span class="anchor" id="line-52"></span><span class="anchor" id="line-53"></span><p class="line867"><a href="http://eetd.lbl.gov/staff/thierry-nouidui">Thierry S. Nouidui</a>, <a href="http://eetd.lbl.gov/staff/david-lorenzetti">David M. Lorenzetti</a>, <a href="http://eetd.lbl.gov/staff/michael-wetter">Michael Wetter</a><br>
+ <span class="anchor" id="line-54"></span>Lawrence Berkeley National Laboratory<br>
+ <span class="anchor" id="line-55"></span><a class="https" href="https://simulationresearch.lbl.gov/">Simulation Research Group</a><br>
+ <span class="anchor" id="line-56"></span><a class="mailto" href="mailto:TSNouidui@lbl.gov">TSNouidui@lbl.gov</a> <span class="anchor" id="line-57"></span><span class="anchor" id="bottom"></span></div><div class="footerLinks">
+ 
           </div>
         </div>
       </div>
