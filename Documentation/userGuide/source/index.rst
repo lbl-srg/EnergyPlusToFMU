@@ -1,15 +1,6 @@
-.. FMU Export of EnergyPlus documentation master file
-
 ==========
 User Guide
 ==========
-
-This user guide provides instructions for how to use the free open-source 
-software that exports EnergyPlus as a Functional Mockup Unit (FMU) for 
-co-simulation.
-
-Contents
-========
 
 .. toctree::
    :numbered: 
@@ -30,9 +21,4 @@ Contents
    disclaimer
    legal
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
 
