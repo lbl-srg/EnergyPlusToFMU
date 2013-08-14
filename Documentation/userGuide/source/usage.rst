@@ -77,10 +77,7 @@ Following items need to be observed when importing an FMU that contains EnergyPl
          midnight.
 .. [#f2] This is because the External Interface in EnergyPlus synchronizes
          the data at the zone time step which is constant throughout
-         the simulation. Synchronizing the
-         data at the system time step would not avoid this problem because
-         in EnergyPlus, the system time step cannot be smaller 
-         than one minute.
+         the simulation. 
 .. [#f3] This is because a tool that imports an FMU has its own definition 
          of start time and stop time.
 
