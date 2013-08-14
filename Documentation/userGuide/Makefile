@@ -14,7 +14,7 @@ PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 
-.PHONY: help clean html dirhtml pickle json htmlhelp qthelp latex changes linkcheck doctest
+.PHONY: help clean html dirhtml pickle json htmlhelp qthelp latex changes linkcheck doctest release-html copypdftodoc
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -28,9 +28,14 @@ help:
 	@echo "  changes   to make an overview of all changed/added/deprecated items"
 	@echo "  linkcheck to check all external links for integrity"
 	@echo "  doctest   to run all doctests embedded in the documentation (if enabled)"
+	@echo "  release-html  to copy HTML files to www folder for online publication"
+	@echo "  copypdftodoc  to copy PDF file to userGuide folder for distribution"
 
 clean:
 	-rm -rf $(BUILDDIR)/*
+
+cleanpdf:
+	-rm -rf *.pdf
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
@@ -94,12 +99,16 @@ doctest:
 release-html:
 	#-mkdir release
 	#-mkdir release/userGuide
-	@echo "Copy html files to the release folder."
-	-cp -R $(BUILDDIR)/html/*.* release/userGuide
+	@echo "Copy html files to the www folder."
+	-cp -R $(BUILDDIR)/html/*.* www/userGuide
 
-dist:   clean latex html linkcheck copytowww
+dist:   clean cleanpdf latex html linkcheck release-html copypdftodoc copydoctowww 
 
-copytowww:
+copypdftodoc:
+	@echo "Copy pdf files to the userGuide folder."
+	-cp -R $(BUILDDIR)/latex/*.pdf .
+
+copydoctowww:
 	@echo "Sent files to the server excluding .svn."
-	rsync -av --exclude '*.svn' release/* thierry@simulationresearch.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
+	rsync -av --exclude '*.svn' www/* thierry@simulationresearch.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
 	#scp -r release/* thierry@simulationresearch.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
