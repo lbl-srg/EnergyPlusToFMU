@@ -171,7 +171,7 @@ to be specified in the idf file:
 	Surface Outside Face Incident Solar Radiation Rate per Area,  !- Variable Name
 	TimeStep;                                                     !- Reporting Frequency
 
-	Output:Variable,``
+	Output:Variable,
 	WEST ZONE,                          !- Key Value
 	Zone Mean Air Temperature,          !- Variable Name
 	TimeStep;                           !- Reporting Frequency
