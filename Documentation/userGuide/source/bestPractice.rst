@@ -53,7 +53,7 @@ To activate the external interface, we use:
 
    .. code-block:: text
 
-      ExternalInterface,	   !- Object to activate external interface`
+      ExternalInterface,	   !- Object to activate external interface
       FunctionalMockupUnitExport;  !- Name of external interface
 
 To define the inputs of the FMU, we use:
