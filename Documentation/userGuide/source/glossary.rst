@@ -16,7 +16,7 @@ Glossary
 
    Functional Mock-up Unit
       A simulation model or program which implements the FMI standard is called FMU (Functional Mock-up Unit). 
-      An FMU comes along with a small set of easy to use C-functions (FMI functions) whose input and return arguments are defined by the FMI standard}. 
+      An FMU comes along with a small set of easy to use C-functions (FMI functions) whose input and return arguments are defined by the FMI standard. 
       These C-functions can be provided in source and/or binary form. The FMI functions are called by a simulator to create one or more instances of the FMU. 
       The functions are also used to run the FMUs, typically together with other models. An FMU may either require the simulator 
       to perform numerical integration (model-exchange) or be self-integrating (co-simulation). An FMU is distributed in the form of a zip-file that contains
