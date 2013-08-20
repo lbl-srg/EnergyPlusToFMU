@@ -389,10 +389,23 @@ static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu,
 			old_index = 6;
 		}
 
-		else 
+		else if (strstr(day_of_week, "USEWEATHERFILE") != NULL) 
 		{
 			change = 0;
+			// write the new day of week
+			fprintf(fp2, "%s", day_of_week);
+			printDebug("Day of week: UseWeatherFile has been specified and will be used.");
+			return 0;
 		}
+		else
+		{
+			// write the new day of week, no day of week was specified.
+			fprintf(fp2, "%s", " ");
+			printDebug("Day of week was left blank in input file.");
+			fclose (fp2);
+			return 0;
+		}
+
 		if (change !=0) {
 			// determine the new index
 			if (modDat > 0)
@@ -414,11 +427,6 @@ static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu,
 			fprintf(fp2, "%s", arr[new_index]);
 		}
 		
-		else
-		{
-			// write the new day of week
-			fprintf(fp2, "%s", day_of_week);
-		}
 		// close file
 		fclose (fp2);
 		return 0;
