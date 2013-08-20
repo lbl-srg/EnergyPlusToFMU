@@ -61,24 +61,24 @@ To define the inputs of the FMU, we use:
    .. code-block:: text
 
       ExternalInterface:FunctionalMockupUnitExport:From:Variable,
-      Environment,                           !- EnergyPlus Key Value
-      Site Outdoor Air Drybulb Temperature,  !- EnergyPlus Variable Name
+      Environment,                           !- Output:Variable Index Key Name
+      Site Outdoor Air Drybulb Temperature,  !- Output:Variable Name
       TDryBul;                               !- FMU Variable Name
       
       ExternalInterface: FunctionalMockupUnitExport:From:Variable,
-      ZONE ONE,                  !- EnergyPlus Key Value
-      Zone Mean Air Temperature, !- EnergyPlus Variable Name
+      ZONE ONE,                  !- Output:Variable Index Key Name
+      Zone Mean Air Temperature, !- Output:Variable Name
       TRooMea;                   !- FMU Variable Name
       
       
       ExternalInterface: FunctionalMockupUnitExport:From:Variable,
-      Environment,                         !- EnergyPlus Key Value
-      Site Outdoor Air Relative Humidity,  !- EnergyPlus Variable Name
+      Environment,                         !- Output:Variable Index Key Name
+      Site Outdoor Air Relative Humidity,  !- Output:Variable Name
       outRelHum;                           !- FMU Variable Name
       
       ExternalInterface:FunctionalMockupUnitExport:From:Variable,
-      ZONE ONE,                    !- EnergyPlus Key Value
-      Zone Air Relative Humidity,  !- EnergyPlus Variable Name
+      ZONE ONE,                    !- Output:Variable Index Key Name
+      Zone Air Relative Humidity,  !- Output:Variable Name
       rooRelHum;                   !- FMU Variable Name 
 
 
@@ -113,13 +113,13 @@ To define the outputs of the FMU, we use:
    .. code-block:: text
    
 	ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
-	FMU_OthEquLat_ZoneOne,   !- EnergyPlus Variable Name
+	FMU_OthEquLat_ZoneOne,   !- Name
 	Any Number,              !- Schedule Type Limits Names
 	QSensible,               !- FMU Variable Name
 	0;                       !- Initial Value
     
 	ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
-	FMU_OthEquSen_ZoneOne,   !- EnergyPlus Variable Name
+	FMU_OthEquSen_ZoneOne,   !- Name
 	Any Number,              !- Schedule Type Limits Names
 	QLatent,                 !- FMU Variable Name
 	0;                       !- Initial Value
@@ -136,7 +136,7 @@ the window to compute the shading actuation signal (yShade).
 Such an  EnergyPlus model could be exported as an FMU with 
 2 inputs and one outputs. The two inputs of the FMU will map to the 
 outside temperature (TRoo) and the solar irradiation (ISolExt), whereas 
-the output to the shading actuation signal.
+the output will map to the shading actuation signal.
 
 The code below shows how the objects will be in the idf.
 To activate the external interface, we use:
@@ -151,13 +151,13 @@ To define the inputs of the FMU, we use:
    .. code-block:: text
    
 	ExternalInterface:FunctionalMockupUnitExport:From:Variable,
-	WEST ZONE,                                   !- EnergyPlus Key Value
-	Zone Mean Air Temperature,                   !- EnergyPlus Variable Name
+	WEST ZONE,                                   !- Output:Variable Index Key Name
+	Zone Mean Air Temperature,                   !- Output:Variable Name
 	TRoo;                                        !- FMU Variable Name
 
 	ExternalInterface:FunctionalMockupUnitExport:From:Variable,
-	Zn001:Wall001:Win001,                                        !- EnergyPlus Key Value
-	Surface Outside Face Incident Solar Radiation Rate per Area, !- EnergyPlus Variable Name
+	Zn001:Wall001:Win001,                                        !- Output:Variable Index Key Name
+	Surface Outside Face Incident Solar Radiation Rate per Area, !- Output:Variable Name
 	ISolExt;                                                     !- FMU Variable Name
 
 Along with the FMU's inputs definition, the
@@ -181,7 +181,7 @@ To define the output of the FMU, we use:
    .. code-block:: text
     
 	ExternalInterface:FunctionalMockupUnitExport:To:Actuator,
-	Zn001_Wall001_Win001_Shading_Deploy_Status,  !- EnergyPlus Variable Name
+	Zn001_Wall001_Win001_Shading_Deploy_Status,  !- Name
 	Zn001:Wall001:Win001,                        !- Actuated Component Unique Name
 	Window Shading Control,                      !- Actuated Component Type
 	Control Status,                              !- Actuated Component Control Type
@@ -201,7 +201,7 @@ To define the output of the FMU, we use:
    .. code-block:: text
    
 	ExternalInterface:FunctionalMockupUnitExport:To:Variable,
-	Shade_Signal,            !- EnergyPlus Variable Name
+	Shade_Signal,            !- Name
 	yShade,                  !- FMU Variable Name
 	6;                       !- Initial Value
 
