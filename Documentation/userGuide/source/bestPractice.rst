@@ -28,17 +28,12 @@ Configuring an EnergyPlus model which uses the ``Schedule`` object
 ------------------------------------------------------------------
 
 Suppose, we would like to export an EnergyPlus model of a room with 
-an ideal HVAC system, that delivers sensible and latent heat gains as schedules
-to maintain a certain room temperature. The HVAC system in EnergyPlus requires 
-outdoor dry-bulb temperature, outdoor air relative humidity, 
-room dry-bulb temperature and room air relative humidity in the zone to compute 
-the sensible and latent heat gains. 
+an ideal HVAC system, that adds heating or cooling load to the zone as schedule
+to maintain a certain room temperature. 
 
 Such an  EnergyPlus model could be exported as an FMU with 
-four inputs and two outputs. The four inputs of the FMU will map to the 
-outdoor dry-bulb temperature, outdoor air relative humidity, 
-room dry-bulb temperature and room air relative humidity in the zone, whereas 
-the two outputs map to the sensible and latent heat gains.
+one input and one output. The input of the FMU will map to the heating/cooling load
+schedule, whereas the output of the FMU will map to the room dry-bulb temperature.
 
 The Energyplus model needs to contain the following three items:
 
@@ -56,87 +51,49 @@ To activate the external interface, we use:
       ExternalInterface,	   !- Object to activate external interface
       FunctionalMockupUnitExport;  !- Name of external interface
 
-To define the inputs of the FMU, we use:
+To define the input of the FMU, we use:
 
    .. code-block:: text
+   
+	ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
+	FMU_OthEqu_ZoneOne,      !- Name
+	Any Number,              !- Schedule Type Limits Names
+	QLoad,                   !- FMU Variable Name
+	0;                       !- Initial Value
 
-      ExternalInterface:FunctionalMockupUnitExport:From:Variable,
-      Environment,                           !- Output:Variable Index Key Name
-      Site Outdoor Air Drybulb Temperature,  !- Output:Variable Name
-      TDryBul;                               !- FMU Variable Name
+To define the output of the FMU, we use:
+
+   .. code-block:: text
       
       ExternalInterface: FunctionalMockupUnitExport:From:Variable,
       ZONE ONE,                  !- Output:Variable Index Key Name
       Zone Mean Air Temperature, !- Output:Variable Name
       TRooMea;                   !- FMU Variable Name
-      
-      
-      ExternalInterface: FunctionalMockupUnitExport:From:Variable,
-      Environment,                         !- Output:Variable Index Key Name
-      Site Outdoor Air Relative Humidity,  !- Output:Variable Name
-      outRelHum;                           !- FMU Variable Name
-      
-      ExternalInterface:FunctionalMockupUnitExport:From:Variable,
-      ZONE ONE,                    !- Output:Variable Index Key Name
-      Zone Air Relative Humidity,  !- Output:Variable Name
-      rooRelHum;                   !- FMU Variable Name 
 
 
-Along with the FMU's inputs definition, the
-EnergyPlus output variables which correspond to the FMU inputs need 
+Along with the FMU's output definition, the
+EnergyPlus output variable which corresponds to the FMU output needs 
 to be specified in the idf file:
 
    .. code-block:: text
-   
-	Output:Variable,
-	Environment,                             !- Key Value
-	Site Outdoor Air Drybulb Temperature,    !- Variable Name
-	TimeStep;                                !- Reporting Frequency
 
 	Output:Variable,
 	ZONE ONE,                    !- Key Value
 	Zone Mean Air Temperature,   !- Variable Name
 	TimeStep;                    !- Reporting Frequency 
-
-	Output:Variable,
-	Environment,                         !- Key Value
-	Site Outdoor Air Relative Humidity,  !- Variable Name
-	TimeStep;                            !- Reporting Frequency
-
-	Output:Variable,
-	ZONE ONE,                    !- Key Value
-	Zone Air Relative Humidity,  !- Variable Name 
-	TimeStep;                    !- Reporting Frequency
-
-To define the outputs of the FMU, we use:
-
-   .. code-block:: text
-   
-	ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
-	FMU_OthEquLat_ZoneOne,   !- Name
-	Any Number,              !- Schedule Type Limits Names
-	QSensible,               !- FMU Variable Name
-	0;                       !- Initial Value
     
-	ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
-	FMU_OthEquSen_ZoneOne,   !- Name
-	Any Number,              !- Schedule Type Limits Names
-	QLatent,                 !- FMU Variable Name
-	0;                       !- Initial Value
 
 Configuring an EnergyPlus model which uses the ``EMS Actuator`` object
 ----------------------------------------------------------------------
 
 Suppose, we would like to export an EnergyPlus model of a room with a window 
-model which has a shading controller which actuates a blind as function of 
-boundary conditions. The shading controller requires as inputs the outside 
-temperature (TRoo) and the solar irradiation (ISolExt) that is incident on 
-the window to compute the shading actuation signal (yShade).
+model which has a shading controller. The shading controller requires as input the shading 
+actuation signal (yShade), and has as outputs the outside temperature (TRoo) 
+and the solar irradiation (ISolExt) that is incident on the window.
 
 Such an  EnergyPlus model could be exported as an FMU with 
-2 inputs and one outputs. The two inputs of the FMU will map to the 
-outside temperature (TRoo) and the solar irradiation (ISolExt), whereas 
-the output will map to the shading actuation signal.
+one input and two outputs. The input of the FMU will map to the shading actuation signal, 
+whereas the outputs will map to outside temperature (TRoo) and the solar irradiation (ISolExt).
 
 The code below shows how the objects will be in the idf.
 To activate the external interface, we use:
@@ -146,7 +103,19 @@ To activate the external interface, we use:
       ExternalInterface,	   !- Object to activate external interface
       FunctionalMockupUnitExport;  !- Name of external interface
 
-To define the inputs of the FMU, we use:
+To define the input of the FMU, we use:
+
+   .. code-block:: text
+    
+	ExternalInterface:FunctionalMockupUnitExport:To:Actuator,
+	Zn001_Wall001_Win001_Shading_Deploy_Status,  !- Name
+	Zn001:Wall001:Win001,                        !- Actuated Component Unique Name
+	Window Shading Control,                      !- Actuated Component Type
+	Control Status,                              !- Actuated Component Control Type
+	yShade,                                      !- FMU Variable Name
+	6;                                           !- Initial Value
+
+To define the outputs of the FMU, we use:
 
    .. code-block:: text
    
@@ -160,8 +129,8 @@ To define the inputs of the FMU, we use:
 	Surface Outside Face Incident Solar Radiation Rate per Area, !- Output:Variable Name
 	ISolExt;                                                     !- FMU Variable Name
 
-Along with the FMU's inputs definition, the
-EnergyPlus output variables which correspond to the FMU inputs need 
+Along with the FMU's outputs definition, the
+EnergyPlus output variables which correspond to the FMU outputs need 
 to be specified in the idf file:
 
    .. code-block:: text
@@ -176,18 +145,6 @@ to be specified in the idf file:
 	Zone Mean Air Temperature,          !- Variable Name
 	TimeStep;                           !- Reporting Frequency
 
-To define the output of the FMU, we use:
-
-   .. code-block:: text
-    
-	ExternalInterface:FunctionalMockupUnitExport:To:Actuator,
-	Zn001_Wall001_Win001_Shading_Deploy_Status,  !- Name
-	Zn001:Wall001:Win001,                        !- Actuated Component Unique Name
-	Window Shading Control,                      !- Actuated Component Type
-	Control Status,                              !- Actuated Component Control Type
-	yShade,                                      !- FMU Variable Name
-	6;                                           !- Initial Value
-
 
 Configuring an EnergyPlus model which uses the ``EMS Variable`` object
 ----------------------------------------------------------------------
@@ -196,7 +153,7 @@ This configuration is almost the same as in the previous example with the only
 difference being that the shading actuation signal will be mapped to an EMS variable
 (Shade_Signal) that can be used in an EMS program.
 
-To define the output of the FMU, we use: 
+To define the input of the FMU, we use: 
 
    .. code-block:: text
    
