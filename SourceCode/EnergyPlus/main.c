@@ -1146,6 +1146,18 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 
 		closeipcFMU(&(fmuInstances[_c->index]->sockfd));
 		closeipcFMU(&(fmuInstances[_c->index]->newsockfd));
+		// clean-up temporary files
+		findFileDelete();
+#ifdef _MSC_VER
+		// wait for object to terminate
+		WaitForSingleObject (fmuInstances[_c->index]->handle_EP, INFINITE);
+		TerminateProcess(fmuInstances[_c->index]->handle_EP, 1);
+#else
+		// wait for object to terminate
+		waitpid(fmuInstances[_c->index]->pid, &status, WNOHANG );
+		kill (fmuInstances[_c->index]->pid, SIGKILL);
+#endif
+
 #ifdef _MSC_VER
 		// Clean-up winsock
 		WSACleanup();
