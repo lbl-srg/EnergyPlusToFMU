@@ -37,7 +37,7 @@
 */
 /////////////////////////////////////////////////////////////////////
 #define FRUNWEAFILE  "runweafile.epw" 
-#define FTIMESTEP    "timestep.txt"
+#define FTIMESTEP    "tstep.txt"
 #define VARCFG       "variables.cfg"
 #define SOCKCFG      "socket.cfg"
 #define EPBAT        "EP.bat"

@@ -40,8 +40,10 @@
 
 // constant parameters for filenames
 const char* TEMP1         = "tmp1.idf";
-const char* TEMP2         = "tmp2.idf";
-const char* LOG           = "log.txt";
+// TEMP2 defines the input file to be run
+const char* TEMP2         = "log_ini.idf";
+// LOG is created if more than two RunPeriod
+const char* LOG           = "log_runP.txt";
 const char* BEGINDAYMONTH = "beginDayMonth.txt";
 const char* ENDDAYMONTH   = "endDayMonth.txt";
 const char* BEGINMONTH    = "beginMonth.txt";
@@ -163,7 +165,7 @@ void findFileDelete()
 		remove(EPBAT);
 	}
 	// cleanup .idf files
-	res = system ("rm -f *.idf");
+	//res = system ("rm -f *.idf");
 	// cleanup .epw files
 	res = system ("rm -f *.epw");
 }    
