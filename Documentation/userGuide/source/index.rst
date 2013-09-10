@@ -6,7 +6,6 @@ User Guide
    :numbered: 
    :maxdepth: 3
 
-   releaseNotes
    introduction
    download
    installation

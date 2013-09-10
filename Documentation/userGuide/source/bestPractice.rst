@@ -6,7 +6,7 @@
 Best Practice
 =============
 
-This section explains to users best practice in configuring an EnergyPlus model 
+This section explains to users the best practice in configuring an EnergyPlus model 
 for an FMU. 
 
 To export EnergyPlus as an FMU, four objects have been added to the EnergyPlus data structure. These objects are:
@@ -18,8 +18,8 @@ To export EnergyPlus as an FMU, four objects have been added to the EnergyPlus d
 - The ``ExternalInterface:FunctionalMockupUnitExport:To:Schedule``, 
   ``ExternalInterface:FunctionalMockupUnitExport:To:Actuator``, 
   and ``ExternalInterface:FunctionalMockupUnitExport:To:Variable`` 
-  which are used to map the inputs of the FMU to EnergyPlus schedule and 
-  EMS actuators and variables.
+  which are used to map the inputs of the FMU to EnergyPlus schedules,  
+  EMS actuators, and variables.
   
 These objects are described in the Input/Output reference of the EnergyPlus manual 
 (http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf) 
@@ -27,8 +27,8 @@ These objects are described in the Input/Output reference of the EnergyPlus manu
 Configuring an EnergyPlus model which uses the ``Schedule`` object
 ------------------------------------------------------------------
 
-Suppose, we would like to export an EnergyPlus model of a room with 
-an ideal HVAC system, that adds heating or cooling load to the zone as schedule
+Suppose we like to export an EnergyPlus model of a room with 
+an ideal HVAC system that adds heating or cooling load to the zone as schedules,
 to maintain a certain room temperature. 
 
 Such an  EnergyPlus model could be exported as an FMU with 
@@ -39,11 +39,11 @@ The Energyplus model needs to contain the following three items:
 
 - An object that instructs EnergyPlus to activate the external interface.
 
-- EnergyPlus objects that read inputs of the FMU and send to EnergyPlus.
+- EnergyPlus objects that read inputs of the FMU and send the values to EnergyPlus.
 
-- EnergyPlus objects that read data from EnergyPlus and send to the outputs of the FMU.
+- EnergyPlus objects that read data from EnergyPlus and send the values to the outputs of the FMU.
 
-The code below shows how the objects will be in the idf.
+The code below shows how the objects will be in the IDF.
 To activate the external interface, we use:
 
    .. code-block:: text
@@ -70,10 +70,9 @@ To define the output of the FMU, we use:
       Zone Mean Air Temperature, !- Output:Variable Name
       TRooMea;                   !- FMU Variable Name
 
-
 Along with the FMU's output definition, the
 EnergyPlus output variable which corresponds to the FMU output needs 
-to be specified in the idf file:
+to be specified in the IDF file:
 
    .. code-block:: text
 
@@ -81,21 +80,22 @@ to be specified in the idf file:
 	ZONE ONE,                    !- Key Value
 	Zone Mean Air Temperature,   !- Variable Name
 	TimeStep;                    !- Reporting Frequency 
-    
+
+These specifications are used in the example that is available in ``Examples/Schedule``.
 
 Configuring an EnergyPlus model which uses the ``EMS Actuator`` object
 ----------------------------------------------------------------------
 
-Suppose, we would like to export an EnergyPlus model of a room with a window 
-model which has a shading controller. The shading controller requires as input the shading 
-actuation signal (yShade), and has as outputs the outside temperature (TRoo) 
-and the solar irradiation (ISolExt) that is incident on the window.
+Suppose we like to export an EnergyPlus model of a room that has a shading controller. 
+The shading controller requires as input the shading 
+actuation signal ``yShade``, and has as outputs the outside temperature ``TRoo`` 
+and the solar irradiation ``ISolExt`` that is incident on the window.
 
-Such an  EnergyPlus model could be exported as an FMU with 
+We will export such an  EnergyPlus model as an FMU with 
 one input and two outputs. The input of the FMU will map to the shading actuation signal, 
-whereas the outputs will map to outside temperature (TRoo) and the solar irradiation (ISolExt).
+whereas the outputs will map to outside temperature ``TRoo`` and the solar irradiation ``ISolExt``.
 
-The code below shows how the objects will be in the idf.
+The code below shows how the objects will be in the IDF.
 To activate the external interface, we use:
 
    .. code-block:: text
@@ -131,7 +131,7 @@ To define the outputs of the FMU, we use:
 
 Along with the FMU's outputs definition, the
 EnergyPlus output variables which correspond to the FMU outputs need 
-to be specified in the idf file:
+to be specified in the IDF file:
 
    .. code-block:: text
 
@@ -145,13 +145,14 @@ to be specified in the idf file:
 	Zone Mean Air Temperature,          !- Variable Name
 	TimeStep;                           !- Reporting Frequency
 
+These specifications are used in the example that is available in ``Examples/Actuator``.
 
 Configuring an EnergyPlus model which uses the ``EMS Variable`` object
 ----------------------------------------------------------------------
 
 This configuration is almost the same as in the previous example with the only 
 difference being that the shading actuation signal will be mapped to an EMS variable
-(Shade_Signal) that can be used in an EMS program.
+``Shade_Signal`` that can be used in an EMS program.
 
 To define the input of the FMU, we use: 
 
@@ -162,12 +163,11 @@ To define the input of the FMU, we use:
 	yShade,                  !- FMU Variable Name
 	6;                       !- Initial Value
 
+These specifications are used in the example that is available in ``Examples/Variable``.
+
 Please see the Input/Output reference of the EnergyPlus manual 
 
 (http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf) 
 for more details.
 
 Please read :doc:`installation` to see how to generate an FMU.
-
-
-

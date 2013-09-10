@@ -3,7 +3,7 @@
 Development
 ===========
 
-The development page of this software is at https://corbu.lbl.gov/svn/fmu/EnergyPlus/export/.
+The development site of this software is at https://corbu.lbl.gov/svn/fmu/EnergyPlus/export/.
 
 To check out the trunk, type
    

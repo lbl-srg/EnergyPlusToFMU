@@ -5,23 +5,19 @@
 Download
 ========
 
-The EnergyPlusToFMU release includes scripts and source codes to export 
-EnergyPlus as an FMU for co-simulation for Windows, Linux, and MAC OS X.
+The EnergyPlusToFMU release includes scripts and source code to export 
+EnergyPlus as an FMU for co-simulation for Windows 32/64 bit, Linux 32/64 bit, and MAC OS X 64 bit.
 
 To install EnergyPlusToFMU, follow :doc:`installation`. 
 
-Release 0.1.0 (xxx, 2013)
+Release 1.0.0 (xxx, 2013)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Download
 --------
 
 +----------------------+---------------------------------------------------------------------------------------------------------------------------------+
-|                      |                                                                                                                                 |
-+======================+=================================================================================================================================+
-| Tool                 | URL                                                                                                                             |
-+----------------------+---------------------------------------------------------------------------------------------------------------------------------+
-| ``EnergyPlusToFMU``  | `EnergyPlusToFMU-0.1.0.zip <http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/releases/0.1.0/EnergyPlusToFMU-0.1.0.zip>`_ |
+| ``EnergyPlusToFMU``  | `EnergyPlusToFMU-1.0.0.zip <http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/releases/1.0.0/EnergyPlusToFMU-1.0.0.zip>`_ |
 +----------------------+---------------------------------------------------------------------------------------------------------------------------------+
 
 
@@ -29,4 +25,4 @@ Download
 Release notes
 -------------
 
-Support of FMI version 1.0 for co-simulation.
+First release that supports FMI version 1.0 for co-simulation.

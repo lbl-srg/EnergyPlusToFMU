@@ -15,12 +15,11 @@ To report the bug, send email to https://groups.google.com/group/energyplus-fmu.
 Known Issues
 ============
 
-Release 0.1.0
+Release 1.0.0
 -------------
 
 :term:`Dymola` 2014 cannot import EnergyPlus as an FMU. The reason is a bug in :term:`Dymola` 2014 which does not pass the path to the resources location folder to the FMU when invoking the ``fmiInstantiateSlave()`` method. 
-This information is needed by the FMU for its correct execution. 
+This information is needed by the FMU for its correct execution. A workaround will be to manually specified the path to the resources location in the ``fmiInstantiateSlave()`` method in ``main.c``. ``main.c`` can be found in the
+``SourceCode`` folder that comes along with EnergyPlusToFMU.
 
 :term:`PyFMI` 1.3.1 cannot import EnergyPlus as an FMU since it currently does not support FMI for co-simulation tool coupling.
-
-:term:`Ptolemy II` cannot import EnergyPlus as an FMU since it does not set and get all input and outputs of the FMU, as specified in :doc:`usage`, prior to calling the ``fmiDoStep()`` method.
