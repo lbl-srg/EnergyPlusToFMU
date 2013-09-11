@@ -47,7 +47,7 @@ The following items need to be observed when importing an FMU that contains Ener
    will be Tuesday.
 
 4. During the warm-up period and the autosizing of EnergyPlus, 
-   no data-exchange occurs between the FMU and the master program. 
+   no data exchange occurs between the FMU and the master program. 
    Thus, inputs of EnergyPlus remain constant during these times and are equals 
    to the initial values specified in the IDF input file.
    

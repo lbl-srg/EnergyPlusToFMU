@@ -31,29 +31,43 @@ In comparison to numerical methods of differential equations, this scheme is equ
 
 on the time interval :math:`t \in [0, 1]`, using he following steps:
 
-**Step 0:**	Initialize counter k=0 and number of steps, :math:`N > 0`.
+
+**Step 0:**	
+
+	Initialize counter k=0 and number of steps, :math:`N > 0`.
 			
-		Set initial state :math:`x(k) = x_{0}` and set time step  :math:`\Delta t = 1/N`.
+	Set initial state :math:`x(k) = x_{0}` and set time step  :math:`\Delta t = 1/N`.
 
-**Step 1:**	Compute new state  :math:`x(k+1) = x(k) + h(x(k)) \Delta t`.
 
-		Replace k by k+1.
+**Step 1:**	
 
-**Step 2:**	If k=N stop, else go to Step 1.
+	Compute new state  :math:`x(k+1) = x(k) + h(x(k)) \Delta t`.
+
+	Replace k by k+1.
+
+**Step 2:**	
+
+	If k=N stop, else go to Step 1.
 
 However, this scheme does not require each simulation tool to use explicit Euler for its internal time integration algorithm; the analogy to explicit Euler applies only to the data exchange between the programs.  In the situation where the differential equation is solved using co-simulation, the above algorithm becomes
 
-**Step 0:**	Initialize counter :math:`k=0` and number of steps.
+**Step 0:**	
 
-		Set initial state :math:`x_{1}(k) = x_{1,0}` and :math:`x_{2}(k) = x_{2,0}`. Set the time step  :math:`\Delta t = 1/N`.
+	Initialize counter :math:`k=0` and number of steps, :math:`N > 0`.
 
-**Step 1:**	Compute new states
+	Set initial state :math:`x_{1}(k) = x_{1,0}` and :math:`x_{2}(k) = x_{2,0}`. Set the time step  :math:`\Delta t = 1/N`.
 
-		:math:`x_{1}(k+1) = x_{1}(k) + f_{1}(x_{1}(k), x_{2}(k)) \Delta t`, and
+**Step 1:**	
 
-		:math:`x_{2}(k+1) = x_{2}(k) + f_{2}(x_{2}(k), x_{1}(k)) \Delta t`.
+	Compute new states
 
-		Replace :math:`k` by :math:`k+1`.
+	:math:`x_{1}(k+1) = x_{1}(k) + f_{1}(x_{1}(k), x_{2}(k)) \Delta t`, and
 
-**Step 2:**	If :math:`k=N` stop, else go to Step 1.
+	:math:`x_{2}(k+1) = x_{2}(k) + f_{2}(x_{2}(k), x_{1}(k)) \Delta t`.
+
+	Replace :math:`k` by :math:`k+1`.
+
+**Step 2:**	
+
+	If :math:`k=N` stop, else go to Step 1.
 
