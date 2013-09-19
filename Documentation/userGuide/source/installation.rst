@@ -2,10 +2,10 @@
 
 .. _installation:
 
-Installation and configuration
+Installation and Configuration
 ==============================
 
-This chapter describes how to install, configure and uninstall the EnergyPlusToFMU tools.
+This chapter describes how to install, configure and uninstall EnergyPlusToFMU.
 
 
 Software requirements
@@ -21,11 +21,11 @@ To export an EnergyPlus simulation as an FMU, EnergyPlusToFMU needs:
 
 EnergyPlusToFMU has been tested on:
 
-- Linux Ubuntu 12.04.
+- Linux Ubuntu 12.04 (both 32- and 64-bit).
 
 - Windows XP Professional.
 
-- Mac OS X 10.5 and 10.6.
+- Mac OS X 10.5 and 10.6 (both 32- and 64-bit).
 
 
 .. _installation directory:
@@ -33,29 +33,29 @@ EnergyPlusToFMU has been tested on:
 Installation
 ^^^^^^^^^^^^
 
-To install the EnergyPlusToFMU package:
+To install EnergyPlusToFMU, proceed as follows:
 
-1. Download the installation file from the :doc:`download` page. 
+1. Download the installation file from the :doc:`download` page.
 
 2. Unzip the installation file into any folder (hereafter referred to as the "installation directory").
 
-Minimally, the installation directory should contain the following subdirectories:
+The installation directory then contains the following subdirectories:
 
-- ``Scripts``
+- ``Scripts/``
 
-  - ``EnergyPlusToFMU``
+  - ``EnergyPlusToFMU/``
     (Python scripts that create an FMU from an IDF file)
 
     - ``batch-dos``
-      (batch files specific to Windows)
+      (batch files for Windows)
 
     - ``batch-linux``
-      (shell scripts specific to Linux)
+      (shell scripts for Linux)
 
     - ``batch-darwin``
-      (shell scripts specific to Mac OS X)
+      (shell scripts for Mac OS X)
 
-- ``SourceCode``
+- ``SourceCode/``
   (C and C++ source code for creating an EnergyPlus FMU)
 
   - ``EnergyPlus``
@@ -72,7 +72,7 @@ Minimally, the installation directory should contain the following subdirectorie
 Configuration
 ^^^^^^^^^^^^^
 
-EnergyPlusToFMU requires a C compiler and linker (in order to build the FMU), and a C++ compiler and linker (in order to build some supporting tools).
+EnergyPlusToFMU requires a C compiler and linker (in order to build the FMU), and a C++ compiler and linker (in order to build supporting tools).
 
 To run the compiler and linker, EnergyPlusToFMU uses the following batch files:
 
@@ -127,8 +127,8 @@ Therefore the installation has fewer unique batch files than it at first appears
 Checking compile-c.bat
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The included batch files cover some common cases.
-With luck, you can simply run the EnergyPlusToFMU build process described in :doc:`build`, and everything will work as expected.
+The included batch files cover common cases.
+Usually, you can simply run the EnergyPlusToFMU build process described in :doc:`build`, and everything will work as expected.
 
 This section describes how to check the current version of batch file ``compile-c.bat``.
 A later section describes `checking link-c-exe.bat`_.
@@ -137,19 +137,9 @@ Once these batch files work, then it should not be difficult to make the other c
 The check is to build one of the EnergyPlusToFMU supporting applications, and to make sure it runs.
 If successful, the application determines whether your compiler generates 32-bit or 64-bit executables.
 
-To check the compiler batch file, open a command window (e.g., a DOS prompt on Windows, a command shell on Linux, or a Terminal window on MacOS).
-The instructions that follow represent the command window like this:
-
-.. code-block:: none
-
-  # This is a comment.
-  > (This is the command prompt, where you enter a command)
-  (If shown, this is sample output in response to the command)
-
-Note that your system may use a different symbol than "``>``" as the command prompt (for example, "``$``").
-Furthermore, the prompt may include information such as the name of your system, or the name of the current subdirectory.
-
-To begin, change to the appropriate batch file directory.
+To check the compiler batch file,
+open a command-line window (see :doc:`notation`).
+Next, change to the appropriate batch file directory.
 For example:
 
 .. code-block:: none
@@ -171,7 +161,7 @@ Next, run the compiler batch file:
   > compile-c.bat  ..\..\..\SourceCode\utility-src\get-address-size.c
 
   # Linux, MacOS:
-  #   Note the "./" before the name of the batch file.
+  # Note the "./" before the name of the batch file.
   > ./compile-c.bat  ../../../SourceCode/utility-src/get-address-size.c
 
 In response, the compiler should produce an object file in the current directory.
@@ -190,6 +180,11 @@ The object file should be called ``get-address-size.obj`` on Windows, and ``get-
 Unfortunately, the compiler batch file can fail.
 Reasons for failure fall into a few broad categories:
 
+- The commands in the batch file are wrong for your system.
+  This is the most likely cause of failure.
+  The subsections below give hints on providing an appropriate ``compile-c.bat``
+  batch file.
+
 - You do not have permission to run the batch file.
   When you run the batch file, watch for output like
   "Permission denied" from the operating system.
@@ -199,11 +194,6 @@ Reasons for failure fall into a few broad categories:
   When you run the batch file, watch for output like
   "No such file or directory", along with the name of the source code file.
   Check the `installation directory`_ structure, as specified above.
-
-- The commands in the batch file are wrong for your system.
-  This is the most likely cause of failure.
-  The subsections below give hints on providing an appropriate ``compile-c.bat``
-  batch file.
 
 - The compiler did not accept some statement in source code file ``get-address-size.c``.
   In this case, please contact the EnergyPlusToFMU team to report the problem.
@@ -236,7 +226,7 @@ Working in the same subdirectory where you built the object file, run the linker
   > link-c-exe.bat  test.exe  get-address-size.obj
 
   # Linux, MacOS:
-  #   Note the "./" before the name of the batch file.
+  # Note the "./" before the name of the batch file.
   > ./link-c-exe.bat  test.exe  get-address-size.o
 
 In response, the linker should produce an executable called ``test.exe``, in the current directory, and you should be able to run the executable:
@@ -257,16 +247,16 @@ In response, the linker should produce an executable called ``test.exe``, in the
 
 Again, the batch file may not work, for a few broad reasons:
 
-- You do not have permission to run the batch file.
-  When you run the batch file, watch for output like
-  "Permission denied" from the operating system.
-  See `Troubleshooting permissions`_ below.
-
 - The commands in the batch file are wrong for your system.
   The subsections below give hints on providing an appropriate ``link-c-exe.bat``
   batch file.
   In particular, if the linker complains of not being able to find the standard
   library function ``printf``, see `Troubleshooting missing libraries`_ below.
+
+- You do not have permission to run the batch file.
+  When you run the batch file, watch for output like
+  "Permission denied" from the operating system.
+  See `Troubleshooting permissions`_ below.
 
 
 Successfully building ``test.exe`` does not completely test the linker batch files.
@@ -274,7 +264,9 @@ In particular:
 
 - Batch file ``link-c-lib.bat`` has an additional complication.
   This batch file must link objects into a shared library.
-  This generally will require passing a special switch or flag to the linker.
+  Creating a shared library generally requires passing a special switch or flag
+  to the linker, such as ``-shared``, ``-dynamiclib``, or ``/LD``.
+  See the documentation for your development environment.
 
 - Batch file ``link-cpp-exe.bat`` must link objects generated by the C++ compiler.
   This may require providing different switches or flags to the linker, than
@@ -292,17 +284,17 @@ In all cases, comparing the batch files provided by the ``EnergyPlusToFMU`` inst
 Modifying the batch files
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This section gives general hints on editing your batch files, in case the default versions do not work on your system, or in case you want to modify or replace the default versions (for example, to change the optimization level, or to use a different compiler/linker altogether).
+This section gives general advice for editing your batch files, in case the default versions do not work on your system, or in case you want to modify or replace the default versions (for example, to change the optimization level, or to use a different compiler/linker).
 
 Unfortunately, it is beyond the scope of this document to give full instructions on installing and using developer tools such as compilers and linkers.
 
 The EnergyPlusToFMU tools only use the batch files named in the `configuration`_ table above.
-Thus, editing ``compile-c-gcc.txt`` will have no effect on how the FMU gets made.
+Thus, editing ``compile-c-gcc.txt`` will have no effect on how the FMU gets created.
 Only ``compile-c.bat`` affects the EnergyPlusToFMU tools.
 
 If a provided batch file does not work, it may simply be a matter of changing the directory path hard-coded in the batch file.
 For example, the batch files for Microsoft Visual Studio list several known locations for finding the Visual Studio program files.
-If your machine as Visual Studio installed in some other location (say, on the "``D:\``" drive rather than on "``C:\``"), then editing the batch file to point to the correct path may be all that is needed.
+If your machine has Visual Studio installed in some other location (say, on the "``D:\``" drive rather than on "``C:\``"), then editing the batch file to point to the correct path may be all that is needed.
 
 On most systems, the compiler also can act as the linker (or call the linker, filling in appropriate options).
 Therefore once you have your system's compiler working, try listing the same tool in the linker batch files.
@@ -327,7 +319,7 @@ For example, entering the command:
   > which gcc
   
 will return the path to the ``gcc`` compiler, provided your system has it, and provided it is on the search path.
-If you do not have gcc, or if you have gcc but it is not on the search path, then ``which gcc`` will return nothing.
+If you do not have ``gcc``, or if you have ``gcc`` but it is not on the search path, then ``which gcc`` will return nothing.
 
 If you believe you have a certain compiler, but cannot find it on your search path, try the ``find`` command.
 For example, to locate the ``icc`` compiler, try:
@@ -350,7 +342,7 @@ For example:
 
   > find /usr -name "*icc*"
 
-searches the ``/usr`` directory for any file whose name contains the string "icc".
+searches the ``/usr`` directory for any file whose name contains the string ``icc``.
 
 Finally, the ``apropos`` command may help:
 
@@ -362,8 +354,10 @@ will search your help files for information pertaining to compilers.
 Unfortunately, it may return many entries unrelated to compiling C and C++ source code.
 
 
-Troubleshooting permissions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _troubleshooting permissions:
+
+Troubleshooting permissions (Unix)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Permissions problems arise on Unix-like systems.
 The batch files must have "execute" permission, meaning you are allowed to run the file as a set of commands.
@@ -379,7 +373,7 @@ To check the permissions:
   -rwxr--r--  ...  link-cpp-exe.bat
   -rwxr--r--  ...  compile-cpp.bat
 
-All five of the default batch files should have "``-rwx``" at the beginning of the permissions block (indicating you are allowed to read, write, and execute/run the file).
+All five of the default batch files should have "``-rwx``" at the beginning of the permissions block (indicating you are allowed to read, write, and execute the file).
 If not, then set the permissions:
 
 .. code-block:: none
@@ -390,30 +384,29 @@ If not, then set the permissions:
 and try running the compiler batch file again.
 
 
-Troubleshooting the memmove function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Troubleshooting the ``memmove`` function
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The batch file that runs the C compiler, ``compile-c.bat``, needs to indicate whether or not your C compiler/linker environment provides a non-standard function called ``memmove``.
 While ``memmove`` is non-standard in C, it is standard for C++.
 Therefore many C environments provide it as well.
-However, yours may not.
 
-If your C compiler/linker environment does provide ``memmove``, then the batch file should pass the compiler the macro definition ``HAVE_MEMMOVE``.
+If your C compiler/linker environment does provide ``memmove``, then the batch file should pass the macro definition ``HAVE_MEMMOVE`` to the compiler.
 The included batch files show how to define a macro for various compilers.
 
 If, on the other hand, your C compiler/linker environment does not provide ``memmove``, then do not define the macro in the compiler batch file.
 
 If you are not sure whether or not your system provides the function, simply watch for any errors while building your first FMU.
 If you fail to define ``HAVE_MEMMOVE`` when your system has it, the linker will complain about duplicate definitions of ``memmove``.
-If, on the other hand, you define ``HAVE_MEMMOVE`` when your system does not have it, the linker will complain about not being able to find ``memmove``.
+Conversely, if you define ``HAVE_MEMMOVE`` when your system does not have it, the linker will complain about not being able to find ``memmove``.
 
 
 Troubleshooting missing libraries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The linker batch files may have to use special flags to indicate which libraries to link against.
-In general, if you need to link against a library, it will be to provide a standard function, such as ``printf``, that is called by the EnergyPlusToFMU source code.
-If a linker batch file fails, and the linker emits an error message indicating it cannot find a particular function, then consult your development environment's documentation to determine which libraries it may need.
+Some linkers need explicit instructions to link in library code.
+Libraries are needed to provide standard functions, such as ``printf``, that are called by the EnergyPlusToFMU source code.
+If the linker emits an error message indicating it cannot find a particular function, then consult your development environment's documentation to determine which libraries it may need.
 
 Note that specifying libraries is often somewhat arcane.
 For example, on Unix-like systems, to link a library ``libm.a`` typically requires the linker flag ``-lm``.
@@ -423,4 +416,4 @@ Furthermore, the order in which libraries are linked can matter, and you may nee
 Uninstallation
 ^^^^^^^^^^^^^^
 
-To uninstall EnergyPlusToFMU, simply delete the `installation directory`_ where it was unzipped.
+To uninstall EnergyPlusToFMU, delete the `installation directory`_.

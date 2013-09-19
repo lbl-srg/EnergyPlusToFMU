@@ -14,10 +14,9 @@ User Guide
    mathematics
    bestPractice
    development
+   notation
    help
    glossary
    acknowledgments
    disclaimer
    legal
-
-

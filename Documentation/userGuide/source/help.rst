@@ -13,7 +13,7 @@ When submitting a bug report, please provide:
 To report the bug, send email to https://groups.google.com/group/energyplus-fmu. This is an open group and everyone can join it. No invitation is needed. 
 
 Known Issues
-============
+^^^^^^^^^^^^
 
 Release 1.0.0
 -------------
