@@ -113,22 +113,29 @@ Therefore if you are using an emulator or virtual machine (for example, Cygwin u
 Each system-specific batch subdirectory includes sample batch files.
 In addition to the default versions, some alternate versions also may be present.
 The alternate versions can be identified in two ways:
-(1) the file extension is "``.txt``", rather than "``.bat``";
-and
-(2) the file name identifies the associated options.
-For example, a file ``compile-c-gcc-32bit.txt`` is one possible version of ``compile-c.bat``.
-It is specific to the gcc compiler/linker environment, and it generates 32-bit object files even on a 64-bit machine.
+
+1. The file extension is "``.txt``", rather than "``.bat``".
+2. The file name indicates the associated options.
+   For example, a file ``compile-c-gcc-32bit.txt`` is one possible version of ``compile-c.bat``.
+   It is specific to the gcc compiler/linker environment, and it generates
+   32-bit object files, even on a 64-bit machine.
 
 Note that the default batch file is an exact copy of one of the supplied alternate versions.
 For example, in the ``batch-dos`` subdirectory, the default batch file ``compile-c.bat`` is the same as ``compile-c-mvs10.txt`` (the version for Microsoft Visual Studio 10).
 Therefore the installation has fewer unique batch files than it at first appears.
 
 
-Checking compile-c.bat
-^^^^^^^^^^^^^^^^^^^^^^
+Troubleshooting overview
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 The included batch files cover common cases.
 Usually, you can simply run the EnergyPlusToFMU build process described in :doc:`build`, and everything will work as expected.
+
+The following sections provide tips on troubleshooting, in case problems arise.
+
+
+Checking compile-c.bat
+^^^^^^^^^^^^^^^^^^^^^^
 
 This section describes how to check the current version of batch file ``compile-c.bat``.
 A later section describes `checking link-c-exe.bat`_.
@@ -139,45 +146,55 @@ If successful, the application determines whether your compiler generates 32-bit
 
 To check the compiler batch file,
 open a command-line window (see :doc:`notation`).
-Next, change to the appropriate batch file directory.
-For example:
+Next, change to the appropriate batch file directory, and run the compiler batch file.
+The compiler should produce an object file in the same directory.
+
+A sample session at the Windows DOS prompt:
 
 .. code-block:: none
 
-  # Windows:
+  # Change to the batch file directory.
   > cd  epfmu_install_dir\Scripts\EnergyPlusToFMU\batch-dos
 
-  # Linux:
-  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-linux
-
-  # MacOS:
-  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-darwin
-
-Next, run the compiler batch file:
-
-.. code-block:: none
-
-  # Windows:
+  # Run the batch file.
   > compile-c.bat  ..\..\..\SourceCode\utility-src\get-address-size.c
 
-  # Linux, MacOS:
-  # Note the "./" before the name of the batch file.
-  > ./compile-c.bat  ../../../SourceCode/utility-src/get-address-size.c
-
-In response, the compiler should produce an object file in the current directory.
-The object file should be called ``get-address-size.obj`` on Windows, and ``get-address-size.o`` on Unix-like systems.
-
-.. code-block:: none
-
-  # Windows:
+  # Check the object file.
   > dir  *.obj
   get-address-size.obj
 
-  # Linux, MacOS:
+A sample session in a Linux command shell:
+
+.. code-block:: none
+
+  # Change to the batch file directory.
+  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-linux
+
+  # Run the batch file.
+  # Note the "./" before the batch file name.
+  > ./compile-c.bat  ../../../SourceCode/utility-src/get-address-size.c
+
+  # Check the object file.
   > ls  *.o
   get-address-size.o
 
-Unfortunately, the compiler batch file can fail.
+A sample session in MacOS Terminal:
+
+.. code-block:: none
+
+  # Change to the batch file directory.
+  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-darwin
+
+  # Run the batch file.
+  # Note the "./" before the batch file name.
+  > ./compile-c.bat  ../../../SourceCode/utility-src/get-address-size.c
+
+  # Check the object file.
+  > ls  *.o
+  get-address-size.o
+
+In the sessions shown above, the compiler batch file successfully builds the object file.
+Unfortunately, this is not always the case.
 Reasons for failure fall into a few broad categories:
 
 - The commands in the batch file are wrong for your system.
@@ -218,32 +235,39 @@ Checking link-c-exe.bat
 
 Once you have successfully compiled source code file ``get-address-size.c`` into an object file, the next step is to link the object file into an executable (i.e., a runnable program).
 
-Working in the same subdirectory where you built the object file, run the linker batch file:
+Working in the same subdirectory where you built the object file, run the linker batch file.
+In response, the linker should produce an executable, called ``test.exe``, which you should be able to run.
+
+A sample session at the Windows DOS prompt:
 
 .. code-block:: none
 
-  # Windows:
+  # Run the batch file.
   > link-c-exe.bat  test.exe  get-address-size.obj
 
-  # Linux, MacOS:
-  # Note the "./" before the name of the batch file.
-  > ./link-c-exe.bat  test.exe  get-address-size.o
-
-In response, the linker should produce an executable called ``test.exe``, in the current directory, and you should be able to run the executable:
-
-.. code-block:: none
-
-  # Windows (32-bit example):
+  # Check the executable.
   > dir  *.exe
   test.exe
+
+  # Run the executable (32-bit system).
   > test.exe
   32
 
-  # Linux, MacOS (64-bit example):
+A sample session for both a Linux command shell and MacOS Terminal:
+
+.. code-block:: none
+
+  # Run the batch file.
+  # Note the "./" before the batch file name.
+  > ./link-c-exe.bat  test.exe  get-address-size.o
+
+  # Check the executable.
   > ls  *.exe
   test.exe
+
+  # Run the executable (32-bit system).
   > ./test.exe
-  64
+  32
 
 Again, the batch file may not work, for a few broad reasons:
 
@@ -304,8 +328,8 @@ For example, Microsoft Visual Studio is the standard IDE for Microsoft's C/C++ c
 Therefore if you are having problems compiling a source code file with a provided batch file, try using the IDE to compile that source code file, and check what options the IDE uses.
 
 
-Finding a compiler/linker on Unix
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Finding a compiler/linker (Unix)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following tips for finding the compiler/linker apply to Unix-like environments, including Linux and MacOS.
 
