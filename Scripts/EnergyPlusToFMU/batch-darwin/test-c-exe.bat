@@ -90,10 +90,11 @@ fi
 
 
 echo "===== Running output executable ====="
-echo "== You should see the address size, e.g., 32 or 64, printed below =="
 #
+echo "== The address size, e.g., 32 or 64, should appear below =="
 ./"${exeName}"
 echo
+echo "== The address size should appear above =="
 #
 if test $? -ne 0
 then
