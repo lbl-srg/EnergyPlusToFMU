@@ -72,9 +72,24 @@ The installation directory then contains the following subdirectories:
 Configuration
 ^^^^^^^^^^^^^
 
-EnergyPlusToFMU requires a C compiler and linker (in order to build the FMU), and a C++ compiler and linker (in order to build supporting tools).
+EnergyPlusToFMU comes pre-configured to handle the most common system configurations.
+Usually, you can simply create an FMU, as described in :doc:`build`, and everything will work as expected.
 
-EnergyPlusToFMU includes the following batch files:
+The remainder of this section provides tips on configuring EnergyPlusToFMU, to match your particular system and needs.
+This may be needed in case problems arise.
+In addition, you may wish to reconfigure EnergyPlusToFMU, for example to optimize the FMU code, or to change the memory model under which it runs.
+
+
+Configuration batch files
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+EnergyPlusToFMU requires a C compiler and linker (in order to build the FMU), and a C++ compiler and linker (in order to build supporting tools).
+Configuring EnergyPlusToFMU mainly consists of:
+
+- Choosing a different compiler or linker than the default.
+- Passing the compiler or linker different options than the default.
+
+EnergyPlusToFMU controls both aspects of the configuration using the following batch files:
 
 +----------------------+-------------------------------------------------------+
 | Batch file           | Purpose                                               |
@@ -105,10 +120,8 @@ However, the exact contents of these batch files depends on:
 
 3. The options desired (e.g., a 32-bit or 64-bit FMU).
 
-Therefore configuring your installation may require modifying these files, according to your particular needs.
-
-First, identify the appropriate subdirectory where these batch files reside.
 As shown above, the `installation directory`_ contains a batch subdirectory for each of the supported platforms.
+Therefore to configure your system, you should first identify the appropriate subdirectory.
 
 Note that Python detects your platform when it runs.
 Therefore if you are using an emulator or virtual machine (for example, Cygwin under Windows, or a Windows virtual machine on a Mac), you should look in the subdirectory corresponding to the emulated operating system.
@@ -127,20 +140,19 @@ Note that the default batch file is an exact copy of one of the supplied alterna
 For example, in the ``batch-dos`` subdirectory, the default batch file ``compile-c.bat`` is the same as ``compile-c-mvs10.txt`` (the version for Microsoft Visual Studio 10).
 Therefore the installation has fewer unique batch files than it at first appears.
 
+Once you have identified the appropriate batch file subdirectory, you can either:
 
-Troubleshooting overview
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-The included batch files cover common cases.
-Usually, you can simply run the EnergyPlusToFMU build process described in :doc:`build`, and everything will work as expected.
-
-The following sections provide tips on troubleshooting, in case problems arise.
+- Test the existing batch files.
+  See `Running a basic test`_.
+- Modify the existing files, according to your particular needs.
+  See `Modifying the batch files`_.
 
 
 Running a basic test
 ^^^^^^^^^^^^^^^^^^^^
 
-EnergyPlusToFMU includes a batch file that, in turn, tests the compiler and linker batch files which build an executable from ``C`` source code.
+In addition to the batch files that run the compiler and linker, EnergyPlusToFMU includes a batch file that tests some of the existing batch files.
+In particular, batch file ``test-c-exe.bat`` tests the compiler and linker batch files which build an executable from ``C`` source code.
 Once these batch files work, it should not be difficult to make the other compiler and linker batch files work.
 
 The test batch file, ``test-c-exe.bat``, runs the appropriate compiler and linker batch files, and checks the resulting executable.
@@ -211,8 +223,11 @@ A sample session in MacOS Terminal:
   ===== Cleaning up =====
 
 In the sessions shown above, the test batch file successfully runs to completion.
-The test batch file automates the individual steps described in `checking compile-c.bat`_ and `checking link-c-exe.bat`_ below.
-Therefore if the test batch file fails at some point, look first to those sections for help.
+If the test batch file fails at some point, then you will have to modify either the compiler or linker batch file, or possibly both.
+See `Modifying the batch files`_.
+
+The test batch file automates the individual steps described in `Checking compile-c.bat`_ and `Checking link-c-exe.bat`_ below.
+Therefore as you fine-tune your configuration, you may want to look to those sections for help.
 
 
 Checking compile-c.bat
@@ -393,9 +408,9 @@ This section gives general advice for editing your batch files, in case the defa
 
 Unfortunately, it is beyond the scope of this document to give full instructions on installing and using developer tools such as compilers and linkers.
 
-The EnergyPlusToFMU tools only use the batch files named in the `configuration`_ table above.
+The EnergyPlusToFMU tools only use the batch files named in the table showing the `Configuration batch files`_.
 Thus, editing ``compile-c-gcc.txt`` will have no effect on how the FMU gets created.
-Only ``compile-c.bat`` affects the EnergyPlusToFMU tools.
+Only ``compile-c.bat`` affects how EnergyPlusToFMU compiles ``C`` source code files.
 
 If a provided batch file does not work, it may simply be a matter of changing the directory path hard-coded in the batch file.
 For example, the batch files for Microsoft Visual Studio list several known locations for finding the Visual Studio program files.
