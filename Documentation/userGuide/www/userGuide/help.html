@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1.0',
+        VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="FMU Export of EnergyPlus User Guide" href="index.html" />
-    <link rel="next" title="12. Glossary" href="glossary.html" />
-    <link rel="prev" title="9. Development" href="development.html" /> 
+    <link rel="next" title="11. Glossary" href="glossary.html" />
+    <link rel="prev" title="9. Notation" href="notation.html" /> 
   </head>
   <body>
 <div class="headerStyle">
@@ -42,10 +42,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="glossary.html" title="12. Glossary"
+          <a href="glossary.html" title="11. Glossary"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="development.html" title="9. Development"
+          <a href="notation.html" title="9. Notation"
              accesskey="P">previous</a> |</li>
     <li><a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/index.html">Home</a> |
     <a href="index.html">User Guide</a></li>
@@ -59,19 +59,21 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">10. Help</a></li>
-<li><a class="reference internal" href="#known-issues">11. Known Issues</a><ul>
-<li><a class="reference internal" href="#release-0-1-0">11.1. Release 0.1.0</a></li>
+<li><a class="reference internal" href="#">10. Help</a><ul>
+<li><a class="reference internal" href="#known-issues">10.1. Known Issues</a><ul>
+<li><a class="reference internal" href="#release-1-0-0">10.1.1. Release 1.0.0</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="development.html"
-                        title="previous chapter">9. Development</a></p>
+  <p class="topless"><a href="notation.html"
+                        title="previous chapter">9. Notation</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="glossary.html"
-                        title="next chapter">12. Glossary</a></p>
+                        title="next chapter">11. Glossary</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/help.txt"
@@ -116,15 +118,15 @@
 </dd>
 </dl>
 <p>To report the bug, send email to <a class="reference external" href="https://groups.google.com/group/energyplus-fmu">https://groups.google.com/group/energyplus-fmu</a>. This is an open group and everyone can join it. No invitation is needed.</p>
-</div>
 <div class="section" id="known-issues">
-<h1>11. Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="release-0-1-0">
-<h2>11.1. Release 0.1.0<a class="headerlink" href="#release-0-1-0" title="Permalink to this headline">¶</a></h2>
+<h2>10.1. Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="release-1-0-0">
+<h3>10.1.1. Release 1.0.0<a class="headerlink" href="#release-1-0-0" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference internal" href="glossary.html#term-dymola"><em class="xref std std-term">Dymola</em></a> 2014 cannot import EnergyPlus as an FMU. The reason is a bug in <a class="reference internal" href="glossary.html#term-dymola"><em class="xref std std-term">Dymola</em></a> 2014 which does not pass the path to the resources location folder to the FMU when invoking the <tt class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></tt> method.
-This information is needed by the FMU for its correct execution.</p>
+This information is needed by the FMU for its correct execution. A workaround will be to manually specified the path to the resources location in the <tt class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></tt> method in <tt class="docutils literal"><span class="pre">main.c</span></tt>. <tt class="docutils literal"><span class="pre">main.c</span></tt> can be found in the
+<tt class="docutils literal"><span class="pre">SourceCode</span></tt> folder that comes along with EnergyPlusToFMU.</p>
 <p><a class="reference internal" href="glossary.html#term-pyfmi"><em class="xref std std-term">PyFMI</em></a> 1.3.1 cannot import EnergyPlus as an FMU since it currently does not support FMI for co-simulation tool coupling.</p>
-<p><a class="reference internal" href="glossary.html#term-ptolemy-ii"><em class="xref std std-term">Ptolemy II</em></a> cannot import EnergyPlus as an FMU since it does not set and get all input and outputs of the FMU, as specified in <a class="reference internal" href="usage.html"><em>Usage of EnergyPlus as an FMU</em></a>, prior to calling the <tt class="docutils literal"><span class="pre">fmiDoStep()</span></tt> method.</p>
+</div>
 </div>
 </div>
 
@@ -141,10 +143,10 @@ This information is needed by the FMU for its correct execution.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="glossary.html" title="12. Glossary"
+          <a href="glossary.html" title="11. Glossary"
              >next</a> |</li>
         <li class="right" >
-          <a href="development.html" title="9. Development"
+          <a href="notation.html" title="9. Notation"
              >previous</a> |</li>
     <li><a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/index.html">Home</a> |
     <a href="index.html">User Guide</a></li>

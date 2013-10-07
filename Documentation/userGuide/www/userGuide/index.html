@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1.0',
+        VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="FMU Export of EnergyPlus User Guide" href="#" />
-    <link rel="next" title="1. Release Notes" href="releaseNotes.html" /> 
+    <link rel="next" title="1. Introduction" href="introduction.html" /> 
   </head>
   <body>
 <div class="headerStyle">
@@ -41,7 +41,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="releaseNotes.html" title="1. Release Notes"
+          <a href="introduction.html" title="1. Introduction"
              accesskey="N">next</a> |</li>
     <li><a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/index.html">Home</a> |
     <a href="index.html">User Guide</a></li>
@@ -54,8 +54,8 @@
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Next topic</h4>
-  <p class="topless"><a href="releaseNotes.html"
-                        title="next chapter">1. Release Notes</a></p>
+  <p class="topless"><a href="introduction.html"
+                        title="next chapter">1. Introduction</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/index.txt"
@@ -86,59 +86,63 @@
 <h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="releaseNotes.html">1. Release Notes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="releaseNotes.html#version-0-1-0">1.1. Version 0.1.0</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="download.html">3. Download</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="download.html#release-0-1-0-xxx-2013">3.1. Release 0.1.0 (xxx, 2013)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="download.html#id2">3.1.1. Download</a></li>
-<li class="toctree-l3"><a class="reference internal" href="download.html#release-notes">3.1.2. Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">2. Download</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-0-xxx-2013">2.1. Release 1.0.0 (xxx, 2013)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="download.html#id2">2.1.1. Download</a></li>
+<li class="toctree-l3"><a class="reference internal" href="download.html#release-notes">2.1.2. Release notes</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">4. Installation and configuration</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#software-requirements">4.1. Software requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-directory">4.2. Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#configuration">4.3. Configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#checking-compile-c-bat">4.4. Checking compile-c.bat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#checking-link-c-exe-bat">4.5. Checking link-c-exe.bat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#modifying-the-batch-files">4.6. Modifying the batch files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#finding-a-compiler-linker-on-unix">4.7. Finding a compiler/linker on Unix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-permissions">4.8. Troubleshooting permissions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-the-memmove-function">4.9. Troubleshooting the memmove function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-missing-libraries">4.10. Troubleshooting missing libraries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#uninstallation">4.11. Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">3. Installation and Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#software-requirements">3.1. Software requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-directory">3.2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#configuration">3.3. Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#configuration-batch-files">3.4. Configuration batch files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#running-a-basic-test">3.5. Running a basic test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#checking-compile-c-bat">3.6. Checking compile-c.bat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#checking-link-c-exe-bat">3.7. Checking link-c-exe.bat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#modifying-the-batch-files">3.8. Modifying the batch files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#finding-a-compiler-linker-unix">3.9. Finding a compiler/linker (Unix)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-permissions-unix">3.10. Troubleshooting permissions (Unix)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-the-memmove-function">3.11. Troubleshooting the <tt class="docutils literal"><span class="pre">memmove</span></tt> function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-missing-libraries">3.12. Troubleshooting missing libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#uninstallation">3.13. Uninstallation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="build.html">5. Creating an FMU</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="build.html#basic-command-line-use">5.1. Basic command-line use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="build.html#output">5.2. Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="build.html#advanced-use">5.3. Advanced use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="build.html#setting-environment-variables">5.4. Setting environment variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="build.html#troubleshooting">5.5. Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="build.html">4. Creating an FMU</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="build.html#basic-command-line-use">4.1. Basic command-line use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build.html#output">4.2. Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build.html#advanced-use">4.3. Advanced use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build.html#setting-environment-variables">4.4. Setting environment variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build.html#troubleshooting">4.5. Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">6. Usage of EnergyPlus as an FMU</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mathematics.html">7. Mathematical Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="bestPractice.html">8. Best Practice</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-schedule-object">8.1. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">Schedule</span></tt> object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-ems-actuator-object">8.2. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">EMS</span> <span class="pre">Actuator</span></tt> object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-ems-variable-object">8.3. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">EMS</span> <span class="pre">Variable</span></tt> object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">5. Usage of EnergyPlus as an FMU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mathematics.html">6. Mathematical Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bestPractice.html">7. Best Practice</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-schedule-object">7.1. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">Schedule</span></tt> object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-ems-actuator-object">7.2. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">EMS</span> <span class="pre">Actuator</span></tt> object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-ems-variable-object">7.3. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">EMS</span> <span class="pre">Variable</span></tt> object</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">9. Development</a></li>
-<li class="toctree-l1"><a class="reference internal" href="help.html">10. Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="help.html#known-issues">11. Known Issues</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="help.html#release-0-1-0">11.1. Release 0.1.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">8. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notation.html">9. Notation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notation.html#command-line-window">9.1. Command-line window</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="glossary.html">12. Glossary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">13. Acknowledgments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="disclaimer.html">14. Disclaimers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="legal.html">15. Copyright and License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="help.html">10. Help</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="help.html#known-issues">10.1. Known Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="help.html#release-1-0-0">10.1.1. Release 1.0.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">11. Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">12. Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="disclaimer.html">13. Disclaimers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="legal.html">14. Copyright and License</a></li>
 </ul>
 </div>
 </div>
@@ -156,7 +160,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="releaseNotes.html" title="1. Release Notes"
+          <a href="introduction.html" title="1. Introduction"
              >next</a> |</li>
     <li><a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/index.html">Home</a> |
     <a href="index.html">User Guide</a></li>

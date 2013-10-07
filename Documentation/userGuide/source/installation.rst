@@ -39,7 +39,7 @@ To install EnergyPlusToFMU, proceed as follows:
 
 2. Unzip the installation file into any folder (hereafter referred to as the "installation directory").
 
-The installation directory then contains the following subdirectories:
+Minimally, the installation directory contains the following subdirectories:
 
 - ``Scripts/``
 
