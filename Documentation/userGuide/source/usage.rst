@@ -7,8 +7,14 @@ Usage of EnergyPlus as an FMU
 
 The following items need to be observed when importing an FMU that contains EnergyPlus:
 
-1. A tool that imports the FMU must start and stop the simulation at midnight. 
-   [#f1]_
+1. A tool that imports the FMU needs to make sure that the version of 
+   EnergyPlus which has been used to export the FMU
+   is (a) installed and (b) added to the system path environment variable. Otherwise, 
+   the simulation will fail with an error. If EnergyPlus has been properly added to the 
+   system path environment variable, then it can be started from any DOS prompt on 
+   Windows, command shell console on Linux, or Terminal window on Mac OS by 
+   typing ``RunEPlus.bat`` on Windows and ``runenergyplus`` on Linux or Mac OS. [#f1]_
+
 2. The ``Number of Timesteps per Hour`` in EnergyPlus must be equal
    to the sampling time of the FMU. For example, consider the following
    EnergyPlus IDF snippet:
@@ -46,37 +52,36 @@ The following items need to be observed when importing an FMU that contains Ener
    start time equal to 3 days, then the first day of the simulation
    will be Tuesday.
 
-4. During the warm-up period and the autosizing of EnergyPlus, 
+4. A tool that imports the FMU must start and stop the simulation at midnight. 
+   [#f4]_
+
+5. The weather file which comes along with an FMU is used to determine 
+   if the year is a leap year. If no weather file is included in the FMU, then the 
+   assumption is that the year is not a leap year.
+
+6. During the warm-up period and the autosizing of EnergyPlus, 
    no data exchange occurs between the FMU and the master program. 
    Thus, inputs of EnergyPlus remain constant during these times and are equals 
    to the initial values specified in the IDF input file.
    
-5. A tool that imports the FMU needs to make sure that the version of 
-   EnergyPlus which has been used to export the FMU
-   is (a) installed and (b) added to the system path environment variable. Otherwise, 
-   the simulation will fail with an error. If EnergyPlus has been properly added to the 
-   system path environment variable, then it can be started from any DOS prompt on 
-   Windows, command shell console on Linux, or Terminal window on Mac OS by 
-   typing ``RunEPlus.bat`` on Windows and ``runenergyplus`` on Linux or Mac OS. [#f4]_
-   
-6. The simulation results are saved in a result folder which is created in the current 
+7. The simulation results are saved in a result folder which is created in the current 
    working directory. The name of the result folder is ``Output_FMUExport_xxx``, where 
    ``xxx`` is the FMU model ``instanceName`` as defined in the FMI specifications.
-
-7. The weather file which comes along with an FMU is used to determine 
-   if the year is a leap year. If no weather file is included in the FMU, then the 
-   assumption is that the year is not a leap year.
 
 
 .. rubric:: Footnotes
 
-.. [#f1] This is because EnergyPlus requires simulation to start and end at
-         midnight.
+.. [#f1] This is because the FMU implements the FMI for co-simulation 
+         in the `Tool Coupling <https://svn.modelica.org/fmi/branches/public/specifications/FMI_for_CoSimulation_v1.0.pdf>`_ scenario. 
 .. [#f2] This is because the External Interface in EnergyPlus synchronizes
          the data at the zone time step which is constant throughout
          the simulation. 
 .. [#f3] This is because a tool that imports an FMU has its own definition 
          of start time and stop time.
+.. [#f4] This is because EnergyPlus requires simulation to start and end at
+         midnight.
 
-.. [#f4] This is because the FMU implements the FMI for co-simulation 
-         in the `Tool Coupling <https://svn.modelica.org/fmi/branches/public/specifications/FMI_for_CoSimulation_v1.0.pdf>`_ scenario. 
+
+
+
+
