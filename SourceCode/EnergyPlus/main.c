@@ -414,7 +414,6 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	fmiBoolean loggingOn)
 {
 	int retVal;
-
 	fmiString mID;
 	fmiString mGUID;
 
@@ -512,7 +511,6 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 8, strlen(fmuLocation + 8));
 		printfDebug ("fmiInstantiateSlave: Path to fmuLocation without https:// %s\n", fmuInstances[_c->index]->fmuLocation);
 	}
-
 	else
 	{
 		strcpy(fmuInstances[_c->index]->fmuLocation, fmuLocation);
@@ -614,6 +612,13 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// free resources_p
 	free (resources_p);
 	printfDebug ("fmiInstantiateSlave: Slave %s is instantiated!\n", instanceName);
+	// reset the current working directory. This is particularly important for Dymola
+	// otherwise Dymola will write results at wrong place
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+	retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 	return(c); 
 }
 
@@ -894,9 +899,23 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 			fmuInstances[_c->index]->firstCallIni = 0;
 		}
 		printfDebug ("fmiInitializeSlave: Slave %s is initialized!\n", instanceName);
+		// reset the current working directory. This is particularly important for Dymola
+		// otherwise Dymola will write results at wrong place
+#ifdef _MSC_VER
+		retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+		retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 		return fmiOK;
 	}
 	printfDebug ("fmiInitializeSlave: Slave %s is initialized!\n", instanceName);
+	// reset the current working directory. This is particularly important for Dymola
+	// otherwise Dymola will write results at wrong place
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+	retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 	return fmiOK;
 } 
 
@@ -912,9 +931,9 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal communicationStepSize, fmiBoolean newStep)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
+	int retVal;
 	if (fmuInstances[_c->index]->pid != 0)
 	{
-		int retVal;
 		FILE *fp;
 
 		// get current communication point
@@ -1085,8 +1104,22 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		{
 			fmuInstances[_c->index]->firstCallDoStep = 0;
 		}
+		// reset the current working directory. This is particularly important for Dymola
+		// otherwise Dymola will write results at wrong place
+#ifdef _MSC_VER
+		retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+		retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 		return fmiOK;
 	}
+	// reset the current working directory. This is particularly important for Dymola
+	// otherwise Dymola will write results at wrong place
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+	retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 	return fmiOK;
 }  
 
@@ -1195,6 +1228,8 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 	// otherwise Dymola will terminate the simulation but returns false
 #ifdef _MSC_VER
 	retVal = _chdir(fmuInstances[_c->index]->cwd);
+	// reset the current working directory. This is particularly important for Dymola
+	// otherwise Dymola will write results at wrong place
 #else
 	retVal = chdir(fmuInstances[_c->index]->cwd);
 #endif
@@ -1294,7 +1329,7 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 		// FIXME: free FMU instance does not work with Dymola 2014
 		// free (_c);
 		// reset the current working directory. This is particularly important for Dymola
-		// otherwise Dymola will terminate the simulation but returns false
+		// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER
 		retVal = _chdir(fmuInstances[_c->index]->cwd);
 #else
@@ -1341,12 +1376,13 @@ DllExport fmiStatus fmiSetDebugLogging  (fmiComponent c, fmiBoolean loggingOn)
 DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiReal value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
+	int retVal;
 	if (fmuInstances[_c->index]->pid != 0)
 	{
 		// fmiValueReference to check for input variable
 		fmiValueReference vrTemp;
 		ScalarVariable** vars;
-		int i, k, retVal;
+		int i, k;
 
 		if (fmuInstances[_c->index]->firstCallSetReal || (fmuInstances[_c->index]->index!=fmuInstances[_c->index]->preInSetReal)){
 			// change the directory to make sure that FMUs are not overwritten
@@ -1384,8 +1420,22 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 		if (fmuInstances[_c->index]->firstCallSetReal){
 			fmuInstances[_c->index]->firstCallSetReal = 0;
 		}
+		// reset the current working directory. This is particularly important for Dymola
+		// otherwise Dymola will write results at wrong place
+#ifdef _MSC_VER
+		retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+		retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 		return fmiOK;
 	}
+	// reset the current working directory. This is particularly important for Dymola
+	// otherwise Dymola will write results at wrong place
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+	retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 	return fmiOK;
 }
 
@@ -1476,11 +1526,12 @@ DllExport fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], s
 DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
+	int retVal;
 	if (fmuInstances[_c->index]->pid != 0)
 	{
 		fmiValueReference vrTemp;
 		ScalarVariable** vars;
-		int i, k, retVal;
+		int i, k;
 
 		vars = fmuInstances[_c->index]->md->modelVariables;
 		fmuInstances[_c->index]->flaGetRealCall = 1;
@@ -1530,9 +1581,22 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 		{
 			fmuInstances[_c->index]->firstCallGetReal = 0;
 		}
+		// reset the current working directory. This is particularly important for Dymola
+		// otherwise Dymola will write results at wrong place
+#ifdef _MSC_VER
+		retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+		retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 		return fmiOK;
 	}
-
+	// reset the current working directory. This is particularly important for Dymola
+	// otherwise Dymola will write results at wrong place
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+	retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 	return fmiOK;
 }
 
