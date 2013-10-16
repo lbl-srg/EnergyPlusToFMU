@@ -54,10 +54,12 @@
 #define TS 1
 #endif
 
+
 typedef struct idfFmu_t {
 	int index;
 	fmiCallbackFunctions functions;
 	char instanceName[PATHLEN];
+	char cwd[256];
 	char* fmuLocation;
 	char* fmuCalLocation;
 	char* mID;
@@ -419,7 +421,6 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	char *xml_file_p;
 	char tmpResLoc[5];
 	char uptmpResLoc[8];
-	char cwd[256];
 	char *fmuOutput;
 	char *tmpResCon;
 	char* resources_p;
@@ -439,24 +440,25 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 
 	// get current working directory
 #ifdef _MSC_VER
-	if (_getcwd(cwd, sizeof(cwd)) == NULL)
+	if (_getcwd(fmuInstances[_c->index]->cwd, sizeof(fmuInstances[_c->index]->cwd)) == NULL)
 #else
-	if (getcwd(cwd, sizeof(cwd)) == NULL)
+	if (getcwd(fmuInstances[_c->index]->cwd, sizeof(fmuInstances[_c->index]->cwd)) == NULL)
 #endif
 	{
 		perror("getcwd() error");
 	}
 	else
 	{
-		printfDebug("The current working directory is: %s\n", cwd);
+		printfDebug("The current working directory is: %s\n", fmuInstances[_c->index]->cwd);
 	}
 
 	// create the output folder for current FMU in working directory
-	fmuOutput = (char *)calloc(sizeof(char), strlen ("Output_EPExport_") + strlen (instanceName) + 10 + strlen (cwd));
+	fmuOutput = (char *)calloc(sizeof(char), strlen ("Output_EPExport_") + strlen (instanceName) 
+		+ 10 + strlen (fmuInstances[_c->index]->cwd));
 #ifdef _MSC_VER
-	sprintf(fmuOutput, "%s%s%s%s", cwd,"\\", "Output_EPExport_", instanceName);
+	sprintf(fmuOutput, "%s%s%s%s", fmuInstances[_c->index]->cwd,"\\", "Output_EPExport_", instanceName);
 #else
-	sprintf(fmuOutput, "%s%s%s%s", cwd,"//", "Output_EPExport_", instanceName);
+	sprintf(fmuOutput, "%s%s%s%s", fmuInstances[_c->index]->cwd,"//", "Output_EPExport_", instanceName);
 #endif
 	// check if directory exists and deletes it 
 	errDir = (stat(fmuOutput, &st) == 0);
@@ -1115,9 +1117,9 @@ DllExport fmiStatus fmiCancelStep(fmiComponent c)
 DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
+	int retVal;
 	if (fmuInstances[_c->index]->pid != 0)
 	{
-		int retVal;
 #ifndef _MSC_VER
 		int status;
 #endif
@@ -1180,9 +1182,22 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 		}
 		// FIXME: free FMU instance does not work with Dymola 2014
 		//free (_c);
+		// reset the current working directory. This is particularly important for Dymola
+		// otherwise Dymola will terminate the simulation but returns false
+#ifdef _MSC_VER
+		retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+		retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 		return fmiOK;
 	}
-
+	// reset the current working directory. This is particularly important for Dymola
+	// otherwise Dymola will terminate the simulation but returns false
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+	retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 	return fmiOK;
 }
 
@@ -1212,10 +1227,9 @@ DllExport fmiStatus fmiResetSlave(fmiComponent c)
 DllExport void fmiFreeSlaveInstance(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-
+	int retVal;
 	if (fmuInstances[_c->index]->pid != 0)
 	{
-		int retVal;
 #ifndef _MSC_VER
 		int status;
 #endif
@@ -1279,7 +1293,21 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 		}
 		// FIXME: free FMU instance does not work with Dymola 2014
 		// free (_c);
+		// reset the current working directory. This is particularly important for Dymola
+		// otherwise Dymola will terminate the simulation but returns false
+#ifdef _MSC_VER
+		retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+		retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 	}
+	// reset the current working directory. This is particularly important for Dymola
+	// otherwise Dymola will terminate the simulation but returns false
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+	retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
 
 }
 
@@ -1594,7 +1622,8 @@ DllExport fmiStatus fmiGetString (fmiComponent c, const fmiValueReference vr[], 
 ///\param value The values of variables to get.
 ///\return fmiWarning if no error occurred.
 ////////////////////////////////////////////////////////////////
-DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], fmiReal value[])
+DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, 
+	const fmiInteger order[], fmiReal value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	if (fmuInstances[_c->index]->pid != 0)
@@ -1617,7 +1646,8 @@ DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueRe
 ///\param value The values of variables to set.
 ///\return fmiWarning if no error occurred.
 ////////////////////////////////////////////////////////////////
-DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])
+DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, 
+	const fmiInteger order[], const fmiReal value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	if (fmuInstances[_c->index]->pid != 0)
