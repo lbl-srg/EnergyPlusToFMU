@@ -1,5 +1,4 @@
 ! Based on EnergyPlus example file "EnergyPlus/Examples/EMSCustomSchedule.idf".
-
 ! EMSCustomSchedule.idf
 !
 ! Highlights:   Demonstrates using Energy Management System adn EnergyPlus Runtime Language to "create" schedules from calculations.
@@ -67,7 +66,7 @@
 ! ExtWallConstruction=Mass
 ! End SimMetaData
 
-  Version,7.1;
+  Version,8.0;
 
   Timestep,6;
 
@@ -108,6 +107,7 @@
     20;                      !- Maximum HVAC Iterations
 
   ShadowCalculation,
+    AverageOverDaysInFrequency,  !- Calculation Method
     7,                       !- Calculation Frequency
     15000;                   !- Maximum Figures in Shadow Overlap Calculations
 
@@ -222,11 +222,11 @@
     -20.6,                   !- Maximum Dry-Bulb Temperature {C}
     0.0,                     !- Daily Dry-Bulb Temperature Range {deltaC}
     ,                        !- Dry-Bulb Temperature Range Modifier Type
-    ,                        !- Dry-Bulb Temperature Range Modifier Schedule Name
+    ,                        !- Dry-Bulb Temperature Range Modifier Day Schedule Name
     Wetbulb,                 !- Humidity Condition Type
     -20.6,                   !- Wetbulb or DewPoint at Maximum Dry-Bulb {C}
-    ,                        !- Humidity Indicating Day Schedule Name
-    ,                        !- Humidity Ratio at Maximum Dry-Bulb {dimensionless}
+    ,                        !- Humidity Condition Day Schedule Name
+    ,                        !- Humidity Ratio at Maximum Dry-Bulb {kgWater/kgDryAir}
     ,                        !- Enthalpy at Maximum Dry-Bulb {J/kg}
     ,                        !- Daily Wet-Bulb Temperature Range {deltaC}
     99063.,                  !- Barometric Pressure {Pa}
@@ -239,7 +239,7 @@
     ,                        !- Beam Solar Day Schedule Name
     ,                        !- Diffuse Solar Day Schedule Name
     ,                        !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub) {dimensionless}
-    ,                        !- ASHRAE Clear Sky Optical Depth for Diffues Irradiance (taud) {dimensionless}
+    ,                        !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud) {dimensionless}
     0.00;                    !- Sky Clearness
 
 ! CHICAGO_IL_USA Annual Cooling (DB=>MWB) .4%, MaxDB=33.2°C MWB=23.8°C
@@ -252,11 +252,11 @@
     33.2,                    !- Maximum Dry-Bulb Temperature {C}
     10.7,                    !- Daily Dry-Bulb Temperature Range {deltaC}
     ,                        !- Dry-Bulb Temperature Range Modifier Type
-    ,                        !- Dry-Bulb Temperature Range Modifier Schedule Name
+    ,                        !- Dry-Bulb Temperature Range Modifier Day Schedule Name
     Wetbulb,                 !- Humidity Condition Type
     23.8,                    !- Wetbulb or DewPoint at Maximum Dry-Bulb {C}
-    ,                        !- Humidity Indicating Day Schedule Name
-    ,                        !- Humidity Ratio at Maximum Dry-Bulb {dimensionless}
+    ,                        !- Humidity Condition Day Schedule Name
+    ,                        !- Humidity Ratio at Maximum Dry-Bulb {kgWater/kgDryAir}
     ,                        !- Enthalpy at Maximum Dry-Bulb {J/kg}
     ,                        !- Daily Wet-Bulb Temperature Range {deltaC}
     99063.,                  !- Barometric Pressure {Pa}
@@ -269,7 +269,7 @@
     ,                        !- Beam Solar Day Schedule Name
     ,                        !- Diffuse Solar Day Schedule Name
     ,                        !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub) {dimensionless}
-    ,                        !- ASHRAE Clear Sky Optical Depth for Diffues Irradiance (taud) {dimensionless}
+    ,                        !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud) {dimensionless}
     1.00;                    !- Sky Clearness
 
   ScheduleTypeLimits,
@@ -513,7 +513,6 @@
 !    HTGSETP_SCH,             !- Actuated Component Unique Name
 !    Schedule:Constant,       !- Actuated Component Type
 !    Schedule Value;          !- Actuated Component Control Type
-
 ! This program, and the actuator it controls, now replaced by external interface.
 !  EnergyManagementSystem:Program,
 !    MyComputedHeatingSetpointProg,  !- Name
@@ -1130,7 +1129,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     InteriorFurnishings,     !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     1,                       !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1154,7 +1153,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     INT-FLOOR-UNDERSIDE,     !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     15,                      !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1172,7 +1171,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     INT-FLOOR-SLAB,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     35,                      !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1190,7 +1189,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     DropCeiling,             !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     10,                      !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1235,7 +1234,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     Sloped_Metal_Roof,       !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     1,                       !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1253,7 +1252,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     Gable_Wall,              !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     1,                       !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1271,7 +1270,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     AIR-WALL,                !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     1,                       !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1289,7 +1288,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     Std Swinging Door_con,   !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     1,                       !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1307,7 +1306,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     Std Swinging Door_semi,  !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     1,                       !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1325,7 +1324,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     Std Overhead Door,       !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     1,                       !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1343,7 +1342,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     window_south,            !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     215.9700,                !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1362,7 +1361,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     window_east,             !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     215.9700,                !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1381,7 +1380,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     window_north,            !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     209.7290,                !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1400,7 +1399,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     window_west,             !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     215.9700,                !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1419,7 +1418,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     window_SkylightConst,    !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     215.9700,                !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1441,7 +1440,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     roofs,                   !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     14.9259,                 !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1461,7 +1460,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     int-walls,               !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     1.0000,                  !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1483,7 +1482,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     ext-walls,               !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     42.9231,                 !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1503,7 +1502,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     ext-slab,                !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     24.8600,                 !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1524,7 +1523,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     exposed-floor,           !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     34.6727,                 !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1545,7 +1544,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     attic-floor,             !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     15.0182,                 !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1565,7 +1564,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     attic-roof,              !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     34.3904,                 !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1586,7 +1585,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     door,                    !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     1.0000,                  !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1607,7 +1606,7 @@
     ,                        !- Type
     Construction,            !- Line Item Type
     non-swinging-door,       !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     1.0000,                  !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1759,7 +1758,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Core_ZN,                 !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1789,7 +1788,7 @@
     ,                        !- Type
     Lights,                  !- Line Item Type
     Core_ZN,                 !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     1.0000,                  !- Cost per Unit of Output Capacity {$/kW}
@@ -1817,7 +1816,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Core_ZN,                 !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -1831,10 +1830,14 @@
 
   Sizing:Zone,
     Core_ZN,                 !- Zone or ZoneList Name
+    SupplyAirTemperature,    !- Zone Cooling Design Supply Air Temperature Input Method
     14.0,                    !- Zone Cooling Design Supply Air Temperature {C}
+    ,                        !- Zone Cooling Design Supply Air Temperature Difference {deltaC}
+    SupplyAirTemperature,    !- Zone Heating Design Supply Air Temperature Input Method
     40.0,                    !- Zone Heating Design Supply Air Temperature {C}
-    0.0085,                  !- Zone Cooling Design Supply Air Humidity Ratio {kg-H2O/kg-air}
-    0.008,                   !- Zone Heating Design Supply Air Humidity Ratio {kg-H2O/kg-air}
+    ,                        !- Zone Heating Design Supply Air Temperature Difference {deltaC}
+    0.0085,                  !- Zone Cooling Design Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.008,                   !- Zone Heating Design Supply Air Humidity Ratio {kgWater/kgDryAir}
     SZ DSOA Core_ZN,         !- Design Specification Outdoor Air Object Name
     0.0000,                  !- Zone Heating Sizing Factor
     0.0000,                  !- Zone Cooling Sizing Factor
@@ -2206,7 +2209,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_1,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -2241,7 +2244,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_1,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -2271,7 +2274,7 @@
     ,                        !- Type
     Lights,                  !- Line Item Type
     Perimeter_ZN_1,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     1.0000,                  !- Cost per Unit of Output Capacity {$/kW}
@@ -2299,7 +2302,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_1,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -2313,10 +2316,14 @@
 
   Sizing:Zone,
     Perimeter_ZN_1,          !- Zone or ZoneList Name
+    SupplyAirTemperature,    !- Zone Cooling Design Supply Air Temperature Input Method
     14.0,                    !- Zone Cooling Design Supply Air Temperature {C}
+    ,                        !- Zone Cooling Design Supply Air Temperature Difference {deltaC}
+    SupplyAirTemperature,    !- Zone Heating Design Supply Air Temperature Input Method
     40.0,                    !- Zone Heating Design Supply Air Temperature {C}
-    0.0085,                  !- Zone Cooling Design Supply Air Humidity Ratio {kg-H2O/kg-air}
-    0.008,                   !- Zone Heating Design Supply Air Humidity Ratio {kg-H2O/kg-air}
+    ,                        !- Zone Heating Design Supply Air Temperature Difference {deltaC}
+    0.0085,                  !- Zone Cooling Design Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.008,                   !- Zone Heating Design Supply Air Humidity Ratio {kgWater/kgDryAir}
     SZ DSOA Perimeter_ZN_1,  !- Design Specification Outdoor Air Object Name
     0.0000,                  !- Zone Heating Sizing Factor
     0.0000,                  !- Zone Cooling Sizing Factor
@@ -2585,7 +2592,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_2,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -2620,7 +2627,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_2,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -2650,7 +2657,7 @@
     ,                        !- Type
     Lights,                  !- Line Item Type
     Perimeter_ZN_2,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     1.0000,                  !- Cost per Unit of Output Capacity {$/kW}
@@ -2678,7 +2685,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_2,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -2692,10 +2699,14 @@
 
   Sizing:Zone,
     Perimeter_ZN_2,          !- Zone or ZoneList Name
+    SupplyAirTemperature,    !- Zone Cooling Design Supply Air Temperature Input Method
     14.0,                    !- Zone Cooling Design Supply Air Temperature {C}
+    ,                        !- Zone Cooling Design Supply Air Temperature Difference {deltaC}
+    SupplyAirTemperature,    !- Zone Heating Design Supply Air Temperature Input Method
     40.0,                    !- Zone Heating Design Supply Air Temperature {C}
-    0.0085,                  !- Zone Cooling Design Supply Air Humidity Ratio {kg-H2O/kg-air}
-    0.008,                   !- Zone Heating Design Supply Air Humidity Ratio {kg-H2O/kg-air}
+    ,                        !- Zone Heating Design Supply Air Temperature Difference {deltaC}
+    0.0085,                  !- Zone Cooling Design Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.008,                   !- Zone Heating Design Supply Air Humidity Ratio {kgWater/kgDryAir}
     SZ DSOA Perimeter_ZN_2,  !- Design Specification Outdoor Air Object Name
     0.0000,                  !- Zone Heating Sizing Factor
     0.0000,                  !- Zone Cooling Sizing Factor
@@ -2996,7 +3007,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_3,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -3031,7 +3042,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_3,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -3061,7 +3072,7 @@
     ,                        !- Type
     Lights,                  !- Line Item Type
     Perimeter_ZN_3,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     1.0000,                  !- Cost per Unit of Output Capacity {$/kW}
@@ -3089,7 +3100,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_3,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -3103,10 +3114,14 @@
 
   Sizing:Zone,
     Perimeter_ZN_3,          !- Zone or ZoneList Name
+    SupplyAirTemperature,    !- Zone Cooling Design Supply Air Temperature Input Method
     14.0,                    !- Zone Cooling Design Supply Air Temperature {C}
+    ,                        !- Zone Cooling Design Supply Air Temperature Difference {deltaC}
+    SupplyAirTemperature,    !- Zone Heating Design Supply Air Temperature Input Method
     40.0,                    !- Zone Heating Design Supply Air Temperature {C}
-    0.0085,                  !- Zone Cooling Design Supply Air Humidity Ratio {kg-H2O/kg-air}
-    0.008,                   !- Zone Heating Design Supply Air Humidity Ratio {kg-H2O/kg-air}
+    ,                        !- Zone Heating Design Supply Air Temperature Difference {deltaC}
+    0.0085,                  !- Zone Cooling Design Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.008,                   !- Zone Heating Design Supply Air Humidity Ratio {kgWater/kgDryAir}
     SZ DSOA Perimeter_ZN_3,  !- Design Specification Outdoor Air Object Name
     0.0000,                  !- Zone Heating Sizing Factor
     0.0000,                  !- Zone Cooling Sizing Factor
@@ -3375,7 +3390,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_4,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -3410,7 +3425,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_4,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -3440,7 +3455,7 @@
     ,                        !- Type
     Lights,                  !- Line Item Type
     Perimeter_ZN_4,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     ,                        !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     1.0000,                  !- Cost per Unit of Output Capacity {$/kW}
@@ -3468,7 +3483,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Perimeter_ZN_4,          !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -3482,10 +3497,14 @@
 
   Sizing:Zone,
     Perimeter_ZN_4,          !- Zone or ZoneList Name
+    SupplyAirTemperature,    !- Zone Cooling Design Supply Air Temperature Input Method
     14.0,                    !- Zone Cooling Design Supply Air Temperature {C}
+    ,                        !- Zone Cooling Design Supply Air Temperature Difference {deltaC}
+    SupplyAirTemperature,    !- Zone Heating Design Supply Air Temperature Input Method
     40.0,                    !- Zone Heating Design Supply Air Temperature {C}
-    0.0085,                  !- Zone Cooling Design Supply Air Humidity Ratio {kg-H2O/kg-air}
-    0.008,                   !- Zone Heating Design Supply Air Humidity Ratio {kg-H2O/kg-air}
+    ,                        !- Zone Heating Design Supply Air Temperature Difference {deltaC}
+    0.0085,                  !- Zone Cooling Design Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.008,                   !- Zone Heating Design Supply Air Humidity Ratio {kgWater/kgDryAir}
     SZ DSOA Perimeter_ZN_4,  !- Design Specification Outdoor Air Object Name
     0.0000,                  !- Zone Heating Sizing Factor
     0.0000,                  !- Zone Cooling Sizing Factor
@@ -3794,7 +3813,7 @@
     ,                        !- Type
     General,                 !- Line Item Type
     Attic,                   !- Item Name
-    ,                        !- Object End Use Key
+    ,                        !- Object End-Use Key
     1.0000,                  !- Cost per Each {$}
     ,                        !- Cost per Area {$/m2}
     ,                        !- Cost per Unit of Output Capacity {$/kW}
@@ -3840,16 +3859,16 @@
     AUTOSIZE,                !- Design Outdoor Air Flow Rate {m3/s}
     0.3000,                  !- Minimum System Air Flow Ratio
     7.0,                     !- Preheat Design Temperature {C}
-    0.008,                   !- Preheat Design Humidity Ratio {kg-H2O/kg-Air}
+    0.008,                   !- Preheat Design Humidity Ratio {kgWater/kgDryAir}
     12.8000,                 !- Precool Design Temperature {C}
-    0.008,                   !- Precool Design Humidity Ratio {kg-H2O/kg-Air}
+    0.008,                   !- Precool Design Humidity Ratio {kgWater/kgDryAir}
     12.8000,                 !- Central Cooling Design Supply Air Temperature {C}
     40.0,                    !- Central Heating Design Supply Air Temperature {C}
     NonCoincident,           !- Sizing Option
     No,                      !- 100% Outdoor Air in Cooling
     No,                      !- 100% Outdoor Air in Heating
-    0.0085,                  !- Central Cooling Design Supply Air Humidity Ratio {kg-H2O/kg-Air}
-    0.008,                   !- Central Heating Design Supply Air Humidity Ratio {kg-H2O/kg-Air}
+    0.0085,                  !- Central Cooling Design Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.008,                   !- Central Heating Design Supply Air Humidity Ratio {kgWater/kgDryAir}
     DesignDay,               !- Cooling Design Air Flow Method
     0.0,                     !- Cooling Design Air Flow Rate {m3/s}
     DesignDay,               !- Heating Design Air Flow Method
@@ -4124,16 +4143,16 @@
     AUTOSIZE,                !- Design Outdoor Air Flow Rate {m3/s}
     0.3000,                  !- Minimum System Air Flow Ratio
     7.0,                     !- Preheat Design Temperature {C}
-    0.008,                   !- Preheat Design Humidity Ratio {kg-H2O/kg-Air}
+    0.008,                   !- Preheat Design Humidity Ratio {kgWater/kgDryAir}
     12.8000,                 !- Precool Design Temperature {C}
-    0.008,                   !- Precool Design Humidity Ratio {kg-H2O/kg-Air}
+    0.008,                   !- Precool Design Humidity Ratio {kgWater/kgDryAir}
     12.8000,                 !- Central Cooling Design Supply Air Temperature {C}
     40.0,                    !- Central Heating Design Supply Air Temperature {C}
     NonCoincident,           !- Sizing Option
     No,                      !- 100% Outdoor Air in Cooling
     No,                      !- 100% Outdoor Air in Heating
-    0.0085,                  !- Central Cooling Design Supply Air Humidity Ratio {kg-H2O/kg-Air}
-    0.008,                   !- Central Heating Design Supply Air Humidity Ratio {kg-H2O/kg-Air}
+    0.0085,                  !- Central Cooling Design Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.008,                   !- Central Heating Design Supply Air Humidity Ratio {kgWater/kgDryAir}
     DesignDay,               !- Cooling Design Air Flow Method
     0.0,                     !- Cooling Design Air Flow Rate {m3/s}
     DesignDay,               !- Heating Design Air Flow Method
@@ -4408,16 +4427,16 @@
     AUTOSIZE,                !- Design Outdoor Air Flow Rate {m3/s}
     0.3000,                  !- Minimum System Air Flow Ratio
     7.0,                     !- Preheat Design Temperature {C}
-    0.008,                   !- Preheat Design Humidity Ratio {kg-H2O/kg-Air}
+    0.008,                   !- Preheat Design Humidity Ratio {kgWater/kgDryAir}
     12.8000,                 !- Precool Design Temperature {C}
-    0.008,                   !- Precool Design Humidity Ratio {kg-H2O/kg-Air}
+    0.008,                   !- Precool Design Humidity Ratio {kgWater/kgDryAir}
     12.8000,                 !- Central Cooling Design Supply Air Temperature {C}
     40.0,                    !- Central Heating Design Supply Air Temperature {C}
     NonCoincident,           !- Sizing Option
     No,                      !- 100% Outdoor Air in Cooling
     No,                      !- 100% Outdoor Air in Heating
-    0.0085,                  !- Central Cooling Design Supply Air Humidity Ratio {kg-H2O/kg-Air}
-    0.008,                   !- Central Heating Design Supply Air Humidity Ratio {kg-H2O/kg-Air}
+    0.0085,                  !- Central Cooling Design Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.008,                   !- Central Heating Design Supply Air Humidity Ratio {kgWater/kgDryAir}
     DesignDay,               !- Cooling Design Air Flow Method
     0.0,                     !- Cooling Design Air Flow Rate {m3/s}
     DesignDay,               !- Heating Design Air Flow Method
@@ -4692,16 +4711,16 @@
     AUTOSIZE,                !- Design Outdoor Air Flow Rate {m3/s}
     0.3000,                  !- Minimum System Air Flow Ratio
     7.0,                     !- Preheat Design Temperature {C}
-    0.008,                   !- Preheat Design Humidity Ratio {kg-H2O/kg-Air}
+    0.008,                   !- Preheat Design Humidity Ratio {kgWater/kgDryAir}
     12.8000,                 !- Precool Design Temperature {C}
-    0.008,                   !- Precool Design Humidity Ratio {kg-H2O/kg-Air}
+    0.008,                   !- Precool Design Humidity Ratio {kgWater/kgDryAir}
     12.8000,                 !- Central Cooling Design Supply Air Temperature {C}
     40.0,                    !- Central Heating Design Supply Air Temperature {C}
     NonCoincident,           !- Sizing Option
     No,                      !- 100% Outdoor Air in Cooling
     No,                      !- 100% Outdoor Air in Heating
-    0.0085,                  !- Central Cooling Design Supply Air Humidity Ratio {kg-H2O/kg-Air}
-    0.008,                   !- Central Heating Design Supply Air Humidity Ratio {kg-H2O/kg-Air}
+    0.0085,                  !- Central Cooling Design Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.008,                   !- Central Heating Design Supply Air Humidity Ratio {kgWater/kgDryAir}
     DesignDay,               !- Cooling Design Air Flow Method
     0.0,                     !- Cooling Design Air Flow Rate {m3/s}
     DesignDay,               !- Heating Design Air Flow Method
@@ -4976,16 +4995,16 @@
     AUTOSIZE,                !- Design Outdoor Air Flow Rate {m3/s}
     0.3000,                  !- Minimum System Air Flow Ratio
     7.0,                     !- Preheat Design Temperature {C}
-    0.008,                   !- Preheat Design Humidity Ratio {kg-H2O/kg-Air}
+    0.008,                   !- Preheat Design Humidity Ratio {kgWater/kgDryAir}
     12.8000,                 !- Precool Design Temperature {C}
-    0.008,                   !- Precool Design Humidity Ratio {kg-H2O/kg-Air}
+    0.008,                   !- Precool Design Humidity Ratio {kgWater/kgDryAir}
     12.8000,                 !- Central Cooling Design Supply Air Temperature {C}
     40.0,                    !- Central Heating Design Supply Air Temperature {C}
     NonCoincident,           !- Sizing Option
     No,                      !- 100% Outdoor Air in Cooling
     No,                      !- 100% Outdoor Air in Heating
-    0.0085,                  !- Central Cooling Design Supply Air Humidity Ratio {kg-H2O/kg-Air}
-    0.008,                   !- Central Heating Design Supply Air Humidity Ratio {kg-H2O/kg-Air}
+    0.0085,                  !- Central Cooling Design Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.008,                   !- Central Heating Design Supply Air Humidity Ratio {kgWater/kgDryAir}
     DesignDay,               !- Cooling Design Air Flow Method
     0.0,                     !- Cooling Design Air Flow Rate {m3/s}
     DesignDay,               !- Heating Design Air Flow Method
@@ -5984,17 +6003,17 @@
   Output:Table:Monthly,
     Occupant Comfort Data Summary,  !- Name
     3,                       !- Digits After Decimal
-    People Number Of Occupants,  !- Variable or Meter 1 Name
+    People Occupant Count,   !- Variable or Meter 1 Name
     HoursNonZero,            !- Aggregation Type for Variable or Meter 1
-    People Air Temperatures, !- Variable or Meter 2 Name
+    People Air Temperature,  !- Variable or Meter 2 Name
     SumOrAverageDuringHoursShown,  !- Aggregation Type for Variable or Meter 2
     People Air Relative Humidity,  !- Variable or Meter 3 Name
     SumOrAverageDuringHoursShown,  !- Aggregation Type for Variable or Meter 3
-    ThermalComfortMRT,       !- Variable or Meter 4 Name
+    Zone Thermal Comfort Mean Radiant Temperature,  !- Variable or Meter 4 Name
     SumOrAverageDuringHoursShown,  !- Aggregation Type for Variable or Meter 4
-    Time Not Comfortable Summer Or Winter Clothes,  !- Variable or Meter 5 Name
+    Zone Thermal Comfort ASHRAE 55 Simple Model Summer or Winter Clothes Not Comfortable Time,  !- Variable or Meter 5 Name
     SumOrAverageDuringHoursShown,  !- Aggregation Type for Variable or Meter 5
-    FANGERPMV,               !- Variable or Meter 6 Name
+    Zone Thermal Comfort Fanger Model PMV,  !- Variable or Meter 6 Name
     SumOrAverageDuringHoursShown;  !- Aggregation Type for Variable or Meter 6
 
   Output:EnvironmentalImpactFactors,
@@ -6002,9 +6021,9 @@
 
   EnvironmentalImpactFactors,
     0.663,                   !- District Heating Efficiency
-    4.18,                    !- District Cooling COP
+    4.18,                    !- District Cooling COP {W/W}
     0.585,                   !- Steam Conversion Efficiency
-    80.7272,                 !- Total Carbon Equivalent Emission Factor From NOx {kg/kg}
+    80.7272,                 !- Total Carbon Equivalent Emission Factor From N2O {kg/kg}
     6.2727,                  !- Total Carbon Equivalent Emission Factor From CH4 {kg/kg}
     0.2727;                  !- Total Carbon Equivalent Emission Factor From CO2 {kg/kg}
 
@@ -6029,11 +6048,11 @@
   Output:Table:Monthly,
     Outdoor Air Summary,     !- Name
     3,                       !- Digits After Decimal
-    Zone People Number of Occupants,  !- Variable or Meter 1 Name
+    Zone People Occupant Count,  !- Variable or Meter 1 Name
     HoursNonZero,            !- Aggregation Type for Variable or Meter 1
-    Zone People Number Of Occupants,  !- Variable or Meter 2 Name
+    Zone People Occupant Count,  !- Variable or Meter 2 Name
     SumOrAverageDuringHoursShown,  !- Aggregation Type for Variable or Meter 2
-    Zone Mechanical Ventilation Air Change Rate,  !- Variable or Meter 3 Name
+    Zone Mechanical Ventilation Air Changes per Hour,  !- Variable or Meter 3 Name
     SumOrAverageDuringHoursShown,  !- Aggregation Type for Variable or Meter 3
     Zone Infiltration Air Change Rate,  !- Variable or Meter 4 Name
     SumOrAverageDuringHoursShown;  !- Aggregation Type for Variable or Meter 4
@@ -6041,29 +6060,29 @@
   Output:Table:Monthly,
     Ventilation Load Components,  !- Name
     3,                       !- Digits After Decimal
-    Zone Mechanical Ventilation No Load Heat Removal,  !- Variable or Meter 1 Name
+    Zone Mechanical Ventilation No Load Heat Removal Energy,  !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    Zone Mechanical Ventilation Cooling Load Increase,  !- Variable or Meter 2 Name
+    Zone Mechanical Ventilation Cooling Load Increase Energy,  !- Variable or Meter 2 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 2
-    Zone Mech Ventilation Cooling Load Increase: OverHeating,  !- Variable or Meter 3 Name
+    Zone Mechanical Ventilation Cooling Load Increase Due to Overheating Energy,  !- Variable or Meter 3 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 3
-    Zone Mechanical Ventilation Cooling Load Decrease,  !- Variable or Meter 4 Name
+    Zone Mechanical Ventilation Cooling Load Decrease Energy,  !- Variable or Meter 4 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 4
-    Zone Mechanical Ventilation No Load Heat Addition,  !- Variable or Meter 5 Name
+    Zone Mechanical Ventilation No Load Heat Addition Energy,  !- Variable or Meter 5 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 5
-    Zone Mechanical Ventilation Heating Load Increase,  !- Variable or Meter 6 Name
+    Zone Mechanical Ventilation Heating Load Increase Energy,  !- Variable or Meter 6 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 6
-    Zone Mech Ventilation Heating Load Increase: OverCooling,  !- Variable or Meter 7 Name
+    Zone Mechanical Ventilation Heating Load Increase Due to Overcooling Energy,  !- Variable or Meter 7 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 7
-    Zone Mechanical Ventilation Heating Load Decrease,  !- Variable or Meter 8 Name
+    Zone Mechanical Ventilation Heating Load Decrease Energy,  !- Variable or Meter 8 Name
     SumOrAverage;            !- Aggregation Type for Variable or Meter 8
 
   Output:Table:Monthly,
     Overall HVAC Air System Loads,  !- Name
     3,                       !- Digits After Decimal
-    Air Loop Total Heating Energy,  !- Variable or Meter 1 Name
+    Air System Total Heating Energy,  !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    Air Loop Total Cooling Energy,  !- Variable or Meter 2 Name
+    Air System Total Cooling Energy,  !- Variable or Meter 2 Name
     SumOrAverage;            !- Aggregation Type for Variable or Meter 2
 
   Output:Table:Monthly,
@@ -6153,19 +6172,19 @@
   Output:Table:Monthly,
     Setpoints Not Met With Temperatures,  !- Name
     2,                       !- Digits After Decimal
-    Time Heating Setpoint Not Met,  !- Variable or Meter 1 Name
+    Zone Heating Setpoint Not Met Time,  !- Variable or Meter 1 Name
     HoursNonZero,            !- Aggregation Type for Variable or Meter 1
     Zone Mean Air Temperature,  !- Variable or Meter 2 Name
     SumOrAverageDuringHoursShown,  !- Aggregation Type for Variable or Meter 2
-    Time Heating Setpoint Not Met While Occupied,  !- Variable or Meter 3 Name
+    Zone Heating Setpoint Not Met While Occupied Time,  !- Variable or Meter 3 Name
     HoursNonZero,            !- Aggregation Type for Variable or Meter 3
     Zone Mean Air Temperature,  !- Variable or Meter 4 Name
     SumOrAverageDuringHoursShown,  !- Aggregation Type for Variable or Meter 4
-    Time Cooling Setpoint Not Met,  !- Variable or Meter 5 Name
+    Zone Cooling Setpoint Not Met Time,  !- Variable or Meter 5 Name
     HoursNonZero,            !- Aggregation Type for Variable or Meter 5
     Zone Mean Air Temperature,  !- Variable or Meter 6 Name
     SumOrAverageDuringHoursShown,  !- Aggregation Type for Variable or Meter 6
-    Time Cooling Setpoint Not Met While Occupied,  !- Variable or Meter 7 Name
+    Zone Cooling Setpoint Not Met While Occupied Time,  !- Variable or Meter 7 Name
     HoursNonZero,            !- Aggregation Type for Variable or Meter 7
     Zone Mean Air Temperature,  !- Variable or Meter 8 Name
     SumOrAverageDuringHoursShown;  !- Aggregation Type for Variable or Meter 8
@@ -6173,57 +6192,57 @@
   Output:Table:Monthly,
     Building Loads - Cooling,!- Name
     2,                       !- Digits After Decimal
-    Zone/Sys Sensible Cooling Energy,  !- Variable or Meter 1 Name
+    Zone Air System Sensible Cooling Energy,  !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    Zone/Sys Sensible Cooling Rate,  !- Variable or Meter 2 Name
+    Zone Air System Sensible Cooling Rate,  !- Variable or Meter 2 Name
     Maximum,                 !- Aggregation Type for Variable or Meter 2
-    Outdoor Dry Bulb,        !- Variable or Meter 3 Name
+    Site Outdoor Air Drybulb Temperature,  !- Variable or Meter 3 Name
     ValueWhenMaximumOrMinimum,  !- Aggregation Type for Variable or Meter 3
-    Outdoor Wet Bulb,        !- Variable or Meter 4 Name
+    Site Outdoor Air Wetbulb Temperature,  !- Variable or Meter 4 Name
     ValueWhenMaximumOrMinimum,  !- Aggregation Type for Variable or Meter 4
-    Zone Total Internal Latent Gain,  !- Variable or Meter 5 Name
+    Zone Total Internal Latent Gain Energy,  !- Variable or Meter 5 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 5
-    Zone Total Internal Latent Gain,  !- Variable or Meter 6 Name
+    Zone Total Internal Latent Gain Energy,  !- Variable or Meter 6 Name
     Maximum,                 !- Aggregation Type for Variable or Meter 6
-    Outdoor Dry Bulb,        !- Variable or Meter 7 Name
+    Site Outdoor Air Drybulb Temperature,  !- Variable or Meter 7 Name
     ValueWhenMaximumOrMinimum,  !- Aggregation Type for Variable or Meter 7
-    Outdoor Wet Bulb,        !- Variable or Meter 8 Name
+    Site Outdoor Air Wetbulb Temperature,  !- Variable or Meter 8 Name
     ValueWhenMaximumOrMinimum;  !- Aggregation Type for Variable or Meter 8
 
   Output:Table:Monthly,
     Building Loads - Heating,!- Name
     2,                       !- Digits After Decimal
-    Zone/Sys Sensible Heating Energy,  !- Variable or Meter 1 Name
+    Zone Air System Sensible Heating Energy,  !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    Zone/Sys Sensible Heating Rate,  !- Variable or Meter 2 Name
+    Zone Air System Sensible Heating Rate,  !- Variable or Meter 2 Name
     Maximum,                 !- Aggregation Type for Variable or Meter 2
-    Outdoor Dry Bulb,        !- Variable or Meter 3 Name
+    Site Outdoor Air Drybulb Temperature,  !- Variable or Meter 3 Name
     ValueWhenMaximumOrMinimum;  !- Aggregation Type for Variable or Meter 3
 
   Output:Table:Monthly,
     Building Loads - Electric,  !- Name
     2,                       !- Digits After Decimal
-    Zone Lights Electric Consumption,  !- Variable or Meter 1 Name
+    Zone Lights Electric Energy,  !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    Zone Lights Electric Consumption,  !- Variable or Meter 2 Name
+    Zone Lights Electric Energy,  !- Variable or Meter 2 Name
     Maximum,                 !- Aggregation Type for Variable or Meter 2
-    Zone Electric Equipment Electric Consumption,  !- Variable or Meter 3 Name
+    Zone Electric Equipment Electric Energy,  !- Variable or Meter 3 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 3
-    Zone Electric Equipment Electric Consumption,  !- Variable or Meter 4 Name
+    Zone Electric Equipment Electric Energy,  !- Variable or Meter 4 Name
     Maximum;                 !- Aggregation Type for Variable or Meter 4
 
   Output:Table:Monthly,
     Space Loads,             !- Name
     2,                       !- Digits After Decimal
-    Zone People Total Heat Gain,  !- Variable or Meter 1 Name
+    Zone People Total Heating Energy,  !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    Zone Lights Total Heat Gain,  !- Variable or Meter 2 Name
+    Zone Lights Total Heating Energy,  !- Variable or Meter 2 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 2
-    Zone Electric Equipment Total Heat Gain,  !- Variable or Meter 3 Name
+    Zone Electric Equipment Total Heating Energy,  !- Variable or Meter 3 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 3
-    Zone Infiltration Sensible Heat Gain,  !- Variable or Meter 4 Name
+    Zone Infiltration Sensible Heat Gain Energy,  !- Variable or Meter 4 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 4
-    Zone Infiltration Sensible Heat Loss,  !- Variable or Meter 5 Name
+    Zone Infiltration Sensible Heat Loss Energy,  !- Variable or Meter 5 Name
     SumOrAverage;            !- Aggregation Type for Variable or Meter 5
 
   Output:Table:Monthly,
@@ -6342,10 +6361,12 @@
     AverageBuildingTemp;     !- Erl Variable 1 Name
 
   EnergyManagementSystem:OutputVariable,
-    Weighted Average Building Zone Air Temperature [C],  !- Name
+    Weighted Average Building Zone Air Temperature,  !- Name
     AverageBuildingTemp,     !- EMS Variable Name
     Averaged,                !- Type of Data in Variable
-    ZoneTimeStep;            !- Update Frequency
+    ZoneTimeStep,            !- Update Frequency
+    ,                        !- EMS Program or Subroutine Name
+    C;                       !- Units
 
   EnergyManagementSystem:InternalVariable,
     Zn1vol,                  !- Name
@@ -6387,8 +6408,8 @@
 
 !-   ===========  ALL OBJECTS IN CLASS: ExternalInterface:FunctionalMockupUnitExport ===========
 
-  ExternalInterface,            !- Activate the external interface
-    FunctionalMockupUnitExport; !- Name of external interface
+  ExternalInterface,
+    FunctionalMockupUnitExport;  !- Name of External Interface
 
   ExternalInterface:FunctionalMockupUnitExport:To:Actuator,  !- FMU master will set the value for this actuator
     myHTGSETP_SCH,           !- Name

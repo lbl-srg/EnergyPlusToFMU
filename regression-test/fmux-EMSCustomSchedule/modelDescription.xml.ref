@@ -3,7 +3,7 @@
 <fmiModelDescription  fmiVersion="1.0"
   modelName="fmux-EMSCustomSchedule.idf"
   modelIdentifier="fmux_EMSCustomSchedule"
-  guid="f05098502c4d8575fd4ec0bd34f22d3b"
+  guid="2a165d2d66c3740fed16645353823806"
   description="Automatically generated from EnergyPlus input file fmux-EMSCustomSchedule.idf"
   generationTool="[[name of the program that generated this file]]"
   generationDateAndTime="[[yyyy-mm-ddThh:mm:ssZ]]"
@@ -18,7 +18,7 @@
     <!-- Note the order of valueReferences should match the order of elements in file 'variables.cfg'. -->
     <ScalarVariable  name="EpActuator1"  valueReference="1"
       variability="continuous"  causality="input"
-      description="IDF line 6393">
+      description="IDF line 6414">
       <Real  start="0"/>
     </ScalarVariable>
   </ModelVariables>

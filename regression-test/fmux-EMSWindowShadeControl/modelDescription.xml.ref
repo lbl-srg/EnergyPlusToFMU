@@ -3,7 +3,7 @@
 <fmiModelDescription  fmiVersion="1.0"
   modelName="fmux-EMSWindowShadeControl.idf"
   modelIdentifier="fmux_EMSWindowShadeControl"
-  guid="1369f5b77ee7e4f6663a6c5296a3fd00"
+  guid="76f76db0c31d11ecc5a14ade578a9b50"
   description="Automatically generated from EnergyPlus input file fmux-EMSWindowShadeControl.idf"
   generationTool="[[name of the program that generated this file]]"
   generationDateAndTime="[[yyyy-mm-ddThh:mm:ssZ]]"
@@ -18,12 +18,12 @@
     <!-- Note the order of valueReferences should match the order of elements in file 'variables.cfg'. -->
     <ScalarVariable  name="bldgShadeSig"  valueReference="1"
       variability="continuous"  causality="input"
-      description="IDF line 1290">
+      description="IDF line 1289">
       <Real  start="1"/>
     </ScalarVariable>
     <ScalarVariable  name="bldgShadeSigPlus"  valueReference="10001"
       variability="continuous"  causality="output"
-      description="IDF line 1325">
+      description="IDF line 1326">
       <Real/>
     </ScalarVariable>
   </ModelVariables>

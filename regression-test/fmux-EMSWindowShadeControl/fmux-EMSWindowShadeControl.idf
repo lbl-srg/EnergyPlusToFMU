@@ -1,5 +1,4 @@
 ! Based on EnergyPlus example file "EnergyPlus/Examples/EMSWindowShadeControl.idf".
-
 ! EMSWindowShadeControl.idf
 !
 !
@@ -98,7 +97,7 @@
 ! Environmental Emissions:        None
 ! Utility Tariffs:                None
 
-  Version,7.1;
+  Version,8.0;
 
   Timestep,6;
 
@@ -155,11 +154,11 @@
     -17.3,                   !- Maximum Dry-Bulb Temperature {C}
     0.0,                     !- Daily Dry-Bulb Temperature Range {deltaC}
     ,                        !- Dry-Bulb Temperature Range Modifier Type
-    ,                        !- Dry-Bulb Temperature Range Modifier Schedule Name
+    ,                        !- Dry-Bulb Temperature Range Modifier Day Schedule Name
     Wetbulb,                 !- Humidity Condition Type
     -17.3,                   !- Wetbulb or DewPoint at Maximum Dry-Bulb {C}
-    ,                        !- Humidity Indicating Day Schedule Name
-    ,                        !- Humidity Ratio at Maximum Dry-Bulb {dimensionless}
+    ,                        !- Humidity Condition Day Schedule Name
+    ,                        !- Humidity Ratio at Maximum Dry-Bulb {kgWater/kgDryAir}
     ,                        !- Enthalpy at Maximum Dry-Bulb {J/kg}
     ,                        !- Daily Wet-Bulb Temperature Range {deltaC}
     99063.,                  !- Barometric Pressure {Pa}
@@ -172,7 +171,7 @@
     ,                        !- Beam Solar Day Schedule Name
     ,                        !- Diffuse Solar Day Schedule Name
     ,                        !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub) {dimensionless}
-    ,                        !- ASHRAE Clear Sky Optical Depth for Diffues Irradiance (taud) {dimensionless}
+    ,                        !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud) {dimensionless}
     0.0;                     !- Sky Clearness
 
  ! CHICAGO_IL_USA Annual Cooling 1% Design Conditions, MaxDB=  31.5°C MCWB=  23.0°C
@@ -185,11 +184,11 @@
     31.5,                    !- Maximum Dry-Bulb Temperature {C}
     10.7,                    !- Daily Dry-Bulb Temperature Range {deltaC}
     ,                        !- Dry-Bulb Temperature Range Modifier Type
-    ,                        !- Dry-Bulb Temperature Range Modifier Schedule Name
+    ,                        !- Dry-Bulb Temperature Range Modifier Day Schedule Name
     Wetbulb,                 !- Humidity Condition Type
     23.0,                    !- Wetbulb or DewPoint at Maximum Dry-Bulb {C}
-    ,                        !- Humidity Indicating Day Schedule Name
-    ,                        !- Humidity Ratio at Maximum Dry-Bulb {dimensionless}
+    ,                        !- Humidity Condition Day Schedule Name
+    ,                        !- Humidity Ratio at Maximum Dry-Bulb {kgWater/kgDryAir}
     ,                        !- Enthalpy at Maximum Dry-Bulb {J/kg}
     ,                        !- Daily Wet-Bulb Temperature Range {deltaC}
     99063.,                  !- Barometric Pressure {Pa}
@@ -202,7 +201,7 @@
     ,                        !- Beam Solar Day Schedule Name
     ,                        !- Diffuse Solar Day Schedule Name
     ,                        !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub) {dimensionless}
-    ,                        !- ASHRAE Clear Sky Optical Depth for Diffues Irradiance (taud) {dimensionless}
+    ,                        !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud) {dimensionless}
     1.0;                     !- Sky Clearness
 
   Material,
@@ -1111,8 +1110,8 @@
     ,                        !- Zone Exhaust Air Node Name
     50,                      !- Maximum Heating Supply Air Temperature {C}
     13,                      !- Minimum Cooling Supply Air Temperature {C}
-    0.015,                   !- Maximum Heating Supply Air Humidity Ratio {kg-H2O/kg-air}
-    0.009,                   !- Minimum Cooling Supply Air Humidity Ratio {kg-H2O/kg-air}
+    0.015,                   !- Maximum Heating Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.009,                   !- Minimum Cooling Supply Air Humidity Ratio {kgWater/kgDryAir}
     NoLimit,                 !- Heating Limit
     autosize,                !- Maximum Heating Air Flow Rate {m3/s}
     ,                        !- Maximum Sensible Heating Capacity {W}
@@ -1139,8 +1138,8 @@
     ,                        !- Zone Exhaust Air Node Name
     50,                      !- Maximum Heating Supply Air Temperature {C}
     13,                      !- Minimum Cooling Supply Air Temperature {C}
-    0.015,                   !- Maximum Heating Supply Air Humidity Ratio {kg-H2O/kg-air}
-    0.009,                   !- Minimum Cooling Supply Air Humidity Ratio {kg-H2O/kg-air}
+    0.015,                   !- Maximum Heating Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.009,                   !- Minimum Cooling Supply Air Humidity Ratio {kgWater/kgDryAir}
     NoLimit,                 !- Heating Limit
     autosize,                !- Maximum Heating Air Flow Rate {m3/s}
     ,                        !- Maximum Sensible Heating Capacity {W}
@@ -1167,8 +1166,8 @@
     ,                        !- Zone Exhaust Air Node Name
     50,                      !- Maximum Heating Supply Air Temperature {C}
     13,                      !- Minimum Cooling Supply Air Temperature {C}
-    0.015,                   !- Maximum Heating Supply Air Humidity Ratio {kg-H2O/kg-air}
-    0.009,                   !- Minimum Cooling Supply Air Humidity Ratio {kg-H2O/kg-air}
+    0.015,                   !- Maximum Heating Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.009,                   !- Minimum Cooling Supply Air Humidity Ratio {kgWater/kgDryAir}
     NoLimit,                 !- Heating Limit
     autosize,                !- Maximum Heating Air Flow Rate {m3/s}
     ,                        !- Maximum Sensible Heating Capacity {W}
@@ -1200,39 +1199,39 @@
     Zone3Inlets,             !- Name
     NODE_3;                  !- Node 1 Name
 
-  Output:Variable,*,Outdoor Dry Bulb,timestep;
+  Output:Variable,*,Site Outdoor Air Drybulb Temperature,timestep;
 
   Output:Variable,*,Zone Mean Air Temperature,timestep;
 
   Output:Variable,*,Zone Mean Radiant Temperature,timestep;
 
-  Output:Variable,Zn001:Wall001:Win001,Surface Ext Solar Incident,timestep;
+  Output:Variable,Zn001:Wall001:Win001,Surface Outside Face Incident Solar Radiation Rate per Area,timestep;
 
-  Output:Variable,*,Fraction of Time Shading Device Is On,timestep;
+  Output:Variable,*,Surface Shading Device Is On Time Fraction,timestep;
 
-  Output:Variable,*,Window Blind Slat Angle,timestep;
+  Output:Variable,*,Surface Window Blind Slat Angle,timestep;
 
-  Output:Variable,*,Window Transmitted Solar,timestep;
+  Output:Variable,*,Surface Window Transmitted Solar Radiation Rate,timestep;
 
-  Output:Variable,*,Window Solar Absorbed:All Glass Layers,timestep;
+  Output:Variable,*,Surface Window Total Glazing Layers Absorbed Solar Radiation Rate,timestep;
 
-  Output:Variable,*,Window Heat Gain,timestep;
+  Output:Variable,*,Surface Window Heat Gain Rate,timestep;
 
-  Output:Variable,*,Window Heat Loss,timestep;
+  Output:Variable,*,Surface Window Heat Loss Rate,timestep;
 
-  Output:Variable,*,Window Solar Absorbed:Shading Device,timestep;
+  Output:Variable,*,Surface Window Shading Device Absorbed Solar Radiation Rate,timestep;
 
-  Output:Variable,*,Window System Solar Transmittance,timestep;
+  Output:Variable,*,Surface Window System Solar Transmittance,timestep;
 
-  Output:Variable,*,Window System Solar Reflectance,timestep;
+  Output:Variable,*,Surface Window System Solar Reflectance,timestep;
 
-  Output:Variable,*,Window System Solar Absorptance,timestep;
+  Output:Variable,*,Surface Window System Solar Absorptance,timestep;
 
-  Output:Variable,*,Zone/Sys Sensible Cooling Rate,timestep;
+  Output:Variable,*,Zone Air System Sensible Cooling Rate,timestep;
 
-  Output:Variable,*,Zone/Sys Sensible Heating Rate,timestep;
+  Output:Variable,*,Zone Air System Sensible Heating Rate,timestep;
 
-  Output:Variable,*,Zone/Sys Air Temperature,timestep;
+  Output:Variable,*,Zone Air Temperature,timestep;
 
   Output:Variable,*,Zone Air Humidity Ratio,timestep;
 
@@ -1242,7 +1241,7 @@
 
   Output:Constructions,Constructions;
 
-  Output:Variable,*,FangerPMV,timestep;
+  Output:Variable,*,Zone Thermal Comfort Fanger Model PMV,timestep;
 
   Output:Meter:MeterFileOnly,Electricity:Facility,monthly;
 
@@ -1270,22 +1269,22 @@
   EnergyManagementSystem:Sensor,
     Solar_Beam_Incident_Cos, !- Name
     Zn001:Wall001:Win001,    !- Output:Variable or Output:Meter Index Key Name
-    Surface Ext Solar Beam Cosine Of Incidence Angle;  !- Output:Variable or Output:Meter Name
+    Surface Outside Face Beam Solar Incident Angle Cosine Value;  !- Output:Variable or Output:Meter Name
 
-  Output:Variable,Zn001:Wall001:Win001,Surface Ext Solar Beam Cosine Of Incidence Angle,Timestep;
+  Output:Variable,Zn001:Wall001:Win001,Surface Outside Face Beam Solar Incident Angle Cosine Value,Timestep;
 
   EnergyManagementSystem:Sensor,
     Zone_Sensible_Cool_Rate, !- Name
     WEST ZONE,               !- Output:Variable or Output:Meter Index Key Name
-    Zone/Sys Sensible Cooling Rate;  !- Output:Variable or Output:Meter Name
+    Zone Air System Sensible Cooling Rate;  !- Output:Variable or Output:Meter Name
 
   EnergyManagementSystem:ProgramCallingManager,
     Window Shading Device EMS Controller,  !- Name
     BeginTimestepBeforePredictor,  !- EnergyPlus Model Calling Point
     Set_Shade_Control_State; !- Program Name 1
 
-  ExternalInterface,            !- Activate the external interface
-    FunctionalMockupUnitExport; !- Name of external interface
+  ExternalInterface,
+    FunctionalMockupUnitExport;  !- Name of External Interface
 
   ExternalInterface:FunctionalMockupUnitExport:To:Variable,  !- FMU master will set the value for this variable
     yShade,                  !- Name
@@ -1320,7 +1319,9 @@
     Erl Shading Control Status,  !- Name
     Shade_Signal_01,         !- EMS Variable Name
     Averaged,                !- Type of Data in Variable
-    ZoneTimeStep;            !- Update Frequency
+    ZoneTimeStep,            !- Update Frequency
+    ,                        !- EMS Program or Subroutine Name
+    ;                        !- Units
 
   ExternalInterface:FunctionalMockupUnitExport:From:Variable,  !- FMU master can read the value of this variable
     EMS,                         !- Output:Variable Index Key Name

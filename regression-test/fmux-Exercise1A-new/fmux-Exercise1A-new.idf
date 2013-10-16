@@ -1,5 +1,4 @@
 ! Based on EnergyPlus example file "EnergyPlus/Examples/BasicsFiles/Exercise1A-new.idf".
-
 !-Generator IDFEditor 1.25 'current version of IDFEditor - less than 1 is a beta
 !-NOTE: All comments with '!-' are ignored by the IDFEditor and are generated automatically.
 !-      Use '!' comments if they need to be retained when using the IDFEditor.
@@ -16,7 +15,7 @@
 !
 !
 
-  VERSION,7.1;
+  VERSION,8.0;
 
 !-   ===========  ALL OBJECTS IN CLASS: BUILDING ===========
 
@@ -49,6 +48,7 @@
 !-   ===========  ALL OBJECTS IN CLASS: SHADOWING CALCULATIONS ===========
 
   ShadowCalculation,
+    AverageOverDaysInFrequency,  !- Calculation Method
     20;                      !- Calculation Frequency
 
 !-   ===========  ALL OBJECTS IN CLASS: RUN CONTROL ===========
@@ -80,7 +80,7 @@
     32.80000,                !- Maximum Dry-Bulb Temperature {C}
     10.90000,                !- Daily Dry-Bulb Temperature Range {deltaC}
     ,                        !- Dry-Bulb Temperature Range Modifier Type
-    ,                        !- Dry-Bulb Temperature Range Modifier Schedule Name
+    ,                        !- Dry-Bulb Temperature Range Modifier Day Schedule Name
     Wetbulb,                 !- Humidity Condition Type
     23.60000,                !- Wetbulb or DewPoint at Maximum Dry-Bulb {C}
     ,                        !- Humidity Condition Day Schedule Name
@@ -110,7 +110,7 @@
     -21.20000,               !- Maximum Dry-Bulb Temperature {C}
     0.0,                     !- Daily Dry-Bulb Temperature Range {deltaC}
     ,                        !- Dry-Bulb Temperature Range Modifier Type
-    ,                        !- Dry-Bulb Temperature Range Modifier Schedule Name
+    ,                        !- Dry-Bulb Temperature Range Modifier Day Schedule Name
     Wetbulb,                 !- Humidity Condition Type
     -21.20000,               !- Wetbulb or DewPoint at Maximum Dry-Bulb {C}
     ,                        !- Humidity Condition Day Schedule Name
@@ -437,8 +437,8 @@
 
 !-   ===========  ALL OBJECTS IN CLASS: ExternalInterface:FunctionalMockupUnitExport ===========
 
-  ExternalInterface,            !- Activate the external interface
-    FunctionalMockupUnitExport; !- Name of external interface
+  ExternalInterface,
+    FunctionalMockupUnitExport;  !- Name of External Interface
 
   ExternalInterface:FunctionalMockupUnitExport:To:Schedule,  !- FMU master will set the value for this schedule
     ExternalSchedule1,          !- Schedule Name
@@ -463,13 +463,13 @@
 
 !-   ===========  ALL OBJECTS IN CLASS: REPORT VARIABLE ===========
 
-  Output:Variable,*,Outdoor Dry Bulb,Hourly;
+  Output:Variable,*,Site Outdoor Air Drybulb Temperature,Hourly;
 
-  Output:Variable,*,Zone/Sys Sensible Cooling Energy,Hourly;
+  Output:Variable,*,Zone Air System Sensible Cooling Energy,Hourly;
 
-  Output:Variable,*,Zone/Sys Sensible Heating Energy,Hourly;
+  Output:Variable,*,Zone Air System Sensible Heating Energy,Hourly;
 
-  Output:Variable,*,Zone/Sys Air Temperature,Hourly;
+  Output:Variable,*,Zone Air Temperature,Hourly;
 
 !-   ===========  ALL OBJECTS IN CLASS: REPORT METER ===========
 
