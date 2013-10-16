@@ -418,6 +418,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 
 	char *xml_file_p;
 	char tmpResLoc[5];
+	char uptmpResLoc[8];
 	char cwd[256];
 	char *fmuOutput;
 	char *tmpResCon;
@@ -476,11 +477,23 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// copy first 5 characters of fmuLocation
 	strncpy (tmpResLoc, fmuLocation, 5);
 
+	// copy first 8 characters of fmuLocation (FMU specification has been fixed now file:/// rather than file://)
+	// nonetheless to ensure backward compatibility we allow also the case with file://
+	strncpy (uptmpResLoc, fmuLocation, 8);
+
 	// allocate memory for fmuLocation 
 	fmuInstances[_c->index]->fmuLocation = (char *)calloc(sizeof(char), strlen (fmuLocation) + 1);
 
 	// extract the URI information from the fmuResourceLocation path
-	if ((strncmp (tmpResLoc, "file", 4)== 0) || ((strncmp (tmpResLoc, "http", 4)== 0) && strncmp(tmpResLoc, "https", 5)!= 0))
+	if (strncmp (uptmpResLoc, "file:///", 8)== 0)
+	{
+		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 8, strlen(fmuLocation + 8));
+		printfDebug ("fmiInstantiateSlave: Path to fmuLocation without file:/// or http:// %s\n", 
+			fmuInstances[_c->index]->fmuLocation);
+	}
+
+	else if (((strncmp (tmpResLoc, "file", 4)== 0) && (strncmp (uptmpResLoc, "file:///", 8)!= 0)) 
+		|| ((strncmp (tmpResLoc, "http", 4)== 0) && strncmp(tmpResLoc, "https", 5)!= 0))
 	{
 		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 7, strlen(fmuLocation + 7));
 		printfDebug ("fmiInstantiateSlave: Path to fmuLocation without file:// or http:// %s\n", 
