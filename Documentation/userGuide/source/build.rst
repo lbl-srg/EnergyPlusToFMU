@@ -18,33 +18,23 @@ The basic invocation of the EnergyPlusToFMU tool is:
 
 .. code-block:: none
 
-  > python  <path-to-scripts-subdir>EnergyPlusToFMU.py  <path-to-idf-file>
+  > python  <path-to-scripts-subdir>EnergyPlusToFMU.py  -i <path-to-idd-file>  <path-to-idf-file>
 
 For example:
 
 .. code-block:: none
 
   # Windows:
-  > python  scriptDir\EnergyPlusToFMU.py  test.idf
+  > python  scriptDir\EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  test.idf
 
   # Linux, MacOS:
-  > python  scriptDir/EnergyPlusToFMU.py  test.idf
+  > python  scriptDir/EnergyPlusToFMU.py  -i ~/eplus/Energy+.idd  test.idf
 
 where ``scriptDir`` is the path to the scripts directory of EnergyPlusToFMU.
 Typically this is the ``Scripts/EnergyPlusToFMU`` subdirectory of the installation directory.
 See :doc:`installation` for details.
 
-The ``<path-to-idf-file>`` can include an absolute or relative path.
-For example:
-
-.. code-block:: none
-
-  # Windows:
-  > python  scriptDir\EnergyPlusToFMU.py  ..\all-idfs\test.idf
-
-  # Linux, MacOS:
-  > python  scriptDir/EnergyPlusToFMU.py  ../all-idfs/test.idf
-
+Both the ``<path-to-idd-file>`` and the ``<path-to-idf-file>`` can use an absolute or relative path.
 For readability, the rest of these instructions omit the full path to the script and input files.
 
 
@@ -95,47 +85,38 @@ To do so, it may help to change the "``.fmu``" extension to "``.zip``".
 Advanced use
 ^^^^^^^^^^^^
 
-The EnergyPlusToFMU tool supports a number of options:
+The EnergyPlusToFMU tool supports the following command-line switches:
 
 +---------------------------+-------------------------------------------------------+
 | option <argument>         | Purpose                                               |
 +===========================+=======================================================+
-| -i <path-to-idd-file>     | Use the named Input Data Dictionary.                  |
-|                           | If you do not specify this option, the tool reads the |
-|                           | environment variable ``ENERGYPLUS_DIR``, and uses the |
-|                           | data dictionary ``ENERGYPLUS_DIR/Energy+.idd``.       |
-|                           | For most EnergyPlus users, this environment           |
-|                           | variable, and the IDD file, typically already         |
-|                           | exist.                                                |
+| -i <path-to-idd-file>     | Use the named Input Data Dictionary (required).       |
 +---------------------------+-------------------------------------------------------+
-| -w <path-to-weather-file> | Include the named weather file in the FMU.            |
+| -w <path-to-weather-file> | Include the named weather file in the FMU [optional]. |
 +---------------------------+-------------------------------------------------------+
-| -d                        | Print diagnostics.                                    |
+| -d                        | Print diagnostics [optional].                         |
 |                           | Produces a status line for every major action         |
 |                           | taken by the EnergyPlusToFMU tools.                   |
 |                           | This option may be helpful for troubleshooting.       |
 +---------------------------+-------------------------------------------------------+
 | -L                        | Litter, that is, do not clean up intermediate         |
-|                           | files.                                                |
+|                           | files [optional].                                     |
 |                           | Typically the EnergyPlusToFMU tools will delete       |
 |                           | most of the intermediate files that ultimately get    |
 |                           | packaged into the FMU.                                |
-|                           | This option allows you to easily inspect              |
-|                           | intermediate output.                                  |
+|                           | This option lets you inspect intermediate output.     |
 +---------------------------+-------------------------------------------------------+
 
-All these options must be supplied before the name of the IDF file.
+All these switches must be supplied before the name of the IDF file.
 However, they may be provided in any order.
-For repeated options like ``-i`` or ``-w``, the last one specified will be used.
+For repeated switches like ``-i`` or ``-w``, the last one specified will be used.
 
 For example:
 
 .. code-block:: none
 
   # Windows:
-  > python  EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  test.idf
-
-  > python  EnergyPlusToFMU.py  -d  test.idf
+  > python  EnergyPlusToFMU.py  -d  -i C:\eplus\Energy+.idd  test.idf
 
 
 Setting environment variables

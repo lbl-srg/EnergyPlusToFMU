@@ -31,11 +31,10 @@
 def printCmdLineUsage():
   #
   print 'USAGE:', os.path.basename(__file__),  \
-    '[-i path-to-idd-file]  [-w path-to-weather-file]  [-d]  [-L]  <path-to-idf-file>'
+    '-i <path-to-idd-file>  [-w <path-to-weather-file>]  [-d]  [-L]  <path-to-idf-file>'
   #
   print '-- Export an EnergyPlus model as a Functional Mockup Unit (FMU) for co-simulation'
-  print '-- Option -i, use the named Input Data Dictionary'
-  print '   Lacking -i, read environment variable {ENERGYPLUS_DIR}, and use {ENERGYPLUS_DIR/Energy+.idd}'
+  print '-- Input -i, use the named Input Data Dictionary (required)'
   print '-- Option -w, use the named weather file'
   print '-- Option -d, print diagnostics'
   print '-- Option -L, litter, that is, do not clean up intermediate files'
@@ -139,29 +138,6 @@ def addToZipFile(theZipFile, addFileName, toDir, addAsName):
   # Here, successfully added {addFileName} to {theZipFile}.
   #
   # End fcn addToZipFile().
-
-
-#--- Fcn to search for an IDD file using environment variable {ENERGYPLUS_DIR}.
-#
-#   Return a tuple (found, resultStr).
-#   If {found}, set {resultStr} to fully-resolved name of IDD file.
-# Otherwise, set {resultStr} to an appropriate error message.
-#
-def findIddFileViaEnvDir():
-  #
-  epDirName = os.environ.get('ENERGYPLUS_DIR')
-  if( epDirName is None ):
-    return(False, 'Cannot find environment variable {ENERGYPLUS_DIR}')
-  if( not os.path.isdir(epDirName) ):
-    return(False, 'Environment variable {ENERGYPLUS_DIR} refers to missing directory ' +epDirName)
-  #
-  iddFileName = os.path.join(epDirName, 'Energy+.idd')
-  if( not os.path.isfile(iddFileName) ):
-    return(False, 'Missing IDD file ' +iddFileName)
-  #
-  return(True, iddFileName)
-  #
-  # End fcn findIddFileViaEnvDir().
 
 
 #--- Fcn to export an EnergyPlus IDF file as an FMU.
@@ -336,16 +312,9 @@ if __name__ == '__main__':
   if( idfFileName.startswith('-') and len(idfFileName)==2 ):
     quitWithError('Expecting IDF file name, got what looks like a command-line option {' +idfFileName +'}', True)
   #
-  # Get {iddFileName} if necessary.
+  # Get {iddFileName}.
   if( iddFileName is None ):
-    if( showDiagnostics ):
-      printDiagnostic('Begin looking for IDD file via environment variable {ENERGYPLUS_DIR}')
-    (success, iddFileName) = findIddFileViaEnvDir()
-    if( not success ):
-      # Note here, {iddFileName} is actually an error string.
-      quitWithError('Could not find IDD file via environment variable {ENERGYPLUS_DIR}: ' +iddFileName, True)
-    if( showDiagnostics ):
-      printDiagnostic('Setting IDD file to {' +iddFileName +'}')
+    quitWithError('Missing required input, <path-to-idd-file>', True)
   #
   # Run.
   exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idfFileName)
