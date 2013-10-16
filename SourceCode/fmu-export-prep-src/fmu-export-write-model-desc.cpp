@@ -9,6 +9,7 @@
 //--- Includes.
 //
 #include <cstdio>
+#include <ctype.h>
 #include <string>
 using std::string;
 #include <ostream>
@@ -36,6 +37,8 @@ using std::endl;
 static void writeTag_scalarVariable(std::ostream& outStream, const int indentLevel,
   const char *const fmuVarName, const int valueReference,
   const bool toEP, const int idfLineNo, const double initValue);
+
+static string sanitizeIdfFileName(const char *const idfFileBaseName);
 
 
 //-- Write file {modelDescription.xml}.
@@ -69,16 +72,8 @@ void modelDescXml_write(std::ostream& outStream,
   xmlOutput_attribute(outStream, -1, "fmiVersion", "1.0");
   xmlOutput_attribute(outStream, 0, "modelName", idfFileBaseName);
   //
-  // The {modelIdentifier} attribute must match base name of zip file.
-  //   Strip ".idf" if possible.
-  composedStr = idfFileBaseName;
-  const int baseNameLenM4 = composedStr.size() - 4;
-  if( 0<baseNameLenM4
-    &&
-    (0==composedStr.compare(baseNameLenM4, 4, ".idf") || 0==composedStr.compare(baseNameLenM4, 4, ".IDF")))
-    {
-    composedStr.replace(baseNameLenM4, 4, "");
-    }
+  // Make the {modelIdentifier} acceptable according to FMU rules.
+  composedStr = sanitizeIdfFileName(idfFileBaseName);
   xmlOutput_attribute(outStream, 0, "modelIdentifier", composedStr.c_str());
   //
   // Find GUID as MD5 checksum of IDF file.
@@ -275,3 +270,48 @@ static void writeTag_scalarVariable(std::ostream& outStream, const int indentLev
   #undef HS_MAX
   //
   }  // End fcn writeTag_scalarVariable().
+
+
+//--- Sanitize the name of an IDF file.
+//
+//   For reasons related to the FMU, the "model identifier" name has to be
+// acceptable as the name of a C function.  It also must match the base name of
+// the ZIP file that will contain the FMU.
+//   In C, a function name:
+// - Can contain any of the characters {a-z,A-Z,0-9,_}.
+// - Cannot start with a number.
+// - Can contain universal character names from the ISO/IEC TR 10176 standard.
+//   However, universal character names are not supported here.
+//
+static string sanitizeIdfFileName(const char *const idfFileBaseName)
+  {
+  string composedStr = idfFileBaseName;
+  //
+  // Can't start with a number.
+  if( isdigit(composedStr[0]) )
+    {
+    composedStr.insert(0, "f_");
+    }
+  //
+  // Replace all illegal characters with an underscore.
+  const int len = composedStr.size();
+  for( int idx=0; idx<len; ++idx )
+    {
+    if( ! isalnum(composedStr[idx]) )
+      {
+      composedStr[idx] = '_';
+      }
+    }
+  //
+  // Strip ".idf" if possible.
+  //   Note it has been changed to "_idf".
+  const int baseNameLenM4 = len - 4;
+  if( 0<baseNameLenM4
+    &&
+    (0==composedStr.compare(baseNameLenM4, 4, "_idf") || 0==composedStr.compare(baseNameLenM4, 4, "_IDF")))
+    {
+    composedStr.replace(baseNameLenM4, 4, "");
+    }
+  //
+  return( composedStr );
+  }  // End fcn sanitizeIdfFileName().

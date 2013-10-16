@@ -2,7 +2,7 @@
 <!-- This is file 'modelDescription.xml' for input 'fmux-Exercise1A-new.idf'. -->
 <fmiModelDescription  fmiVersion="1.0"
   modelName="fmux-Exercise1A-new.idf"
-  modelIdentifier="fmux-Exercise1A-new"
+  modelIdentifier="fmux_Exercise1A_new"
   guid="04923f6496148b8e058a100e2cc1a4b8"
   description="Automatically generated from EnergyPlus input file fmux-Exercise1A-new.idf"
   generationTool="[[name of the program that generated this file]]"

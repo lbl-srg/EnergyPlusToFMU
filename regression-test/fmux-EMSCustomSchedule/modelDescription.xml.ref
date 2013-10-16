@@ -2,7 +2,7 @@
 <!-- This is file 'modelDescription.xml' for input 'fmux-EMSCustomSchedule.idf'. -->
 <fmiModelDescription  fmiVersion="1.0"
   modelName="fmux-EMSCustomSchedule.idf"
-  modelIdentifier="fmux-EMSCustomSchedule"
+  modelIdentifier="fmux_EMSCustomSchedule"
   guid="f05098502c4d8575fd4ec0bd34f22d3b"
   description="Automatically generated from EnergyPlus input file fmux-EMSCustomSchedule.idf"
   generationTool="[[name of the program that generated this file]]"

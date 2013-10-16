@@ -2,7 +2,7 @@
 <!-- This is file 'modelDescription.xml' for input 'fmux-EMSWindowShadeControl.idf'. -->
 <fmiModelDescription  fmiVersion="1.0"
   modelName="fmux-EMSWindowShadeControl.idf"
-  modelIdentifier="fmux-EMSWindowShadeControl"
+  modelIdentifier="fmux_EMSWindowShadeControl"
   guid="1369f5b77ee7e4f6663a6c5296a3fd00"
   description="Automatically generated from EnergyPlus input file fmux-EMSWindowShadeControl.idf"
   generationTool="[[name of the program that generated this file]]"

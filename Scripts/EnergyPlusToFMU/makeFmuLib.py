@@ -187,7 +187,7 @@ def sanitizeIdentifier(identifier):
   if( identifier[0].isdigit() ):
     identifier = 'f_' +identifier
   #
-  # Replace all illegal characters.
+  # Replace all illegal characters with an underscore.
   identifier = g_rexBadIdChars.sub('_', identifier)
   #
   return( identifier )
