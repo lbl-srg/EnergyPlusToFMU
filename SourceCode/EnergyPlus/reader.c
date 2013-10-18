@@ -246,7 +246,7 @@ static int isEmptyLine(const char *s) {
 ///
 ///\param fname The string.
 ///////////////////////////////////////////////////////////////////////////////
-static void remSpaces_makeUpper(char *infile){
+void remSpaces_makeUpper(char *infile){
 	char *tmp = infile;
 	int i,j = 0;
 
