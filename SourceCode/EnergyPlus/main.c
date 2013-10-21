@@ -431,9 +431,6 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	insNum++;
 	retValIns=insNum;
 
-	// set the debug for the FMU instance
-	//setDebug (loggingOnInt);
-	//fmuInstances[_c->index]->loggingOn = loggingOn;
 	// get current working directory
 #ifdef _MSC_VER
 	if (_getcwd(fmuInstances[_c->index]->cwd, sizeof(fmuInstances[_c->index]->cwd)) == NULL)
@@ -460,7 +457,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	errDir = stat(fmuInstances[_c->index]->fmuOutput, &st);
 	if(errDir>=0) {
 		printf("The fmuOutput directory %s already exists and will be deleted!\n", fmuInstances[_c->index]->fmuOutput);
-	removeFMUDir (fmuInstances[_c->index]->fmuOutput);
+		removeFMUDir (fmuInstances[_c->index]->fmuOutput);
 	}
 
 	// check whether the path to the resources folder has been provided
@@ -566,7 +563,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	fmuInstances[_c->index]->tmpResCon = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->resources_p) + strlen ("\"*.*") + 1);
 	sprintf(fmuInstances[_c->index]->tmpResCon, "%s%s", fmuInstances[_c->index]->resources_p, "\"*.*");
 
-	//create the output directory
+	// create the output directory
 	retVal = create_res (fmuInstances[_c->index]->fmuOutput);
 	// add the end slash to the fmuOutput
 #ifdef _MSC_VER
@@ -692,9 +689,6 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	mode_t process_mask = umask(0);
 #endif 
 
-	// set the debug for the FMU instance--- Problem to solve
-	//setDebug (fmuInstances[_c->index]->loggingOn);
-
 	// save start of the simulation time step
 	fmuInstances[_c->index]->tStartFMU = tStart;
 	// save end of smulation time step
@@ -745,7 +739,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	// create the socket server
 
 #ifdef _MSC_VER
-	// initializes winsock  /************* Windows specific code ********/
+	// initialize winsock  /************* Windows specific code ********/
 	if (WSAStartup(wVersionRequested, &wsaData)!= 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName , fmiFatal, 
@@ -1223,7 +1217,6 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 			&(fmuInstances[_c->index]->simTimRec), fmuInstances[_c->index]->outVec, &(fmuInstances[_c->index]->simTimSen), 
 			fmuInstances[_c->index]->inVec);
 		// close socket
-
 		closeipcFMU(&(fmuInstances[_c->index]->sockfd));
 		closeipcFMU(&(fmuInstances[_c->index]->newsockfd));
 		// clean-up temporary files
@@ -1239,14 +1232,12 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 #endif
 
 #ifdef _MSC_VER
-		// Clean-up winsock
+		// clean-up winsock
 		WSACleanup();
 #endif
 		if (fmuInstances[_c->index]->firstCallTerm){
 			fmuInstances[_c->index]->firstCallTerm = 0;
 		}
-		// FIXME: free FMU instance does not work with Dymola 2014
-		//free (_c);
 		// reset the current working directory. This is particularly important for Dymola
 		// otherwise Dymola will terminate the simulation but returns false
 #ifdef _MSC_VER
@@ -1254,6 +1245,8 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 #else
 		retVal = chdir(fmuInstances[_c->index]->cwd);
 #endif
+		// FIXME: free FMU instance does not work with Dymola 2014
+		//free (_c);
 		return fmiOK;
 	}
 	// reset the current working directory. This is particularly important for Dymola
@@ -1352,20 +1345,20 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 #endif
 
 #ifdef _MSC_VER
-		// Clean-up winsock
+		// clean-up winsock
 		WSACleanup();
 #endif
 		if (fmuInstances[_c->index]->firstCallFree){
 			fmuInstances[_c->index]->firstCallFree = 0;
 		}
-		// FIXME: free FMU instance does not work with Dymola 2014
-		// free (_c);
 		// reset the current working directory. This is particularly important for Dymola
 		// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER
 		retVal = _chdir(fmuInstances[_c->index]->cwd);
 #else
 		retVal = chdir(fmuInstances[_c->index]->cwd);
+		// FIXME: free FMU instance does not work with Dymola 2014
+		// free (_c);
 #endif
 	}
 	// reset the current working directory. This is particularly important for Dymola
@@ -1432,7 +1425,6 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 					vrTemp = getValueReference(svTemp);
 					if (vrTemp == vr[i]){
 						fmuInstances[_c->index]->inVec[vr[i]-1] = value[vr[i]-1]; 
-						//fmuInstances[_c->index]->inVec[vr[i]-1] = 0;
 						fmuInstances[_c->index]->setCounter++;
 					}
 				}
@@ -1440,7 +1432,6 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 			if (fmuInstances[_c->index]->setCounter == fmuInstances[_c->index]->numInVar)
 			{
 				fmuInstances[_c->index]->writeReady = 1;
-
 			}
 		}
 		if (fmuInstances[_c->index]->firstCallSetReal){
