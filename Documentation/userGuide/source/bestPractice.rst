@@ -81,12 +81,13 @@ to be specified in the IDF file:
 	Zone Mean Air Temperature,   !- Variable Name
 	TimeStep;                    !- Reporting Frequency 
 
+These specifications are used in the example that is available in ``Examples/Schedule``.
+
    .. figure:: _img/_schedule.png
       :scale: 50 %
       
       Configuration of an EnergyPlus model which uses the ``Schedule``.
 
-These specifications are used in the example that is available in ``Examples/Schedule``.
 
 Configuring an EnergyPlus model which uses the ``EMS Actuator`` object
 ----------------------------------------------------------------------
@@ -150,12 +151,13 @@ to be specified in the IDF file:
 	Zone Mean Air Temperature,          !- Variable Name
 	TimeStep;                           !- Reporting Frequency
 
+These specifications are used in the example that is available in ``Examples/Actuator``.
+
    .. figure:: _img/_ems.png
       :scale: 50 %
       
       Configuration of an EnergyPlus model which uses the ``EMS Actuator``.
       
-These specifications are used in the example that is available in ``Examples/Actuator``.
 
 Configuring an EnergyPlus model which uses the ``EMS Variable`` object
 ----------------------------------------------------------------------
