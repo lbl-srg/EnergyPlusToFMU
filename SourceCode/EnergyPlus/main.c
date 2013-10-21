@@ -878,9 +878,9 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		}
 #ifndef _MSC_VER
 		// create a directory and copy the weather file into it
-		if (!stat (FRUNWEAFILE, &stat_p))
+		if (stat (FRUNWEAFILE, &stat_p)>=0)
 		{
-			if (stat ("WeatherData", &stat_p))
+			if (stat ("WeatherData", &stat_p)<0)
 			{
 				char *str;
 				mkdir ("WeatherData", S_IRWXU | S_IRWXG | S_IRWXO);
@@ -1378,8 +1378,15 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 ///\param loggingOn The loginggOn activate/deactivate.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
-DllExport fmiStatus fmiSetDebugLogging  (fmiComponent c, fmiBoolean loggingOn)
+DllExport fmiStatus fmiSetDebugLogging (fmiComponent c, fmiBoolean loggingOn)
 {
+	idfFmu_t* _c = (idfFmu_t *)c;
+	if (fmuInstances[_c->index]->pid != 0)
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
+			"fmiSetDebugLogging: fmiSetDebugLogging(): fmiSetDebugLogging is not provided!\n");
+		return fmiOK;
+	}
 	return fmiOK;
 }
 
