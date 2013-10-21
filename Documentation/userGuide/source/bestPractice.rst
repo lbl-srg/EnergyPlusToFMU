@@ -33,7 +33,7 @@ to maintain a certain room temperature.
 
 Such an  EnergyPlus model could be exported as an FMU with 
 one input and one output. The input of the FMU will write to the heating/cooling
-schedule, whereas the output of the FMU will read the room dry-bulb temperature.
+time schedule, whereas the output of the FMU will read the room dry-bulb temperature.
 
 The Energyplus model needs to contain the following three items:
 
@@ -80,6 +80,11 @@ to be specified in the IDF file:
 	ZONE ONE,                    !- Key Value
 	Zone Mean Air Temperature,   !- Variable Name
 	TimeStep;                    !- Reporting Frequency 
+
+   .. figure:: _img/_schedule.png
+      :scale: 50 %
+      
+      Configuration of an EnergyPlus model which uses the ``Schedule``.
 
 These specifications are used in the example that is available in ``Examples/Schedule``.
 
@@ -145,6 +150,11 @@ to be specified in the IDF file:
 	Zone Mean Air Temperature,          !- Variable Name
 	TimeStep;                           !- Reporting Frequency
 
+   .. figure:: _img/_ems.png
+      :scale: 50 %
+      
+      Configuration of an EnergyPlus model which uses the ``EMS Actuator``.
+      
 These specifications are used in the example that is available in ``Examples/Actuator``.
 
 Configuring an EnergyPlus model which uses the ``EMS Variable`` object
