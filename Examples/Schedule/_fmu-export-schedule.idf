@@ -411,7 +411,7 @@ ExternalInterface:FunctionalMockupUnitExport:From:Variable,
 ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
     FMU_OthEqu_ZoneOne,      !- Schedule Name
     Fraction,                !- Schedule Type Limits Names
-    QLoad,                   !- FMU Variable Name
+    Q,                       !- FMU Variable Name
     0;                       !- Initial Value
 
 ScheduleTypeLimits,
