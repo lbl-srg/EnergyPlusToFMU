@@ -110,27 +110,27 @@ which is used to map the outputs of the FMU to the EnergyPlus
 objects <tt class="docutils literal"><span class="pre">Output:Variable</span></tt> and <tt class="docutils literal"><span class="pre">EnergyManagementSystem:OutputVariable</span></tt>.</li>
 <li>The <tt class="docutils literal"><span class="pre">ExternalInterface:FunctionalMockupUnitExport:To:Schedule</span></tt>,
 <tt class="docutils literal"><span class="pre">ExternalInterface:FunctionalMockupUnitExport:To:Actuator</span></tt>,
-and <tt class="docutils literal"><span class="pre">ExternalInterface:FunctionalMockupUnitExport:To:Variable</span></tt>
+and <tt class="docutils literal"><span class="pre">ExternalInterface:FunctionalMockupUnitExport:To:Variable</span></tt>,
 which are used to map the inputs of the FMU to EnergyPlus schedules,
 EMS actuators, and variables.</li>
 </ul>
 <p>These objects are described in the Input/Output reference of the EnergyPlus manual
-(<a class="reference external" href="http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf">http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf</a>)</p>
+(<a class="reference external" href="http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf">http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf</a>).</p>
 <div class="section" id="configuring-an-energyplus-model-which-uses-the-schedule-object">
 <h2>7.1. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">Schedule</span></tt> object<a class="headerlink" href="#configuring-an-energyplus-model-which-uses-the-schedule-object" title="Permalink to this headline">¶</a></h2>
 <p>Suppose we like to export an EnergyPlus model of a room with
-an ideal HVAC system that adds heating or cooling load to the zone as schedules,
+an ideal HVAC system that adds heating or cooling to the zone as schedules,
 to maintain a certain room temperature.</p>
 <p>Such an  EnergyPlus model could be exported as an FMU with
-one input and one output. The input of the FMU will map to the heating/cooling load
-schedule, whereas the output of the FMU will map to the room dry-bulb temperature.</p>
+one input and one output. The input of the FMU will write to the heating/cooling
+time schedule, whereas the output of the FMU will read the room dry-bulb temperature.</p>
 <p>The Energyplus model needs to contain the following three items:</p>
 <ul class="simple">
 <li>An object that instructs EnergyPlus to activate the external interface.</li>
 <li>EnergyPlus objects that read inputs of the FMU and send the values to EnergyPlus.</li>
 <li>EnergyPlus objects that read data from EnergyPlus and send the values to the outputs of the FMU.</li>
 </ul>
-<p>The code below shows how the objects will be in the IDF.
+<p>The code below shows how to declare these objects in the IDF.
 To activate the external interface, we use:</p>
 <blockquote>
 <div><div class="highlight-text"><div class="highlight"><pre>ExternalInterface,           !- Object to activate external interface
@@ -143,7 +143,7 @@ FunctionalMockupUnitExport;  !- Name of external interface
 <div><div class="highlight-text"><div class="highlight"><pre>ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
 FMU_OthEqu_ZoneOne,      !- Name
 Any Number,              !- Schedule Type Limits Names
-QLoad,                   !- FMU Variable Name
+Q,                       !- FMU Variable Name
 0;                       !- Initial Value
 </pre></div>
 </div>
@@ -167,6 +167,10 @@ Zone Mean Air Temperature,   !- Variable Name
 TimeStep;                    !- Reporting Frequency
 </pre></div>
 </div>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/_schedule.png"><img alt="_images/_schedule.png" src="_images/_schedule.png" style="width: 514.5px; height: 209.5px;" /></a>
+<p class="caption">Configuration of an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">Schedule</span></tt>.</p>
+</div>
 </div></blockquote>
 <p>These specifications are used in the example that is available in <tt class="docutils literal"><span class="pre">Examples/Schedule</span></tt>.</p>
 </div>
@@ -176,10 +180,10 @@ TimeStep;                    !- Reporting Frequency
 The shading controller requires as input the shading
 actuation signal <tt class="docutils literal"><span class="pre">yShade</span></tt>, and has as outputs the outside temperature <tt class="docutils literal"><span class="pre">TRoo</span></tt>
 and the solar irradiation <tt class="docutils literal"><span class="pre">ISolExt</span></tt> that is incident on the window.</p>
-<p>We will export such an  EnergyPlus model as an FMU with
-one input and two outputs. The input of the FMU will map to the shading actuation signal,
-whereas the outputs will map to outside temperature <tt class="docutils literal"><span class="pre">TRoo</span></tt> and the solar irradiation <tt class="docutils literal"><span class="pre">ISolExt</span></tt>.</p>
-<p>The code below shows how the objects will be in the IDF.
+<p>We will export such an EnergyPlus model as an FMU with
+one input and two outputs. The input of the FMU will write to the shading actuation signal,
+whereas the outputs will read the outside temperature <tt class="docutils literal"><span class="pre">TRoo</span></tt> and the solar irradiation <tt class="docutils literal"><span class="pre">ISolExt</span></tt>.</p>
+<p>The code below shows how to declare these objects in the IDF.
 To activate the external interface, we use:</p>
 <blockquote>
 <div><div class="highlight-text"><div class="highlight"><pre>ExternalInterface,           !- Object to activate external interface
@@ -228,13 +232,17 @@ Zone Mean Air Temperature,          !- Variable Name
 TimeStep;                           !- Reporting Frequency
 </pre></div>
 </div>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/_ems.png"><img alt="_images/_ems.png" src="_images/_ems.png" style="width: 514.5px; height: 209.5px;" /></a>
+<p class="caption">Configuration of an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">EMS</span> <span class="pre">Actuator</span></tt>.</p>
+</div>
 </div></blockquote>
 <p>These specifications are used in the example that is available in <tt class="docutils literal"><span class="pre">Examples/Actuator</span></tt>.</p>
 </div>
 <div class="section" id="configuring-an-energyplus-model-which-uses-the-ems-variable-object">
 <h2>7.3. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">EMS</span> <span class="pre">Variable</span></tt> object<a class="headerlink" href="#configuring-an-energyplus-model-which-uses-the-ems-variable-object" title="Permalink to this headline">¶</a></h2>
 <p>This configuration is almost the same as in the previous example with the only
-difference being that the shading actuation signal will be mapped to an EMS variable
+difference being that the shading actuation signal will be written to an EMS variable
 <tt class="docutils literal"><span class="pre">Shade_Signal</span></tt> that can be used in an EMS program.</p>
 <p>To define the input of the FMU, we use:</p>
 <blockquote>

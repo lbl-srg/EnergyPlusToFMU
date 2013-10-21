@@ -60,11 +60,9 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">4. Creating an FMU</a><ul>
-<li><a class="reference internal" href="#basic-command-line-use">4.1. Basic command-line use</a></li>
+<li><a class="reference internal" href="#command-line-use">4.1. Command-line use</a></li>
 <li><a class="reference internal" href="#output">4.2. Output</a></li>
-<li><a class="reference internal" href="#advanced-use">4.3. Advanced use</a></li>
-<li><a class="reference internal" href="#setting-environment-variables">4.4. Setting environment variables</a></li>
-<li><a class="reference internal" href="#troubleshooting">4.5. Troubleshooting</a></li>
+<li><a class="reference internal" href="#troubleshooting">4.3. Troubleshooting</a></li>
 </ul>
 </li>
 </ul>
@@ -105,35 +103,69 @@
 <span id="build"></span><h1>4. Creating an FMU<a class="headerlink" href="#creating-an-fmu" title="Permalink to this headline">¶</a></h1>
 <p>This chapter describes how to create a Functional Mockup Unit, starting from an EnergyPlus IDF file.
 It assumes you have followed the <a class="reference internal" href="installation.html"><em>Installation and Configuration</em></a> instructions, and that you have created an IDF file following the <a class="reference internal" href="bestPractice.html"><em>Best Practice</em></a> guidelines.</p>
-<div class="section" id="basic-command-line-use">
-<h2>4.1. Basic command-line use<a class="headerlink" href="#basic-command-line-use" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="command-line-use">
+<h2>4.1. Command-line use<a class="headerlink" href="#command-line-use" title="Permalink to this headline">¶</a></h2>
 <p>To create an FMU,
 open a command-line window (see <a class="reference internal" href="notation.html"><em>Notation</em></a>).
-The basic invocation of the EnergyPlusToFMU tool is:</p>
-<div class="highlight-none"><div class="highlight"><pre>&gt; python  &lt;path-to-scripts-subdir&gt;EnergyPlusToFMU.py  &lt;path-to-idf-file&gt;
+The standard invocation of the EnergyPlusToFMU tool is:</p>
+<div class="highlight-none"><div class="highlight"><pre>&gt; python  &lt;path-to-scripts-subdir&gt;EnergyPlusToFMU.py  -i &lt;path-to-idd-file&gt;  -w &lt;path-to-weather-file&gt;  &lt;path-to-idf-file&gt;
 </pre></div>
 </div>
 <p>For example:</p>
 <div class="highlight-none"><div class="highlight"><pre># Windows:
-&gt; python  scriptDir\EnergyPlusToFMU.py  test.idf
+&gt; python  scriptDir\EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  test.epw  test.idf
 
 # Linux, MacOS:
-&gt; python  scriptDir/EnergyPlusToFMU.py  test.idf
+&gt; python  scriptDir/EnergyPlusToFMU.py  -i ~/eplus/Energy+.idd  test.epw  test.idf
 </pre></div>
 </div>
 <p>where <tt class="docutils literal"><span class="pre">scriptDir</span></tt> is the path to the scripts directory of EnergyPlusToFMU.
 Typically this is the <tt class="docutils literal"><span class="pre">Scripts/EnergyPlusToFMU</span></tt> subdirectory of the installation directory.
 See <a class="reference internal" href="installation.html"><em>Installation and Configuration</em></a> for details.</p>
-<p>The <tt class="docutils literal"><span class="pre">&lt;path-to-idf-file&gt;</span></tt> can include an absolute or relative path.
-For example:</p>
+<p>All file paths, including those to the weather, IDD, and IDF files, can be absolute or relative.
+For readability, the rest of these instructions omit the paths to the script and input files.</p>
+<p>Script <tt class="docutils literal"><span class="pre">EnergyPlusToFMU.py</span></tt> supports the following command-line switches:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">option &lt;argument&gt;</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-i &lt;path-to-idd-file&gt;</td>
+<td>Use the named Input Data Dictionary (required).</td>
+</tr>
+<tr class="row-odd"><td>-w &lt;path-to-weather-file&gt;</td>
+<td>Add the named weather file to the FMU [optional].</td>
+</tr>
+<tr class="row-even"><td>-d</td>
+<td>Print diagnostics [optional].
+Produces a status line for every major action taken
+by the EnergyPlusToFMU tools.
+This option may be helpful for troubleshooting.</td>
+</tr>
+<tr class="row-odd"><td>-L</td>
+<td>Litter, that is, do not clean up intermediate
+files [optional].
+Typically the EnergyPlusToFMU tools delete most of
+the intermediate files that ultimately get packaged
+into the FMU.
+This option lets you inspect intermediate output.</td>
+</tr>
+</tbody>
+</table>
+<p>The switches may be given in any order.
+However, all must appear before the name of the IDF file.
+For repeated switches such as <tt class="docutils literal"><span class="pre">-i</span></tt> or <tt class="docutils literal"><span class="pre">-w</span></tt>, the last one specified will be used.</p>
+<p>For example:</p>
 <div class="highlight-none"><div class="highlight"><pre># Windows:
-&gt; python  scriptDir\EnergyPlusToFMU.py  ..\all-idfs\test.idf
-
-# Linux, MacOS:
-&gt; python  scriptDir/EnergyPlusToFMU.py  ../all-idfs/test.idf
+&gt; python  EnergyPlusToFMU.py  -d  -i C:\eplus\Energy+.idd  test.idf
 </pre></div>
 </div>
-<p>For readability, the rest of these instructions omit the full path to the script and input files.</p>
 </div>
 <div class="section" id="output">
 <h2>4.2. Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
@@ -170,76 +202,8 @@ depending on the system.</li>
 This means you can open and inspect its contents.
 To do so, it may help to change the &#8220;<tt class="docutils literal"><span class="pre">.fmu</span></tt>&#8221; extension to &#8220;<tt class="docutils literal"><span class="pre">.zip</span></tt>&#8221;.</p>
 </div>
-<div class="section" id="advanced-use">
-<h2>4.3. Advanced use<a class="headerlink" href="#advanced-use" title="Permalink to this headline">¶</a></h2>
-<p>The EnergyPlusToFMU tool supports a number of options:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="33%" />
-<col width="67%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">option &lt;argument&gt;</th>
-<th class="head">Purpose</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>-i &lt;path-to-idd-file&gt;</td>
-<td>Use the named Input Data Dictionary.
-If you do not specify this option, the tool reads the
-environment variable <tt class="docutils literal"><span class="pre">ENERGYPLUS_DIR</span></tt>, and uses the
-data dictionary <tt class="docutils literal"><span class="pre">ENERGYPLUS_DIR/Energy+.idd</span></tt>.
-For most EnergyPlus users, this environment
-variable, and the IDD file, typically already
-exist.</td>
-</tr>
-<tr class="row-odd"><td>-w &lt;path-to-weather-file&gt;</td>
-<td>Include the named weather file in the FMU.</td>
-</tr>
-<tr class="row-even"><td>-d</td>
-<td>Print diagnostics.
-Produces a status line for every major action
-taken by the EnergyPlusToFMU tools.
-This option may be helpful for troubleshooting.</td>
-</tr>
-<tr class="row-odd"><td>-L</td>
-<td>Litter, that is, do not clean up intermediate
-files.
-Typically the EnergyPlusToFMU tools will delete
-most of the intermediate files that ultimately get
-packaged into the FMU.
-This option allows you to easily inspect
-intermediate output.</td>
-</tr>
-</tbody>
-</table>
-<p>All these options must be supplied before the name of the IDF file.
-However, they may be provided in any order.
-For repeated options like <tt class="docutils literal"><span class="pre">-i</span></tt> or <tt class="docutils literal"><span class="pre">-w</span></tt>, the last one specified will be used.</p>
-<p>For example:</p>
-<div class="highlight-none"><div class="highlight"><pre># Windows:
-&gt; python  EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  test.idf
-
-&gt; python  EnergyPlusToFMU.py  -d  test.idf
-</pre></div>
-</div>
-</div>
-<div class="section" id="setting-environment-variables">
-<h2>4.4. Setting environment variables<a class="headerlink" href="#setting-environment-variables" title="Permalink to this headline">¶</a></h2>
-<p>To set the <tt class="docutils literal"><span class="pre">ENERGYPLUS_DIR</span></tt> environment variable, proceed as follows:</p>
-<div class="highlight-none"><div class="highlight"><pre># Windows:
-&gt; set  ENERGYPLUS_DIR=&quot;/Applications/EnergyPlus-8-0-0&quot;
-
-# Bash shell on Linux, MacOS:
-&gt; export  ENERGYPLUS_DIR=&quot;/Applications/EnergyPlus-8-0-0&quot;
-
-# C shell on Linux, MacOS:
-&gt; setenv  ENERGYPLUS_DIR  &quot;/Applications/EnergyPlus-8-0-0&quot;
-</pre></div>
-</div>
-</div>
 <div class="section" id="troubleshooting">
-<h2>4.5. Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+<h2>4.3. Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
 <p>To check whether <tt class="docutils literal"><span class="pre">EnergyPlusToFMU.py</span></tt> has run correctly, look for an FMU in your current working directory.
 If you do not get an FMU, there will be some error output, indicating the nature of the problem.</p>
 <p>The error message should be explicit enough to guide you to the source of the problem.
@@ -254,7 +218,6 @@ Try running the export-preparation application directly on your IDF file:</p>
 &gt; ./idf-to-fmu-export-prep.app  Energy+.idd  test.idf
 </pre></div>
 </div>
-<p>Note that you must explicitly name the IDD file, as this executable does not attempt to read the <tt class="docutils literal"><span class="pre">ENERGYPLUS_DIR</span></tt> environment variable.</p>
 <p>If running the export-preparation application as shown above works correctly, it produces two files, <tt class="docutils literal"><span class="pre">modelDescription.xml</span></tt> and <tt class="docutils literal"><span class="pre">variables.cfg</span></tt>.
 Otherwise, it should produce an error message, which should also be echoed to an output file <tt class="docutils literal"><span class="pre">output.log</span></tt>.</p>
 <p>Note that the export-preparation application processes only parts of the IDF file.

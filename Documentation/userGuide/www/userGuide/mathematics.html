@@ -103,7 +103,7 @@ Then program 1 computes the sequence</p>
 <p>with initial conditions <span class="math">\(x_{1}(0) = x_{1,0}\)</span> and <span class="math">\(x_{2}(0) = x_{2,0}\)</span>.</p>
 <p>To advance from time <span class="math">\(k\)</span> to <span class="math">\(k+1\)</span>, each program uses its own integration algorithm. At the end of the time step, program 1 sends its new state <span class="math">\(x_{1}(k+1)\)</span> to program 2, and receives the state <span class="math">\(x_{2}(k+1)\)</span> from program 2.
 The same procedure is done with the program 2. Program 2, which is the master simulation program, imports the FMU, and manages the data exchange between the two programs.
-In comparison to numerical methods of differential equations, this scheme is equals to an explicit Euler integration, which is an integration algorithm that solves an ordinary differential equation with specified initial values,</p>
+In comparison to numerical methods of differential equations, this scheme is equal to an explicit Euler integration, which is an integration algorithm that solves an ordinary differential equation with specified initial values,</p>
 <blockquote>
 <div><p><span class="math">\(dx/dt = h(x)\)</span>,</p>
 <p><span class="math">\(x(0)  = x_{0}\)</span>,</p>
@@ -111,18 +111,18 @@ In comparison to numerical methods of differential equations, this scheme is equ
 <p>on the time interval <span class="math">\(t \in [0, 1]\)</span>, using he following steps:</p>
 <p><strong>Step 0:</strong></p>
 <blockquote>
-<div><p>Initialize counter k=0 and number of steps, <span class="math">\(N &gt; 0\)</span>.</p>
+<div><p>Initialize counter <span class="math">\(k=0\)</span> and number of steps, <span class="math">\(N &gt; 0\)</span>.</p>
 <p>Set initial state <span class="math">\(x(k) = x_{0}\)</span> and set time step  <span class="math">\(\Delta t = 1/N\)</span>.</p>
 </div></blockquote>
 <p><strong>Step 1:</strong></p>
 <blockquote>
 <div><p>Compute new state  <span class="math">\(x(k+1) = x(k) + h(x(k)) \Delta t\)</span>.</p>
-<p>Replace k by k+1.</p>
+<p>Replace <span class="math">\(k\)</span> by <span class="math">\(k+1\)</span>.</p>
 </div></blockquote>
 <p><strong>Step 2:</strong></p>
 <blockquote>
-<div>If k=N stop, else go to Step 1.</div></blockquote>
-<p>However, this scheme does not require each simulation tool to use explicit Euler for its internal time integration algorithm; the analogy to explicit Euler applies only to the data exchange between the programs.  In the situation where the differential equation is solved using co-simulation, the above algorithm becomes</p>
+<div>If <span class="math">\(k=N\)</span> stop, else go to Step 1.</div></blockquote>
+<p>However, this scheme does not require each simulation tool to use the explicit Euler method for its internal time integration algorithm; the analogy to explicit Euler applies only to the data exchange between the programs.  In the situation where the differential equation is solved using co-simulation, the above algorithm becomes</p>
 <p><strong>Step 0:</strong></p>
 <blockquote>
 <div><p>Initialize counter <span class="math">\(k=0\)</span> and number of steps, <span class="math">\(N &gt; 0\)</span>.</p>
