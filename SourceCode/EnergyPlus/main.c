@@ -62,6 +62,10 @@ typedef struct idfFmu_t {
 	char cwd[256];
 	char* fmuLocation;
 	char* fmuCalLocation;
+	char* resources_p;
+	char *xml_file_p;
+	char* tmpResCon;
+	char *fmuOutput;
 	char* mID;
 	char *mGUID;
 	int numInVar;
@@ -212,9 +216,9 @@ static int copy_res (fmiString str,  fmiString des)
 #elif __APPLE__
 	sprintf(tmp_str, "cp -f %s%s %s%s%s", "\"", str,  "\"", des, "\"");
 #else
-	printfDebug ("Cannot execute %s! The FMU export is only supported on Windows, Linux and Mac OS!\n", tmp_str);
+	printf ("Cannot execute %s! The FMU export is only supported on Windows, Linux and Mac OS!\n", tmp_str);
 #endif
-	printfDebug ("Command executes to copy content of resources folder: %s\n", tmp_str);
+	printf ("Command executes to copy content of resources folder: %s\n", tmp_str);
 	retVal = system (tmp_str);
 	free (tmp_str);
 	return 0;
@@ -256,7 +260,7 @@ static int removeFMUDir (fmiString str)
 #else
 	sprintf(tmp_str, "rm -rf %s%s%s", "\"", str, "\"");
 #endif
-	printfDebug ("This is the command to be executed to delete existing directory %s\n", tmp_str);
+	printf ("This is the command to be executed to delete existing directory %s\n", tmp_str);
 	retVal = system (tmp_str);
 	free (tmp_str);
 	return 0;
@@ -416,15 +420,9 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	int retVal;
 	fmiString mID;
 	fmiString mGUID;
-
-	char *xml_file_p;
 	char tmpResLoc[5];
-	char *fmuOutput;
-	char *tmpResCon;
-	char* resources_p;
 	struct stat st;
 	fmiBoolean errDir;
-
 	fmiComponent c = (fmiComponent)calloc(1, sizeof(struct idfFmu_t));
 	idfFmu_t* _c = (idfFmu_t*)c;
 
@@ -434,8 +432,8 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	retValIns=insNum;
 
 	// set the debug for the FMU instance
-	setDebug (loggingOn);
-
+	//setDebug (loggingOnInt);
+	//fmuInstances[_c->index]->loggingOn = loggingOn;
 	// get current working directory
 #ifdef _MSC_VER
 	if (_getcwd(fmuInstances[_c->index]->cwd, sizeof(fmuInstances[_c->index]->cwd)) == NULL)
@@ -447,22 +445,22 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	}
 	else
 	{
-		printfDebug("The current working directory is: %s\n", fmuInstances[_c->index]->cwd);
+		printf("The current working directory is: %s\n", fmuInstances[_c->index]->cwd);
 	}
 
 	// create the output folder for current FMU in working directory
-	fmuOutput = (char *)calloc(sizeof(char), strlen ("Output_EPExport_") + strlen (instanceName) 
+	fmuInstances[_c->index]->fmuOutput = (char *)calloc(sizeof(char), strlen ("Output_EPExport_") + strlen (instanceName) 
 		+ 10 + strlen (fmuInstances[_c->index]->cwd));
 #ifdef _MSC_VER
-	sprintf(fmuOutput, "%s%s%s%s", fmuInstances[_c->index]->cwd,"\\", "Output_EPExport_", instanceName);
+	sprintf(fmuInstances[_c->index]->fmuOutput, "%s%s%s%s", fmuInstances[_c->index]->cwd,"\\", "Output_EPExport_", instanceName);
 #else
-	sprintf(fmuOutput, "%s%s%s%s", fmuInstances[_c->index]->cwd,"//", "Output_EPExport_", instanceName);
+	sprintf(fmuInstances[_c->index]->fmuOutput, "%s%s%s%s", fmuInstances[_c->index]->cwd,"//", "Output_EPExport_", instanceName);
 #endif
 	// check if directory exists and deletes it 
-	errDir = stat(fmuOutput, &st);
+	errDir = stat(fmuInstances[_c->index]->fmuOutput, &st);
 	if(errDir>=0) {
-		printfDebug("The fmuOutput directory %s already exists and will be deleted!\n", fmuOutput);
-	removeFMUDir (fmuOutput);
+		printf("The fmuOutput directory %s already exists and will be deleted!\n", fmuInstances[_c->index]->fmuOutput);
+	removeFMUDir (fmuInstances[_c->index]->fmuOutput);
 	}
 
 	// check whether the path to the resources folder has been provided
@@ -481,10 +479,6 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	remSpaces_makeUpper(tmpResLoc);
 
 	// allocate memory for fmuLocation 
-	if (fmuInstances[_c->index]->fmuLocation!=NULL)
-	{
-		free(fmuInstances[_c->index]->fmuLocation);
-	}
 	fmuInstances[_c->index]->fmuLocation = (char *)calloc(sizeof(char), strlen (fmuLocation) + 1);
 	// extract the URI information from the fmuResourceLocation path
 	if (strncmp (tmpResLoc, "FILE", 4)== 0)
@@ -493,7 +487,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 		// is not clear (e.g. see FMI 1.0, and FMI 2.0). We will thus check all cases to see what we have
 		// case file: (If Ptolemy unzips an FMu in /tmp then the fmuLocation is file:/temp)
 		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 5, strlen(fmuLocation + 5));
-		printfDebug ("fmiInstantiateSlave: Path to fmuLocation without file: %s\n", 
+		printf ("fmiInstantiateSlave: Path to fmuLocation without file: %s\n", 
 			fmuInstances[_c->index]->fmuLocation);
 		// check whether fmuLocation exists
 		errDir = stat(fmuInstances[_c->index]->fmuLocation, &st);
@@ -504,7 +498,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 			fmuInstances[_c->index]->fmuLocation = (char *)calloc(sizeof(char), strlen (fmuLocation) + 1);
 			// case file:/
 			strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 6, strlen(fmuLocation + 6));
-			printfDebug ("fmiInstantiateSlave: Path to fmuLocation without file:/ %s\n", 
+			printf ("fmiInstantiateSlave: Path to fmuLocation without file:/ %s\n", 
 				fmuInstances[_c->index]->fmuLocation);
 			// check whether fmuLocation exists
 			errDir = stat(fmuInstances[_c->index]->fmuLocation, &st);
@@ -515,7 +509,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 				fmuInstances[_c->index]->fmuLocation = (char *)calloc(sizeof(char), strlen (fmuLocation) + 1);
 				// case file://
 				strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 7, strlen(fmuLocation + 7));
-				printfDebug ("fmiInstantiateSlave: Path to fmuLocation without file:// %s\n", 
+				printf ("fmiInstantiateSlave: Path to fmuLocation without file:// %s\n", 
 					fmuInstances[_c->index]->fmuLocation);
 
 				// check whether fmuLocation exists
@@ -527,7 +521,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 					fmuInstances[_c->index]->fmuLocation = (char *)calloc(sizeof(char), strlen (fmuLocation) + 1);
 					// case file:///
 					strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 8, strlen(fmuLocation + 8));
-					printfDebug ("fmiInstantiateSlave: Path to fmuLocation without file:/// %s\n", 
+					printf ("fmiInstantiateSlave: Path to fmuLocation without file:/// %s\n", 
 						fmuInstances[_c->index]->fmuLocation);
 					// check whether fmuLocation exists
 					errDir = stat(fmuInstances[_c->index]->fmuLocation, &st);
@@ -546,47 +540,47 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	else if ((strncmp (tmpResLoc, "FTP", 3)== 0) || (strncmp (tmpResLoc, "FMI", 3)== 0))
 	{
 		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 6, strlen(fmuLocation + 6));
-		printfDebug ("fmiInstantiateSlave: Path to fmuLocationPath without ftp:// or fmi:// %s\n", 
+		printf ("fmiInstantiateSlave: Path to fmuLocationPath without ftp:// or fmi:// %s\n", 
 			fmuInstances[_c->index]->fmuLocation);
 	}
 	else if ((strncmp (tmpResLoc, "HTTPS", 5)== 0))
 	{
 		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 8, strlen(fmuLocation + 8));
-		printfDebug ("fmiInstantiateSlave: Path to fmuLocation without https:// %s\n", fmuInstances[_c->index]->fmuLocation);
+		printf("fmiInstantiateSlave: Path to fmuLocation without https:// %s\n", fmuInstances[_c->index]->fmuLocation);
 	}
 	else
 	{
 		strcpy(fmuInstances[_c->index]->fmuLocation, fmuLocation);
-		printfDebug ("fmiInstantiateSlave: Path to fmuLocation %s\n", fmuInstances[_c->index]->fmuLocation);
+		printf("fmiInstantiateSlave: Path to fmuLocation %s\n", fmuInstances[_c->index]->fmuLocation);
 	}
 #ifdef _MSC_VER
 	// replace eventual forward slash with backslash on Windows
 	replace_char (fmuInstances[_c->index]->fmuLocation, '//', '\\');
 #endif
-	printfDebug ("fmiInstantiateSlave: Path to fmuLocation used in the program %s\n", fmuInstances[_c->index]->fmuLocation);
+	printf("fmiInstantiateSlave: Path to fmuLocation used in the program %s\n", fmuInstances[_c->index]->fmuLocation);
 
-	resources_p = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->fmuLocation) + strlen (RESOURCES) + 1);
-	sprintf(resources_p, "%s%s", fmuInstances[_c->index]->fmuLocation, RESOURCES);
+	fmuInstances[_c->index]->resources_p = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->fmuLocation) + strlen (RESOURCES) + 1);
+	sprintf(fmuInstances[_c->index]->resources_p, "%s%s", fmuInstances[_c->index]->fmuLocation, RESOURCES);
 
 	// create content of resources folder in created output directory
-	tmpResCon = (char *)calloc(sizeof(char), strlen (resources_p) + strlen ("\"*.*") + 1);
-	sprintf(tmpResCon, "%s%s", resources_p, "\"*.*");
+	fmuInstances[_c->index]->tmpResCon = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->resources_p) + strlen ("\"*.*") + 1);
+	sprintf(fmuInstances[_c->index]->tmpResCon, "%s%s", fmuInstances[_c->index]->resources_p, "\"*.*");
 
 	//create the output directory
-	retVal = create_res (fmuOutput);
+	retVal = create_res (fmuInstances[_c->index]->fmuOutput);
 	// add the end slash to the fmuOutput
 #ifdef _MSC_VER
-	sprintf(fmuOutput, "%s%s", fmuOutput,"\\");
+	sprintf(fmuInstances[_c->index]->fmuOutput, "%s%s", fmuInstances[_c->index]->fmuOutput,"\\");
 #else
-	sprintf(fmuOutput, "%s%s", fmuOutput,"//");
+	sprintf(fmuInstances[_c->index]->fmuOutput, "%s%s", fmuInstances[_c->index]->fmuOutput,"//");
 #endif
 
 	// copy the resources folder into the output directory
-	retVal = copy_res (tmpResCon, fmuOutput);
+	retVal = copy_res (fmuInstances[_c->index]->tmpResCon, fmuInstances[_c->index]->fmuOutput);
 
 	// reallocate memory for fmuLocation and assign it to the folder created
-	fmuInstances[_c->index]->fmuCalLocation = (char *)calloc(sizeof(char), strlen (fmuOutput) + 1);
-	strcpy(fmuInstances[_c->index]->fmuCalLocation, fmuOutput);
+	fmuInstances[_c->index]->fmuCalLocation = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->fmuOutput) + 1);
+	strcpy(fmuInstances[_c->index]->fmuCalLocation, fmuInstances[_c->index]->fmuOutput);
 
 	// change the directory to make sure that FMUs are not overwritten
 #ifdef _MSC_VER
@@ -601,11 +595,11 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	}
 
 	// create path to xml file
-	xml_file_p = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->fmuLocation) + strlen (XML_FILE) + 1);
-	sprintf(xml_file_p, "%s%s", fmuInstances[_c->index]->fmuLocation, XML_FILE);
+	fmuInstances[_c->index]->xml_file_p = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->fmuLocation) + strlen (XML_FILE) + 1);
+	sprintf(fmuInstances[_c->index]->xml_file_p, "%s%s", fmuInstances[_c->index]->fmuLocation, XML_FILE);
 
 	// get model description of the FMU
-	fmuInstances[_c->index]->md = parse(xml_file_p);
+	fmuInstances[_c->index]->md = parse(fmuInstances[_c->index]->xml_file_p);
 	if (!fmuInstances[_c->index]->md) {
 		fprintf(stderr, "fmiInstantiateSlave: Failed to get the modelDescription\n");
 		exit(1);
@@ -617,11 +611,11 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// copy model ID to FMU
 	fmuInstances[_c->index]->mID = (char *)calloc(sizeof(char), strlen (mID) + 1);
 	strcpy(fmuInstances[_c->index]->mID, mID);
-	printfDebug("fmiInstantiateSlave: The FMU modelIdentifier is %s.\n", mID);
+	printf("fmiInstantiateSlave: The FMU modelIdentifier is %s.\n", mID);
 
 	// get the model GUID of the FMU
 	mGUID = getString(fmuInstances[_c->index]->md, att_guid);
-	printfDebug("fmiInstantiateSlave: The FMU modelGUID is %s.\n", mGUID);
+	printf("fmiInstantiateSlave: The FMU modelGUID is %s.\n", mGUID);
 
 	fmuInstances[_c->index]->mGUID = (char *)calloc(sizeof(char), strlen (mGUID) + 1);
 	strcpy(fmuInstances[_c->index]->mGUID, mGUID);
@@ -646,15 +640,13 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	fmuInstances[_c->index]->timeout = timeout;
 	fmuInstances[_c->index]->visible = visible;
 	fmuInstances[_c->index]->interactive = interactive; 
-	fmuInstances[_c->index]->loggingOn = loggingOn;
-
 	// free xml_file_p;
-	free (xml_file_p);
+	free (fmuInstances[_c->index]->xml_file_p);
 	// free tmpResCon
-	free (tmpResCon);
+	free (fmuInstances[_c->index]->tmpResCon);
 	// free resources_p
-	free (resources_p);
-	printfDebug ("fmiInstantiateSlave: Slave %s is instantiated!\n", instanceName);
+	free (fmuInstances[_c->index]->resources_p);
+	printf("fmiInstantiateSlave: Slave %s is instantiated!\n", instanceName);
 	// reset the current working directory. This is particularly important for Dymola
 	// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER
@@ -700,8 +692,8 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	mode_t process_mask = umask(0);
 #endif 
 
-	// set the debug for the FMU instance
-	setDebug (fmuInstances[_c->index]->loggingOn);
+	// set the debug for the FMU instance--- Problem to solve
+	//setDebug (fmuInstances[_c->index]->loggingOn);
 
 	// save start of the simulation time step
 	fmuInstances[_c->index]->tStartFMU = tStart;
@@ -781,8 +773,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 			" sockfd = %d!\n", fmuInstances[_c->index]->sockfd);
 		return fmiFatal;
 	}
-
-	printfIntDebug("fmiInitializeSlave: The sockfd is %d.\n", fmuInstances[_c->index]->sockfd);
+	printf("fmiInitializeSlave: The sockfd is %d.\n", fmuInstances[_c->index]->sockfd);
 	// initialize socket structure server address information
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;                 // Address family to use
@@ -808,7 +799,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 
 	// get the port number
 	port_num= ntohs(server_addr.sin_port);
-	printfIntDebug("fmiInitializeSlave: The port number is %d.\n", port_num);
+	printf("fmiInitializeSlave: The port number is %d.\n", port_num);
 
 	// get the hostname information
 	gethostname(ThisHost, MAXHOSTNAME);
@@ -820,7 +811,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 
 	// write socket cfg file
 	retVal = write_socket_cfg (port_num, ThisHost);
-	printfDebug("fmiInitializeSlave: This hostname is %s.\n", ThisHost);
+	printf("fmiInitializeSlave: This hostname is %s.\n", ThisHost);
 	if  (retVal != 0) {
 		fmuLogger(0,  fmuInstances[_c->index]->instanceName, fmiFatal, 
 			"Fatal Error", "fmiInitializeSlave: Write socket cfg failed!\n");
@@ -833,8 +824,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		closeipcFMU (&(fmuInstances[_c->index]->sockfd));
 		return fmiFatal;
 	}
-	printfIntDebug("fmiInitializeSlave: TCPServer Server waiting for clients on port: %d.\n", port_num);
-
+	printf("fmiInitializeSlave: TCPServer Server waiting for clients on port: %d.\n", port_num);
 #ifndef _MSC_VER
 
 	fmuInstances[_c->index]->pid = fork();
@@ -846,7 +836,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	if (fmuInstances[_c->index]->pid != 0 )
 	{
 		fmuInstances[_c->index]->newsockfd = accept(fmuInstances[_c->index]->sockfd, NULL, NULL);
-		printDebug ("fmiInitializeSlave: The connection has been accepted!\n");
+		printf("fmiInitializeSlave: The connection has been accepted!\n");
 	}
 #endif
 
@@ -862,7 +852,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		// initialize the input vectors
 		fmuInstances[_c->index]->inVec = (fmiReal*)malloc(fmuInstances[_c->index]->numInVar*sizeof(fmiReal));
 	}
-	printfIntDebug("fmiInitializeSlave: The number of input variables is %d!\n", fmuInstances[_c->index]->numInVar);
+	printf("fmiInitializeSlave: The number of input variables is %d!\n", fmuInstances[_c->index]->numInVar);
 
 	// get the number of output variables of the FMU
 	if (fmuInstances[_c->index]->numOutVar ==-1)
@@ -871,7 +861,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		// initialize the output vector
 		fmuInstances[_c->index]->outVec = (fmiReal*)malloc(fmuInstances[_c->index]->numOutVar*sizeof(fmiReal));
 	}
-	printfIntDebug("fmiInitializeSlave: The number of output variables is %d!\n", fmuInstances[_c->index]->numOutVar);
+	printf("fmiInitializeSlave: The number of output variables is %d!\n", fmuInstances[_c->index]->numOutVar);
 
 	if ( (fmuInstances[_c->index]->numInVar + fmuInstances[_c->index]->numOutVar) == 0){
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
@@ -879,7 +869,6 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 			fmuInstances[_c->index]->instanceName);
 		return fmiFatal;
 	}
-
 	// fmiInitialize just active when pid of the child is invoked
 	if ((fmuInstances[_c->index]->pid == 0)){
 
@@ -918,7 +907,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		retVal = start_sim(c);
 #ifdef _MSC_VER
 		fmuInstances[_c->index]->newsockfd = accept(fmuInstances[_c->index]->sockfd, NULL, NULL);
-		printDebug ("fmiInitializeSlave: The connection has been accepted!\n");
+		printf("fmiInitializeSlave: The connection has been accepted!\n");
 #endif
 		// check whether the simulation could start successfully
 #ifndef _MSC_VER
@@ -941,7 +930,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		{
 			fmuInstances[_c->index]->firstCallIni = 0;
 		}
-		printfDebug ("fmiInitializeSlave: Slave %s is initialized!\n", instanceName);
+		printf("fmiInitializeSlave: Slave %s is initialized!\n", instanceName);
 		// reset the current working directory. This is particularly important for Dymola
 		// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER
@@ -951,7 +940,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 #endif
 		return fmiOK;
 	}
-	printfDebug ("fmiInitializeSlave: Slave %s is initialized!\n", instanceName);
+	printf("fmiInitializeSlave: Slave %s is initialized!\n", instanceName);
 	// reset the current working directory. This is particularly important for Dymola
 	// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER
@@ -1398,12 +1387,6 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetDebugLogging  (fmiComponent c, fmiBoolean loggingOn)
 {
-	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
-	{
-		setDebug (fmuInstances[_c->index]->loggingOn );
-		return fmiOK;
-	}
 	return fmiOK;
 }
 
