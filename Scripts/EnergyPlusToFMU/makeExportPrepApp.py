@@ -15,14 +15,38 @@
 #   However, this script can be run from a different working directory.
 
 
+#--- Ensure access.
+#
+import os
+import sys
+
+
+#--- Identify system.
+#
+PLATFORM_NAME = sys.platform
+#
+if( PLATFORM_NAME.startswith('win') ):
+    PLATFORM_SHORT_NAME = 'win'
+    BATCH_EXTENSION = '.bat'
+elif( PLATFORM_NAME.startswith('linux')
+    or PLATFORM_NAME.startswith('cygwin') ):
+    PLATFORM_SHORT_NAME = 'linux'
+    BATCH_EXTENSION = '.sh'
+elif( PLATFORM_NAME.startswith('darwin') ):
+    PLATFORM_SHORT_NAME = 'darwin'
+    BATCH_EXTENSION = '.sh'
+else:
+    raise Exception('Unknown platform {' +PLATFORM_NAME +'}')
+
+
 #--- Note on compile and link batch files.
 #
 #   This script uses separate, system-dependent, batch files to compile and
 # link source code.  For more information, see fcns printCompileCppBatchInfo()
 # and printLinkCppExeBatchInfo() below.
 #
-g_compileCppBatchFileName = 'compile-cpp.bat'
-g_linkCppExeBatchFileName = 'link-cpp-exe.bat'
+COMPILE_CPP_BATCH_FILE_NAME = 'compile-cpp' + BATCH_EXTENSION
+LINK_CPP_EXE_BATCH_FILE_NAME = 'link-cpp-exe' + BATCH_EXTENSION
 
 
 #--- Running this script.
@@ -60,7 +84,7 @@ def printCmdLineUsage():
 
 def printCompileCppBatchInfo():
   #
-  print 'Require a batch file {' +g_compileCppBatchFileName +'}'
+  print 'Require a batch file {' +COMPILE_CPP_BATCH_FILE_NAME +'}'
   print '-- The batch file should compile C++ source code files'
   print '-- The batch file should accept one argument, the name (including path) of the source code file to compile'
   print '-- The batch file should leave the resulting object file in the working directory'
@@ -71,8 +95,8 @@ def printCompileCppBatchInfo():
 
 def printLinkCppExeBatchInfo():
   #
-  print 'Require a batch file {' +g_linkCppExeBatchFileName +'}'
-  print '-- The batch file should link object files compiled via ' +g_compileCppBatchFileName
+  print 'Require a batch file {' +LINK_CPP_EXE_BATCH_FILE_NAME +'}'
+  print '-- The batch file should link object files compiled via ' +COMPILE_CPP_BATCH_FILE_NAME
   print '-- The batch file should produce a command-line executable'
   print '-- The batch file should accept at least two arguments, in this order:'
   print '  ** the name of the output executable'
@@ -80,12 +104,6 @@ def printLinkCppExeBatchInfo():
   print '-- Place the batch file in the system-specific batch directory'
   #
   # End fcn printLinkCppExeBatchInfo().
-
-
-#--- Ensure access.
-#
-import os
-import sys
 
 
 #--- Fcn to print diagnostics.
@@ -170,38 +188,19 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   if( showDiagnostics ):
     printDiagnostic('Begin creating executable {' +exportPrepExeName +'}')
   #
-  # Get directory of this script file.
-  scriptDirName = os.path.abspath(os.path.dirname(__file__))
-  #
-  # Choose system-specific values.
-  platformName = sys.platform
-  systemBatchDirName = None
-  #
-  if( platformName.startswith('win') ):
-    platformName = 'win'
-    systemBatchDirName = 'batch-dos'
-  elif( platformName.startswith('linux')
-    or platformName.startswith('cygwin') ):
-    platformName = 'linux'
-    systemBatchDirName = 'batch-linux'
-  elif( platformName.startswith('darwin') ):
-    platformName = 'darwin'
-    systemBatchDirName = 'batch-darwin'
-  else:
-    quitWithError('Unknown platform {' +platformName +'}', False)
-  #
+  # Form absolute path to system-specific script directory.
   if( showDiagnostics ):
-    printDiagnostic('Using system-specific scripts from batch directory {' +systemBatchDirName +'}')
-  #
-  systemBatchDirName = os.path.join(scriptDirName, systemBatchDirName)
-  if( not os.path.isdir(systemBatchDirName) ):
-    quitWithError('Missing system-specific batch directory {' +systemBatchDirName +'}', False)
+    printDiagnostic('Using system-specific scripts from batch directory {' +PLATFORM_SHORT_NAME +'}')
+  scriptDirName = os.path.abspath(os.path.dirname(__file__))
+  batchDirAbsName = os.path.join(scriptDirName, PLATFORM_SHORT_NAME)
+  if( not os.path.isdir(batchDirAbsName) ):
+    quitWithError('Missing system-specific batch directory {' +batchDirAbsName +'}', False)
   #
   # Form names of system-specific scripts.
-  compileCppBatchFileName = os.path.join(systemBatchDirName, g_compileCppBatchFileName)
+  compileCppBatchFileName = os.path.join(batchDirAbsName, COMPILE_CPP_BATCH_FILE_NAME)
   findFileOrQuit('compiler batch', compileCppBatchFileName)
   #
-  linkCppExeBatchFileName = os.path.join(systemBatchDirName, g_linkCppExeBatchFileName)
+  linkCppExeBatchFileName = os.path.join(batchDirAbsName, LINK_CPP_EXE_BATCH_FILE_NAME)
   findFileOrQuit('linker batch', linkCppExeBatchFileName)
   #
   # Assemble names of source files.

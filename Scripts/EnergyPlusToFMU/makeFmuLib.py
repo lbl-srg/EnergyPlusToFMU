@@ -14,15 +14,44 @@
 #   However, this script can be run from a different working directory.
 
 
+#--- Ensure access.
+#
+import os
+import re
+import subprocess
+import sys
+
+
+#--- Identify system.
+#
+PLATFORM_NAME = sys.platform
+#
+if( PLATFORM_NAME.startswith('win') ):
+    PLATFORM_SHORT_NAME = 'win'
+    BATCH_EXTENSION = '.bat'
+    SHARED_LIB_EXTENSION = '.dll'
+elif( PLATFORM_NAME.startswith('linux')
+    or PLATFORM_NAME.startswith('cygwin') ):
+    PLATFORM_SHORT_NAME = 'linux'
+    BATCH_EXTENSION = '.sh'
+    SHARED_LIB_EXTENSION = '.so'
+elif( PLATFORM_NAME.startswith('darwin') ):
+    PLATFORM_SHORT_NAME = 'darwin'
+    BATCH_EXTENSION = '.sh'
+    SHARED_LIB_EXTENSION = '.dylib'
+else:
+    raise Exception('Unknown platform {' +PLATFORM_NAME +'}')
+
+
 #--- Note on compile and link batch files.
 #
 #   This script uses separate, system-dependent, batch files to compile and
 # link source code.  For more information, see fcns printCompileCBatchInfo(),
 # printLinkCLibBatchInfo(), and printLinkCExeBatchInfo().
 #
-g_compileCBatchFileName = 'compile-c.bat'
-g_linkCLibBatchFileName = 'link-c-lib.bat'
-g_linkCExeBatchFileName = 'link-c-exe.bat'
+COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
+LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
+LINK_C_EXE_BATCH_FILE_NAME = 'link-c-exe' + BATCH_EXTENSION
 
 
 #--- Running this script.
@@ -63,7 +92,7 @@ def printCmdLineUsage():
 
 def printCompileCBatchInfo():
   #
-  print 'Require a batch file {' +g_compileCBatchFileName +'}'
+  print 'Require a batch file {' +COMPILE_C_BATCH_FILE_NAME +'}'
   print '-- The batch file should compile C source code files'
   print '-- The batch file should accept one argument, the name (including path) of the source code file to compile'
   print '-- The batch file should leave the resulting object file in the working directory'
@@ -74,8 +103,8 @@ def printCompileCBatchInfo():
 
 def printLinkCLibBatchInfo():
   #
-  print 'Require a batch file {' +g_linkCLibBatchFileName +'}'
-  print '-- The batch file should link object files compiled via ' +g_compileCBatchFileName
+  print 'Require a batch file {' +LINK_C_LIB_BATCH_FILE_NAME +'}'
+  print '-- The batch file should link object files compiled via ' +COMPILE_C_BATCH_FILE_NAME
   print '-- The batch file should produce a shared library'
   print '-- The batch file should accept at least two arguments, in this order:'
   print '  ** the name of the output shared library'
@@ -87,8 +116,8 @@ def printLinkCLibBatchInfo():
 
 def printLinkCExeBatchInfo():
   #
-  print 'Require a batch file {' +g_linkCExeBatchFileName +'}'
-  print '-- The batch file should link object files compiled via ' +g_compileCBatchFileName
+  print 'Require a batch file {' +LINK_C_EXE_BATCH_FILE_NAME +'}'
+  print '-- The batch file should link object files compiled via ' +COMPILE_C_BATCH_FILE_NAME
   print '-- The batch file should produce a command-line executable'
   print '-- The batch file should accept at least two arguments, in this order:'
   print '  ** the name of the output executable'
@@ -96,14 +125,6 @@ def printLinkCExeBatchInfo():
   print '-- Place the batch file in the system-specific batch directory'
   #
   # End fcn printLinkCExeBatchInfo().
-
-
-#--- Ensure access.
-#
-import os
-import re
-import subprocess
-import sys
 
 
 #--- Fcn to print diagnostics.
@@ -265,45 +286,24 @@ def makeFmuSharedLib(showDiagnostics, litter,
   if( showDiagnostics and (modelIdSanitizedName != modelIdName) ):
     printDiagnostic('Converting model identifier from {' +modelIdName +'} to {' +modelIdSanitizedName +'}')
   #
-  # Get directory of this script file.
-  scriptDirName = os.path.abspath(os.path.dirname(__file__))
+  fmuSharedLibName = modelIdSanitizedName + SHARED_LIB_EXTENSION
   #
-  # Choose system-specific values.
-  platformName = sys.platform
-  systemBatchDirName = None
-  fmuSharedLibName = None
-  #
-  if( platformName.startswith('win') ):
-    platformName = 'win'
-    systemBatchDirName = 'batch-dos'
-    fmuSharedLibName = modelIdSanitizedName +'.dll'
-  elif( platformName.startswith('linux')
-    or platformName.startswith('cygwin') ):
-    platformName = 'linux'
-    systemBatchDirName = 'batch-linux'
-    fmuSharedLibName = modelIdSanitizedName +'.so'
-  elif( platformName.startswith('darwin') ):
-    platformName = 'darwin'
-    systemBatchDirName = 'batch-darwin'
-    fmuSharedLibName = modelIdSanitizedName +'.dylib'
-  else:
-    quitWithError('Unknown platform {' +platformName +'}', False)
-  #
+  # Form absolute path to system-specific script directory.
   if( showDiagnostics ):
-    printDiagnostic('Using system-specific scripts from batch directory {' +systemBatchDirName +'}')
-  #
-  systemBatchDirName = os.path.join(scriptDirName, systemBatchDirName)
-  if( not os.path.isdir(systemBatchDirName) ):
-    quitWithError('Missing system-specific batch directory {' +os.path.join(scriptDirName, systemBatchDirName) +'}', False)
+    printDiagnostic('Using system-specific scripts from batch directory {' +PLATFORM_SHORT_NAME +'}')
+  scriptDirName = os.path.abspath(os.path.dirname(__file__))
+  batchDirAbsName = os.path.join(scriptDirName, PLATFORM_SHORT_NAME)
+  if( not os.path.isdir(batchDirAbsName) ):
+    quitWithError('Missing system-specific batch directory {' +batchDirAbsName +'}', False)
   #
   # Form names of system-specific scripts.
-  compileCBatchFileName = os.path.join(systemBatchDirName, g_compileCBatchFileName)
+  compileCBatchFileName = os.path.join(batchDirAbsName, COMPILE_C_BATCH_FILE_NAME)
   findFileOrQuit('compiler batch', compileCBatchFileName)
   #
-  linkCLibBatchFileName = os.path.join(systemBatchDirName, g_linkCLibBatchFileName)
+  linkCLibBatchFileName = os.path.join(batchDirAbsName, LINK_C_LIB_BATCH_FILE_NAME)
   findFileOrQuit('linker batch', linkCLibBatchFileName)
   #
-  linkCExeBatchFileName = os.path.join(systemBatchDirName, g_linkCExeBatchFileName)
+  linkCExeBatchFileName = os.path.join(batchDirAbsName, LINK_C_EXE_BATCH_FILE_NAME)
   findFileOrQuit('linker batch', linkCExeBatchFileName)
   #
   # Insert model identifier into source code files.
@@ -377,7 +377,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
       printDiagnostic('FMU shared library {' +fmuSharedLibName +'} has address size {' +addressSize +'}')
     if( addressSize!='32' and addressSize!='64' ):
       quitWithError('Unexpected address size {' +addressSize +'}', False)
-    fmuBinDirName = platformName +addressSize
+    fmuBinDirName = PLATFORM_SHORT_NAME +addressSize
   except:
     # Check failure due to missing {getAddressSizeExeName} before complain about
     # unknown problem.

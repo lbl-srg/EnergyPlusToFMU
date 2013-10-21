@@ -46,27 +46,27 @@ Minimally, the installation directory contains the following subdirectories:
   - ``EnergyPlusToFMU/``
     (Python scripts that create an FMU from an IDF file)
 
-    - ``batch-dos``
+    - ``win/``
       (batch files for Windows)
 
-    - ``batch-linux``
+    - ``linux/``
       (shell scripts for Linux)
 
-    - ``batch-darwin``
+    - ``darwin/``
       (shell scripts for Mac OS X)
 
 - ``SourceCode/``
   (C and C++ source code for creating an EnergyPlus FMU)
 
-  - ``EnergyPlus``
+  - ``EnergyPlus/``
 
-  - ``Expat``
+  - ``Expat/``
 
-  - ``fmu-export-prep-src``
+  - ``fmu-export-prep-src/``
 
-  - ``read-ep-file-src``
+  - ``read-ep-file-src/``
 
-  - ``utility-src``
+  - ``utility-src/``
 
 
 Configuration
@@ -80,8 +80,8 @@ This may be needed in case problems arise.
 In addition, you may wish to reconfigure EnergyPlusToFMU, for example to optimize the FMU code, or to change the memory model under which it runs.
 
 
-Configuration batch files
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Batch files
+^^^^^^^^^^^
 
 EnergyPlusToFMU requires a C compiler and linker (in order to build the FMU), and a C++ compiler and linker (in order to build supporting tools).
 Configuring EnergyPlusToFMU mainly consists of:
@@ -89,10 +89,14 @@ Configuring EnergyPlusToFMU mainly consists of:
 - Choosing a different compiler or linker than the default.
 - Passing the compiler or linker different options than the default.
 
-EnergyPlusToFMU controls both aspects of the configuration using the following batch files:
+EnergyPlusToFMU controls both aspects of the configuration using batch files on DOS, and shell scripts on Linux and Macintosh.
+Batch files have the extension ``.bat``, while shell scripts have the ``.sh`` extension.
+For convenience, this guide refers to all such files as batch files.
+
+EnergyPlusToFMU includes the following batch files:
 
 +----------------------+-------------------------------------------------------+
-| Batch file           | Purpose                                               |
+| Batch (shell) file   | Purpose                                               |
 +======================+=======================================================+
 | ``compile-c.bat``    | Compiles a C source code file into an object file.    |
 +----------------------+-------------------------------------------------------+
@@ -130,14 +134,14 @@ Each system-specific batch subdirectory includes sample batch files.
 In addition to the default versions, some alternate versions also may be present.
 The alternate versions can be identified in two ways:
 
-1. The file extension is "``.txt``", rather than "``.bat``".
+1. The file extension is "``.txt``", rather than "``.bat``" (or "``.sh``").
 2. The file name indicates the associated options.
-   For example, a file ``compile-c-gcc-32bit.txt`` is one possible version of ``compile-c.bat``.
+   For example, a file ``compile-c-gcc-32bit.txt`` is one possible version of ``compile-c.sh``.
    It is specific to the gcc compiler/linker environment, and it generates
    32-bit object files, even on a 64-bit machine.
 
 Note that the default batch file is an exact copy of one of the supplied alternate versions.
-For example, in the ``batch-dos`` subdirectory, the default batch file ``compile-c.bat`` is the same as ``compile-c-mvs10.txt`` (the version for Microsoft Visual Studio 10).
+For example, in the ``win`` subdirectory, the default batch file ``compile-c.bat`` is the same as ``compile-c-mvs10.txt`` (the version for Microsoft Visual Studio 10).
 Therefore the installation has fewer unique batch files than it at first appears.
 
 Once you have identified the appropriate batch file subdirectory, you can either:
@@ -167,7 +171,7 @@ A sample session at the Windows DOS prompt:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir\Scripts\EnergyPlusToFMU\batch-dos
+  > cd  epfmu_install_dir\Scripts\EnergyPlusToFMU\win
 
   # Run the batch file.
   > test-c-exe.bat
@@ -187,11 +191,11 @@ A sample session in a Linux command shell:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-linux
+  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/linux
 
   # Run the batch file.
   # Note the "./" before the batch file name.
-  > ./test-c-exe.bat
+  > ./test-c-exe.sh
   ===== Checking for required files =====
   ===== Removing old output files =====
   ===== Running compiler =====
@@ -207,11 +211,11 @@ A sample session in MacOS Terminal:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-darwin
+  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/darwin
 
   # Run the batch file.
   # Note the "./" before the batch file name.
-  > ./test-c-exe.bat
+  > ./test-c-exe.sh
   ===== Checking for required files =====
   ===== Removing old output files =====
   ===== Running compiler =====
@@ -250,7 +254,7 @@ A sample session at the Windows DOS prompt:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir\Scripts\EnergyPlusToFMU\batch-dos
+  > cd  epfmu_install_dir\Scripts\EnergyPlusToFMU\win
 
   # Run the batch file.
   > compile-c.bat  ..\..\..\SourceCode\utility-src\get-address-size.c
@@ -264,11 +268,11 @@ A sample session in a Linux command shell:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-linux
+  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/linux
 
   # Run the batch file.
   # Note the "./" before the batch file name.
-  > ./compile-c.bat  ../../../SourceCode/utility-src/get-address-size.c
+  > ./compile-c.sh  ../../../SourceCode/utility-src/get-address-size.c
 
   # Check the object file.
   > ls  *.o
@@ -279,11 +283,11 @@ A sample session in MacOS Terminal:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-darwin
+  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/darwin
 
   # Run the batch file.
   # Note the "./" before the batch file name.
-  > ./compile-c.bat  ../../../SourceCode/utility-src/get-address-size.c
+  > ./compile-c.sh  ../../../SourceCode/utility-src/get-address-size.c
 
   # Check the object file.
   > ls  *.o
@@ -355,7 +359,7 @@ A sample session for both a Linux command shell and MacOS Terminal:
 
   # Run the batch file.
   # Note the "./" before the batch file name.
-  > ./link-c-exe.bat  test.exe  get-address-size.o
+  > ./link-c-exe.sh  test.exe  get-address-size.o
 
   # Check the executable.
   > ls  *.exe
@@ -486,12 +490,12 @@ To check the permissions:
 .. code-block:: none
 
   # Linux, MacOS:
-  > ls -lt  *.bat
-  -rwxr--r--  ...  link-c-lib.bat
-  -rwxr--r--  ...  link-c-exe.bat
-  -rwxr--r--  ...  compile-c.bat
-  -rwxr--r--  ...  link-cpp-exe.bat
-  -rwxr--r--  ...  compile-cpp.bat
+  > ls -lt  *.sh
+  -rwxr--r--  ...  link-c-lib.sh
+  -rwxr--r--  ...  link-c-exe.sh
+  -rwxr--r--  ...  compile-c.sh
+  -rwxr--r--  ...  link-cpp-exe.sh
+  -rwxr--r--  ...  compile-cpp.sh
 
 All five of the default batch files should have "``-rwx``" at the beginning of the permissions block (indicating you are allowed to read, write, and execute the file).
 If not, then set the permissions:
@@ -499,7 +503,7 @@ If not, then set the permissions:
 .. code-block:: none
 
   # Linux, MacOS:
-  > chmod  u=rwx,g=r,o=r  *.bat
+  > chmod  u=rwx,g=r,o=r  *.sh
 
 and try running the compiler batch file again.
 
