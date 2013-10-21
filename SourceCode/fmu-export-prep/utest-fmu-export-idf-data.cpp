@@ -21,9 +21,9 @@ using std::endl;
 
 #include "fmu-export-idf-data.h"
 
-#include "../read-ep-file-src/ep-idd-map.h"
-#include "../read-ep-file-src/fileReaderData.h"
-#include "../read-ep-file-src/fileReaderDictionary.h"
+#include "../read-ep-file/ep-idd-map.h"
+#include "../read-ep-file/fileReaderData.h"
+#include "../read-ep-file/fileReaderDictionary.h"
 
 
 //--- Main driver.

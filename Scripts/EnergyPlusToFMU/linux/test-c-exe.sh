@@ -18,7 +18,7 @@
 
 echo "===== Checking for required files ====="
 #
-srcFileName="../../../SourceCode/utility-src/get-address-size.c"
+srcFileName="../../../SourceCode/utility/get-address-size.c"
 if test ! -f "${srcFileName}"
 then
     echo "Error: missing source file ${srcFileName}"

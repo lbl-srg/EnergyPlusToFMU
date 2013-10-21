@@ -206,7 +206,7 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   # Assemble names of source files.
   srcFileNameList = list()
   #
-  srcDirName = os.path.join(scriptDirName, '../../SourceCode/fmu-export-prep-src')
+  srcDirName = os.path.join(scriptDirName, '../../SourceCode/fmu-export-prep')
   for theRootName in ['app-cmdln-input',
     'app-cmdln-version',
     'fmu-export-idf-data',
@@ -216,7 +216,7 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
     ]:
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.cpp'))
   #
-  srcDirName = os.path.join(scriptDirName, '../../SourceCode/read-ep-file-src')
+  srcDirName = os.path.join(scriptDirName, '../../SourceCode/read-ep-file')
   for theRootName in ['ep-idd-map',
     'fileReader',
     'fileReaderData',
@@ -224,7 +224,7 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
     ]:
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.cpp'))
   #
-  srcDirName = os.path.join(scriptDirName, '../../SourceCode/utility-src')
+  srcDirName = os.path.join(scriptDirName, '../../SourceCode/utility')
   for theRootName in ['digest-md5',
     'file-help',
     'string-help',

@@ -358,7 +358,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
   if( showDiagnostics ):
     printDiagnostic('Building utility application {' +getAddressSizeExeName +'}')
   srcFileNameList = [
-    os.path.join(scriptDirName, '../../SourceCode/utility-src/get-address-size.c')
+    os.path.join(scriptDirName, '../../SourceCode/utility/get-address-size.c')
     ]
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
     compileCBatchFileName, linkCExeBatchFileName, srcFileNameList, getAddressSizeExeName)

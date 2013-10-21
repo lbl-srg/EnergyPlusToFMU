@@ -62,11 +62,11 @@ Minimally, the installation directory contains the following subdirectories:
 
   - ``Expat/``
 
-  - ``fmu-export-prep-src/``
+  - ``fmu-export-prep/``
 
-  - ``read-ep-file-src/``
+  - ``read-ep-file/``
 
-  - ``utility-src/``
+  - ``utility/``
 
 
 Configuration
@@ -257,7 +257,7 @@ A sample session at the Windows DOS prompt:
   > cd  epfmu_install_dir\Scripts\EnergyPlusToFMU\win
 
   # Run the batch file.
-  > compile-c.bat  ..\..\..\SourceCode\utility-src\get-address-size.c
+  > compile-c.bat  ..\..\..\SourceCode\utility\get-address-size.c
 
   # Check the object file.
   > dir  *.obj
@@ -272,7 +272,7 @@ A sample session in a Linux command shell:
 
   # Run the batch file.
   # Note the "./" before the batch file name.
-  > ./compile-c.sh  ../../../SourceCode/utility-src/get-address-size.c
+  > ./compile-c.sh  ../../../SourceCode/utility/get-address-size.c
 
   # Check the object file.
   > ls  *.o
@@ -287,7 +287,7 @@ A sample session in MacOS Terminal:
 
   # Run the batch file.
   # Note the "./" before the batch file name.
-  > ./compile-c.sh  ../../../SourceCode/utility-src/get-address-size.c
+  > ./compile-c.sh  ../../../SourceCode/utility/get-address-size.c
 
   # Check the object file.
   > ls  *.o
@@ -412,7 +412,7 @@ This section gives general advice for editing your batch files, in case the defa
 
 Unfortunately, it is beyond the scope of this document to give full instructions on installing and using developer tools such as compilers and linkers.
 
-The EnergyPlusToFMU tools only use the batch files named in the table showing the `Configuration batch files`_.
+The EnergyPlusToFMU tools only use the batch files named in the table showing the `Batch files`_.
 Thus, editing ``compile-c-gcc.txt`` will have no effect on how the FMU gets created.
 Only ``compile-c.bat`` affects how EnergyPlusToFMU compiles ``C`` source code files.
 

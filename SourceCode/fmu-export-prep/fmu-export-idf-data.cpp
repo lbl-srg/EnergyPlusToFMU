@@ -19,7 +19,7 @@ using std::endl;
 
 #include "fmu-export-idf-data.h"
 
-#include "../utility-src/string-help.h"
+#include "../utility/string-help.h"
 
 
 //--- File-scope constants.

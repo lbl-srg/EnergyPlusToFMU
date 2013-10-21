@@ -14,7 +14,7 @@ using std::string;
 
 #include "fileReaderDictionary.h"
 
-#include "../utility-src/string-help.h"
+#include "../utility/string-help.h"
 
 
 //--- Preprocessor definitions.

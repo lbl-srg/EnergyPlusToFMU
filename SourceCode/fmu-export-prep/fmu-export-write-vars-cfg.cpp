@@ -15,8 +15,8 @@ using std::endl;
 
 #include "fmu-export-write-vars-cfg.h"
 
-#include "../utility-src/file-help.h"
-#include "../utility-src/xml-output-help.h"
+#include "../utility/file-help.h"
+#include "../utility/xml-output-help.h"
 
 
 //--- File-scope constants.

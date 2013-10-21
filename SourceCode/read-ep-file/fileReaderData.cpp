@@ -17,7 +17,7 @@ using std::string;
 #include "fileReaderData.h"
 
 #include "ep-idd-map.h"
-#include "../utility-src/string-help.h"
+#include "../utility/string-help.h"
 
 
 //--- Preprocessor definitions.
