@@ -61,7 +61,7 @@ The following items need to be observed when importing an FMU that contains Ener
 
 6. During the warm-up period and the autosizing of EnergyPlus, 
    no data exchange occurs between the FMU and the master program. 
-   Thus, inputs of EnergyPlus remain constant during these times and are equals 
+   Thus, inputs of EnergyPlus remain constant during these times and are equal 
    to the initial values specified in the IDF input file.
    
 7. The simulation results are saved in a result folder which is created in the current 

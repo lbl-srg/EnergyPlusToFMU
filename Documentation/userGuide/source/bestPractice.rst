@@ -17,23 +17,23 @@ To export EnergyPlus as an FMU, four objects have been added to the EnergyPlus d
  
 - The ``ExternalInterface:FunctionalMockupUnitExport:To:Schedule``, 
   ``ExternalInterface:FunctionalMockupUnitExport:To:Actuator``, 
-  and ``ExternalInterface:FunctionalMockupUnitExport:To:Variable`` 
+  and ``ExternalInterface:FunctionalMockupUnitExport:To:Variable``, 
   which are used to map the inputs of the FMU to EnergyPlus schedules,  
   EMS actuators, and variables.
   
 These objects are described in the Input/Output reference of the EnergyPlus manual 
-(http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf) 
+(http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf). 
 
 Configuring an EnergyPlus model which uses the ``Schedule`` object
 ------------------------------------------------------------------
 
 Suppose we like to export an EnergyPlus model of a room with 
-an ideal HVAC system that adds heating or cooling load to the zone as schedules,
+an ideal HVAC system that adds heating or cooling to the zone as schedules,
 to maintain a certain room temperature. 
 
 Such an  EnergyPlus model could be exported as an FMU with 
-one input and one output. The input of the FMU will map to the heating/cooling load
-schedule, whereas the output of the FMU will map to the room dry-bulb temperature.
+one input and one output. The input of the FMU will write to the heating/cooling
+schedule, whereas the output of the FMU will read the room dry-bulb temperature.
 
 The Energyplus model needs to contain the following three items:
 
@@ -43,7 +43,7 @@ The Energyplus model needs to contain the following three items:
 
 - EnergyPlus objects that read data from EnergyPlus and send the values to the outputs of the FMU.
 
-The code below shows how the objects will be in the IDF.
+The code below shows how to declare these objects in the IDF.
 To activate the external interface, we use:
 
    .. code-block:: text
@@ -58,7 +58,7 @@ To define the input of the FMU, we use:
 	ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
 	FMU_OthEqu_ZoneOne,      !- Name
 	Any Number,              !- Schedule Type Limits Names
-	QLoad,                   !- FMU Variable Name
+	Q,                       !- FMU Variable Name
 	0;                       !- Initial Value
 
 To define the output of the FMU, we use:
@@ -91,11 +91,11 @@ The shading controller requires as input the shading
 actuation signal ``yShade``, and has as outputs the outside temperature ``TRoo`` 
 and the solar irradiation ``ISolExt`` that is incident on the window.
 
-We will export such an  EnergyPlus model as an FMU with 
-one input and two outputs. The input of the FMU will map to the shading actuation signal, 
-whereas the outputs will map to outside temperature ``TRoo`` and the solar irradiation ``ISolExt``.
+We will export such an EnergyPlus model as an FMU with 
+one input and two outputs. The input of the FMU will write to the shading actuation signal, 
+whereas the outputs will read the outside temperature ``TRoo`` and the solar irradiation ``ISolExt``.
 
-The code below shows how the objects will be in the IDF.
+The code below shows how to declare these objects in the IDF.
 To activate the external interface, we use:
 
    .. code-block:: text
@@ -151,7 +151,7 @@ Configuring an EnergyPlus model which uses the ``EMS Variable`` object
 ----------------------------------------------------------------------
 
 This configuration is almost the same as in the previous example with the only 
-difference being that the shading actuation signal will be mapped to an EMS variable
+difference being that the shading actuation signal will be written to an EMS variable
 ``Shade_Signal`` that can be used in an EMS program.
 
 To define the input of the FMU, we use: 

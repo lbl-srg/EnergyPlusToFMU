@@ -4,16 +4,13 @@ Glossary
 .. glossary::
 
    Dymola
-      Dymola, Dynamic Modeling Laboratory, is a complete tool for modeling and simulation of integrated and complex systems.
+      Dymola, Dynamic Modeling Laboratory, is a modeling and simulation environment for the Modelica language.
       
-
-
    Functional Mock-up Interface
       The Functional Mock-up Interface (FMI) is the result of the Information Technology for European Advancement (ITEA2) project  :term:`MODELISAR`. 
       The FMI standard is a tool independent standard to support both model exchange and co-simulation of dynamic models using a combination of XML-files, 
-      C-header files, and C-code in source or binary form. 
+      C-header files, C-code or binaries. 
       
-
    Functional Mock-up Unit
       A simulation model or program which implements the FMI standard is called Functional Mock-up Unit (FMU). 
       An FMU comes along with a small set of C-functions (FMI functions) whose input and return arguments are defined by the FMI standard. 

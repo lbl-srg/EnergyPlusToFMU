@@ -23,7 +23,7 @@ with initial conditions :math:`x_{1}(0) = x_{1,0}` and :math:`x_{2}(0) = x_{2,0}
 
 To advance from time :math:`k` to :math:`k+1`, each program uses its own integration algorithm. At the end of the time step, program 1 sends its new state :math:`x_{1}(k+1)` to program 2, and receives the state :math:`x_{2}(k+1)` from program 2. 
 The same procedure is done with the program 2. Program 2, which is the master simulation program, imports the FMU, and manages the data exchange between the two programs. 
-In comparison to numerical methods of differential equations, this scheme is equals to an explicit Euler integration, which is an integration algorithm that solves an ordinary differential equation with specified initial values,
+In comparison to numerical methods of differential equations, this scheme is equal to an explicit Euler integration, which is an integration algorithm that solves an ordinary differential equation with specified initial values,
 
 	:math:`dx/dt = h(x)`, 
 
@@ -34,7 +34,7 @@ on the time interval :math:`t \in [0, 1]`, using he following steps:
 
 **Step 0:**	
 
-	Initialize counter k=0 and number of steps, :math:`N > 0`.
+	Initialize counter :math:`k=0` and number of steps, :math:`N > 0`.
 			
 	Set initial state :math:`x(k) = x_{0}` and set time step  :math:`\Delta t = 1/N`.
 
@@ -43,13 +43,13 @@ on the time interval :math:`t \in [0, 1]`, using he following steps:
 
 	Compute new state  :math:`x(k+1) = x(k) + h(x(k)) \Delta t`.
 
-	Replace k by k+1.
+	Replace :math:`k` by :math:`k+1`.
 
 **Step 2:**	
 
-	If k=N stop, else go to Step 1.
+	If :math:`k=N` stop, else go to Step 1.
 
-However, this scheme does not require each simulation tool to use explicit Euler for its internal time integration algorithm; the analogy to explicit Euler applies only to the data exchange between the programs.  In the situation where the differential equation is solved using co-simulation, the above algorithm becomes
+However, this scheme does not require each simulation tool to use the explicit Euler method for its internal time integration algorithm; the analogy to explicit Euler applies only to the data exchange between the programs.  In the situation where the differential equation is solved using co-simulation, the above algorithm becomes
 
 **Step 0:**	
 

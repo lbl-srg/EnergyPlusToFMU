@@ -4,7 +4,7 @@ Copyright and License
 
 Functional Mock-up Unit Export of EnergyPlus 2013, The Regents of the University of California, through Lawrence Berkeley National Laboratory (subject to receipt of any required approvals from the U.S. Department of Energy). All rights reserved.
  
-If you have questions about your rights to use or distribute this software, please contact Berkeley Lab's Technology Transfer Department at TTD@lbl.gov.referring to "Functional Mock-up Unit Export of EnergyPlus (LBNL Ref 2013-088)".
+If you have questions about your rights to use or distribute this software, please contact Berkeley Lab's Technology Transfer Department at TTD@lbl.gov. referring to "Functional Mock-up Unit Export of EnergyPlus (LBNL Ref 2013-088)".
  
 NOTICE: This software was produced by The Regents of the University of California under Contract No. DE-AC02-05CH11231 with the Department of Energy.
 For 5 years from November 1, 2012, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this data to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. 
