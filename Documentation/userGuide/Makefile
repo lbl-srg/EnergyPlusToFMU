@@ -101,6 +101,7 @@ release-html:
 	#-mkdir release/userGuide
 	@echo "Copy html files to the www folder."
 	-cp -R $(BUILDDIR)/html/*.* www/userGuide
+	-cp -R $(BUILDDIR)/html/_images www/userGuide
 
 dist:   clean cleanpdf latex html linkcheck release-html copypdftodoc copydoctowww 
 
