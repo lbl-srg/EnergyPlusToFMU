@@ -83,7 +83,7 @@ Any secondary output from running the EnergyPlusToFMU tools can be deleted safel
 Secondary output includes:
 
 - A utility executable, called ``idf-to-fmu-export-prep.exe`` on Windows, and
-  ``idf-to-fmu-export-prep.app`` on Linux and MacOS (the different names allow
+  ``idf-to-fmu-export-prep`` on Linux and MacOS (the different names allow
   dual-boot users to work in the same directory).
   This executable will appear in your current working directory.
   If deleted, it will be rebuilt on the next run of EnergyPlusToFMU.
@@ -135,7 +135,7 @@ Try running the export-preparation application directly on your IDF file:
 
   # Linux, MacOS:
   #   Note the "./" before the name of the application.
-  > ./idf-to-fmu-export-prep.app  Energy+.idd  test.idf
+  > ./idf-to-fmu-export-prep  Energy+.idd  test.idf
 
 If running the export-preparation application as shown above works correctly, it produces two files, ``modelDescription.xml`` and ``variables.cfg``.
 Otherwise, it should produce an error message, which should also be echoed to an output file ``output.log``.

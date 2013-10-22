@@ -184,7 +184,7 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   if( sys.platform.startswith('win') ):
     exportPrepExeName = exportPrepExeName +'.exe'
   else:
-    exportPrepExeName = exportPrepExeName +'.app'
+    exportPrepExeName = exportPrepExeName
   if( showDiagnostics ):
     printDiagnostic('Begin creating executable {' +exportPrepExeName +'}')
   #
