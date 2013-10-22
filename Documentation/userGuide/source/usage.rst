@@ -65,7 +65,7 @@ The following items need to be observed when importing an FMU that contains Ener
    to the initial values specified in the IDF input file.
    
 7. The simulation results are saved in a result folder which is created in the current 
-   working directory. The name of the result folder is ``Output_FMUExport_xxx``, where 
+   working directory. The name of the result folder is ``Output_EPExport_xxx``, where 
    ``xxx`` is the FMU model ``instanceName`` as defined in the FMI specifications.
 
 
