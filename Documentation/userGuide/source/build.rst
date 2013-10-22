@@ -18,7 +18,8 @@ The standard invocation of the EnergyPlusToFMU tool is:
 
 .. code-block:: none
 
-  > python  <path-to-scripts-subdir>EnergyPlusToFMU.py  -i <path-to-idd-file>  -w <path-to-weather-file>  <path-to-idf-file>
+  > python  <path-to-scripts-subdir>EnergyPlusToFMU.py  -i <path-to-idd-file>  \
+    -w <path-to-weather-file>  <path-to-idf-file>
 
 For example:
 
@@ -49,7 +50,7 @@ Script ``EnergyPlusToFMU.py`` supports the following command-line switches:
 | -d                        | Print diagnostics [optional].                         |
 |                           | Produces a status line for every major action taken   |
 |                           | by the EnergyPlusToFMU tools.                         |
-|                           | This option may be helpful for troubleshooting.       |
+|                           | This option may be helpful for debugging.             |
 +---------------------------+-------------------------------------------------------+
 | -L                        | Litter, that is, do not clean up intermediate         |
 |                           | files [optional].                                     |

@@ -37,9 +37,9 @@ To install EnergyPlusToFMU, proceed as follows:
 
 1. Download the installation file from the :doc:`download` page.
 
-2. Unzip the installation file into any folder (hereafter referred to as the "installation directory").
+2. Unzip the installation file into any subdirectory (hereafter referred to as the "installation directory").
 
-Minimally, the installation directory contains the following subdirectories:
+The installation directory should contain the following subdirectories:
 
 - ``Scripts/``
   (Python scripts that create an FMU from an IDF file)
@@ -71,9 +71,9 @@ Configuration
 ^^^^^^^^^^^^^
 
 EnergyPlusToFMU comes pre-configured to handle the most common system configurations.
-Usually, you can simply create an FMU, as described in :doc:`build`, and everything will work as expected.
+Usually, you can simply create an FMU, as described in :doc:`build`, and everything will work.
 
-The remainder of this section provides tips on configuring EnergyPlusToFMU, to match your particular system and needs.
+The remainder of this section provides tips for configuring EnergyPlusToFMU to match your particular system and needs.
 This may be needed in case problems arise.
 In addition, you may wish to reconfigure EnergyPlusToFMU, for example to optimize the FMU code, or to change the memory model under which it runs.
 
@@ -114,7 +114,7 @@ EnergyPlusToFMU includes the following batch files:
 +----------------------+-------------------------------------------------------+
 
 The EnergyPlusToFMU installation includes default versions of these batch files.
-However, the exact contents of these batch files depends on:
+However, the contents of these batch files depends on:
 
 1. The operating system.
 
@@ -136,11 +136,10 @@ The alternate versions can be identified in two ways:
 2. The file name indicates the associated options.
    For example, a file ``compile-c-gcc-32bit.txt`` is one possible version of ``compile-c.sh``.
    It is specific to the gcc compiler/linker environment, and it generates
-   32-bit object files, even on a 64-bit machine.
+   32-bit object files, even on a 64-bit operating system.
 
 Note that the default batch file is an exact copy of one of the supplied alternate versions.
 For example, in the ``win`` subdirectory, the default batch file ``compile-c.bat`` is the same as ``compile-c-mvs10.txt`` (the version for Microsoft Visual Studio 10).
-Therefore the installation has fewer unique batch files than it at first appears.
 
 Once you have identified the appropriate batch file subdirectory, you can either:
 
@@ -157,8 +156,8 @@ In addition to the batch files that run the compiler and linker, EnergyPlusToFMU
 In particular, batch file ``test-c-exe.bat`` tests the compiler and linker batch files which build an executable from ``C`` source code.
 Once these batch files work, it should not be difficult to make the other compiler and linker batch files work.
 
-The test batch file, ``test-c-exe.bat``, runs the appropriate compiler and linker batch files, and checks the resulting executable.
-It reports its progress, and so should give a clue to where problems occur, if any.
+Batch file ``test-c-exe.bat`` runs the appropriate compiler and linker batch files, and tests the resulting executable.
+It reports its progress, and so should give information as to where problems occur, if any.
 
 To run the basic test,
 open a command-line window (see :doc:`notation`).
@@ -224,7 +223,7 @@ A sample session in MacOS Terminal:
   == The address size should appear above ==
   ===== Cleaning up =====
 
-In the sessions shown above, the test batch file successfully runs to completion.
+In the sessions shown above, the test batch file successfully ran to completion.
 If the test batch file fails at some point, then you will have to modify either the compiler or linker batch file, or possibly both.
 See `Modifying the batch files`_.
 
@@ -239,11 +238,10 @@ This section describes how to check the current version of batch file ``compile-
 A later section describes `checking link-c-exe.bat`_.
 Once these batch files work, it should not be difficult to make the other compiler and linker batch files work.
 
-The check is to build one of the EnergyPlusToFMU supporting applications, and to make sure it runs.
-If successful, the application determines whether your compiler generates 32-bit or 64-bit executables.
+The check is to build and then run one of the EnergyPlusToFMU supporting applications.
+If the application builds and runs correctly, it reports whether your compiler generates 32-bit or 64-bit executables.
 
-To check the compiler batch file,
-open a command-line window (see :doc:`notation`).
+To check the compiler batch file, open a command-line window (see :doc:`notation`).
 Next, change to the appropriate batch file directory, and run the compiler batch file.
 The compiler should produce an object file in the same directory.
 
@@ -291,7 +289,7 @@ A sample session in MacOS Terminal:
   > ls  *.o
   get-address-size.o
 
-In the sessions shown above, the compiler batch file successfully builds the object file.
+In the sessions shown above, the compiler batch file successfully built the object file.
 Unfortunately, this is not always the case.
 Reasons for failure fall into a few broad categories:
 
@@ -331,7 +329,7 @@ In particular:
 Checking link-c-exe.bat
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Once you have successfully compiled source code file ``get-address-size.c`` into an object file, the next step is to link the object file into an executable (i.e., a runnable program).
+Once you have successfully compiled source code file ``get-address-size.c`` into an object file, the next step is to link the object file into an executable.
 
 Working in the same subdirectory where you built the object file, run the linker batch file.
 In response, the linker should produce an executable, called ``test.exe``, which you should be able to run.
@@ -367,7 +365,7 @@ A sample session for both a Linux command shell and MacOS Terminal:
   > ./test.exe
   32
 
-Again, the batch file may not work, for a few broad reasons:
+Again, the batch file may not work, for a few reasons:
 
 - The commands in the batch file are wrong for your system.
   The subsections below give hints on providing an appropriate ``link-c-exe.bat``
@@ -391,8 +389,7 @@ In particular:
   See the documentation for your development environment.
 
 - Batch file ``link-cpp-exe.bat`` must link objects generated by the C++ compiler.
-  This may require providing different switches or flags to the linker, than
-  used in ``link-c-exe.bat``.
+  This may require changing the linker switches or flags used in ``link-c-exe.bat``.
 
 - Building ``test.exe`` uses a single object file.
   The linker batch file must be able to handle a list of object files.
@@ -410,11 +407,11 @@ This section gives general advice for editing your batch files, in case the defa
 
 Unfortunately, it is beyond the scope of this document to give full instructions on installing and using developer tools such as compilers and linkers.
 
-The EnergyPlusToFMU tools only use the batch files named in the table showing the `Batch files`_.
+The EnergyPlusToFMU tools only use the batch files named in the table shown in subsection `Batch files`_.
 Thus, editing ``compile-c-gcc.txt`` will have no effect on how the FMU gets created.
 Only ``compile-c.bat`` affects how EnergyPlusToFMU compiles ``C`` source code files.
 
-If a provided batch file does not work, it may simply be a matter of changing the directory path hard-coded in the batch file.
+If a batch file does not work, it may simply be a matter of changing the directory path hard-coded in the batch file.
 For example, the batch files for Microsoft Visual Studio list several known locations for finding the Visual Studio program files.
 If your machine has Visual Studio installed in some other location (say, on the "``D:\``" drive rather than on "``C:\``"), then editing the batch file to point to the correct path may be all that is needed.
 
@@ -441,7 +438,7 @@ For example, entering the command:
   > which gcc
   
 will return the path to the ``gcc`` compiler, provided your system has it, and provided it is on the search path.
-If you do not have ``gcc``, or if you have ``gcc`` but it is not on the search path, then ``which gcc`` will return nothing.
+Otherwise, ``which gcc`` will return nothing.
 
 If you believe you have a certain compiler, but cannot find it on your search path, try the ``find`` command.
 For example, to locate the ``icc`` compiler, try:
@@ -526,7 +523,7 @@ Conversely, if you define ``HAVE_MEMMOVE`` when your system does not have it, th
 Troubleshooting missing libraries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Some linkers need explicit instructions to link in library code.
+Some linkers need explicit instructions to link to library code.
 Libraries are needed to provide standard functions, such as ``printf``, that are called by the EnergyPlusToFMU source code.
 If the linker emits an error message indicating it cannot find a particular function, then consult your development environment's documentation to determine which libraries it may need.
 

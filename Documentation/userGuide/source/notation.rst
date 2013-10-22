@@ -7,10 +7,6 @@ Notation
 
 This chapter shows the formatting conventions used throughout the User Guide.
 
-
-Command-line window
-^^^^^^^^^^^^^^^^^^^
-
 The command-line is an interactive session for issuing commands to the operating system.
 Examples include a DOS prompt on Windows, a command shell on Linux, and a Terminal window on MacOS.
 
