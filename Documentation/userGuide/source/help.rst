@@ -14,7 +14,7 @@ To report the bug, send email to https://groups.google.com/group/energyplus-fmu.
 
 **Known Issues**
 
-**Release 1.0.0**
+*Release 1.0.0*
 
 :term:`Dymola` 2014 cannot import EnergyPlus as an FMU. The reason is a bug in :term:`Dymola` 2014 which does not pass the path to the resources location folder to the FMU when invoking the ``fmiInstantiateSlave()`` method. 
 This information is needed by the FMU for its correct execution. A workaround will be to manually specify the path to the resources location in the ``fmiInstantiateSlave()`` method in ``main.c``. ``main.c`` can be found in the

@@ -57,17 +57,6 @@
     </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">10. Help</a><ul>
-<li><a class="reference internal" href="#known-issues">10.1. Known Issues</a><ul>
-<li><a class="reference internal" href="#release-1-0-0">10.1.1. Release 1.0.0</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
   <h4>Previous topic</h4>
   <p class="topless"><a href="notation.html"
                         title="previous chapter">9. Notation</a></p>
@@ -118,15 +107,11 @@
 </dd>
 </dl>
 <p>To report the bug, send email to <a class="reference external" href="https://groups.google.com/group/energyplus-fmu">https://groups.google.com/group/energyplus-fmu</a>. This is an open group and everyone can join it. No invitation is needed.</p>
-<div class="section" id="known-issues">
-<h2>10.1. Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="release-1-0-0">
-<h3>10.1.1. Release 1.0.0<a class="headerlink" href="#release-1-0-0" title="Permalink to this headline">¶</a></h3>
+<p><strong>Known Issues</strong></p>
+<p><strong>Release 1.0.0</strong></p>
 <p><a class="reference internal" href="glossary.html#term-dymola"><em class="xref std std-term">Dymola</em></a> 2014 cannot import EnergyPlus as an FMU. The reason is a bug in <a class="reference internal" href="glossary.html#term-dymola"><em class="xref std std-term">Dymola</em></a> 2014 which does not pass the path to the resources location folder to the FMU when invoking the <tt class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></tt> method.
 This information is needed by the FMU for its correct execution. A workaround will be to manually specify the path to the resources location in the <tt class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></tt> method in <tt class="docutils literal"><span class="pre">main.c</span></tt>. <tt class="docutils literal"><span class="pre">main.c</span></tt> can be found in the
 <tt class="docutils literal"><span class="pre">SourceCode</span></tt> folder of the EnergyPlusToFMU installation.</p>
-</div>
-</div>
 </div>
 
 

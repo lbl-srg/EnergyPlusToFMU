@@ -108,7 +108,8 @@ It assumes you have followed the <a class="reference internal" href="installatio
 <p>To create an FMU,
 open a command-line window (see <a class="reference internal" href="notation.html"><em>Notation</em></a>).
 The standard invocation of the EnergyPlusToFMU tool is:</p>
-<div class="highlight-none"><div class="highlight"><pre>&gt; python  &lt;path-to-scripts-subdir&gt;EnergyPlusToFMU.py  -i &lt;path-to-idd-file&gt;  -w &lt;path-to-weather-file&gt;  &lt;path-to-idf-file&gt;
+<div class="highlight-none"><div class="highlight"><pre>&gt; python  &lt;path-to-scripts-subdir&gt;EnergyPlusToFMU.py  -i &lt;path-to-idd-file&gt;  \
+  -w &lt;path-to-weather-file&gt;  &lt;path-to-idf-file&gt;
 </pre></div>
 </div>
 <p>For example:</p>
@@ -120,7 +121,7 @@ The standard invocation of the EnergyPlusToFMU tool is:</p>
 </pre></div>
 </div>
 <p>where <tt class="docutils literal"><span class="pre">scriptDir</span></tt> is the path to the scripts directory of EnergyPlusToFMU.
-Typically this is the <tt class="docutils literal"><span class="pre">Scripts/EnergyPlusToFMU</span></tt> subdirectory of the installation directory.
+Typically this is the <tt class="docutils literal"><span class="pre">Scripts/</span></tt> subdirectory of the installation directory.
 See <a class="reference internal" href="installation.html"><em>Installation and Configuration</em></a> for details.</p>
 <p>All file paths, including those to the weather, IDD, and IDF files, can be absolute or relative.
 For readability, the rest of these instructions omit the paths to the script and input files.</p>
@@ -146,7 +147,7 @@ For readability, the rest of these instructions omit the paths to the script and
 <td>Print diagnostics [optional].
 Produces a status line for every major action taken
 by the EnergyPlusToFMU tools.
-This option may be helpful for troubleshooting.</td>
+This option may be helpful for debugging.</td>
 </tr>
 <tr class="row-odd"><td>-L</td>
 <td>Litter, that is, do not clean up intermediate

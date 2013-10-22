@@ -63,7 +63,7 @@
 <li><a class="reference internal" href="#software-requirements">3.1. Software requirements</a></li>
 <li><a class="reference internal" href="#installation-directory">3.2. Installation</a></li>
 <li><a class="reference internal" href="#configuration">3.3. Configuration</a></li>
-<li><a class="reference internal" href="#configuration-batch-files">3.4. Configuration batch files</a></li>
+<li><a class="reference internal" href="#batch-files">3.4. Batch files</a></li>
 <li><a class="reference internal" href="#running-a-basic-test">3.5. Running a basic test</a></li>
 <li><a class="reference internal" href="#checking-compile-c-bat">3.6. Checking compile-c.bat</a></li>
 <li><a class="reference internal" href="#checking-link-c-exe-bat">3.7. Checking link-c-exe.bat</a></li>
@@ -132,30 +132,27 @@
 <p>To install EnergyPlusToFMU, proceed as follows:</p>
 <ol class="arabic simple">
 <li>Download the installation file from the <a class="reference internal" href="download.html"><em>Download</em></a> page.</li>
-<li>Unzip the installation file into any folder (hereafter referred to as the &#8220;installation directory&#8221;).</li>
+<li>Unzip the installation file into any subdirectory (hereafter referred to as the &#8220;installation directory&#8221;).</li>
 </ol>
-<p>Minimally, the installation directory contains the following subdirectories:</p>
+<p>The installation directory should contain the following subdirectories:</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">Scripts/</span></tt><ul>
-<li><tt class="docutils literal"><span class="pre">EnergyPlusToFMU/</span></tt>
+<li><tt class="docutils literal"><span class="pre">Scripts/</span></tt>
 (Python scripts that create an FMU from an IDF file)<ul>
-<li><tt class="docutils literal"><span class="pre">batch-dos</span></tt>
+<li><tt class="docutils literal"><span class="pre">win/</span></tt>
 (batch files for Windows)</li>
-<li><tt class="docutils literal"><span class="pre">batch-linux</span></tt>
+<li><tt class="docutils literal"><span class="pre">linux/</span></tt>
 (shell scripts for Linux)</li>
-<li><tt class="docutils literal"><span class="pre">batch-darwin</span></tt>
+<li><tt class="docutils literal"><span class="pre">darwin/</span></tt>
 (shell scripts for Mac OS X)</li>
-</ul>
-</li>
 </ul>
 </li>
 <li><tt class="docutils literal"><span class="pre">SourceCode/</span></tt>
 (C and C++ source code for creating an EnergyPlus FMU)<ul>
-<li><tt class="docutils literal"><span class="pre">EnergyPlus</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">Expat</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">fmu-export-prep-src</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">read-ep-file-src</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">utility-src</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">EnergyPlus/</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Expat/</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">fmu-export-prep/</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">read-ep-file/</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">utility/</span></tt></li>
 </ul>
 </li>
 </ul>
@@ -163,27 +160,30 @@
 <div class="section" id="configuration">
 <h2>3.3. Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
 <p>EnergyPlusToFMU comes pre-configured to handle the most common system configurations.
-Usually, you can simply create an FMU, as described in <a class="reference internal" href="build.html"><em>Creating an FMU</em></a>, and everything will work as expected.</p>
-<p>The remainder of this section provides tips on configuring EnergyPlusToFMU, to match your particular system and needs.
+Usually, you can simply create an FMU, as described in <a class="reference internal" href="build.html"><em>Creating an FMU</em></a>, and everything will work.</p>
+<p>The remainder of this section provides tips for configuring EnergyPlusToFMU to match your particular system and needs.
 This may be needed in case problems arise.
 In addition, you may wish to reconfigure EnergyPlusToFMU, for example to optimize the FMU code, or to change the memory model under which it runs.</p>
 </div>
-<div class="section" id="configuration-batch-files">
-<h2>3.4. Configuration batch files<a class="headerlink" href="#configuration-batch-files" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="batch-files">
+<h2>3.4. Batch files<a class="headerlink" href="#batch-files" title="Permalink to this headline">¶</a></h2>
 <p>EnergyPlusToFMU requires a C compiler and linker (in order to build the FMU), and a C++ compiler and linker (in order to build supporting tools).
 Configuring EnergyPlusToFMU mainly consists of:</p>
 <ul class="simple">
 <li>Choosing a different compiler or linker than the default.</li>
 <li>Passing the compiler or linker different options than the default.</li>
 </ul>
-<p>EnergyPlusToFMU controls both aspects of the configuration using the following batch files:</p>
+<p>EnergyPlusToFMU controls both aspects of the configuration using batch files on DOS, and shell scripts on Linux and Macintosh.
+Batch files have the extension <tt class="docutils literal"><span class="pre">.bat</span></tt>, while shell scripts have the <tt class="docutils literal"><span class="pre">.sh</span></tt> extension.
+For convenience, this guide refers to all such files as batch files.</p>
+<p>EnergyPlusToFMU includes the following batch files:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="29%" />
 <col width="71%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">Batch file</th>
+<tr class="row-odd"><th class="head">Batch (shell) file</th>
 <th class="head">Purpose</th>
 </tr>
 </thead>
@@ -213,7 +213,7 @@ into an executable (i.e. a stand-alone application).</td>
 </tbody>
 </table>
 <p>The EnergyPlusToFMU installation includes default versions of these batch files.
-However, the exact contents of these batch files depends on:</p>
+However, the contents of these batch files depends on:</p>
 <ol class="arabic simple">
 <li>The operating system.</li>
 <li>The compiler/linker environment (e.g., gcc or Microsoft Visual Studio).</li>
@@ -227,15 +227,14 @@ Therefore if you are using an emulator or virtual machine (for example, Cygwin u
 In addition to the default versions, some alternate versions also may be present.
 The alternate versions can be identified in two ways:</p>
 <ol class="arabic simple">
-<li>The file extension is &#8220;<tt class="docutils literal"><span class="pre">.txt</span></tt>&#8221;, rather than &#8220;<tt class="docutils literal"><span class="pre">.bat</span></tt>&#8221;.</li>
+<li>The file extension is &#8220;<tt class="docutils literal"><span class="pre">.txt</span></tt>&#8221;, rather than &#8220;<tt class="docutils literal"><span class="pre">.bat</span></tt>&#8221; (or &#8220;<tt class="docutils literal"><span class="pre">.sh</span></tt>&#8221;).</li>
 <li>The file name indicates the associated options.
-For example, a file <tt class="docutils literal"><span class="pre">compile-c-gcc-32bit.txt</span></tt> is one possible version of <tt class="docutils literal"><span class="pre">compile-c.bat</span></tt>.
+For example, a file <tt class="docutils literal"><span class="pre">compile-c-gcc-32bit.txt</span></tt> is one possible version of <tt class="docutils literal"><span class="pre">compile-c.sh</span></tt>.
 It is specific to the gcc compiler/linker environment, and it generates
-32-bit object files, even on a 64-bit machine.</li>
+32-bit object files, even on a 64-bit operating system.</li>
 </ol>
 <p>Note that the default batch file is an exact copy of one of the supplied alternate versions.
-For example, in the <tt class="docutils literal"><span class="pre">batch-dos</span></tt> subdirectory, the default batch file <tt class="docutils literal"><span class="pre">compile-c.bat</span></tt> is the same as <tt class="docutils literal"><span class="pre">compile-c-mvs10.txt</span></tt> (the version for Microsoft Visual Studio 10).
-Therefore the installation has fewer unique batch files than it at first appears.</p>
+For example, in the <tt class="docutils literal"><span class="pre">win</span></tt> subdirectory, the default batch file <tt class="docutils literal"><span class="pre">compile-c.bat</span></tt> is the same as <tt class="docutils literal"><span class="pre">compile-c-mvs10.txt</span></tt> (the version for Microsoft Visual Studio 10).</p>
 <p>Once you have identified the appropriate batch file subdirectory, you can either:</p>
 <ul class="simple">
 <li>Test the existing batch files.
@@ -249,14 +248,14 @@ See <a class="reference internal" href="#modifying-the-batch-files">Modifying th
 <p>In addition to the batch files that run the compiler and linker, EnergyPlusToFMU includes a batch file that tests some of the existing batch files.
 In particular, batch file <tt class="docutils literal"><span class="pre">test-c-exe.bat</span></tt> tests the compiler and linker batch files which build an executable from <tt class="docutils literal"><span class="pre">C</span></tt> source code.
 Once these batch files work, it should not be difficult to make the other compiler and linker batch files work.</p>
-<p>The test batch file, <tt class="docutils literal"><span class="pre">test-c-exe.bat</span></tt>, runs the appropriate compiler and linker batch files, and checks the resulting executable.
-It reports its progress, and so should give a clue to where problems occur, if any.</p>
+<p>Batch file <tt class="docutils literal"><span class="pre">test-c-exe.bat</span></tt> runs the appropriate compiler and linker batch files, and tests the resulting executable.
+It reports its progress, and so should give information as to where problems occur, if any.</p>
 <p>To run the basic test,
 open a command-line window (see <a class="reference internal" href="notation.html"><em>Notation</em></a>).
 Next, change to the appropriate batch file directory, and run the test batch file.</p>
 <p>A sample session at the Windows DOS prompt:</p>
 <div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
-&gt; cd  epfmu_install_dir\Scripts\EnergyPlusToFMU\batch-dos
+&gt; cd  epfmu_install_dir\Scripts\win
 
 # Run the batch file.
 &gt; test-c-exe.bat
@@ -274,11 +273,11 @@ get-address-size.c
 </div>
 <p>A sample session in a Linux command shell:</p>
 <div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
-&gt; cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-linux
+&gt; cd  epfmu_install_dir/Scripts/linux
 
 # Run the batch file.
 # Note the &quot;./&quot; before the batch file name.
-&gt; ./test-c-exe.bat
+&gt; ./test-c-exe.sh
 ===== Checking for required files =====
 ===== Removing old output files =====
 ===== Running compiler =====
@@ -292,11 +291,11 @@ get-address-size.c
 </div>
 <p>A sample session in MacOS Terminal:</p>
 <div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
-&gt; cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-darwin
+&gt; cd  epfmu_install_dir/Scripts/darwin
 
 # Run the batch file.
 # Note the &quot;./&quot; before the batch file name.
-&gt; ./test-c-exe.bat
+&gt; ./test-c-exe.sh
 ===== Checking for required files =====
 ===== Removing old output files =====
 ===== Running compiler =====
@@ -308,7 +307,7 @@ get-address-size.c
 ===== Cleaning up =====
 </pre></div>
 </div>
-<p>In the sessions shown above, the test batch file successfully runs to completion.
+<p>In the sessions shown above, the test batch file successfully ran to completion.
 If the test batch file fails at some point, then you will have to modify either the compiler or linker batch file, or possibly both.
 See <a class="reference internal" href="#modifying-the-batch-files">Modifying the batch files</a>.</p>
 <p>The test batch file automates the individual steps described in <a class="reference internal" href="#checking-compile-c-bat">Checking compile-c.bat</a> and <a class="reference internal" href="#checking-link-c-exe-bat">Checking link-c-exe.bat</a> below.
@@ -319,18 +318,17 @@ Therefore as you fine-tune your configuration, you may want to look to those sec
 <p>This section describes how to check the current version of batch file <tt class="docutils literal"><span class="pre">compile-c.bat</span></tt>.
 A later section describes <a class="reference internal" href="#checking-link-c-exe-bat">checking link-c-exe.bat</a>.
 Once these batch files work, it should not be difficult to make the other compiler and linker batch files work.</p>
-<p>The check is to build one of the EnergyPlusToFMU supporting applications, and to make sure it runs.
-If successful, the application determines whether your compiler generates 32-bit or 64-bit executables.</p>
-<p>To check the compiler batch file,
-open a command-line window (see <a class="reference internal" href="notation.html"><em>Notation</em></a>).
+<p>The check is to build and then run one of the EnergyPlusToFMU supporting applications.
+If the application builds and runs correctly, it reports whether your compiler generates 32-bit or 64-bit executables.</p>
+<p>To check the compiler batch file, open a command-line window (see <a class="reference internal" href="notation.html"><em>Notation</em></a>).
 Next, change to the appropriate batch file directory, and run the compiler batch file.
 The compiler should produce an object file in the same directory.</p>
 <p>A sample session at the Windows DOS prompt:</p>
 <div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
-&gt; cd  epfmu_install_dir\Scripts\EnergyPlusToFMU\batch-dos
+&gt; cd  epfmu_install_dir\Scripts\win
 
 # Run the batch file.
-&gt; compile-c.bat  ..\..\..\SourceCode\utility-src\get-address-size.c
+&gt; compile-c.bat  ..\..\SourceCode\utility\get-address-size.c
 
 # Check the object file.
 &gt; dir  *.obj
@@ -339,11 +337,11 @@ get-address-size.obj
 </div>
 <p>A sample session in a Linux command shell:</p>
 <div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
-&gt; cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-linux
+&gt; cd  epfmu_install_dir/Scripts/linux
 
 # Run the batch file.
 # Note the &quot;./&quot; before the batch file name.
-&gt; ./compile-c.bat  ../../../SourceCode/utility-src/get-address-size.c
+&gt; ./compile-c.sh  ../../SourceCode/utility/get-address-size.c
 
 # Check the object file.
 &gt; ls  *.o
@@ -352,18 +350,18 @@ get-address-size.o
 </div>
 <p>A sample session in MacOS Terminal:</p>
 <div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
-&gt; cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/batch-darwin
+&gt; cd  epfmu_install_dir/Scripts/darwin
 
 # Run the batch file.
 # Note the &quot;./&quot; before the batch file name.
-&gt; ./compile-c.bat  ../../../SourceCode/utility-src/get-address-size.c
+&gt; ./compile-c.sh  ../../SourceCode/utility/get-address-size.c
 
 # Check the object file.
 &gt; ls  *.o
 get-address-size.o
 </pre></div>
 </div>
-<p>In the sessions shown above, the compiler batch file successfully builds the object file.
+<p>In the sessions shown above, the compiler batch file successfully built the object file.
 Unfortunately, this is not always the case.
 Reasons for failure fall into a few broad categories:</p>
 <ul class="simple">
@@ -398,7 +396,7 @@ See the sample batch files in the standard distribution.</li>
 </div>
 <div class="section" id="checking-link-c-exe-bat">
 <h2>3.7. Checking link-c-exe.bat<a class="headerlink" href="#checking-link-c-exe-bat" title="Permalink to this headline">¶</a></h2>
-<p>Once you have successfully compiled source code file <tt class="docutils literal"><span class="pre">get-address-size.c</span></tt> into an object file, the next step is to link the object file into an executable (i.e., a runnable program).</p>
+<p>Once you have successfully compiled source code file <tt class="docutils literal"><span class="pre">get-address-size.c</span></tt> into an object file, the next step is to link the object file into an executable.</p>
 <p>Working in the same subdirectory where you built the object file, run the linker batch file.
 In response, the linker should produce an executable, called <tt class="docutils literal"><span class="pre">test.exe</span></tt>, which you should be able to run.</p>
 <p>A sample session at the Windows DOS prompt:</p>
@@ -417,7 +415,7 @@ test.exe
 <p>A sample session for both a Linux command shell and MacOS Terminal:</p>
 <div class="highlight-none"><div class="highlight"><pre># Run the batch file.
 # Note the &quot;./&quot; before the batch file name.
-&gt; ./link-c-exe.bat  test.exe  get-address-size.o
+&gt; ./link-c-exe.sh  test.exe  get-address-size.o
 
 # Check the executable.
 &gt; ls  *.exe
@@ -428,7 +426,7 @@ test.exe
 32
 </pre></div>
 </div>
-<p>Again, the batch file may not work, for a few broad reasons:</p>
+<p>Again, the batch file may not work, for a few reasons:</p>
 <ul class="simple">
 <li>The commands in the batch file are wrong for your system.
 The subsections below give hints on providing an appropriate <tt class="docutils literal"><span class="pre">link-c-exe.bat</span></tt>
@@ -449,8 +447,7 @@ Creating a shared library generally requires passing a special switch or flag
 to the linker, such as <tt class="docutils literal"><span class="pre">-shared</span></tt>, <tt class="docutils literal"><span class="pre">-dynamiclib</span></tt>, or <tt class="docutils literal"><span class="pre">/LD</span></tt>.
 See the documentation for your development environment.</li>
 <li>Batch file <tt class="docutils literal"><span class="pre">link-cpp-exe.bat</span></tt> must link objects generated by the C++ compiler.
-This may require providing different switches or flags to the linker, than
-used in <tt class="docutils literal"><span class="pre">link-c-exe.bat</span></tt>.</li>
+This may require changing the linker switches or flags used in <tt class="docutils literal"><span class="pre">link-c-exe.bat</span></tt>.</li>
 <li>Building <tt class="docutils literal"><span class="pre">test.exe</span></tt> uses a single object file.
 The linker batch file must be able to handle a list of object files.
 The provided batch files all do this correctly.
@@ -463,10 +460,10 @@ no problems should arise here.</li>
 <h2>3.8. Modifying the batch files<a class="headerlink" href="#modifying-the-batch-files" title="Permalink to this headline">¶</a></h2>
 <p>This section gives general advice for editing your batch files, in case the default versions do not work on your system, or in case you want to modify or replace the default versions (for example, to change the optimization level, or to use a different compiler/linker).</p>
 <p>Unfortunately, it is beyond the scope of this document to give full instructions on installing and using developer tools such as compilers and linkers.</p>
-<p>The EnergyPlusToFMU tools only use the batch files named in the table showing the <a class="reference internal" href="#configuration-batch-files">Configuration batch files</a>.
+<p>The EnergyPlusToFMU tools only use the batch files named in the table shown in subsection <a class="reference internal" href="#batch-files">Batch files</a>.
 Thus, editing <tt class="docutils literal"><span class="pre">compile-c-gcc.txt</span></tt> will have no effect on how the FMU gets created.
 Only <tt class="docutils literal"><span class="pre">compile-c.bat</span></tt> affects how EnergyPlusToFMU compiles <tt class="docutils literal"><span class="pre">C</span></tt> source code files.</p>
-<p>If a provided batch file does not work, it may simply be a matter of changing the directory path hard-coded in the batch file.
+<p>If a batch file does not work, it may simply be a matter of changing the directory path hard-coded in the batch file.
 For example, the batch files for Microsoft Visual Studio list several known locations for finding the Visual Studio program files.
 If your machine has Visual Studio installed in some other location (say, on the &#8220;<tt class="docutils literal"><span class="pre">D:\</span></tt>&#8221; drive rather than on &#8220;<tt class="docutils literal"><span class="pre">C:\</span></tt>&#8221;), then editing the batch file to point to the correct path may be all that is needed.</p>
 <p>On most systems, the compiler also can act as the linker (or call the linker, filling in appropriate options).
@@ -485,7 +482,7 @@ For example, entering the command:</p>
 </pre></div>
 </div>
 <p>will return the path to the <tt class="docutils literal"><span class="pre">gcc</span></tt> compiler, provided your system has it, and provided it is on the search path.
-If you do not have <tt class="docutils literal"><span class="pre">gcc</span></tt>, or if you have <tt class="docutils literal"><span class="pre">gcc</span></tt> but it is not on the search path, then <tt class="docutils literal"><span class="pre">which</span> <span class="pre">gcc</span></tt> will return nothing.</p>
+Otherwise, <tt class="docutils literal"><span class="pre">which</span> <span class="pre">gcc</span></tt> will return nothing.</p>
 <p>If you believe you have a certain compiler, but cannot find it on your search path, try the <tt class="docutils literal"><span class="pre">find</span></tt> command.
 For example, to locate the <tt class="docutils literal"><span class="pre">icc</span></tt> compiler, try:</p>
 <div class="highlight-none"><div class="highlight"><pre>&gt; find /usr -name icc
@@ -516,18 +513,18 @@ Unfortunately, it may return many entries unrelated to compiling C and C++ sourc
 The batch files must have &#8220;execute&#8221; permission, meaning you are allowed to run the file as a set of commands.
 To check the permissions:</p>
 <div class="highlight-none"><div class="highlight"><pre># Linux, MacOS:
-&gt; ls -lt  *.bat
--rwxr--r--  ...  link-c-lib.bat
--rwxr--r--  ...  link-c-exe.bat
--rwxr--r--  ...  compile-c.bat
--rwxr--r--  ...  link-cpp-exe.bat
--rwxr--r--  ...  compile-cpp.bat
+&gt; ls -lt  *.sh
+-rwxr--r--  ...  link-c-lib.sh
+-rwxr--r--  ...  link-c-exe.sh
+-rwxr--r--  ...  compile-c.sh
+-rwxr--r--  ...  link-cpp-exe.sh
+-rwxr--r--  ...  compile-cpp.sh
 </pre></div>
 </div>
 <p>All five of the default batch files should have &#8220;<tt class="docutils literal"><span class="pre">-rwx</span></tt>&#8221; at the beginning of the permissions block (indicating you are allowed to read, write, and execute the file).
 If not, then set the permissions:</p>
 <div class="highlight-none"><div class="highlight"><pre># Linux, MacOS:
-&gt; chmod  u=rwx,g=r,o=r  *.bat
+&gt; chmod  u=rwx,g=r,o=r  *.sh
 </pre></div>
 </div>
 <p>and try running the compiler batch file again.</p>
@@ -546,7 +543,7 @@ Conversely, if you define <tt class="docutils literal"><span class="pre">HAVE_ME
 </div>
 <div class="section" id="troubleshooting-missing-libraries">
 <h2>3.12. Troubleshooting missing libraries<a class="headerlink" href="#troubleshooting-missing-libraries" title="Permalink to this headline">¶</a></h2>
-<p>Some linkers need explicit instructions to link in library code.
+<p>Some linkers need explicit instructions to link to library code.
 Libraries are needed to provide standard functions, such as <tt class="docutils literal"><span class="pre">printf</span></tt>, that are called by the EnergyPlusToFMU source code.
 If the linker emits an error message indicating it cannot find a particular function, then consult your development environment&#8217;s documentation to determine which libraries it may need.</p>
 <p>Note that specifying libraries is often somewhat arcane.
