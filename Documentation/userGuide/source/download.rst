@@ -14,7 +14,7 @@ To install EnergyPlusToFMU, follow the section :doc:`installation`.
 
 Download `EnergyPlusToFMU-1.0.0.zip <http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/releases/1.0.0/EnergyPlusToFMU-1.0.0.zip>`_. 
 
-*Release notes*
+**Release notes**
 
 First release that uses FMI version 1.0 for co-simulation.
 
