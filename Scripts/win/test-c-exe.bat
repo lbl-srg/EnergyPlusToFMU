@@ -18,7 +18,7 @@
 
 ECHO ===== Checking for required files =====
 ::
-SET srcFileName=..\..\..\SourceCode\utility\get-address-size.c
+SET srcFileName=..\..\SourceCode\utility\get-address-size.c
 IF NOT EXIST %srcFileName% (
     ECHO Error: missing source file %srcFileName%
     GOTO done

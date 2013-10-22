@@ -42,18 +42,16 @@ To install EnergyPlusToFMU, proceed as follows:
 Minimally, the installation directory contains the following subdirectories:
 
 - ``Scripts/``
+  (Python scripts that create an FMU from an IDF file)
 
-  - ``EnergyPlusToFMU/``
-    (Python scripts that create an FMU from an IDF file)
+  - ``win/``
+    (batch files for Windows)
 
-    - ``win/``
-      (batch files for Windows)
+  - ``linux/``
+    (shell scripts for Linux)
 
-    - ``linux/``
-      (shell scripts for Linux)
-
-    - ``darwin/``
-      (shell scripts for Mac OS X)
+  - ``darwin/``
+    (shell scripts for Mac OS X)
 
 - ``SourceCode/``
   (C and C++ source code for creating an EnergyPlus FMU)
@@ -171,7 +169,7 @@ A sample session at the Windows DOS prompt:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir\Scripts\EnergyPlusToFMU\win
+  > cd  epfmu_install_dir\Scripts\win
 
   # Run the batch file.
   > test-c-exe.bat
@@ -191,7 +189,7 @@ A sample session in a Linux command shell:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/linux
+  > cd  epfmu_install_dir/Scripts/linux
 
   # Run the batch file.
   # Note the "./" before the batch file name.
@@ -211,7 +209,7 @@ A sample session in MacOS Terminal:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/darwin
+  > cd  epfmu_install_dir/Scripts/darwin
 
   # Run the batch file.
   # Note the "./" before the batch file name.
@@ -254,10 +252,10 @@ A sample session at the Windows DOS prompt:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir\Scripts\EnergyPlusToFMU\win
+  > cd  epfmu_install_dir\Scripts\win
 
   # Run the batch file.
-  > compile-c.bat  ..\..\..\SourceCode\utility\get-address-size.c
+  > compile-c.bat  ..\..\SourceCode\utility\get-address-size.c
 
   # Check the object file.
   > dir  *.obj
@@ -268,11 +266,11 @@ A sample session in a Linux command shell:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/linux
+  > cd  epfmu_install_dir/Scripts/linux
 
   # Run the batch file.
   # Note the "./" before the batch file name.
-  > ./compile-c.sh  ../../../SourceCode/utility/get-address-size.c
+  > ./compile-c.sh  ../../SourceCode/utility/get-address-size.c
 
   # Check the object file.
   > ls  *.o
@@ -283,11 +281,11 @@ A sample session in MacOS Terminal:
 .. code-block:: none
 
   # Change to the batch file directory.
-  > cd  epfmu_install_dir/Scripts/EnergyPlusToFMU/darwin
+  > cd  epfmu_install_dir/Scripts/darwin
 
   # Run the batch file.
   # Note the "./" before the batch file name.
-  > ./compile-c.sh  ../../../SourceCode/utility/get-address-size.c
+  > ./compile-c.sh  ../../SourceCode/utility/get-address-size.c
 
   # Check the object file.
   > ls  *.o

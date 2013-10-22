@@ -307,8 +307,8 @@ def makeFmuSharedLib(showDiagnostics, litter,
   findFileOrQuit('linker batch', linkCExeBatchFileName)
   #
   # Insert model identifier into source code files.
-  origMainName = os.path.join(scriptDirName, '../../SourceCode/EnergyPlus/main.c')
-  modMainName  = os.path.join(scriptDirName, '../../SourceCode/EnergyPlus', 'temp-'+modelIdSanitizedName+'.c')
+  origMainName = os.path.join(scriptDirName, '../SourceCode/EnergyPlus/main.c')
+  modMainName  = os.path.join(scriptDirName, '../SourceCode/EnergyPlus', 'temp-'+modelIdSanitizedName+'.c')
   poundDefineModelId(showDiagnostics, origMainName, modelIdSanitizedName, modMainName)
   #
   # Assemble names of source files.
@@ -316,7 +316,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
   #
   srcFileNameList.append(modMainName)
   #
-  srcDirName = os.path.join(scriptDirName, '../../SourceCode/EnergyPlus')
+  srcDirName = os.path.join(scriptDirName, '../SourceCode/EnergyPlus')
   for theRootName in ['reader',
     'stack',
     'util',
@@ -325,7 +325,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
     ]:
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
   #
-  srcDirName = os.path.join(scriptDirName, '../../SourceCode/Expat/lib')
+  srcDirName = os.path.join(scriptDirName, '../SourceCode/Expat/lib')
   for theRootName in ['xmlparse',
     'xmlrole',
     'xmltok'  # Note {xmltok.c} directly #includes {xmltok_impl.c} and {xmltok_ns.c}, so they don't need to be in this list.
@@ -358,7 +358,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
   if( showDiagnostics ):
     printDiagnostic('Building utility application {' +getAddressSizeExeName +'}')
   srcFileNameList = [
-    os.path.join(scriptDirName, '../../SourceCode/utility/get-address-size.c')
+    os.path.join(scriptDirName, '../SourceCode/utility/get-address-size.c')
     ]
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
     compileCBatchFileName, linkCExeBatchFileName, srcFileNameList, getAddressSizeExeName)

@@ -31,7 +31,7 @@ For example:
   > python  scriptDir/EnergyPlusToFMU.py  -i ~/eplus/Energy+.idd  test.epw  test.idf
 
 where ``scriptDir`` is the path to the scripts directory of EnergyPlusToFMU.
-Typically this is the ``Scripts/EnergyPlusToFMU`` subdirectory of the installation directory.
+Typically this is the ``Scripts/`` subdirectory of the installation directory.
 See :doc:`installation` for details.
 
 All file paths, including those to the weather, IDD, and IDF files, can be absolute or relative.
