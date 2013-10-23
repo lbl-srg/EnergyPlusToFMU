@@ -163,11 +163,11 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
   if( scriptDirName not in sys.path ):
     sys.path.append(scriptDirName)
   #
-  findFileOrQuit('utility script', os.path.join(scriptDirName, 'makeFmuLib.py'))
+  findFileOrQuit('utility script', os.path.join(scriptDirName, 'makeFMULib.py'))
   try:
-    import makeFmuLib
+    import makeFMULib
   except:
-    quitWithError('Unable to import {makeFmuLib.py}', False)
+    quitWithError('Unable to import {makeFMULib.py}', False)
   #
   findFileOrQuit('utility script', os.path.join(scriptDirName, 'makeExportPrepApp.py'))
   try:
@@ -179,7 +179,7 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
   modelIdName = os.path.basename(idfFileName)
   if( modelIdName.endswith('.idf') or modelIdName.endswith('.IDF') ):
     modelIdName = modelIdName[:-4]
-  modelIdName = makeFmuLib.sanitizeIdentifier(modelIdName)
+  modelIdName = makeFMULib.sanitizeIdentifier(modelIdName)
   if( showDiagnostics ):
     printDiagnostic('Using model identifier {' +modelIdName +'}')
   #
@@ -217,7 +217,7 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
     quitWithError('Failed to extract FMU information from IDF file {' +idfFileName +'}', False)
   #
   # Create the shared library.
-  (OUT_fmuSharedLibName, fmuBinDirName) = makeFmuLib.makeFmuSharedLib(showDiagnostics, litter, modelIdName)
+  (OUT_fmuSharedLibName, fmuBinDirName) = makeFMULib.makeFmuSharedLib(showDiagnostics, litter, modelIdName)
   findFileOrQuit('shared library', OUT_fmuSharedLibName)
   #
   # Create zip file that will become the FMU.
