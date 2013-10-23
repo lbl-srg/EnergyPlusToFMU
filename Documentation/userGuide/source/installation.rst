@@ -129,7 +129,7 @@ Note that Python detects your platform when it runs.
 Therefore if you are using an emulator or virtual machine (for example, Cygwin under Windows, or a Windows virtual machine on a Mac), you should look in the subdirectory corresponding to the emulated operating system.
 
 Each system-specific batch subdirectory includes sample batch files.
-In addition to the default versions, some alternate versions may also be present.
+In addition to the default versions, some alternate versions also may be present.
 The alternate versions can be identified in two ways:
 
 1. The file extension is "``.txt``", rather than "``.bat``" (or "``.sh``").
@@ -156,7 +156,7 @@ In addition to the batch files that run the compiler and linker, EnergyPlusToFMU
 In particular, batch file ``test-c-exe.bat`` tests the compiler and linker batch files which build an executable from ``C`` source code.
 Once these batch files work, it should not be difficult to make the other compiler and linker batch files work.
 
-``test-c-exe.bat`` runs the appropriate compiler and linker batch files, and tests the resulting executable.
+The batch file ``test-c-exe.bat`` runs the appropriate compiler and linker batch files, and tests the resulting executable.
 It reports its progress, and so should give information as to where problems occur, if any.
 
 To run the basic test,
@@ -203,7 +203,7 @@ A sample session in a Linux command shell:
   == The address size should appear above ==
   ===== Cleaning up =====
 
-A sample session in a MacOS Terminal:
+A sample session in a MacOS Terminal window:
 
 .. code-block:: none
 
@@ -329,7 +329,7 @@ In particular:
 Checking link-c-exe.bat
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Once you have successfully compiled the ource code file ``get-address-size.c`` into an object file, the next step is to link the object file into an executable.
+Once you have successfully compiled the source code file ``get-address-size.c`` into an object file, the next step is to link the object file into an executable.
 
 Working in the same subdirectory where you built the object file, run the linker batch file.
 In response, the linker should produce an executable, called ``test.exe``, which you should be able to run.
