@@ -82,11 +82,17 @@ The FMU is complete and self-contained.
 Any secondary output from running the EnergyPlusToFMU tools can be deleted safely.
 Secondary output includes:
 
-- A utility executable, called ``idf-to-fmu-export-prep.exe`` on Windows, and
-  ``idf-to-fmu-export-prep`` on Linux and MacOS (the different names allow
-  dual-boot users to work in the same directory).
+- A utility executable, with the base name ``idf-to-fmu-export-prep``.
   This executable will appear in your current working directory.
   If deleted, it will be rebuilt on the next run of EnergyPlusToFMU.
+  Note that the full name of this executable depends on the operating system.
+  This allows users with dual-boot or virtual machines to work in the same
+  directory.
+  The full names are:
+
+    - ``idf-to-fmu-export-prep-win.exe`` on Windows.
+    - ``idf-to-fmu-export-prep-linux`` on Linux.
+    - ``idf-to-fmu-export-prep-darwin`` on Macintosh OS X.
 
 - Compiled Python files, with the extension "``.pyc``".
   They are written to the script directory.
@@ -99,7 +105,7 @@ If the EnergyPlusToFMU tool fails, you may also see intermediate files, includin
 
 - A utility executable ``util-get-address-size.exe``.
   This program is rebuilt every time you run the EnergyPlusToFMU tools
-  (in case you have modified the compiler/linker batch files as described
+  (to ensure it uses the most recent compiler/linker batch files, as described
   in :doc:`installation`).
 
 - Build directories, named like ``bld-*``.
@@ -107,7 +113,7 @@ If the EnergyPlusToFMU tool fails, you may also see intermediate files, includin
 - A shared library, named like ``*.dll`` or ``*.so`` or ``*.dylib``,
   depending on the system.
 
-- A log file, ``output.log``, containing error messages from ``idf-to-fmu-export-prep.exe``.
+- A log file, ``output.log``, containing error messages from ``idf-to-fmu-export-prep``.
 
 All these intermediate files can be deleted.
 
@@ -131,11 +137,15 @@ Try running the export-preparation application directly on your IDF file:
 .. code-block:: none
 
   # Windows:
-  > idf-to-fmu-export-prep.exe  Energy+.idd  test.idf
+  > idf-to-fmu-export-prep-win.exe  Energy+.idd  test.idf
 
-  # Linux, MacOS:
+  # Linux:
   #   Note the "./" before the name of the application.
-  > ./idf-to-fmu-export-prep  Energy+.idd  test.idf
+  > ./idf-to-fmu-export-prep-linux  Energy+.idd  test.idf
+
+  # MacOS:
+  #   Note the "./" before the name of the application.
+  > ./idf-to-fmu-export-prep-darwin  Energy+.idd  test.idf
 
 If running the export-preparation application as shown above works correctly, it produces two files, ``modelDescription.xml`` and ``variables.cfg``.
 Otherwise, it should produce an error message, which should also be echoed to an output file ``output.log``.

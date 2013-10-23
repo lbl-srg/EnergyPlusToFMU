@@ -178,13 +178,12 @@ def deleteFile(fileName):
 def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   #
   # Form executable name.
-  exportPrepExeName = 'idf-to-fmu-export-prep'
-  # Choose different extension for Windows/DOS.  This is a convenience, to
-  # allow two executables to stay in place when running in a virtual machine.
-  if( sys.platform.startswith('win') ):
+  #   Make name distinct on each platform, in order to allow two executables to
+  # co-exist when running a virtual machine.
+  exportPrepExeName = 'idf-to-fmu-export-prep-' + PLATFORM_SHORT_NAME
+  # Add file extension for Windows/DOS.
+  if( PLATFORM_SHORT_NAME == 'win' ):
     exportPrepExeName = exportPrepExeName +'.exe'
-  else:
-    exportPrepExeName = exportPrepExeName
   if( showDiagnostics ):
     printDiagnostic('Begin creating executable {' +exportPrepExeName +'}')
   #
