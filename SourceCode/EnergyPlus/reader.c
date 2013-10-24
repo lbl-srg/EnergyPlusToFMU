@@ -25,23 +25,24 @@
 #include "fmiModelTypes.h"
 #include "defines.h"
 #include <string.h>
+#include<sys/stat.h>
 
 #ifdef _MSC_VER
 #include <windows.h>
 #include "dirent_win.h"
+
 #else
 #include <dirent.h>
-#include <sys/stat.h>
+//#include <sys/stat.h>
 #include <ctype.h>
 #endif
-
 #include "reader.h"
 #include "util.h"
 
 // constant parameters for filenames
-const char* TEMP1         = "tmp1.idf";
+const char* TEMP1         = "tmp1";
 // TEMP2 defines the input file to be run
-const char* TEMP2         = "log_ini.idf";
+const char* TEMP2         = "log_ini";
 // LOG is created if more than two RunPeriod
 const char* LOG           = "log_runP.txt";
 const char* BEGINDAYMONTH = "beginDayMonth.txt";
@@ -116,37 +117,37 @@ void findFileDelete()
 	int res;
 
 	// delete temporary files
-	if (!stat (TEMP1, &stat_p))
+	if (stat (TEMP1, &stat_p)>=0)
 	{
 		remove(TEMP1);
 	}
-	if (!stat (TEMP2, &stat_p))
+	if (stat (TEMP2, &stat_p)>=0)
 	{
 		remove(TEMP2);
 	}
-	if (!stat(BEGINDAYMONTH, &stat_p))
+	if (stat(BEGINDAYMONTH, &stat_p)>=0)
 	{
 		remove(BEGINDAYMONTH);
 	}
-	if (!stat (BEGINMONTH, &stat_p))
+	if (stat (BEGINMONTH, &stat_p)>=0)
 	{
 		remove(BEGINMONTH);
 	}
-	if (!stat (ENDDAYMONTH, &stat_p))
+	if (stat (ENDDAYMONTH, &stat_p)>=0)
 	{
 		remove(ENDDAYMONTH);
 	}
-	if (!stat (ENDMONTH, &stat_p))
+	if (stat (ENDMONTH, &stat_p)>=0)
 	{
 		remove(ENDMONTH);
 	}
 
-	if (!stat(NEWDAYWEEK, &stat_p))
+	if (stat(NEWDAYWEEK, &stat_p)>=0)
 	{
 		remove(NEWDAYWEEK);
 	}
 
-	if (!stat (OLDDAYWEEK, &stat_p))
+	if (stat (OLDDAYWEEK, &stat_p)>=0)
 	{
 		remove(OLDDAYWEEK);
 	}
@@ -155,12 +156,12 @@ void findFileDelete()
 		remove(VARCFG);
 	}
 
-	if (!stat (SOCKCFG, &stat_p))
+	if (stat (SOCKCFG, &stat_p)>=0)
 	{
 		remove(SOCKCFG);
 	}
 
-	if (!stat (EPBAT, &stat_p))
+	if (stat (EPBAT, &stat_p)>=0)
 	{
 		remove(EPBAT);
 	}
@@ -428,7 +429,7 @@ static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu,
 			// write the new day of week
 			fprintf(fp2, "%s", arr[new_index]);
 		}
-		
+
 		// close file
 		fclose (fp2);
 		return 0;
@@ -984,6 +985,7 @@ int writeNewRunperiod(const char *fname) {
 	char low_case_temp[MAXBUFFSIZE];
 	const char* RUNPERIOD= "RUNPERIOD,";
 	char* TIMESTEP= "TIMESTEP,";
+	struct stat st;
 	int i = 0;
 	// open original input file
 	if((fp = fopen(fname, "r")) == NULL) {
@@ -1026,16 +1028,24 @@ int writeNewRunperiod(const char *fname) {
 				{
 					timeStep[i] = strtok (NULL, ";");
 				}
+
 				// write timestep in file
-				if((fp1 = fopen(FTIMESTEP, "w")) == NULL){
-					printf("Can't open and write timestep!\n");
-					exit(42);  // STL error code: File not open.
+				if(stat(FTIMESTEP, &st)>=0){
+					printf ("The file %s exists and will be used to determine the time step for the simulation\n", FTIMESTEP);
 				}
 				else
-				{   
-					remSpaces_makeUpper(timeStep[1]);
-					fprintf(fp1, "%s", timeStep[1]);
-					fclose (fp1);
+				{
+
+					if((fp1 = fopen(FTIMESTEP, "w")) == NULL){
+						printf("Can't open and write timestep!\n");
+						exit(42);  // STL error code: File not open.
+					}
+					else
+					{   
+						remSpaces_makeUpper(timeStep[1]);
+						fprintf(fp1, "%s", timeStep[1]);
+						fclose (fp1);
+					}
 				}
 
 			}
@@ -1091,6 +1101,7 @@ int updateRunperiodInFile(const char *fname1, char *fname2, double t_start_FMU, 
 
 	char intTostr[10];
 	char *runweafile;
+	struct stat st;
 
 	// open original input file
 	if((fp1 = fopen(fname1, "r")) == NULL) {
@@ -1102,42 +1113,71 @@ int updateRunperiodInFile(const char *fname1, char *fname2, double t_start_FMU, 
 		return(1);
 	}
 	printDebug("Get weather file name from the resources directory!\n");
-	weafile = findNameFile(resources_p, ".epw");
-	if(weafile != NULL)
+
+	if (stat(FRUNWEAFILE, &st)>=0)
 	{
-		runweafile = (char*)(calloc(sizeof(char),strlen(weafile) + strlen (resources_p)+ 1));
-		sprintf(runweafile, "%s%s", resources_p, weafile);
-
-		fp4 = fopen(runweafile, "r");
-		fp5 = fopen(FRUNWEAFILE, "w");
-
+		printf ("The weather file: runweafile.epw exists and will be used for the simulation\n");
+		fp4 = fopen(FRUNWEAFILE, "r");
 		// read input file
-		while(fgets(wea, sizeof wea, fp4) != NULL) {
-			strcpy (low_case_wea, wea );
-			//remove space and make upper case
-			remSpaces_makeUpper(wea);
-			fprintf(fp5, "%s", low_case_wea);  
-			if((strstr(wea, WEATHER)) != NULL) {
-				char *leapyear_ch[sizeof(strtok(wea, ","))];
-				leapyear_ch[0] = strtok( wea, "," );
-				for(i=1; i< sizeof(strtok(wea, " ")); i++)
-				{
-					leapyear_ch[i] = strtok (NULL, ",");
-				}
-				remSpaces_makeUpper(leapyear_ch[1]);
-				if (strcmp (leapyear_ch[1], "YES")== 0)
-				{
-					leapyear = 1;
+			while(fgets(wea, sizeof wea, fp4) != NULL) {
+				strcpy (low_case_wea, wea );
+				//remove space and make upper case
+				remSpaces_makeUpper(wea);
+				if((strstr(wea, WEATHER)) != NULL) {
+					char *leapyear_ch[sizeof(strtok(wea, ","))];
+					leapyear_ch[0] = strtok( wea, "," );
+					for(i=1; i< sizeof(strtok(wea, " ")); i++)
+					{
+						leapyear_ch[i] = strtok (NULL, ",");
+					}
+					remSpaces_makeUpper(leapyear_ch[1]);
+					if (strcmp (leapyear_ch[1], "YES")== 0)
+					{
+						leapyear = 1;
+					}
 				}
 			}
-		}
-		fclose (fp4);
-		fclose (fp5);
+			fclose (fp4);
 	}
 	else
 	{
-		printf ("Can't open weather file!\n");
-		runweafile = NULL;
+		weafile = findNameFile(resources_p, ".epw");
+		if(weafile != NULL)
+		{
+			runweafile = (char*)(calloc(sizeof(char),strlen(weafile) + strlen (resources_p)+ 1));
+			sprintf(runweafile, "%s%s", resources_p, weafile);
+
+			fp4 = fopen(runweafile, "r");
+			fp5 = fopen(FRUNWEAFILE, "w");
+
+			// read input file
+			while(fgets(wea, sizeof wea, fp4) != NULL) {
+				strcpy (low_case_wea, wea );
+				//remove space and make upper case
+				remSpaces_makeUpper(wea);
+				fprintf(fp5, "%s", low_case_wea);  
+				if((strstr(wea, WEATHER)) != NULL) {
+					char *leapyear_ch[sizeof(strtok(wea, ","))];
+					leapyear_ch[0] = strtok( wea, "," );
+					for(i=1; i< sizeof(strtok(wea, " ")); i++)
+					{
+						leapyear_ch[i] = strtok (NULL, ",");
+					}
+					remSpaces_makeUpper(leapyear_ch[1]);
+					if (strcmp (leapyear_ch[1], "YES")== 0)
+					{
+						leapyear = 1;
+					}
+				}
+			}
+			fclose (fp4);
+			fclose (fp5);
+		}
+		else
+		{
+			printf ("Can't open weather file!\n");
+			runweafile = NULL;
+		}
 	}
 	// get the numerical values for old runperiod
 	printDebug("Get current month, day for runperiod based on IDF!\n");
@@ -1186,7 +1226,7 @@ int updateRunperiodInFile(const char *fname1, char *fname2, double t_start_FMU, 
 		exit(1); 
 	}
 
-	
+
 	NewEndMonth = getCurrentMonth (t_end_FMU, leapyear);
 	// check end month
 	if((NewEndMonth < 0) || (NewEndMonth > 12)) {
@@ -1255,16 +1295,16 @@ int updateRunperiodInFile(const char *fname1, char *fname2, double t_start_FMU, 
 Copyright Notice
 ----------------
 
-Functional Mock-up Unit Export of EnergyPlus ©2013, The Regents of 
+Functional Mock-up Unit Export of EnergyPlus \A92013, The Regents of 
 the University of California, through Lawrence Berkeley National 
 Laboratory (subject to receipt of any required approvals from 
 the U.S. Department of Energy). All rights reserved.
- 
+
 If you have questions about your rights to use or distribute this software, 
 please contact Berkeley Lab's Technology Transfer Department at 
 TTD@lbl.gov.referring to "Functional Mock-up Unit Export 
 of EnergyPlus (LBNL Ref 2013-088)".
- 
+
 NOTICE: This software was produced by The Regents of the 
 University of California under Contract No. DE-AC02-05CH11231 
 with the Department of Energy.
@@ -1283,27 +1323,27 @@ the United States nor the United States Department of Energy, nor any of their e
 makes any warranty, express or implied, or assumes any legal liability or responsibility
 for the accuracy, completeness, or usefulness of any data, apparatus, product, 
 or process disclosed, or represents that its use would not infringe privately owned rights.
- 
- 
+
+
 Copyright (c) 2013, The Regents of the University of California, Department
 of Energy contract-operators of the Lawrence Berkeley National Laboratory.
 All rights reserved.
- 
+
 1. Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
- 
+
 (1) Redistributions of source code must retain the copyright notice, this list 
 of conditions and the following disclaimer.
- 
+
 (2) Redistributions in binary form must reproduce the copyright notice, this list
 of conditions and the following disclaimer in the documentation and/or other 
 materials provided with the distribution.
- 
+
 (3) Neither the name of the University of California, Lawrence Berkeley 
 National Laboratory, U.S. Dept. of Energy nor the names of its contributors 
 may be used to endorse or promote products derived from this software without 
 specific prior written permission.
- 
+
 2. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
@@ -1314,7 +1354,7 @@ OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABIL
 WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 POSSIBILITY OF SUCH DAMAGE.
- 
+
 3. You are under no obligation whatsoever to provide any bug fixes, patches, 
 or upgrades to the features, functionality or performance of the source code
 ("Enhancements") to anyone; however, if you choose to make your Enhancements
@@ -1324,7 +1364,7 @@ then you hereby grant the following license: a non-exclusive, royalty-free
 perpetual license to install, use, modify, prepare derivative works, incorporate
 into other computer software, distribute, and sublicense such enhancements or 
 derivative works thereof, in binary and source code form.
- 
+
 NOTE: This license corresponds to the "revised BSD" or "3-clause BSD" 
 License and includes the following modification: Paragraph 3. has been added.
 

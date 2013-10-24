@@ -32,10 +32,10 @@
 #include "defines.h"
 #include "reader.h" 
 #include <errno.h>
+#include <sys/stat.h>
 
 #ifdef _MSC_VER
 #pragma comment(lib, "ws2_32.lib")
-#include<sys/stat.h>
 #include <process.h>
 #include <windows.h>
 #include <direct.h>
@@ -1224,7 +1224,7 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 #ifdef _MSC_VER
 		// wait for object to terminate
 		WaitForSingleObject (fmuInstances[_c->index]->handle_EP, INFINITE);
-		TerminateProcess(fmuInstances[_c->index]->handle_EP, 1);
+		TerminateProcess(fmuInstances[_c->index]->handle_EP, 0);
 #else
 		// wait for object to terminate
 		waitpid(fmuInstances[_c->index]->pid, &status, WNOHANG );
@@ -1337,7 +1337,7 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 #ifdef _MSC_VER
 		// wait for object to terminate
 		WaitForSingleObject (fmuInstances[_c->index]->handle_EP, INFINITE);
-		TerminateProcess(fmuInstances[_c->index]->handle_EP, 1);
+		TerminateProcess(fmuInstances[_c->index]->handle_EP, 0);
 #else
 		// wait for object to terminate
 		waitpid(fmuInstances[_c->index]->pid, &status, WNOHANG );
