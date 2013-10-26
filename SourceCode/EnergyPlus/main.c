@@ -642,7 +642,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// free tmpResCon
 	free (fmuInstances[_c->index]->tmpResCon);
 	// free resources_p
-	free (fmuInstances[_c->index]->resources_p);
+	//free (fmuInstances[_c->index]->resources_p);
 	printf("fmiInstantiateSlave: Slave %s is instantiated!\n", instanceName);
 	// reset the current working directory. This is particularly important for Dymola
 	// otherwise Dymola will write results at wrong place
@@ -868,7 +868,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 
 		// create the input and weather file for the run
 		retVal = createRunInFile(fmuInstances[_c->index]->tStartFMU , fmuInstances[_c->index]->tStopFMU, 
-			fmuInstances[_c->index]->mID,  fmuInstances[_c->index]->fmuCalLocation);
+			fmuInstances[_c->index]->mID,  fmuInstances[_c->index]->resources_p);
 		if  (retVal != 0) {
 
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 

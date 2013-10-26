@@ -30,7 +30,8 @@
 ///\param t_start_FMU The FMU model ID.
 ///\param resources_p The path to resources folder
 ///////////////////////////////////////////////////////////////////////////////
-int createRunInFile (fmiReal t_start_FMU, fmiReal t_stop_FMU, fmiString modelID, char * resources_p);
+int createRunInFile (fmiReal t_start_FMU, fmiReal t_stop_FMU, 
+	fmiString modelID, char * resources_p);
 
 ///////////////////////////////////////////////////////////////////////////////
 /// This function finds a file with a specific extension in a folder. 
