@@ -196,13 +196,13 @@ int write_socket_cfg(int portNum, const char* hostName)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-/// copy resources file into the results folder
+/// copy variables.cfg file into the results folder
 ///
 ///\param str The path to the resource folder.
 ///\param str The path to the results folder.
 ///\return 0 if no error occurred.
 ////////////////////////////////////////////////////////////////////////////////////
-static int copy_res (fmiString str,  fmiString des)
+static int copy_var_cfg (fmiString str,  fmiString des)
 {
 	char *tmp_str;
 	int retVal;
@@ -560,8 +560,8 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	sprintf(fmuInstances[_c->index]->resources_p, "%s%s", fmuInstances[_c->index]->fmuLocation, RESOURCES);
 
 	// create content of resources folder in created output directory
-	fmuInstances[_c->index]->tmpResCon = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->resources_p) + strlen ("\"*.*") + 1);
-	sprintf(fmuInstances[_c->index]->tmpResCon, "%s%s", fmuInstances[_c->index]->resources_p, "\"*.*");
+	fmuInstances[_c->index]->tmpResCon = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->resources_p) + strlen ("\""VARCFG) + 10);
+	sprintf(fmuInstances[_c->index]->tmpResCon, "%s%s", fmuInstances[_c->index]->resources_p, "\""VARCFG);
 
 	// create the output directory
 	retVal = create_res (fmuInstances[_c->index]->fmuOutput);
@@ -572,8 +572,8 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	sprintf(fmuInstances[_c->index]->fmuOutput, "%s%s", fmuInstances[_c->index]->fmuOutput,"//");
 #endif
 
-	// copy the resources folder into the output directory
-	retVal = copy_res (fmuInstances[_c->index]->tmpResCon, fmuInstances[_c->index]->fmuOutput);
+	// copy the vriables cfg into the output directory
+	retVal = copy_var_cfg (fmuInstances[_c->index]->tmpResCon, fmuInstances[_c->index]->fmuOutput);
 
 	// reallocate memory for fmuLocation and assign it to the folder created
 	fmuInstances[_c->index]->fmuCalLocation = (char *)calloc(sizeof(char), strlen (fmuInstances[_c->index]->fmuOutput) + 1);
@@ -641,8 +641,6 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	free (fmuInstances[_c->index]->xml_file_p);
 	// free tmpResCon
 	free (fmuInstances[_c->index]->tmpResCon);
-	// free resources_p
-	//free (fmuInstances[_c->index]->resources_p);
 	printf("fmiInstantiateSlave: Slave %s is instantiated!\n", instanceName);
 	// reset the current working directory. This is particularly important for Dymola
 	// otherwise Dymola will write results at wrong place
@@ -869,6 +867,9 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		// create the input and weather file for the run
 		retVal = createRunInFile(fmuInstances[_c->index]->tStartFMU , fmuInstances[_c->index]->tStopFMU, 
 			fmuInstances[_c->index]->mID,  fmuInstances[_c->index]->resources_p);
+
+		// free resources_p which is not longer used
+		free (fmuInstances[_c->index]->resources_p);
 		if  (retVal != 0) {
 
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 

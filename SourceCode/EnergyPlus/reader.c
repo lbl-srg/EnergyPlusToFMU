@@ -48,7 +48,7 @@ const char* ENDMONTH      = "endMonth.txt";
 const char* NEWDAYWEEK    = "newDayWeek.txt";
 const char* OLDDAYWEEK    = "oldDayWeek.txt";
 
-#define MAXBUFFSIZE 512
+#define MAXBUFFSIZE 1024
 
 ///////////////////////////////////////////////////////////////////////////////
 /// This function calculates the modulo of tow doubles. 
@@ -153,8 +153,17 @@ void findFileDelete()
 	{
 		remove(EPBAT);
 	}
+	if (stat (FTIMESTEP, &stat_p)>=0)
+	{
+		remove(FTIMESTEP);
+	}
+
 	// cleanup .epw files
+#ifdef _MSC_VER
+	res = system ("del *.epw");
+#else
 	res = system ("rm -f *.epw");
+#endif
 }    
 ///////////////////////////////////////////////////////////////////////////////
 /// This function removes tabs and line ends in a string.
@@ -197,22 +206,37 @@ static void printDataForDate (char *temp, const char* fname, int index){
 	int i;
 	char *result[sizeof(strtok(temp, ","))];
 	result[0] = strtok( temp, "," );
-
-	for(i=1; i<sizeof(strtok(temp, " ")); i++)
+	remSpaces_makeUpper(temp);
+	if (strlen(temp)==0)
 	{
-		result[i] = strtok (NULL, ";");
+		if((fp = fopen(fname, "w")) == NULL) {
+			printf("Can't open file!\n");
+			exit(42);  // STL error code: File not open.
+		}
+		else
+		{   
+			fprintf(fp, "%s", " ");
+			fclose (fp);
+			return;
+		}
 	}
+	else{
+		for(i=1; i<sizeof(strtok(temp, " ")); i++)
+		{
+			result[i] = strtok (NULL, ";");
+		}
 
-	// write timestep in file
-	if((fp = fopen(fname, "w")) == NULL) {
-		printf("Can't open file!\n");
-		exit(42);  // STL error code: File not open.
-	}
-	else
-	{   
-		remSpaces_makeUpper(result[index]);
-		fprintf(fp, "%s", result[index]);
-		fclose (fp);
+		// write timestep in file
+		if((fp = fopen(fname, "w")) == NULL) {
+			printf("Can't open file!\n");
+			exit(42);  // STL error code: File not open.
+		}
+		else
+		{   
+			//remSpaces_makeUpper(result[index]);
+			fprintf(fp, "%s", result[index]);
+			fclose (fp);
+		}
 	}
 }
 
@@ -258,7 +282,7 @@ static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu,
 	const char *fname, const char*fname1){
 		FILE *fp1;
 		FILE *fp2;
-		char day_of_week [MAXBUFFSIZE];
+		char day_of_week[MAXBUFFSIZE];
 		int modDat;
 		char arr[7][10]= { "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" };
 		int new_index;
@@ -272,12 +296,11 @@ static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu,
 			return(1);
 		}
 		// read file line by line
-		if(fgets( day_of_week, sizeof day_of_week, fp1) != NULL);
+		if(fgets( day_of_week, MAXBUFFSIZE, fp1) != NULL);
 		fclose(fp1);
 
-		t_start_idf = t_start_idf + 86400;
+		//t_start_idf = t_start_idf + 86400;
 		// deternmine th difference between start time in idf and start time in fmu
-		//modDat = (t_start_fmu  - t_start_idf)%7;
 		modDat =(((int)(t_start_fmu  - t_start_idf)/86400)%86400)%7;
 
 		// remove blanks line and make upper
@@ -910,7 +933,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 
 			if((strstr(temp, RUNPERIOD) != NULL && find_result_RP<1) || strstr(temp, RUNPERIOD) == NULL)
 			{
-			fprintf(fp2, "%s", low_case_temp);
+				fprintf(fp2, "%s", low_case_temp);
 			}
 			// If time step is found, write to file
 			if((strstr(temp, TIMESTEP)) != NULL) {
@@ -946,86 +969,86 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 			if((strstr(temp, RUNPERIOD)) != NULL) {
 				find_result_RP++;
 				if (find_result_RP <=1){
-				//skip first line
-				if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
-				fprintf(fp2, "%s", temp);
-				//write the Begin Month
-				if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
-				printDataForDate(temp, BEGINMONTH, 0);
+					//skip first line
+					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
+					fprintf(fp2, "%s", temp);
+					//write the Begin Month
+					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
+					printDataForDate(temp, BEGINMONTH, 0);
 
-				NewBeginMonth = getCurrentMonth (t_start_FMU, leapyear);
-				// check begin month
-				if((NewBeginMonth < 0) || (NewBeginMonth > 12)) {
-					printf("Begin Month cannot be negativ or greater than 12!\n");
-					exit(1);  
-				}
+					NewBeginMonth = getCurrentMonth (t_start_FMU, leapyear);
+					// check begin month
+					if((NewBeginMonth < 0) || (NewBeginMonth > 12)) {
+						printf("Begin Month cannot be negativ or greater than 12!\n");
+						exit(1);  
+					}
 
-				sprintf(intTostr, "%d,\n", NewBeginMonth);
-				fprintf(fp2, "%s", intTostr);
+					sprintf(intTostr, "%d,\n", NewBeginMonth);
+					fprintf(fp2, "%s", intTostr);
 
-				//write the Begin Day of Month
-				if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
-				printDataForDate(temp, BEGINDAYMONTH, 0);
+					//write the Begin Day of Month
+					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
+					printDataForDate(temp, BEGINDAYMONTH, 0);
 
-				NewBeginDayOfMonth = getCurrentDay (t_start_FMU, NewBeginMonth, leapyear);
-				// check begin day of month
-				if((NewBeginDayOfMonth < 0) || (NewBeginDayOfMonth > 31)) {
-					printf("Begin Day of Month cannot be negativ or greater than 31!\n");
-					exit(1); 
-				}
-				sprintf(intTostr, "%d,\n", NewBeginDayOfMonth);
-				fprintf(fp2, "%s", intTostr);
+					NewBeginDayOfMonth = getCurrentDay (t_start_FMU, NewBeginMonth, leapyear);
+					// check begin day of month
+					if((NewBeginDayOfMonth < 0) || (NewBeginDayOfMonth > 31)) {
+						printf("Begin Day of Month cannot be negativ or greater than 31!\n");
+						exit(1); 
+					}
+					sprintf(intTostr, "%d,\n", NewBeginDayOfMonth);
+					fprintf(fp2, "%s", intTostr);
 
-				//write the End Month
-				if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
-				printDataForDate(temp, ENDMONTH, 0);
+					//write the End Month
+					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
+					printDataForDate(temp, ENDMONTH, 0);
 
-				NewEndMonth = getCurrentMonth (t_end_FMU, leapyear);
-				// check end month
-				if((NewEndMonth < 0) || (NewEndMonth > 12)) {
-					printf("End Month cannot be negativ or greater than 12!\n");
-					exit(1);  
-				}
-				sprintf(intTostr, "%d,\n", NewEndMonth);
-				fprintf(fp2, "%s", intTostr);
-				//write the End Day of Month
-				if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
-				printDataForDate(temp, ENDDAYMONTH, 0);
+					NewEndMonth = getCurrentMonth (t_end_FMU, leapyear);
+					// check end month
+					if((NewEndMonth < 0) || (NewEndMonth > 12)) {
+						printf("End Month cannot be negativ or greater than 12!\n");
+						exit(1);  
+					}
+					sprintf(intTostr, "%d,\n", NewEndMonth);
+					fprintf(fp2, "%s", intTostr);
+					//write the End Day of Month
+					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
+					printDataForDate(temp, ENDDAYMONTH, 0);
 
-				NewEndDayOfMonth = getCurrentDay (t_end_FMU, NewEndMonth, leapyear);
-				// check end day of month
-				if((NewEndDayOfMonth < 0) || (NewEndDayOfMonth > 31)) {
-					printf("End Day of Month cannot be negativ or greater than 31!\n");
-					exit(1);  
-				}
-				sprintf(intTostr, "%d,\n", NewEndDayOfMonth);
-				fprintf(fp2, "%s", intTostr);
-				//write the Day of Week
-				if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
-				printDataForDate(temp, OLDDAYWEEK, 0);
+					NewEndDayOfMonth = getCurrentDay (t_end_FMU, NewEndMonth, leapyear);
+					// check end day of month
+					if((NewEndDayOfMonth < 0) || (NewEndDayOfMonth > 31)) {
+						printf("End Day of Month cannot be negativ or greater than 31!\n");
+						exit(1);  
+					}
+					sprintf(intTostr, "%d,\n", NewEndDayOfMonth);
+					fprintf(fp2, "%s", intTostr);
+					//write the Day of Week
+					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
+					printDataForDate(temp, OLDDAYWEEK, 0);
 
-				//convert start and end time obtained from the master algorithm
-				printDebug("Get simulation time in IDF!\n");
-				t_start_IDF = getSimTimeSeconds( getNumValue (BEGINDAYMONTH), getNumValue (BEGINMONTH), leapyear);
+					//convert start and end time obtained from the master algorithm
+					printDebug("Get simulation time in IDF!\n");
+					t_start_IDF = getSimTimeSeconds( getNumValue (BEGINDAYMONTH), getNumValue (BEGINMONTH), leapyear);
 
-				// get the current day of the week
-				printDebug("Get current day of week!\n");
-				val = getCurrentDayOfWeek (t_start_IDF, t_start_FMU, OLDDAYWEEK, NEWDAYWEEK);  
+					// get the current day of the week
+					printDebug("Get current day of week!\n");
+					val = getCurrentDayOfWeek (t_start_IDF, t_start_FMU, OLDDAYWEEK, NEWDAYWEEK);  
 
 
-				// write new day of week file in another file
-				if((fp3 = fopen(NEWDAYWEEK, "r")) == NULL) {
-					printf ("File with new day of week not found!\n");
-				}
-				else
-				{
-					if(fgets(tmpDayWeek, MAXBUFFSIZE, fp3) != NULL);
-					sprintf(NewDayOfWeek, "%s,\n", tmpDayWeek);
-				}
-				fclose (fp3);
+					// write new day of week file in another file
+					if((fp3 = fopen(NEWDAYWEEK, "r")) == NULL) {
+						printf ("File with new day of week not found!\n");
+					}
+					else
+					{
+						if(fgets(tmpDayWeek, MAXBUFFSIZE, fp3) != NULL);
+						sprintf(NewDayOfWeek, "%s,\n", tmpDayWeek);
+					}
+					fclose (fp3);
 
-				if(fgets(temp, MAXBUFFSIZE, fp1) != NULL); 
-				fprintf(fp2, "%s", NewDayOfWeek);
+					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL); 
+					fprintf(fp2, "%s", NewDayOfWeek);
 				}
 				// delete run period, only one is allowed
 				else
@@ -1060,7 +1083,6 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 		printf("Could not find a runperiod in input file!\n");
 		return 1;
 	}
-	printf ("This is find_result %d\n", find_result_RP);
 	if(find_result_RP > 1) {
 		// open temporary input file
 		if((fp4 = fopen(LOG, "w")) == NULL) {
@@ -1073,7 +1095,6 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 			fclose (fp4);
 		}
 	}
-
 	//Close the file if still open.
 	if(fp1) {
 		fclose(fp1);
@@ -1084,10 +1105,9 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	//deallocate runinfile
 	free (runinfile);
 	//deallocate fruninfile
-	//free (fruninfile);
+	free (fruninfile);
 	return 0;
 }
-
 
 /*
 
