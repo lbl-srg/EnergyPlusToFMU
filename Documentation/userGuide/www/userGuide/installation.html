@@ -224,7 +224,7 @@ Therefore to configure your system, you should first identify the appropriate su
 <p>Note that Python detects your platform when it runs.
 Therefore if you are using an emulator or virtual machine (for example, Cygwin under Windows, or a Windows virtual machine on a Mac), you should look in the subdirectory corresponding to the emulated operating system.</p>
 <p>Each system-specific batch subdirectory includes sample batch files.
-In addition to the default versions, some alternate versions may also be present.
+In addition to the default versions, some alternate versions also may be present.
 The alternate versions can be identified in two ways:</p>
 <ol class="arabic simple">
 <li>The file extension is &#8220;<tt class="docutils literal"><span class="pre">.txt</span></tt>&#8221;, rather than &#8220;<tt class="docutils literal"><span class="pre">.bat</span></tt>&#8221; (or &#8220;<tt class="docutils literal"><span class="pre">.sh</span></tt>&#8221;).</li>
@@ -248,7 +248,7 @@ See <a class="reference internal" href="#modifying-the-batch-files">Modifying th
 <p>In addition to the batch files that run the compiler and linker, EnergyPlusToFMU includes a batch file that tests some of the existing batch files.
 In particular, batch file <tt class="docutils literal"><span class="pre">test-c-exe.bat</span></tt> tests the compiler and linker batch files which build an executable from <tt class="docutils literal"><span class="pre">C</span></tt> source code.
 Once these batch files work, it should not be difficult to make the other compiler and linker batch files work.</p>
-<p><tt class="docutils literal"><span class="pre">test-c-exe.bat</span></tt> runs the appropriate compiler and linker batch files, and tests the resulting executable.
+<p>The batch file <tt class="docutils literal"><span class="pre">test-c-exe.bat</span></tt> runs the appropriate compiler and linker batch files, and tests the resulting executable.
 It reports its progress, and so should give information as to where problems occur, if any.</p>
 <p>To run the basic test,
 open a command-line window (see <a class="reference internal" href="notation.html"><em>Notation</em></a>).
@@ -289,7 +289,7 @@ get-address-size.c
 ===== Cleaning up =====
 </pre></div>
 </div>
-<p>A sample session in a MacOS Terminal:</p>
+<p>A sample session in a MacOS Terminal window:</p>
 <div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
 &gt; cd  epfmu_install_dir/Scripts/darwin
 
@@ -396,7 +396,7 @@ See the sample batch files in the standard distribution.</li>
 </div>
 <div class="section" id="checking-link-c-exe-bat">
 <h2>3.7. Checking link-c-exe.bat<a class="headerlink" href="#checking-link-c-exe-bat" title="Permalink to this headline">¶</a></h2>
-<p>Once you have successfully compiled the ource code file <tt class="docutils literal"><span class="pre">get-address-size.c</span></tt> into an object file, the next step is to link the object file into an executable.</p>
+<p>Once you have successfully compiled the source code file <tt class="docutils literal"><span class="pre">get-address-size.c</span></tt> into an object file, the next step is to link the object file into an executable.</p>
 <p>Working in the same subdirectory where you built the object file, run the linker batch file.
 In response, the linker should produce an executable, called <tt class="docutils literal"><span class="pre">test.exe</span></tt>, which you should be able to run.</p>
 <p>A sample session at the Windows DOS prompt:</p>

@@ -175,28 +175,39 @@ The FMU is written to the current working directory, that is, in the directory f
 <p>The FMU is complete and self-contained.
 Any secondary output from running the EnergyPlusToFMU tools can be deleted safely.
 Secondary output includes:</p>
-<ul class="simple">
-<li>A utility executable, called <tt class="docutils literal"><span class="pre">idf-to-fmu-export-prep.exe</span></tt> on Windows, and
-<tt class="docutils literal"><span class="pre">idf-to-fmu-export-prep</span></tt> on Linux and MacOS (the different names allow
-dual-boot users to work in the same directory).
+<ul>
+<li><p class="first">A utility executable, with the base name <tt class="docutils literal"><span class="pre">idf-to-fmu-export-prep</span></tt>.
 This executable will appear in your current working directory.
-If deleted, it will be rebuilt on the next run of EnergyPlusToFMU.</li>
-<li>Compiled Python files, with the extension &#8220;<tt class="docutils literal"><span class="pre">.pyc</span></tt>&#8221;.
+If deleted, it will be rebuilt on the next run of EnergyPlusToFMU.
+Note that the full name of this executable depends on the operating system.
+This allows users with dual-boot or virtual machines to work in the same
+directory.
+The full names are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">idf-to-fmu-export-prep-win.exe</span></tt> on Windows.</li>
+<li><tt class="docutils literal"><span class="pre">idf-to-fmu-export-prep-linux</span></tt> on Linux.</li>
+<li><tt class="docutils literal"><span class="pre">idf-to-fmu-export-prep-darwin</span></tt> on Macintosh OS X.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Compiled Python files, with the extension &#8220;<tt class="docutils literal"><span class="pre">.pyc</span></tt>&#8221;.
 They are written to the script directory.
 These files speed up Python the next time you run the EnergyPlusToFMU
-tools, and may be deleted.</li>
+tools, and may be deleted.</p>
+</li>
 </ul>
 <p>If the EnergyPlusToFMU tool fails, you may also see intermediate files, including:</p>
 <ul class="simple">
 <li>The configuration files for the FMU, <tt class="docutils literal"><span class="pre">variables.cfg</span></tt> and <tt class="docutils literal"><span class="pre">modelDescription.xml</span></tt>.</li>
 <li>A utility executable <tt class="docutils literal"><span class="pre">util-get-address-size.exe</span></tt>.
 This program is rebuilt every time you run the EnergyPlusToFMU tools
-(in case you have modified the compiler/linker batch files as described
+(to ensure it uses the most recent compiler/linker batch files, as described
 in <a class="reference internal" href="installation.html"><em>Installation and Configuration</em></a>).</li>
 <li>Build directories, named like <tt class="docutils literal"><span class="pre">bld-*</span></tt>.</li>
 <li>A shared library, named like <tt class="docutils literal"><span class="pre">*.dll</span></tt> or <tt class="docutils literal"><span class="pre">*.so</span></tt> or <tt class="docutils literal"><span class="pre">*.dylib</span></tt>,
 depending on the system.</li>
-<li>A log file, <tt class="docutils literal"><span class="pre">output.log</span></tt>, containing error messages from <tt class="docutils literal"><span class="pre">idf-to-fmu-export-prep.exe</span></tt>.</li>
+<li>A log file, <tt class="docutils literal"><span class="pre">output.log</span></tt>, containing error messages from <tt class="docutils literal"><span class="pre">idf-to-fmu-export-prep</span></tt>.</li>
 </ul>
 <p>All these intermediate files can be deleted.</p>
 <p>Note that the FMU is a zip file.
@@ -212,11 +223,15 @@ If not, consider the following hints.</p>
 <p>If you have successfully made an FMU in the past, the problem is most likely with your IDF file.
 Try running the export-preparation application directly on your IDF file:</p>
 <div class="highlight-none"><div class="highlight"><pre># Windows:
-&gt; idf-to-fmu-export-prep.exe  Energy+.idd  test.idf
+&gt; idf-to-fmu-export-prep-win.exe  Energy+.idd  test.idf
 
-# Linux, MacOS:
+# Linux:
 #   Note the &quot;./&quot; before the name of the application.
-&gt; ./idf-to-fmu-export-prep  Energy+.idd  test.idf
+&gt; ./idf-to-fmu-export-prep-linux  Energy+.idd  test.idf
+
+# MacOS:
+#   Note the &quot;./&quot; before the name of the application.
+&gt; ./idf-to-fmu-export-prep-darwin  Energy+.idd  test.idf
 </pre></div>
 </div>
 <p>If running the export-preparation application as shown above works correctly, it produces two files, <tt class="docutils literal"><span class="pre">modelDescription.xml</span></tt> and <tt class="docutils literal"><span class="pre">variables.cfg</span></tt>.
