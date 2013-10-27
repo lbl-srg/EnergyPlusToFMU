@@ -250,7 +250,7 @@ static void printDataForDate (char *temp, const char* fname, int index){
 static int getNumValue(const char* fname){
 	FILE *fp;
 	int result, err_n;
-	char buff[3];
+	char buff[3]= {0};
 	// open file
 	if((fp = fopen(fname, "r")) == NULL) {
 		printf ("Can't open file %s!\n", fname);
@@ -282,7 +282,7 @@ static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu,
 	const char *fname, const char*fname1){
 		FILE *fp1;
 		FILE *fp2;
-		char day_of_week[MAXBUFFSIZE];
+		char day_of_week[MAXBUFFSIZE] = {0};
 		int modDat;
 		char arr[7][10]= { "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" };
 		int new_index;
@@ -346,6 +346,7 @@ static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu,
 			// write the new day of week
 			fprintf(fp2, "%s", day_of_week);
 			printDebug("Day of week: UseWeatherFile has been specified and will be used.");
+			fclose (fp2);
 			return 0;
 		}
 		else
@@ -777,8 +778,8 @@ int getLeapYear(char * resources_p)
 	int i;
 
 	char *weafile;
-	char low_case_wea[2*MAXBUFFSIZE];
-	char wea[2*MAXBUFFSIZE];
+	char low_case_wea[2*MAXBUFFSIZE] = {0};
+	char wea[2*MAXBUFFSIZE] = {0};
 	const char* WEATHER = "HOLIDAYS/DAYLIGHT";
 	if (stat(FRUNWEAFILE, &st)>=0)
 	{
@@ -861,10 +862,10 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	char *infile;
 	char *runinfile;
 	char *fruninfile;
-	char temp[MAXBUFFSIZE];
-	char low_case_temp[MAXBUFFSIZE];
-	char tmpDayWeek[MAXBUFFSIZE];
-	char NewDayOfWeek [2*MAXBUFFSIZE];
+	char temp[MAXBUFFSIZE] = {0};
+	char low_case_temp[MAXBUFFSIZE] = {0};
+	char tmpDayWeek[MAXBUFFSIZE] = {0};
+	char NewDayOfWeek [2*MAXBUFFSIZE] = {0};
 	FILE *fp1;
 	FILE *fp2;
 	FILE *fp3;
@@ -881,8 +882,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	int leapyear = 0;
 
 	double t_start_IDF;
-
-	char intTostr[10];
+	char intTostr[10] = {0};
 
 	const char* RUNPERIOD= "RUNPERIOD,";
 	char* TIMESTEP= "TIMESTEP,";
@@ -951,7 +951,6 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 				}
 				else
 				{
-
 					if((fp3 = fopen(FTIMESTEP, "w")) == NULL){
 						printf("Can't open and write timestep!\n");
 						exit(42);  // STL error code: File not open.
@@ -1035,7 +1034,6 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					printDebug("Get current day of week!\n");
 					val = getCurrentDayOfWeek (t_start_IDF, t_start_FMU, OLDDAYWEEK, NEWDAYWEEK);  
 
-
 					// write new day of week file in another file
 					if((fp3 = fopen(NEWDAYWEEK, "r")) == NULL) {
 						printf ("File with new day of week not found!\n");
@@ -1108,7 +1106,6 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	free (fruninfile);
 	return 0;
 }
-
 /*
 
 ***********************************************************************************
