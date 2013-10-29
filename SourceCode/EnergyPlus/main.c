@@ -321,9 +321,7 @@ int start_sim(fmiComponent c)
 
 	// execute the command string
 	int retVal = system(str);
-	if(fp) {
-		fclose(fp);
-	}
+	fclose(fp);
 	free (str);
 	return retVal;
 #endif
@@ -986,6 +984,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 			fmuInstances[_c->index]->nexComm = currentCommunicationPoint;
 			if((fp = fopen(FTIMESTEP, "r")) != NULL) {
 				retVal = fscanf(fp, "%d", &(fmuInstances[_c->index]->timeStepIDF));
+				fclose (fp);
 			}
 			else
 			{

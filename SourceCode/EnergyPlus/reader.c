@@ -1094,12 +1094,8 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 		}
 	}
 	//Close the file if still open.
-	if(fp1) {
-		fclose(fp1);
-	}
-	if(fp2) {
-		fclose(fp2);
-	}
+	fclose(fp1);
+	fclose(fp2);
 	//deallocate runinfile
 	free (runinfile);
 	//deallocate fruninfile
