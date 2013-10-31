@@ -96,7 +96,7 @@
 ! Environmental Emissions:        None
 ! Utility Tariffs:                None
 
-  Version,8.0;
+  Version,8.1;
 
   Timestep,6;
 
@@ -603,6 +603,8 @@
     zoneaveraged,            !- Mean Radiant Temperature Calculation Type
     ,                        !- Surface Name/Angle Factor List Name
     Work Eff Sch,            !- Work Efficiency Schedule Name
+    ClothingInsulationSchedule,  !- Clothing Insulation Calculation Method
+    ,                        !- Clothing Insulation Calculation Method Schedule Name
     Clothing Sch,            !- Clothing Insulation Schedule Name
     Air Velo Sch,            !- Air Velocity Schedule Name
     FANGER;                  !- Thermal Comfort Model 1 Type
@@ -635,6 +637,8 @@
     zoneaveraged,            !- Mean Radiant Temperature Calculation Type
     ,                        !- Surface Name/Angle Factor List Name
     Work Eff Sch,            !- Work Efficiency Schedule Name
+    ClothingInsulationSchedule,  !- Clothing Insulation Calculation Method
+    ,                        !- Clothing Insulation Calculation Method Schedule Name
     Clothing Sch,            !- Clothing Insulation Schedule Name
     Air Velo Sch,            !- Air Velocity Schedule Name
     FANGER;                  !- Thermal Comfort Model 1 Type
@@ -681,6 +685,8 @@
     zoneaveraged,            !- Mean Radiant Temperature Calculation Type
     ,                        !- Surface Name/Angle Factor List Name
     Work Eff Sch,            !- Work Efficiency Schedule Name
+    ClothingInsulationSchedule,  !- Clothing Insulation Calculation Method
+    ,                        !- Clothing Insulation Calculation Method Schedule Name
     Clothing Sch,            !- Clothing Insulation Schedule Name
     Air Velo Sch,            !- Air Velocity Schedule Name
     FANGER;                  !- Thermal Comfort Model 1 Type
@@ -1322,7 +1328,7 @@
     Set_Shade_Control_State; !- Program Name 1
 
   ExternalInterface,
-    FunctionalMockupUnitExport;           !- Name of External Interface
+    FunctionalMockupUnitExport;  !- Name of External Interface
 
   ExternalInterface:FunctionalMockupUnitExport:To:Variable,
     Shade_Signal,            !- Name
@@ -1330,14 +1336,14 @@
     6;                       !- Initial Value
 
   ExternalInterface:FunctionalMockupUnitExport:From:Variable,
-    WEST ZONE,                                   !- Output:Variable Index Key Name
-    Zone Mean Air Temperature,                   !- Output:Variable Name
-    TRoo;                                        !- FMU Variable Name
+    WEST ZONE,               !- Output:Variable Index Key Name
+    Zone Mean Air Temperature,  !- Output:Variable Name
+    TRoo;                    !- FMU Variable Name
 
   ExternalInterface:FunctionalMockupUnitExport:From:Variable,
-    Zn001:Wall001:Win001,                                        !- Output:Variable Index Key Name
-    Surface Outside Face Incident Solar Radiation Rate per Area, !- Output:Variable Name
-    ISolExt;                                                     !- FMU Variable Name
+    Zn001:Wall001:Win001,    !- Output:Variable Index Key Name
+    Surface Outside Face Incident Solar Radiation Rate per Area,  !- Output:Variable Name
+    ISolExt;                 !- FMU Variable Name
 
 ! EMS program. The first assignments sets the shading status and converts it into the
 !              EnergyPlus signal (i.e., replace 1 by 6).

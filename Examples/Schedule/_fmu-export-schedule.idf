@@ -1,9 +1,7 @@
 !-Generator IDFEditor 1.44
 !-Option OriginalOrderTop UseSpecialFormat
-
 !-NOTE: All comments with '!-' are ignored by the IDFEditor and are generated automatically.
 !-      Use '!' comments if they need to be retained when using the IDFEditor.
-
 ! BESTEST Case 600.idf
 ! Basic file description: BESTEST Low-Mass building loads test.
 ! Author:   R. H. Henninger,  GARD Analytics, Inc.
@@ -16,16 +14,17 @@
 ! System:   None.
 ! Plant:    None.
 ! Modified:
-Version,8.0;
 
-Site:Location,
+  Version,8.1;
+
+  Site:Location,
     GOLDEN COLORADO,         !- Name
     39.80,                   !- Latitude {deg}
     -104.90,                 !- Longitude {deg}
     -7.000000,               !- Time Zone {hr}
     1609.0;                  !- Elevation {m}
 
-RunPeriod,
+  RunPeriod,
     ,                        !- Name
     1,                       !- Begin Month
     1,                       !- Begin Day of Month
@@ -69,7 +68,8 @@ RunPeriod,
 !                7,     ! Month
 !           Monday,     ! Day Type
 !                0;     ! Daylight Savings Time Indicator
-Material,
+
+  Material,
     PLASTERBOARD-1,          !- Name
     Rough,                   !- Roughness
     0.01200,                 !- Thickness {m}
@@ -80,7 +80,7 @@ Material,
     0.600000,                !- Solar Absorptance
     0.600000;                !- Visible Absorptance
 
-Material,
+  Material,
     FIBERGLASS QUILT-1,      !- Name
     Rough,                   !- Roughness
     0.066,                   !- Thickness {m}
@@ -91,7 +91,7 @@ Material,
     0.600000,                !- Solar Absorptance
     0.600000;                !- Visible Absorptance
 
-Material,
+  Material,
     WOOD SIDING-1,           !- Name
     Rough,                   !- Roughness
     0.00900,                 !- Thickness {m}
@@ -103,13 +103,14 @@ Material,
     0.600000;                !- Visible Absorptance
 
 ! Material layer names follow:
-Construction,
+
+  Construction,
     LTWALL,                  !- Name
     WOOD SIDING-1,           !- Outside Layer
     FIBERGLASS QUILT-1,      !- Layer 2
     PLASTERBOARD-1;          !- Layer 3
 
-Material,
+  Material,
     TIMBER FLOORING,         !- Name
     Rough,                   !- Roughness
     0.02500,                 !- Thickness {m}
@@ -120,7 +121,7 @@ Material,
     0.600000,                !- Solar Absorptance
     0.600000;                !- Visible Absorptance
 
-Material:NoMass,
+  Material:NoMass,
     R-25 INSULATION,         !- Name
     Rough,                   !- Roughness
     25.075,                  !- Thermal Resistance {m2-K/W}
@@ -129,12 +130,13 @@ Material:NoMass,
     0.600000;                !- Visible Absorptance
 
 ! Material layer names follow:
-Construction,
+
+  Construction,
     LTFLOOR,                 !- Name
     R-25 INSULATION,         !- Outside Layer
     TIMBER FLOORING;         !- Layer 2
 
-Material,
+  Material,
     PLASTERBOARD-2,          !- Name
     Rough,                   !- Roughness
     0.01000,                 !- Thickness {m}
@@ -145,7 +147,7 @@ Material,
     0.600000,                !- Solar Absorptance
     0.600000;                !- Visible Absorptance
 
-Material,
+  Material,
     FIBERGLASS QUILT-2,      !- Name
     Rough,                   !- Roughness
     0.1118,                  !- Thickness {m}
@@ -156,7 +158,7 @@ Material,
     0.600000,                !- Solar Absorptance
     0.600000;                !- Visible Absorptance
 
-Material,
+  Material,
     ROOF DECK,               !- Name
     Rough,                   !- Roughness
     0.01900,                 !- Thickness {m}
@@ -168,13 +170,14 @@ Material,
     0.600000;                !- Visible Absorptance
 
 ! Material layer names follow:
-Construction,
+
+  Construction,
     LTROOF,                  !- Name
     ROOF DECK,               !- Outside Layer
     FIBERGLASS QUILT-2,      !- Layer 2
     PLASTERBOARD-2;          !- Layer 3
 
-WindowMaterial:Glazing,
+  WindowMaterial:Glazing,
     Glass Type 1,            !- Name
     SpectralAverage,         !- Optical Data Type
     ,                        !- Window Glass Spectral Data Set Name
@@ -190,7 +193,7 @@ WindowMaterial:Glazing,
     0.84,                    !- Back Side Infrared Hemispherical Emissivity
     1.06;                    !- Conductivity {W/m-K}
 
-WindowMaterial:Gas,
+  WindowMaterial:Gas,
     Air Space Resistance,    !- Name
     AIR,                     !- Gas Type
     0.013;                   !- Thickness {m}
@@ -204,23 +207,28 @@ WindowMaterial:Gas,
 !         0.,       !N8 [Prandtl number at 273K] Used for type=CUSTOM
 !         0.;       !N9 [Prandtl number temperature derivative {1/K}] Used for type=CUSTOM
 ! Material layer names follow:
-Construction,
+
+  Construction,
     Double Pane Window,      !- Name
     Glass Type 1,            !- Outside Layer
     Air Space Resistance,    !- Layer 2
     Glass Type 1;            !- Layer 3
 
-Site:GroundTemperature:BuildingSurface,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0;
-Site:GroundReflectance,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2;
-Timestep,4;
-SurfaceConvectionAlgorithm:Inside,TARP;
-SurfaceConvectionAlgorithm:Outside,DOE-2;
+  Site:GroundTemperature:BuildingSurface,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0;
 
-ShadowCalculation,
+  Site:GroundReflectance,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2;
+
+  Timestep,4;
+
+  SurfaceConvectionAlgorithm:Inside,TARP;
+
+  SurfaceConvectionAlgorithm:Outside,DOE-2;
+
+  ShadowCalculation,
     AverageOverDaysInFrequency,  !- Calculation Method
     1;                       !- Calculation Frequency
 
-Building,
+  Building,
     BESTEST Case 600,        !- Name
     0,                       !- North Axis {deg}
     Country,                 !- Terrain
@@ -230,22 +238,25 @@ Building,
     ,                        !- Maximum Number of Warmup Days
     6;                       !- Minimum Number of Warmup Days
 
-Zone,
+  Zone,
     ZONE ONE,                !- Name
     0,                       !- Direction of Relative North {deg}
-    0, 0, 0,                            !- X,Y,Z  {m}
+    0,                       !- X Origin {m}
+    0,                       !- Y Origin {m}
+    0,                       !- Z Origin {m}
     1,                       !- Type
     1,                       !- Multiplier
     2.7000,                  !- Ceiling Height {m}
     129.6;                   !- Volume {m3}
 
 ! ZoneCapacitanceMultiplier,1;
-GlobalGeometryRules,
+
+  GlobalGeometryRules,
     UpperLeftCorner,         !- Starting Vertex Position
     Counterclockwise,        !- Vertex Entry Direction
     WorldCoordinateSystem;   !- Coordinate System
 
-BuildingSurface:Detailed,
+  BuildingSurface:Detailed,
     ZONE SURFACE NORTH,      !- Name
     Wall,                    !- Surface Type
     LTWALL,                  !- Construction Name
@@ -256,12 +267,12 @@ BuildingSurface:Detailed,
     WindExposed,             !- Wind Exposure
     0.5000000,               !- View Factor to Ground
     4,                       !- Number of Vertices
-    8.000000, 6.000000, 2.700000,       !- X,Y,Z  1 {m}
-    8.000000, 6.000000, 0,              !- X,Y,Z  2 {m}
-    0, 6.000000, 0,                     !- X,Y,Z  3 {m}
-    0, 6.000000, 2.700000;              !- X,Y,Z  4 {m}
+    8.000000,6.000000,2.700000,  !- X,Y,Z ==> Vertex 1 {m}
+    8.000000,6.000000,0,  !- X,Y,Z ==> Vertex 2 {m}
+    0,6.000000,0,  !- X,Y,Z ==> Vertex 3 {m}
+    0,6.000000,2.700000;  !- X,Y,Z ==> Vertex 4 {m}
 
-BuildingSurface:Detailed,
+  BuildingSurface:Detailed,
     ZONE SURFACE EAST,       !- Name
     Wall,                    !- Surface Type
     LTWALL,                  !- Construction Name
@@ -272,12 +283,12 @@ BuildingSurface:Detailed,
     WindExposed,             !- Wind Exposure
     0.5000000,               !- View Factor to Ground
     4,                       !- Number of Vertices
-    8.000000, 0, 2.700000,              !- X,Y,Z  1 {m}
-    8.000000, 0, 0,                     !- X,Y,Z  2 {m}
-    8.000000, 6.000000, 0,              !- X,Y,Z  3 {m}
-    8.000000, 6.000000, 2.700000;       !- X,Y,Z  4 {m}
+    8.000000,0,2.700000,  !- X,Y,Z ==> Vertex 1 {m}
+    8.000000,0,0,  !- X,Y,Z ==> Vertex 2 {m}
+    8.000000,6.000000,0,  !- X,Y,Z ==> Vertex 3 {m}
+    8.000000,6.000000,2.700000;  !- X,Y,Z ==> Vertex 4 {m}
 
-BuildingSurface:Detailed,
+  BuildingSurface:Detailed,
     ZONE SURFACE SOUTH,      !- Name
     Wall,                    !- Surface Type
     LTWALL,                  !- Construction Name
@@ -288,12 +299,12 @@ BuildingSurface:Detailed,
     WindExposed,             !- Wind Exposure
     0.5000000,               !- View Factor to Ground
     4,                       !- Number of Vertices
-    0, 0, 2.700000,                     !- X,Y,Z  1 {m}
-    0, 0, 0,                            !- X,Y,Z  2 {m}
-    8.000000, 0, 0,                     !- X,Y,Z  3 {m}
-    8.000000, 0, 2.700000;              !- X,Y,Z  4 {m}
+    0,0,2.700000,  !- X,Y,Z ==> Vertex 1 {m}
+    0,0,0,  !- X,Y,Z ==> Vertex 2 {m}
+    8.000000,0,0,  !- X,Y,Z ==> Vertex 3 {m}
+    8.000000,0,2.700000;  !- X,Y,Z ==> Vertex 4 {m}
 
-FenestrationSurface:Detailed,
+  FenestrationSurface:Detailed,
     ZONE SUBSURFACE 1,       !- Name
     Window,                  !- Surface Type
     DOUBLE PANE WINDOW,      !- Construction Name
@@ -304,12 +315,12 @@ FenestrationSurface:Detailed,
     ,                        !- Frame and Divider Name
     1,                       !- Multiplier
     4,                       !- Number of Vertices
-    0.5000000, 0, 2.200000,             !- X,Y,Z  1 {m}
-    0.5000000, 0, 0.2000000,            !- X,Y,Z  2 {m}
-    3.500000, 0, 0.2000000,             !- X,Y,Z  3 {m}
-    3.500000, 0, 2.200000;              !- X,Y,Z  4 {m}
+    0.5000000,0,2.200000,  !- X,Y,Z ==> Vertex 1 {m}
+    0.5000000,0,0.2000000,  !- X,Y,Z ==> Vertex 2 {m}
+    3.500000,0,0.2000000,  !- X,Y,Z ==> Vertex 3 {m}
+    3.500000,0,2.200000;  !- X,Y,Z ==> Vertex 4 {m}
 
-FenestrationSurface:Detailed,
+  FenestrationSurface:Detailed,
     ZONE SUBSURFACE 2,       !- Name
     Window,                  !- Surface Type
     DOUBLE PANE WINDOW,      !- Construction Name
@@ -320,12 +331,12 @@ FenestrationSurface:Detailed,
     ,                        !- Frame and Divider Name
     1,                       !- Multiplier
     4,                       !- Number of Vertices
-    4.500000, 0, 2.200000,              !- X,Y,Z  1 {m}
-    4.500000, 0, 0.2000000,             !- X,Y,Z  2 {m}
-    7.500000, 0, 0.2000000,             !- X,Y,Z  3 {m}
-    7.500000, 0, 2.200000;              !- X,Y,Z  4 {m}
+    4.500000,0,2.200000,  !- X,Y,Z ==> Vertex 1 {m}
+    4.500000,0,0.2000000,  !- X,Y,Z ==> Vertex 2 {m}
+    7.500000,0,0.2000000,  !- X,Y,Z ==> Vertex 3 {m}
+    7.500000,0,2.200000;  !- X,Y,Z ==> Vertex 4 {m}
 
-BuildingSurface:Detailed,
+  BuildingSurface:Detailed,
     ZONE SURFACE WEST,       !- Name
     Wall,                    !- Surface Type
     LTWALL,                  !- Construction Name
@@ -336,12 +347,12 @@ BuildingSurface:Detailed,
     WindExposed,             !- Wind Exposure
     0.5000000,               !- View Factor to Ground
     4,                       !- Number of Vertices
-    0, 6.000000, 2.700000,              !- X,Y,Z  1 {m}
-    0, 6.000000, 0,                     !- X,Y,Z  2 {m}
-    0, 0, 0,                            !- X,Y,Z  3 {m}
-    0, 0, 2.700000;                     !- X,Y,Z  4 {m}
+    0,6.000000,2.700000,  !- X,Y,Z ==> Vertex 1 {m}
+    0,6.000000,0,  !- X,Y,Z ==> Vertex 2 {m}
+    0,0,0,  !- X,Y,Z ==> Vertex 3 {m}
+    0,0,2.700000;  !- X,Y,Z ==> Vertex 4 {m}
 
-BuildingSurface:Detailed,
+  BuildingSurface:Detailed,
     ZONE SURFACE FLOOR,      !- Name
     Floor,                   !- Surface Type
     LTFLOOR,                 !- Construction Name
@@ -352,12 +363,12 @@ BuildingSurface:Detailed,
     NoWind,                  !- Wind Exposure
     0,                       !- View Factor to Ground
     4,                       !- Number of Vertices
-    0, 0, 0,                            !- X,Y,Z  1 {m}
-    0, 6.000000, 0,                     !- X,Y,Z  2 {m}
-    8.000000, 6.000000, 0,              !- X,Y,Z  3 {m}
-    8.000000, 0, 0;                     !- X,Y,Z  4 {m}
+    0,0,0,  !- X,Y,Z ==> Vertex 1 {m}
+    0,6.000000,0,  !- X,Y,Z ==> Vertex 2 {m}
+    8.000000,6.000000,0,  !- X,Y,Z ==> Vertex 3 {m}
+    8.000000,0,0;  !- X,Y,Z ==> Vertex 4 {m}
 
-BuildingSurface:Detailed,
+  BuildingSurface:Detailed,
     ZONE SURFACE ROOF,       !- Name
     Roof,                    !- Surface Type
     LTROOF,                  !- Construction Name
@@ -368,14 +379,14 @@ BuildingSurface:Detailed,
     WindExposed,             !- Wind Exposure
     0,                       !- View Factor to Ground
     4,                       !- Number of Vertices
-    0, 6.000000, 2.700000,              !- X,Y,Z  1 {m}
-    0, 0, 2.700000,                     !- X,Y,Z  2 {m}
-    8.000000, 0, 2.700000,              !- X,Y,Z  3 {m}
-    8.000000, 6.000000, 2.700000;       !- X,Y,Z  4 {m}
+    0,6.000000,2.700000,  !- X,Y,Z ==> Vertex 1 {m}
+    0,0,2.700000,  !- X,Y,Z ==> Vertex 2 {m}
+    8.000000,0,2.700000,  !- X,Y,Z ==> Vertex 3 {m}
+    8.000000,6.000000,2.700000;  !- X,Y,Z ==> Vertex 4 {m}
 
-OtherEquipment,
+  OtherEquipment,
     ZONE ONE OthEq 1,        !- Name
-    ZONE ONE,                !- Zone Name
+    ZONE ONE,                !- Zone or ZoneList Name
     Sch 1,                   !- Schedule Name
     EquipmentLevel,          !- Design Level Calculation Method
     200.0,                   !- Design Level {W}
@@ -388,9 +399,10 @@ OtherEquipment,
 ! ===============================================================
 ! Other Equipment to link FMU air system to this room model
 ! -- Sensible heat transfer
-OtherEquipment,
+
+  OtherEquipment,
     OthEquSen_ZoneOne,       !- Name
-    ZONE ONE,                !- Zone Name
+    ZONE ONE,                !- Zone or ZoneList Name
     FMU_OthEqu_ZoneOne,      !- Schedule Name
     EquipmentLevel,          !- Design Level Calculation Method
     1,                       !- Design Level {W}
@@ -400,27 +412,27 @@ OtherEquipment,
     0,                       !- Fraction Radiant
     0;                       !- Fraction Lost
 
-ExternalInterface,
+  ExternalInterface,
     FunctionalMockupUnitExport;  !- Name of External Interface
 
-ExternalInterface:FunctionalMockupUnitExport:From:Variable,
+  ExternalInterface:FunctionalMockupUnitExport:From:Variable,
     ZONE ONE,                !- Output:Variable Index Key Name
     Zone Mean Air Temperature,  !- Output:Variable Name
     TRooMea;                 !- FMU Variable Name
 
-ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
+  ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
     FMU_OthEqu_ZoneOne,      !- Schedule Name
     Fraction,                !- Schedule Type Limits Names
     Q,                       !- FMU Variable Name
     0;                       !- Initial Value
 
-ScheduleTypeLimits,
+  ScheduleTypeLimits,
     Fraction,                !- Name
     0.0,                     !- Lower Limit Value
     1.0,                     !- Upper Limit Value
     Continuous;              !- Numeric Type
 
-Schedule:Day:Hourly,
+  Schedule:Day:Hourly,
     Day Sch 1,               !- Name
     Fraction,                !- Schedule Type Limits Name
     1,                       !- Hour 1
@@ -448,7 +460,7 @@ Schedule:Day:Hourly,
     1,                       !- Hour 23
     1;                       !- Hour 24
 
-Schedule:Week:Daily,
+  Schedule:Week:Daily,
     Week Sch 1,              !- Name
     Day Sch 1,               !- Sunday Schedule:Day Name
     Day Sch 1,               !- Monday Schedule:Day Name
@@ -463,7 +475,7 @@ Schedule:Week:Daily,
     Day Sch 1,               !- CustomDay1 Schedule:Day Name
     Day Sch 1;               !- CustomDay2 Schedule:Day Name
 
-Schedule:Year,
+  Schedule:Year,
     Sch 1,                   !- Name
     Fraction,                !- Schedule Type Limits Name
     Week Sch 1,              !- Schedule:Week Name 1
@@ -472,7 +484,7 @@ Schedule:Year,
     12,                      !- End Month 1
     31;                      !- End Day 1
 
-ZoneInfiltration:DesignFlowRate,
+  ZoneInfiltration:DesignFlowRate,
     ZONE ONE Infil 1,        !- Name
     ZONE ONE,                !- Zone or ZoneList Name
     Sch 1,                   !- Schedule Name
@@ -486,14 +498,15 @@ ZoneInfiltration:DesignFlowRate,
     0.0,                     !- Velocity Term Coefficient
     0.0;                     !- Velocity Squared Term Coefficient
 
-ScheduleTypeLimits,
+  ScheduleTypeLimits,
     Temperature,             !- Name
     -60,                     !- Lower Limit Value
     200,                     !- Upper Limit Value
     Continuous;              !- Numeric Type
 
 ! Next Arguments represent each hour of day
-Schedule:Day:Hourly,
+
+  Schedule:Day:Hourly,
     Zone Heating Setpoint All Days,  !- Name
     Temperature,             !- Schedule Type Limits Name
     20.,                     !- Hour 1
@@ -522,7 +535,8 @@ Schedule:Day:Hourly,
     20.;                     !- Hour 24
 
 ! Next arguments are names (DaySchedules) for the days
-Schedule:Week:Daily,
+
+  Schedule:Week:Daily,
     Zone Heating Setpoint All Weeks,  !- Name
     Zone Heating Setpoint All Days,  !- Sunday Schedule:Day Name
     Zone Heating Setpoint All Days,  !- Monday Schedule:Day Name
@@ -539,7 +553,8 @@ Schedule:Week:Daily,
 
 ! remaining arguments are grouped [Name (WeekSchedules),startmonth,startday,endmonth,endday]
 ! 18 periods allowed
-Schedule:Year,
+
+  Schedule:Year,
     Heating Setpoints,       !- Name
     Temperature,             !- Schedule Type Limits Name
     Zone Heating Setpoint All Weeks,  !- Schedule:Week Name 1
@@ -549,7 +564,8 @@ Schedule:Year,
     31;                      !- End Day 1
 
 ! Next Arguments represent each hour of day
-Schedule:Day:Hourly,
+
+  Schedule:Day:Hourly,
     Zone Cooling Setpoint All Days,  !- Name
     Temperature,             !- Schedule Type Limits Name
     27.,                     !- Hour 1
@@ -578,7 +594,8 @@ Schedule:Day:Hourly,
     27.;                     !- Hour 24
 
 ! Next arguments are names (DaySchedules) for the days
-Schedule:Week:Daily,
+
+  Schedule:Week:Daily,
     Zone Cooling Setpoint All Weeks,  !- Name
     Zone Cooling Setpoint All Days,  !- Sunday Schedule:Day Name
     Zone Cooling Setpoint All Days,  !- Monday Schedule:Day Name
@@ -595,7 +612,8 @@ Schedule:Week:Daily,
 
 ! remaining arguments are grouped [Name (WeekSchedules),startmonth,startday,endmonth,endday]
 ! 18 periods allowed
-Schedule:Year,
+
+  Schedule:Year,
     Cooling Setpoints,       !- Name
     Temperature,             !- Schedule Type Limits Name
     Zone Cooling Setpoint All Weeks,  !- Schedule:Week Name 1
@@ -604,14 +622,15 @@ Schedule:Year,
     12,                      !- End Month 1
     31;                      !- End Day 1
 
-ScheduleTypeLimits,
+  ScheduleTypeLimits,
     Control Type,            !- Name
     0,                       !- Lower Limit Value
     4,                       !- Upper Limit Value
     Discrete;                !- Numeric Type
 
 ! Next Arguments represent each hour of day
-Schedule:Day:Hourly,
+
+  Schedule:Day:Hourly,
     Control Type All Days,   !- Name
     Control Type,            !- Schedule Type Limits Name
     4,                       !- Hour 1
@@ -640,7 +659,8 @@ Schedule:Day:Hourly,
     4;                       !- Hour 24
 
 ! Next arguments are names (DaySchedules) for the days
-Schedule:Week:Daily,
+
+  Schedule:Week:Daily,
     Control Type All Weeks,  !- Name
     Control Type All Days,   !- Sunday Schedule:Day Name
     Control Type All Days,   !- Monday Schedule:Day Name
@@ -657,7 +677,8 @@ Schedule:Week:Daily,
 
 ! remaining arguments are grouped [Name (WeekSchedules),startmonth,startday,endmonth,endday]
 ! 18 periods allowed
-Schedule:Year,
+
+  Schedule:Year,
     Zone Control Type Sched, !- Name
     Control Type,            !- Schedule Type Limits Name
     Control Type All Weeks,  !- Schedule:Week Name 1
@@ -666,11 +687,16 @@ Schedule:Year,
     12,                      !- End Month 1
     31;                      !- End Day 1
 
-Output:Variable,*,Zone Mean Air Temperature,Hourly;
-Output:Variable,*,Other Equipment Total Heating Rate ,Hourly;
-Output:Variable,*,Other Equipment Total Heating Energy ,Hourly;
-Output:Variable,*,Zone Other Equipment Total Heating Rate ,Hourly;
-Output:Variable,*,Zone Other Equipment Total Heating Energy ,Hourly;
+  Output:Variable,*,Zone Mean Air Temperature,Hourly;
+
+  Output:Variable,*,Other Equipment Total Heating Rate,Hourly;
+
+  Output:Variable,*,Other Equipment Total Heating Energy,Hourly;
+
+  Output:Variable,*,Zone Other Equipment Total Heating Rate,Hourly;
+
+  Output:Variable,*,Zone Other Equipment Total Heating Energy,Hourly;
+
 !report variable,,Outdoor Dry Bulb,hourly;
 !report variable,,Outdoor Barometric Pressure,hourly;
 !report variable,,Outdoor Wet Bulb,hourly;
@@ -689,11 +715,14 @@ Output:Variable,*,Zone Other Equipment Total Heating Energy ,Hourly;
 !
 !report variable,,Surface Inside face Temperature,hourly;
 !report variable,,Surface Outside face Temperature,hourly;
-Output:Surfaces:Drawing,DXF;
-Output:Constructions,Constructions;
-Output:VariableDictionary,Regular;
 
-Output:PreprocessorMessage,
+  Output:Surfaces:Drawing,DXF;
+
+  Output:Constructions,Constructions;
+
+  Output:VariableDictionary,Regular;
+
+  Output:PreprocessorMessage,
     Conversion 7.2 => 8.0,   !- Preprocessor Name
     Warning,                 !- Error Severity
     rvi file associated with this input is being processed. Review for accuracy.;  !- Message Line 1
