@@ -123,8 +123,7 @@ typedef struct idfFmu_t {
 #endif
 } idfFmu_t;
 
-static int sumProc;
-static int retValIns;
+static int retValIns = 0;
 static int zI = 0;
 static int insNum = 0;
 static int firstCallIns = 1;
