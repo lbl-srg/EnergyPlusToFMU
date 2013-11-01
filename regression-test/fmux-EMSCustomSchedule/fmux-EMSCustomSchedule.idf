@@ -66,7 +66,7 @@
 ! ExtWallConstruction=Mass
 ! End SimMetaData
 
-  Version,8.0;
+  Version,8.1;
 
   Timestep,6;
 
@@ -1749,6 +1749,8 @@
     ZoneAveraged,            !- Mean Radiant Temperature Calculation Type
     ,                        !- Surface Name/Angle Factor List Name
     WORK_EFF_SCH,            !- Work Efficiency Schedule Name
+    ClothingInsulationSchedule,  !- Clothing Insulation Calculation Method
+    ,                        !- Clothing Insulation Calculation Method Schedule Name
     CLOTHING_SCH,            !- Clothing Insulation Schedule Name
     AIR_VELO_SCH,            !- Air Velocity Schedule Name
     FANGER;                  !- Thermal Comfort Model 1 Type
@@ -2235,6 +2237,8 @@
     ZoneAveraged,            !- Mean Radiant Temperature Calculation Type
     ,                        !- Surface Name/Angle Factor List Name
     WORK_EFF_SCH,            !- Work Efficiency Schedule Name
+    ClothingInsulationSchedule,  !- Clothing Insulation Calculation Method
+    ,                        !- Clothing Insulation Calculation Method Schedule Name
     CLOTHING_SCH,            !- Clothing Insulation Schedule Name
     AIR_VELO_SCH,            !- Air Velocity Schedule Name
     FANGER;                  !- Thermal Comfort Model 1 Type
@@ -2618,6 +2622,8 @@
     ZoneAveraged,            !- Mean Radiant Temperature Calculation Type
     ,                        !- Surface Name/Angle Factor List Name
     WORK_EFF_SCH,            !- Work Efficiency Schedule Name
+    ClothingInsulationSchedule,  !- Clothing Insulation Calculation Method
+    ,                        !- Clothing Insulation Calculation Method Schedule Name
     CLOTHING_SCH,            !- Clothing Insulation Schedule Name
     AIR_VELO_SCH,            !- Air Velocity Schedule Name
     FANGER;                  !- Thermal Comfort Model 1 Type
@@ -3033,6 +3039,8 @@
     ZoneAveraged,            !- Mean Radiant Temperature Calculation Type
     ,                        !- Surface Name/Angle Factor List Name
     WORK_EFF_SCH,            !- Work Efficiency Schedule Name
+    ClothingInsulationSchedule,  !- Clothing Insulation Calculation Method
+    ,                        !- Clothing Insulation Calculation Method Schedule Name
     CLOTHING_SCH,            !- Clothing Insulation Schedule Name
     AIR_VELO_SCH,            !- Air Velocity Schedule Name
     FANGER;                  !- Thermal Comfort Model 1 Type
@@ -3416,6 +3424,8 @@
     ZoneAveraged,            !- Mean Radiant Temperature Calculation Type
     ,                        !- Surface Name/Angle Factor List Name
     WORK_EFF_SCH,            !- Work Efficiency Schedule Name
+    ClothingInsulationSchedule,  !- Clothing Insulation Calculation Method
+    ,                        !- Clothing Insulation Calculation Method Schedule Name
     CLOTHING_SCH,            !- Clothing Insulation Schedule Name
     AIR_VELO_SCH,            !- Air Velocity Schedule Name
     FANGER;                  !- Thermal Comfort Model 1 Type
@@ -3988,9 +3998,9 @@
   Coil:Cooling:DX:SingleSpeed,
     PSZ-AC:1_CoolC DXCoil,   !- Name
     ALWAYS_ON,               !- Availability Schedule Name
-    AUTOSIZE,                !- Rated Total Cooling Capacity {W}
-    AUTOSIZE,                !- Rated Sensible Heat Ratio
-    4.56651,                 !- Rated COP {W/W}
+    AUTOSIZE,                !- Gross Rated Total Cooling Capacity {W}
+    AUTOSIZE,                !- Gross Rated Sensible Heat Ratio
+    4.56651,                 !- Gross Rated Cooling COP {W/W}
     AUTOSIZE,                !- Rated Air Flow Rate {m3/s}
     ,                        !- Rated Evaporator Fan Power Per Volume Flow Rate {W/(m3/s)}
     PSZ-AC:1_OA-PSZ-AC:1_CoolCNode,  !- Air Inlet Node Name
@@ -4076,7 +4086,7 @@
   Fan:ConstantVolume,
     PSZ-AC:1_Fan,            !- Name
     HVACOperationSchd,       !- Availability Schedule Name
-    0.174028,                !- Fan Efficiency
+    0.174028,                !- Fan Total Efficiency
     330,                     !- Pressure Rise {Pa}
     AUTOSIZE,                !- Maximum Flow Rate {m3/s}
     0.8250,                  !- Motor Efficiency
@@ -4272,9 +4282,9 @@
   Coil:Cooling:DX:SingleSpeed,
     PSZ-AC:2_CoolC DXCoil,   !- Name
     ALWAYS_ON,               !- Availability Schedule Name
-    AUTOSIZE,                !- Rated Total Cooling Capacity {W}
-    AUTOSIZE,                !- Rated Sensible Heat Ratio
-    4.56651,                 !- Rated COP {W/W}
+    AUTOSIZE,                !- Gross Rated Total Cooling Capacity {W}
+    AUTOSIZE,                !- Gross Rated Sensible Heat Ratio
+    4.56651,                 !- Gross Rated Cooling COP {W/W}
     AUTOSIZE,                !- Rated Air Flow Rate {m3/s}
     ,                        !- Rated Evaporator Fan Power Per Volume Flow Rate {W/(m3/s)}
     PSZ-AC:2_OA-PSZ-AC:2_CoolCNode,  !- Air Inlet Node Name
@@ -4360,7 +4370,7 @@
   Fan:ConstantVolume,
     PSZ-AC:2_Fan,            !- Name
     HVACOperationSchd,       !- Availability Schedule Name
-    0.174028,                !- Fan Efficiency
+    0.174028,                !- Fan Total Efficiency
     330,                     !- Pressure Rise {Pa}
     AUTOSIZE,                !- Maximum Flow Rate {m3/s}
     0.8250,                  !- Motor Efficiency
@@ -4556,9 +4566,9 @@
   Coil:Cooling:DX:SingleSpeed,
     PSZ-AC:3_CoolC DXCoil,   !- Name
     ALWAYS_ON,               !- Availability Schedule Name
-    AUTOSIZE,                !- Rated Total Cooling Capacity {W}
-    AUTOSIZE,                !- Rated Sensible Heat Ratio
-    4.56651,                 !- Rated COP {W/W}
+    AUTOSIZE,                !- Gross Rated Total Cooling Capacity {W}
+    AUTOSIZE,                !- Gross Rated Sensible Heat Ratio
+    4.56651,                 !- Gross Rated Cooling COP {W/W}
     AUTOSIZE,                !- Rated Air Flow Rate {m3/s}
     ,                        !- Rated Evaporator Fan Power Per Volume Flow Rate {W/(m3/s)}
     PSZ-AC:3_OA-PSZ-AC:3_CoolCNode,  !- Air Inlet Node Name
@@ -4644,7 +4654,7 @@
   Fan:ConstantVolume,
     PSZ-AC:3_Fan,            !- Name
     HVACOperationSchd,       !- Availability Schedule Name
-    0.174028,                !- Fan Efficiency
+    0.174028,                !- Fan Total Efficiency
     330,                     !- Pressure Rise {Pa}
     AUTOSIZE,                !- Maximum Flow Rate {m3/s}
     0.8250,                  !- Motor Efficiency
@@ -4840,9 +4850,9 @@
   Coil:Cooling:DX:SingleSpeed,
     PSZ-AC:4_CoolC DXCoil,   !- Name
     ALWAYS_ON,               !- Availability Schedule Name
-    AUTOSIZE,                !- Rated Total Cooling Capacity {W}
-    AUTOSIZE,                !- Rated Sensible Heat Ratio
-    4.56651,                 !- Rated COP {W/W}
+    AUTOSIZE,                !- Gross Rated Total Cooling Capacity {W}
+    AUTOSIZE,                !- Gross Rated Sensible Heat Ratio
+    4.56651,                 !- Gross Rated Cooling COP {W/W}
     AUTOSIZE,                !- Rated Air Flow Rate {m3/s}
     ,                        !- Rated Evaporator Fan Power Per Volume Flow Rate {W/(m3/s)}
     PSZ-AC:4_OA-PSZ-AC:4_CoolCNode,  !- Air Inlet Node Name
@@ -4928,7 +4938,7 @@
   Fan:ConstantVolume,
     PSZ-AC:4_Fan,            !- Name
     HVACOperationSchd,       !- Availability Schedule Name
-    0.174028,                !- Fan Efficiency
+    0.174028,                !- Fan Total Efficiency
     330,                     !- Pressure Rise {Pa}
     AUTOSIZE,                !- Maximum Flow Rate {m3/s}
     0.8250,                  !- Motor Efficiency
@@ -5124,9 +5134,9 @@
   Coil:Cooling:DX:SingleSpeed,
     PSZ-AC:5_CoolC DXCoil,   !- Name
     ALWAYS_ON,               !- Availability Schedule Name
-    AUTOSIZE,                !- Rated Total Cooling Capacity {W}
-    AUTOSIZE,                !- Rated Sensible Heat Ratio
-    4.56651,                 !- Rated COP {W/W}
+    AUTOSIZE,                !- Gross Rated Total Cooling Capacity {W}
+    AUTOSIZE,                !- Gross Rated Sensible Heat Ratio
+    4.56651,                 !- Gross Rated Cooling COP {W/W}
     AUTOSIZE,                !- Rated Air Flow Rate {m3/s}
     ,                        !- Rated Evaporator Fan Power Per Volume Flow Rate {W/(m3/s)}
     PSZ-AC:5_OA-PSZ-AC:5_CoolCNode,  !- Air Inlet Node Name
@@ -5212,7 +5222,7 @@
   Fan:ConstantVolume,
     PSZ-AC:5_Fan,            !- Name
     HVACOperationSchd,       !- Availability Schedule Name
-    0.174028,                !- Fan Efficiency
+    0.174028,                !- Fan Total Efficiency
     330,                     !- Pressure Rise {Pa}
     AUTOSIZE,                !- Maximum Flow Rate {m3/s}
     0.8250,                  !- Motor Efficiency
@@ -6411,10 +6421,11 @@
   ExternalInterface,
     FunctionalMockupUnitExport;  !- Name of External Interface
 
-  ExternalInterface:FunctionalMockupUnitExport:To:Actuator,  !- FMU master will set the value for this actuator
+  ExternalInterface:FunctionalMockupUnitExport:To:Actuator,
     myHTGSETP_SCH,           !- Name
-    HTGSETP_SCH,             !- Actuated component unique name
-    Schedule:Constant,       !- Actuated component type
-    Schedule Value,          !- Actuated component control type
-    EpActuator1,             !- FMU variable name
-    0;                       !- Initial value
+    HTGSETP_SCH,             !- Actuated Component Unique Name
+    Schedule:Constant,       !- Actuated Component Type
+    Schedule Value,          !- Actuated Component Control Type
+    EpActuator1,             !- FMU Variable Name
+    0;                       !- Initial Value
+
