@@ -15,7 +15,7 @@
 !
 !
 
-  VERSION,8.0;
+  VERSION,8.1;
 
 !-   ===========  ALL OBJECTS IN CLASS: BUILDING ===========
 
@@ -440,26 +440,26 @@
   ExternalInterface,
     FunctionalMockupUnitExport;  !- Name of External Interface
 
-  ExternalInterface:FunctionalMockupUnitExport:To:Schedule,  !- FMU master will set the value for this schedule
-    ExternalSchedule1,          !- Schedule Name
-    Any Number,                 !- Schedule Type Limits Name
-    EpModelSchedule1,           !- FMU variable name
-    0;                          !- Initial value
+  ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
+    ExternalSchedule1,       !- Schedule Name
+    Any Number,              !- Schedule Type Limits Names
+    EpModelSchedule1,        !- FMU Variable Name
+    0;                       !- Initial Value
 
-  ExternalInterface:FunctionalMockupUnitExport:From:Variable,  !- FMU master can read the value of this variable
-    Environment,                !- Output:Variable Index Key Name
-    Outdoor Dry Bulb,           !- Output:Variable Name
-    outDryBulb;                 !- FMU variable name
+  ExternalInterface:FunctionalMockupUnitExport:From:Variable,
+    Environment,             !- Output:Variable Index Key Name
+    Outdoor Dry Bulb,        !- Output:Variable Name
+    outDryBulb;              !- FMU Variable Name
 
-  ExternalInterface:FunctionalMockupUnitExport:From:Variable,  !- FMU master can read the value of this variable
-    ZONE ONE,                   !- Output:Variable Index Key Name
+  ExternalInterface:FunctionalMockupUnitExport:From:Variable,
+    ZONE ONE,                !- Output:Variable Index Key Name
     Zone Mean Air Temperature,  !- Output:Variable Name
-    TRoom;                      !- FMU variable name
+    TRoom;                   !- FMU Variable Name
 
-  ExternalInterface:FunctionalMockupUnitExport:From:Variable,  !- FMU master can read the value of this variable
-    Environment,                !- Output:Variable Index Key Name
+  ExternalInterface:FunctionalMockupUnitExport:From:Variable,
+    Environment,             !- Output:Variable Index Key Name
     Outdoor Relative Humidity,  !- Output:Variable Name
-    outRelHum;                  !- FMU variable name
+    outRelHum;               !- FMU Variable Name
 
 !-   ===========  ALL OBJECTS IN CLASS: REPORT VARIABLE ===========
 
