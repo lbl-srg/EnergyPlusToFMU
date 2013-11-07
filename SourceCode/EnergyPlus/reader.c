@@ -194,6 +194,27 @@ void remSpaces_makeUpper(char *infile){
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// This function replace a character with another one.
+///
+///\param from The character to replace
+///\param to The character to use
+///\param to The string to modify
+///////////////////////////////////////////////////////////////////////////////
+void replace_char_from_string(char from, char to, char *str)
+{
+	int i = 0;
+	int len = strlen(str)+1;
+
+	for(i=0; i<len; i++)
+	{
+		if(str[i] == from)
+		{
+			str[i] = to;
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// This function reads a file extracts relevant information for date and print 
 /// the information in a file.
 ///
@@ -839,16 +860,59 @@ int getLeapYear(char * resources_p)
 			}
 			fclose (fp1);
 			fclose (fp2);
+			free (runweafile);
 		}
 		else
 		{
 			printf ("Can't open weather file!\n");
 			//runweafile = NULL;
 		}
-		free (runweafile);
 	}
 	return leapyear;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+/// This function gets the time step from the input file.
+///
+///\param str The input file
+///////////////////////////////////////////////////////////////////////////////
+int getTimeStep (char *str)
+{
+	int i;
+	int found = 0;
+	int ncount = 0;
+	char TSStr [4*MAXBUFFSIZE] = {0};
+	replace_char_from_string ('\n', ' ', str);
+	for(i=0; i<strlen(str); i++)
+	{
+		if (str[i] != ',' && found != 1)
+		{
+			ncount++;
+			continue;
+		}
+		else if (str [i] == ',')
+		{
+			found = 1;
+			ncount++;
+			continue;
+		}
+
+		else
+		{
+			if (str[i] != ';')
+			{
+				TSStr[i-ncount] = str [i];
+			}
+			else
+			{
+				continue;
+			}
+		}
+	}
+	// convert the string to an integer
+	return atoi (TSStr);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /// This function creates the input file to be used for the run.
 ///
@@ -866,11 +930,15 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	char low_case_temp[MAXBUFFSIZE] = {0};
 	char tmpDayWeek[MAXBUFFSIZE] = {0};
 	char NewDayOfWeek [2*MAXBUFFSIZE] = {0};
+	char old_temp[4*MAXBUFFSIZE] = {0};
+	char new_TS[4*MAXBUFFSIZE] = {0};
 	FILE *fp1;
 	FILE *fp2;
 	FILE *fp3;
 	FILE *fp4;
 	struct stat st;
+
+	int TS;
 
 	int val;
 	int i;
@@ -880,6 +948,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	int NewEndMonth;
 	int NewEndDayOfMonth;
 	int leapyear = 0;
+	int foundEndTS = 0;
 
 	double t_start_IDF;
 	char intTostr[10] = {0};
@@ -937,13 +1006,44 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 			}
 			// If time step is found, write to file
 			if((strstr(temp, TIMESTEP)) != NULL) {
-				char *timeStep[sizeof(strtok(temp, ","))];
+				// check whether 
+				while (foundEndTS != 1){
+					for(i=0; i<strlen(temp); i++)
+					{
+						if (temp[i]!='!')
+						{
+							new_TS[i] = temp[i];
+						}
+						else
+						{
+							break;
+						}
 
-				timeStep[0] = strtok( temp, "," );
-				for(i=1; i< sizeof(strtok(temp, " ")); i++)
-				{
-					timeStep[i] = strtok (NULL, ";");
+						if (temp[i]!=';')
+						{
+							foundEndTS = 0;
+						}
+						else
+						{
+							foundEndTS = 1;
+							break;
+
+						}
+					}
+					// concatenate to create TimeStep string
+					strcat (old_temp, new_TS);
+					// empty string used
+					memset(new_TS, 0, sizeof new_TS);
+
+					if (foundEndTS != 1){
+
+						fgets(temp, sizeof temp, fp1);
+						fprintf(fp2, "%s", temp);
+
+					}
 				}
+				// get time step
+				TS = getTimeStep (old_temp);
 
 				// write timestep in file
 				if(stat(FTIMESTEP, &st)>=0){
@@ -957,13 +1057,12 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					}
 					else
 					{   
-						remSpaces_makeUpper(timeStep[1]);
-						fprintf(fp3, "%s", timeStep[1]);
+						fprintf(fp3, "%d", TS);
 						fclose (fp3);
 					}
 				}
-
 			}
+			//printf ("Am I coming here after writing file \n");
 			// rewrite the runperiod
 			if((strstr(temp, RUNPERIOD)) != NULL) {
 				find_result_RP++;
@@ -1102,6 +1201,12 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	free (fruninfile);
 	return 0;
 }
+
+//int main ()
+//{
+//	createRunInFile (0, 86400, "test", "c:\\timestep\\");
+//}
+
 /*
 
 ***********************************************************************************
