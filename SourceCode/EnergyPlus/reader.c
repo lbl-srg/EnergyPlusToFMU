@@ -222,11 +222,10 @@ void replace_char_from_string(char from, char to, char *str)
 ///\param fname The filename to print.
 ///\param fname The index of string to be printed.
 ///////////////////////////////////////////////////////////////////////////////
-static void printDataForDate (char *temp, const char* fname, int index){
+static void printDataForDate (char *temp, const char* fname){
 	FILE *fp;
 	int i;
-	char *result[sizeof(strtok(temp, ","))];
-	result[0] = strtok( temp, "," );
+	char result[MAXBUFFSIZE] = {0};
 	remSpaces_makeUpper(temp);
 	if (strlen(temp)==0)
 	{
@@ -242,11 +241,21 @@ static void printDataForDate (char *temp, const char* fname, int index){
 		}
 	}
 	else{
-		for(i=1; i<sizeof(strtok(temp, " ")); i++)
+		for(i=0; i<strlen(temp); i++)
 		{
-			result[i] = strtok (NULL, ";");
+			if (temp[i] != ',')
+			{
+				result[i] = temp [i];
+			}
+			else if (temp[i] == ',')
+			{
+				break;
+			}
+			else
+			{
+				continue;
+			}
 		}
-
 		// write timestep in file
 		if((fp = fopen(fname, "w")) == NULL) {
 			printf("Can't open file!\n");
@@ -254,8 +263,8 @@ static void printDataForDate (char *temp, const char* fname, int index){
 		}
 		else
 		{   
-			//remSpaces_makeUpper(result[index]);
-			fprintf(fp, "%s", result[index]);
+			remSpaces_makeUpper(result);
+			fprintf(fp, "%s", result);
 			fclose (fp);
 		}
 	}
@@ -798,7 +807,10 @@ int getLeapYear(char * resources_p)
 	int leapyear = 0;
 	int i;
 
+	int found = 0;
+	int ncount = 0;
 	char *weafile;
+	char leapIndic [2*MAXBUFFSIZE] = {0};
 	char low_case_wea[2*MAXBUFFSIZE] = {0};
 	char wea[2*MAXBUFFSIZE] = {0};
 	const char* WEATHER = "HOLIDAYS/DAYLIGHT";
@@ -807,18 +819,38 @@ int getLeapYear(char * resources_p)
 		fp1 = fopen(FRUNWEAFILE, "r");
 		// read input file
 		while(fgets(wea, sizeof wea, fp1) != NULL) {
-			strcpy (low_case_wea, wea );
 			//remove space and make upper case
 			remSpaces_makeUpper(wea);
 			if((strstr(wea, WEATHER)) != NULL) {
-				char *leapyear_ch[sizeof(strtok(wea, ","))];
-				leapyear_ch[0] = strtok( wea, "," );
-				for(i=1; i< sizeof(strtok(wea, " ")); i++)
+				for(i=0; i<strlen(wea); i++)
 				{
-					leapyear_ch[i] = strtok (NULL, ",");
+					if (wea[i] != ',' && found != 1)
+					{
+						ncount++;
+						continue;
+					}
+					else if (wea [i] == ',')
+					{
+						found = 1;
+						ncount++;
+						continue;
+					}
+					else
+					{
+						if (wea[i] != ',')
+						{
+							leapIndic[i-ncount] = wea [i];
+						}
+						else if (wea[i] == ',')
+						{
+							break;
+						}
+						else{
+							continue;
+						}
+					}
 				}
-				remSpaces_makeUpper(leapyear_ch[1]);
-				if (strcmp (leapyear_ch[1], "YES")== 0)
+				if((strstr(leapIndic, "YES")) != NULL)
 				{
 					leapyear = 1;
 				}
@@ -845,14 +877,36 @@ int getLeapYear(char * resources_p)
 				remSpaces_makeUpper(wea);
 				fprintf(fp2, "%s", low_case_wea);  
 				if((strstr(wea, WEATHER)) != NULL) {
-					char *leapyear_ch[sizeof(strtok(wea, ","))];
-					leapyear_ch[0] = strtok( wea, "," );
-					for(i=1; i< sizeof(strtok(wea, " ")); i++)
+					for(i=0; i<strlen(wea); i++)
 					{
-						leapyear_ch[i] = strtok (NULL, ",");
+						if (wea[i] != ',' && found != 1)
+						{
+							ncount++;
+							continue;
+						}
+						else if (wea [i] == ',')
+						{
+							found = 1;
+							ncount++;
+							continue;
+						}
+						else
+						{
+							if (wea[i] != ',')
+							{
+								leapIndic[i-ncount] = wea [i];
+							}
+							else if (wea[i] == ',')
+							{
+								break;
+							}
+							else{
+								continue;
+							}
+
+						}
 					}
-					remSpaces_makeUpper(leapyear_ch[1]);
-					if (strcmp (leapyear_ch[1], "YES")== 0)
+					if((strstr(leapIndic, "YES")) != NULL)
 					{
 						leapyear = 1;
 					}
@@ -864,7 +918,7 @@ int getLeapYear(char * resources_p)
 		}
 		else
 		{
-			printf ("Can't open weather file!\n");
+			printf ("Weather file not existing and required for simulation!\n");
 			//runweafile = NULL;
 		}
 	}
@@ -1072,7 +1126,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					fprintf(fp2, "%s", temp);
 					//write the Begin Month
 					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
-					printDataForDate(temp, BEGINMONTH, 0);
+					printDataForDate(temp, BEGINMONTH);
 
 					NewBeginMonth = getCurrentMonth (t_start_FMU, leapyear);
 					// check begin month
@@ -1086,7 +1140,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 
 					//write the Begin Day of Month
 					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
-					printDataForDate(temp, BEGINDAYMONTH, 0);
+					printDataForDate(temp, BEGINDAYMONTH);
 
 					NewBeginDayOfMonth = getCurrentDay (t_start_FMU, NewBeginMonth, leapyear);
 					// check begin day of month
@@ -1099,7 +1153,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 
 					//write the End Month
 					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
-					printDataForDate(temp, ENDMONTH, 0);
+					printDataForDate(temp, ENDMONTH);
 
 					NewEndMonth = getCurrentMonth (t_end_FMU, leapyear);
 					// check end month
@@ -1111,7 +1165,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					fprintf(fp2, "%s", intTostr);
 					//write the End Day of Month
 					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
-					printDataForDate(temp, ENDDAYMONTH, 0);
+					printDataForDate(temp, ENDDAYMONTH);
 
 					NewEndDayOfMonth = getCurrentDay (t_end_FMU, NewEndMonth, leapyear);
 					// check end day of month
@@ -1123,7 +1177,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					fprintf(fp2, "%s", intTostr);
 					//write the Day of Week
 					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
-					printDataForDate(temp, OLDDAYWEEK, 0);
+					printDataForDate(temp, OLDDAYWEEK);
 
 					//convert start and end time obtained from the master algorithm
 					printDebug("Get simulation time in IDF!\n");
@@ -1204,7 +1258,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 
 //int main ()
 //{
-//	createRunInFile (0, 86400, "test", "c:\\timestep\\");
+//	createRunInFile (0, 86400, "test", "c:\\temp\\");
 //}
 
 /*
