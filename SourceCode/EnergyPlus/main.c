@@ -1056,11 +1056,12 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		if ((fmuInstances[_c->index]->firstCallDoStep == 0)
 			&& (fabs(fmuInstances[_c->index]->curComm - fmuInstances[_c->index]->nexComm) > 1e-10))
 		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", "fmiDoStep: "
+			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep: "
 				"Current communication point: %f is not equals to the previous simulation time + "
-				"communicationStepSize: %f + %f. Simulation will terminate!\n",
+				"communicationStepSize: %f + %f!\n",
 				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->nexComm, 
 				fmuInstances[_c->index]->communicationStepSize);
+			return fmiFatal;
 		}
 
 		// check end of simulation
@@ -1068,7 +1069,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 			// set the communication flags to 1 to send stop signal to EnergyPlus
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
 				"Warning", "fmiDoStep: Current communication point: %f of FMU instance: %s "
-				"is equals to end of simulation: %f. Simulation will terminate!\n", 
+				"is equals to end of simulation: %f!\n", 
 				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->instanceName, fmuInstances[_c->index]->tStopFMU);
 			return fmiWarning;
 		}
@@ -1077,7 +1078,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		if (fmuInstances[_c->index]->curComm > fmuInstances[_c->index]->tStopFMU){
 			// set the communication flags to 1 to send stop signal to EnergyPlus
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", "fmiDoStep:"
-				" Current communication point: %f is larger than end of simulation time: %f. Simulation will terminate!\n", 
+				" Current communication point: %f is larger than end of simulation time: %f!\n", 
 				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->tStopFMU);
 			return fmiError;
 		}
@@ -1085,12 +1086,12 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		if (fmuInstances[_c->index]->curComm + 
 			fmuInstances[_c->index]->communicationStepSize > fmuInstances[_c->index]->tStopFMU){
 				// set the communication flags to 1 to send stop signal to EnergyPlus
-				fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", "fmiDoStep: "
+				fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep: "
 					"Current communication point: %f  + communicationStepsize: %f  is larger than "
-					"end of simulation time: %f. Simulation will terminate!\n", 
+					"end of simulation time: %f!\n", 
 					fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->communicationStepSize,  
 					fmuInstances[_c->index]->tStopFMU);
-				return fmiError;
+				return fmiFatal;
 		}
 
 		// check if inputs are set
