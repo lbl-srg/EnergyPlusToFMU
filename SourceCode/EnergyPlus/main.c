@@ -985,7 +985,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		// check if timeStep is defined
 		if (fmuInstances[_c->index]->firstCallDoStep){
 			// initialize the nexComm value to start communication point
-			fmuInstances[_c->index]->nexComm = currentCommunicationPoint;
+			fmuInstances[_c->index]->nexComm = fmuInstances[_c->index]->curComm;
 			if((fp = fopen(FTIMESTEP, "r")) != NULL) {
 				retVal = fscanf(fp, "%d", &(fmuInstances[_c->index]->timeStepIDF));
 				fclose (fp);
