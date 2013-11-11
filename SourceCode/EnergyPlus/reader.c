@@ -100,7 +100,6 @@ char *findNameFile(char *path, char *pattern)
 		}
 	}
 	closedir(dirp);
-	free (infile);
 	return NULL;
 }
 
@@ -309,7 +308,7 @@ static int getNumValue(const char* fname){
 ///\return 0 if no error occurred.
 ///////////////////////////////////////////////////////////////////////////////
 static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu, 
-	const char *fname, const char*fname1){
+	const char *fname, const char *fname1){
 		FILE *fp1;
 		FILE *fp2;
 		char day_of_week[MAXBUFFSIZE] = {0};
@@ -914,12 +913,13 @@ int getLeapYear(char * resources_p)
 			}
 			fclose (fp1);
 			fclose (fp2);
+			// free weafile which was allocated in findNameFile
+			free (weafile);
 			free (runweafile);
 		}
 		else
 		{
-			printf ("Weather file not existing and required for simulation!\n");
-			//runweafile = NULL;
+			printf ("There is not weather file in the resource folder!\n");
 		}
 	}
 	return leapyear;
@@ -1013,7 +1013,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	int exit_loop;
 
 	// check whether start and end make sense
-	if (t_end_FMU < t_start_FMU)
+	if (t_end_FMU <= t_start_FMU)
 	{
 		printf("End of the simulation should come after start of the simulation!\n");
 		return 1;
@@ -1027,6 +1027,8 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 		fruninfile = (char*)(calloc(sizeof(char), strlen(modelID) + 10));
 		sprintf(runinfile, "%s%s", resources_p, infile);
 		sprintf(fruninfile, "%s%s", modelID, ".idf");
+		// free infile which was allocated in findNameFile
+		free (infile);
 	}
 	else
 	{
@@ -1040,7 +1042,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	// open original input file
 	if((fp1 = fopen(runinfile, "r")) == NULL) {
 		printf ("Can't open file %s!\n", runinfile);
-		return(1);
+		return 1;
 	}
 	// open temporary input file
 	if((fp2 = fopen(fruninfile, "w")) == NULL) {
@@ -1053,14 +1055,14 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 		strcpy (low_case_temp, temp);
 		remSpaces_makeUpper(temp);
 		if ((temp[0] !='!') && (isEmptyLine(temp) == 0)){
-
+			// This implementation assumes a RunPeriod which consits of several lines as in the IDD
+			// If the the structure of the RunPeriod differs from that the code will not work
 			if((strstr(temp, RUNPERIOD) != NULL && find_result_RP<1) || strstr(temp, RUNPERIOD) == NULL)
 			{
 				fprintf(fp2, "%s", low_case_temp);
 			}
 			// If time step is found, write to file
 			if((strstr(temp, TIMESTEP)) != NULL) {
-				// check whether 
 				while (foundEndTS != 1){
 					for(i=0; i<strlen(temp); i++)
 					{
@@ -1116,8 +1118,11 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					}
 				}
 			}
-			//printf ("Am I coming here after writing file \n");
 			// rewrite the runperiod
+			// This implementation assumes a RunPeriod which consits of several comma spearted lines as in the IDD
+			// If the the structure of the RunPeriod differs from that the code will not write the values 
+			// found at the appropriate places. Alternative could be to ship an IDD to determine based on
+			// the IDD the current syntax of the IDF file.
 			if((strstr(temp, RUNPERIOD)) != NULL) {
 				find_result_RP++;
 				if (find_result_RP <=1){
@@ -1255,7 +1260,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	free (fruninfile);
 	return 0;
 }
-
+//
 //int main ()
 //{
 //	createRunInFile (0, 86400, "test", "c:\\temp\\");
