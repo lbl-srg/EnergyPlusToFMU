@@ -1045,8 +1045,9 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", "fmiDoStep: "
 				"Current communication point: %f is not equals to the previous simulation time + "
-				"communicationStepSize: %f. Simulation will terminate!\n",
-				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->communicationStepSize);
+				"communicationStepSize: %f + %f. Simulation will terminate!\n",
+				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->nexComm, 
+				fmuInstances[_c->index]->communicationStepSize);
 		}
 
 		// check end of simulation
