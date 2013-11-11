@@ -480,7 +480,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// allocate memory for fmuLocation 
 	fmuInstances[_c->index]->fmuLocation = (char *)calloc(sizeof(char), strlen (fmuLocation) + 1);
 	// extract the URI information from the fmuResourceLocation path
-	if (strnicmp (tmpResLoc, "file", 4)== 0)
+	if (strncasecmp (tmpResLoc, "file", 4)== 0)
 	{
 		// The specification for defining whether the file should start with file:/, file://, or file:///
 		// is not clear (e.g. see FMI 1.0, and FMI 2.0). We will thus check all cases to see what we have
@@ -536,13 +536,13 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 			}
 		}
 	}
-	else if ((strnicmp (tmpResLoc, "ftp", 3)== 0) || (strnicmp (tmpResLoc, "fmi", 3)== 0))
+	else if ((strncasecmp (tmpResLoc, "ftp", 3)== 0) || (strncasecmp (tmpResLoc, "fmi", 3)== 0))
 	{
 		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 6, strlen(fmuLocation + 6));
 		printf ("fmiInstantiateSlave: Path to fmuLocationPath without ftp:// or fmi:// %s\n", 
 			fmuInstances[_c->index]->fmuLocation);
 	}
-	else if ((strnicmp (tmpResLoc, "https", 5)== 0))
+	else if ((strncasecmp (tmpResLoc, "https", 5)== 0))
 	{
 		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 8, strlen(fmuLocation + 8));
 		printf("fmiInstantiateSlave: Path to fmuLocation without https:// %s\n", fmuInstances[_c->index]->fmuLocation);
