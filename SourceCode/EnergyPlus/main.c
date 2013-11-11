@@ -123,7 +123,6 @@ typedef struct idfFmu_t {
 #endif
 } idfFmu_t;
 
-static int retValIns = 0;
 static int zI = 0;
 static int insNum = 0;
 static int firstCallIns = 1;
@@ -417,16 +416,25 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	int retVal;
 	fmiString mID;
 	fmiString mGUID;
-	char tmpResLoc[5];
+	char tmpResLoc[5] ={0};
 	struct stat st;
 	fmiBoolean errDir;
 	fmiComponent c = (fmiComponent)calloc(1, sizeof(struct idfFmu_t));
 	idfFmu_t* _c = (idfFmu_t*)c;
 
-	_c->index = retValIns;
+	_c->index = insNum;
 	addfmuInstances (_c);
 	insNum++;
-	retValIns=insNum;
+
+	// initialize Strings to store variables for calculations
+	fmuInstances[_c->index]->fmuOutput = NULL;
+	fmuInstances[_c->index]->fmuCalLocation = NULL;
+	fmuInstances[_c->index]->tmpResCon = NULL;
+	fmuInstances[_c->index]->fmuLocation = NULL;
+	fmuInstances[_c->index]->resources_p = NULL;
+	fmuInstances[_c->index]->xml_file_p = NULL;
+	fmuInstances[_c->index]->mID = NULL;
+	fmuInstances[_c->index]->mGUID = NULL;
 
 	// get current working directory
 #ifdef _MSC_VER
@@ -469,13 +477,10 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// copy first 5 characters of fmuLocation
 	strncpy (tmpResLoc, fmuLocation, 5);
 
-	// make tmpResLoc to be upper case
-	remSpaces_makeUpper(tmpResLoc);
-
 	// allocate memory for fmuLocation 
 	fmuInstances[_c->index]->fmuLocation = (char *)calloc(sizeof(char), strlen (fmuLocation) + 1);
 	// extract the URI information from the fmuResourceLocation path
-	if (strncmp (tmpResLoc, "FILE", 4)== 0)
+	if (strnicmp (tmpResLoc, "file", 4)== 0)
 	{
 		// The specification for defining whether the file should start with file:/, file://, or file:///
 		// is not clear (e.g. see FMI 1.0, and FMI 2.0). We will thus check all cases to see what we have
@@ -531,13 +536,13 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 			}
 		}
 	}
-	else if ((strncmp (tmpResLoc, "FTP", 3)== 0) || (strncmp (tmpResLoc, "FMI", 3)== 0))
+	else if ((strnicmp (tmpResLoc, "ftp", 3)== 0) || (strnicmp (tmpResLoc, "fmi", 3)== 0))
 	{
 		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 6, strlen(fmuLocation + 6));
 		printf ("fmiInstantiateSlave: Path to fmuLocationPath without ftp:// or fmi:// %s\n", 
 			fmuInstances[_c->index]->fmuLocation);
 	}
-	else if ((strncmp (tmpResLoc, "HTTPS", 5)== 0))
+	else if ((strnicmp (tmpResLoc, "https", 5)== 0))
 	{
 		strncpy(fmuInstances[_c->index]->fmuLocation, fmuLocation + 8, strlen(fmuLocation + 8));
 		printf("fmiInstantiateSlave: Path to fmuLocation without https:// %s\n", fmuInstances[_c->index]->fmuLocation);
@@ -1328,7 +1333,6 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 			&(fmuInstances[_c->index]->simTimRec), fmuInstances[_c->index]->outVec, &(fmuInstances[_c->index]->simTimSen), 
 			fmuInstances[_c->index]->inVec);
 		// close socket
-
 		closeipcFMU(&(fmuInstances[_c->index]->sockfd));
 		closeipcFMU(&(fmuInstances[_c->index]->newsockfd));
 		// clean-up temporary files

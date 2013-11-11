@@ -1092,8 +1092,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					memset(new_TS, 0, sizeof new_TS);
 
 					if (foundEndTS != 1){
-
-						fgets(temp, sizeof temp, fp1);
+						if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
 						fprintf(fp2, "%s", temp);
 
 					}
