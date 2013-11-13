@@ -1449,7 +1449,7 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 					if (getCausality(svTemp) != enu_input) continue; 
 					vrTemp = getValueReference(svTemp);
 					if (vrTemp == vr[i]){
-						fmuInstances[_c->index]->inVec[vr[i]-1] = value[vr[i]-1]; 
+						fmuInstances[_c->index]->inVec[vr[i]-1] = value[i]; 
 						fmuInstances[_c->index]->setCounter++;
 					}
 				}
@@ -1608,7 +1608,7 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 					if (getCausality(svTemp) != enu_output) continue; 
 					vrTemp = getValueReference(svTemp);
 					if (vrTemp == vr[i]){
-						value[vr[i]-10001] = fmuInstances[_c->index]->outVec[vr[i]-10001];
+						value[i] = fmuInstances[_c->index]->outVec[vr[i]-10001];
 						fmuInstances[_c->index]->getCounter++;
 					}
 				}
@@ -1618,7 +1618,6 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 				fmuInstances[_c->index]->readReady = 1;
 			}
 		} 
-
 		if(fmuInstances[_c->index]->firstCallGetReal)
 		{
 			fmuInstances[_c->index]->firstCallGetReal = 0;
