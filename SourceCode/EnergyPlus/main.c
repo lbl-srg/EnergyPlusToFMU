@@ -126,10 +126,10 @@ typedef struct idfFmu_t {
 static int zI = 0;
 static int insNum = 0;
 static int firstCallIns = 1;
-char instanceName[PATHLEN];
+static char instanceName[PATHLEN];
 
 static int arrsize = 0;
-idfFmu_t **fmuInstances;
+static idfFmu_t **fmuInstances;
 static int fmuLocCoun = 0;
 #define DELTA 10
 
@@ -140,7 +140,7 @@ static int fmuLocCoun = 0;
 ///\param s The character to find.
 ///\param s The character to replace.
 ////////////////////////////////////////////////////////////////////////////////////
-void replace_char (char *s, const char find, const char replace) {
+static void replace_char (char *s, const char find, const char replace) {
 	while (*s != 0) {
 		if (*s == find)
 			*s = replace;
@@ -172,7 +172,7 @@ static void addfmuInstances(idfFmu_t* s){
 ///\param hostName The host name.
 ///\return 0 if no error occurred.
 ////////////////////////////////////////////////////////////////////////////////////
-int write_socket_cfg(int portNum, const char* hostName)
+static int write_socket_cfg(int portNum, const char* hostName)
 {
 	FILE *fp;
 	fp = fopen("socket.cfg", "w");
@@ -270,7 +270,7 @@ static int removeFMUDir (fmiString str)
 ///\param c The FMU instance.
 ///\return 0 if no error occurred.
 ////////////////////////////////////////////////////////////////////////////////////
-int start_sim(fmiComponent c)
+static int start_sim(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t*)c;
 
@@ -530,7 +530,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 					errDir = stat(fmuInstances[_c->index]->fmuLocation, &st);
 					if(errDir<0) 
 					{
-						fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The path to the resources"
+						fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The path to the resources"
 							" folder: %s is not valid! The path does not start with file: file:/, file:// or file:///\n", 
 							fmuLocation);
 						free (fmuInstances[_c->index]->fmuLocation);
@@ -601,7 +601,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
 #endif
 	if (retVal!=0){
-		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The path"
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The path"
 			" to the resources folder: %s is not valid!\n", fmuInstances[_c->index]->fmuCalLocation);
 		exit(1);
 	}
@@ -623,29 +623,27 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// copy model ID to FMU
 	fmuInstances[_c->index]->mID = (char *)calloc(sizeof(char), strlen (mID) + 1);
 	strcpy(fmuInstances[_c->index]->mID, mID);
-	printf("fmiInstantiateSlave: The FMU modelIdentifier is %s.\n", mID);
+	printf("fmiInstantiateSlave: The FMU modelIdentifier is %s.\n", fmuInstances[_c->index]->mID);
 
 	// get the model GUID of the FMU
 	mGUID = getString(fmuInstances[_c->index]->md, att_guid);
-	printf("fmiInstantiateSlave: The FMU modelGUID is %s.\n", mGUID);
-
 	fmuInstances[_c->index]->mGUID = (char *)calloc(sizeof(char), strlen (mGUID) + 1);
 	strcpy(fmuInstances[_c->index]->mGUID, mGUID);
+	printf("fmiInstantiateSlave: The FMU modelGUID is %s.\n", fmuInstances[_c->index]->mGUID);
 
 	// check whether the model is exported for FMI version 1.0
 	if(strcmp(getString(fmuInstances[_c->index]->md, att_fmiVersion), FMIVERSION) != 0){
-
-		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: Wrong FMI version"
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: Wrong FMI version"
 			" FMI version 1.0 is currently supported!\n");
 		exit(1);
 	}
 
 	// check whether GUIDs are consistent with modelDescription file
-	if(strcmp(fmuGUID, mGUID) != 0)
+	if(strcmp(fmuGUID, fmuInstances[_c->index]->mGUID) != 0)
 	{
-		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The given"
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The given"
 			" GUID %s is not equal to the GUID of the binary"
-			" (%s)!\n", fmuGUID, mGUID);
+			" (%s)!\n", fmuGUID, fmuInstances[_c->index]->mGUID);
 		exit(1);
 	}
 	// assign FMU parameters
@@ -656,7 +654,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	free (fmuInstances[_c->index]->xml_file_p);
 	// free tmpResCon
 	free (fmuInstances[_c->index]->tmpResCon);
-	printf("fmiInstantiateSlave: Slave %s is instantiated!\n", instanceName);
+	printf("fmiInstantiateSlave: Slave %s is instantiated!\n", fmuInstances[_c->index]->instanceName);
 	// reset the current working directory. This is particularly important for Dymola
 	// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER
@@ -731,6 +729,8 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	fmuInstances[_c->index]->numOutVar = -1;
 	fmuInstances[_c->index]->getCounter = 0;
 	fmuInstances[_c->index]->setCounter = 0;
+	fmuInstances[_c->index]->readReady = 0;
+	fmuInstances[_c->index]->writeReady = 0;
 
 	// change the directory to make sure that FMUs are not overwritten
 	if (fmuInstances[_c->index]->firstCallIni || fmuInstances[_c->index]->preInIni!= fmuInstances[_c->index]->index) {
@@ -879,6 +879,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	// fmiInitialize just active when pid of the child is invoked
 	if ((fmuInstances[_c->index]->pid == 0)){
 
+		printf ("This is the current FMU model ID %s and the resources folder %s\n", fmuInstances[_c->index]->mID, fmuInstances[_c->index]->resources_p);
 		// create the input and weather file for the run
 		retVal = createRunInFile(fmuInstances[_c->index]->tStartFMU , fmuInstances[_c->index]->tStopFMU, 
 			fmuInstances[_c->index]->mID,  fmuInstances[_c->index]->resources_p);
@@ -940,7 +941,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		{
 			fmuInstances[_c->index]->firstCallIni = 0;
 		}
-		printf("fmiInitializeSlave: Slave %s is initialized!\n", instanceName);
+		printf("fmiInitializeSlave: Slave %s is initialized!\n", fmuInstances[_c->index]->instanceName);
 		// reset the current working directory. This is particularly important for Dymola
 		// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER
@@ -950,7 +951,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 #endif
 		return fmiOK;
 	}
-	printf("fmiInitializeSlave: Slave %s is initialized!\n", instanceName);
+	printf("fmiInitializeSlave: Slave %s is initialized!\n", fmuInstances[_c->index]->instanceName);
 	// reset the current working directory. This is particularly important for Dymola
 	// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER

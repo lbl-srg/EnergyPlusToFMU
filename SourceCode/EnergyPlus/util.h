@@ -50,9 +50,6 @@ void setDebug(int value);
 
 int unpack(const char* fmuFilNam, const char* tmpPat);
 
-int write_socket_cfg(int portNum, const char* hostName);
-
-int start_sim();
 #endif /* _UTIL_H_ */
 
 /*

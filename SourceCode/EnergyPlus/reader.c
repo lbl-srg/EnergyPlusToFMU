@@ -199,7 +199,7 @@ void remSpaces_makeUpper(char *infile){
 ///\param to The character to use
 ///\param to The string to modify
 ///////////////////////////////////////////////////////////////////////////////
-void replace_char_from_string(char from, char to, char *str)
+static void replace_char_from_string(char from, char to, char *str)
 {
 	int i = 0;
 	int len = strlen(str)+1;
@@ -797,7 +797,7 @@ static int getCurrentDay(double time_s, int month, int leapyear){
 ///
 ///\param resources_p The path to resources folder
 ///////////////////////////////////////////////////////////////////////////////
-int getLeapYear(char * resources_p)
+static int getLeapYear(char * resources_p)
 {
 	char *runweafile;
 	struct stat st;
@@ -930,7 +930,7 @@ int getLeapYear(char * resources_p)
 ///
 ///\param str The input file
 ///////////////////////////////////////////////////////////////////////////////
-int getTimeStep (char *str)
+static int getTimeStep (char *str)
 {
 	int i;
 	int found = 0;
