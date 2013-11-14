@@ -126,7 +126,6 @@ typedef struct idfFmu_t {
 static int zI = 0;
 static int insNum = 0;
 static int firstCallIns = 1;
-static char instanceName[PATHLEN];
 
 static int arrsize = 0;
 static idfFmu_t **fmuInstances;
@@ -627,6 +626,8 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 
 	// get the model GUID of the FMU
 	mGUID = getString(fmuInstances[_c->index]->md, att_guid);
+
+	// copy model GUID to FMU
 	fmuInstances[_c->index]->mGUID = (char *)calloc(sizeof(char), strlen (mGUID) + 1);
 	strcpy(fmuInstances[_c->index]->mGUID, mGUID);
 	printf("fmiInstantiateSlave: The FMU modelGUID is %s.\n", fmuInstances[_c->index]->mGUID);
