@@ -39,21 +39,17 @@
 #include <process.h>
 #include <windows.h>
 #include <direct.h>
-//This is the sleeptime
-#define TS 1000
 #else
 #include <stdarg.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <signal.h>
+#include <spawn.h>
 #include <sys/types.h> /* pid_t */
 #include <sys/ioctl.h>
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR   -1
-//This is the sleeptime
-#define TS 1
 #endif
-
 
 typedef struct idfFmu_t {
 	int index;
@@ -272,20 +268,25 @@ static int removeFMUDir (fmiString str)
 static int start_sim(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t*)c;
+	struct stat stat_p;
 
 #ifdef _MSC_VER
 	FILE *fpBat;
 #else
-	char *str;
-#endif
-	FILE *fp;
+	pid_t pidLoc;
 
-	// check whether weather file exists.
-	fp = fopen(FRUNWEAFILE, "r");
+#ifdef __APPLE__
+#include <crt_externs.h>
+#define environ (*_NSGetEnviron())
+#else
+	extern char **environ;
+#endif
+	int retVal;
+#endif
 
 #ifdef _MSC_VER
 	fpBat = fopen("EP.bat", "w");
-	if (fp != NULL){
+	if (stat(FRUNWEAFILE, &stat_p)>=0){
 		// write the command string
 		fprintf(fpBat, "Epl-run.bat %s %s %s %s %s %s %s %s %s %s %s", fmuInstances[_c->index]->mID,
 			fmuInstances[_c->index]->mID, "idf", FRUNWEAFILE, "EP", "N", "nolimit", "N", "Y", "N", "1");
@@ -306,23 +307,20 @@ static int start_sim(fmiComponent c)
 	}
 
 #else
-	if (fp != NULL){
-		str = (char*)(calloc(sizeof(char), strlen(fmuInstances[_c->index]->mID) + strlen (FRUNWEAFILE) + 1 + 200));
-		sprintf(str, "runenergyplus %s %s", fmuInstances[_c->index]->mID, FRUNWEAFILE);
+	if (stat (FRUNWEAFILE, &stat_p)>=0){
+		char *const argv[] = {"runenergyplus", fmuInstances[_c->index]->mID, FRUNWEAFILE, NULL};
+		// execute the command string
+		retVal = posix_spawnp( &pidLoc, argv[0], NULL, NULL, argv, environ);
+		return retVal;
 	}
 	else
 	{
-		str = (char*)(calloc(sizeof(char), strlen(fmuInstances[_c->index]->mID) + 1 + 200));
-		sprintf(str, "runenergyplus %s", fmuInstances[_c->index]->mID);
+		char *const argv[] = {"runenergyplus", fmuInstances[_c->index]->mID, NULL};
+		// execute the command string
+		retVal = posix_spawnp( &pidLoc, argv[0], NULL, NULL, argv, environ);
+		return retVal;
 	}
-
-	// execute the command string
-	int retVal = system(str);
-	fclose(fp);
-	free (str);
-	return retVal;
 #endif
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -833,25 +831,8 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		return fmiFatal;
 	}
 	printf("fmiInitializeSlave: TCPServer Server waiting for clients on port: %d.\n", port_num);
-#ifndef _MSC_VER
 
-	fmuInstances[_c->index]->pid = fork();
-	if (fmuInstances[_c->index]->pid < 0)
-	{
-		perror("fmiInitializeSlave: Fork failed!\n");
-		exit(1);
-	}
-	if (fmuInstances[_c->index]->pid != 0 )
-	{
-		fmuInstances[_c->index]->newsockfd = accept(fmuInstances[_c->index]->sockfd, NULL, NULL);
-		printf("fmiInitializeSlave: The connection has been accepted!\n");
-	}
-#endif
-
-
-#ifdef _MSC_VER
 	fmuInstances[_c->index]->pid = 0;
-#endif
 
 	// get the number of input variables of the FMU
 	if (fmuInstances[_c->index]->numInVar ==-1)
@@ -917,16 +898,10 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 #endif
 		// start the simulation
 		retVal = start_sim(c);
-#ifdef _MSC_VER
 		fmuInstances[_c->index]->newsockfd = accept(fmuInstances[_c->index]->sockfd, NULL, NULL);
 		printf("fmiInitializeSlave: The connection has been accepted!\n");
-#endif
 		// check whether the simulation could start successfully
-#ifndef _MSC_VER
-		if  (retVal < 0) {
-#else
-		if  (retVal > 0) {
-#endif
+		if  (retVal != 0) {
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
 				"Fatal Error", "fmiInitializeSlave: The FMU instance could %s not be initialized. "
 				"EnergyPlus can't start . Check if EnergyPlus is installed and on the system path!\n", 
@@ -934,9 +909,8 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 			return fmiFatal;
 		}
 
-#ifdef _MSC_VER
 		fmuInstances[_c->index]->pid = 1;
-#endif
+
 		// reset firstCallIni
 		if (fmuInstances[_c->index]->firstCallIni) 
 		{
@@ -1246,10 +1220,6 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 		// wait for object to terminate
 		WaitForSingleObject (fmuInstances[_c->index]->handle_EP, INFINITE);
 		TerminateProcess(fmuInstances[_c->index]->handle_EP, 0);
-#else
-		// wait for object to terminate
-		waitpid(fmuInstances[_c->index]->pid, &status, WNOHANG );
-		kill (fmuInstances[_c->index]->pid, SIGKILL);
 #endif
 
 #ifdef _MSC_VER
@@ -1358,10 +1328,6 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 		// wait for object to terminate
 		WaitForSingleObject (fmuInstances[_c->index]->handle_EP, INFINITE);
 		TerminateProcess(fmuInstances[_c->index]->handle_EP, 0);
-#else
-		// wait for object to terminate
-		waitpid(fmuInstances[_c->index]->pid, &status, WNOHANG );
-		kill (fmuInstances[_c->index]->pid, SIGKILL);
 #endif
 
 #ifdef _MSC_VER
