@@ -138,7 +138,7 @@ void findFileDelete()
 	{
 		remove(OLDDAYWEEK);
 	}
-	if (!stat (VARCFG, &stat_p))
+	if (stat (VARCFG, &stat_p)>=0)
 	{
 		remove(VARCFG);
 	}
