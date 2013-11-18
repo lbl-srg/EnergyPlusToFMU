@@ -109,13 +109,12 @@ typedef struct idfFmu_t {
 	fmiReal simTimRec;
 	fmiReal communicationStepSize;
 	fmiReal curComm;
+	int proc;
 
 #ifdef _MSC_VER
-	HANDLE  handle_EP;
-	int pid;
+	HANDLE  pid;
 #else
 	pid_t  pid;
-	pid_t  pidLoc;
 #endif
 } idfFmu_t;
 
@@ -296,8 +295,8 @@ static int start_sim(fmiComponent c)
 			fmuInstances[_c->index]->mID, "idf", "\" \"", "NONE", "N", "nolimit", "N", "Y", "N", "1");
 	}
 	fclose (fpBat);
-	fmuInstances[_c->index]->handle_EP = (HANDLE)_spawnl(P_NOWAIT, "EP.bat", "EP.bat", NULL); 
-	if (fmuInstances[_c->index]->handle_EP > 0 ) {
+	fmuInstances[_c->index]->pid = (HANDLE)_spawnl(P_NOWAIT, "EP.bat", "EP.bat", NULL); 
+	if (fmuInstances[_c->index]->pid > 0 ) {
 		return 0;
 	}
 	else {
@@ -308,14 +307,14 @@ static int start_sim(fmiComponent c)
 	if (stat (FRUNWEAFILE, &stat_p)>=0){
 		char *const argv[] = {"runenergyplus", fmuInstances[_c->index]->mID, FRUNWEAFILE, NULL};
 		// execute the command string
-		retVal = posix_spawnp( &fmuInstances[_c->index]->pidLoc, argv[0], NULL, NULL, argv, environ);
+		retVal = posix_spawnp( &fmuInstances[_c->index]->pid, argv[0], NULL, NULL, argv, environ);
 		return retVal;
 	}
 	else
 	{
 		char *const argv[] = {"runenergyplus", fmuInstances[_c->index]->mID, NULL};
 		// execute the command string
-		retVal = posix_spawnp( &fmuInstances[_c->index]->pidLoc, argv[0], NULL, NULL, argv, environ);
+		retVal = posix_spawnp( &fmuInstances[_c->index]->pid, argv[0], NULL, NULL, argv, environ);
 		return retVal;
 	}
 #endif
@@ -830,7 +829,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	}
 	printf("fmiInitializeSlave: TCPServer Server waiting for clients on port: %d.\n", port_num);
 
-	fmuInstances[_c->index]->pid = 0;
+	fmuInstances[_c->index]->proc = 0;
 
 	// get the number of input variables of the FMU
 	if (fmuInstances[_c->index]->numInVar ==-1)
@@ -856,8 +855,8 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 			fmuInstances[_c->index]->instanceName);
 		return fmiFatal;
 	}
-	// fmiInitialize just active when pid of the child is invoked
-	if ((fmuInstances[_c->index]->pid == 0)){
+	// fmiInitialize just active when proc of the child is invoked
+	if ((fmuInstances[_c->index]->proc == 0)){
 
 		// create the input and weather file for the run
 		retVal = createRunInFile(fmuInstances[_c->index]->tStartFMU , fmuInstances[_c->index]->tStopFMU, 
@@ -906,7 +905,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 			return fmiFatal;
 		}
 
-		fmuInstances[_c->index]->pid = 1;
+		fmuInstances[_c->index]->proc = 1;
 
 		// reset firstCallIni
 		if (fmuInstances[_c->index]->firstCallIni) 
@@ -947,7 +946,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	int retVal;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		FILE *fp;
 		// get current communication point
@@ -1151,7 +1150,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 DllExport fmiStatus fmiCancelStep(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
 			"Warning", "fmiCancelStep: The function fmiCancelStep(..) is not provided!\n");
@@ -1170,7 +1169,7 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	int retVal;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 #ifndef _MSC_VER
 		int status;
@@ -1216,10 +1215,10 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 		findFileDelete();
 #ifdef _MSC_VER
 		// wait for object to terminate
-		WaitForSingleObject (fmuInstances[_c->index]->handle_EP, INFINITE);
-		TerminateProcess(fmuInstances[_c->index]->handle_EP, 0);
+		WaitForSingleObject (fmuInstances[_c->index]->pid, INFINITE);
+		TerminateProcess(fmuInstances[_c->index]->pid, 0);
 #else
-		waitpid (fmuInstances[_c->index]->pidLoc, &status, 0);
+		waitpid (fmuInstances[_c->index]->pid, &status, 0);
 #endif
 
 #ifdef _MSC_VER
@@ -1261,7 +1260,7 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 DllExport fmiStatus fmiResetSlave(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
 			"fmiResetSlave: fmiResetSlave(..): is not provided!\n");
@@ -1279,7 +1278,7 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	int retVal;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 #ifndef _MSC_VER
 		int status;
@@ -1326,10 +1325,10 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 		findFileDelete();
 #ifdef _MSC_VER
 		// wait for object to terminate
-		WaitForSingleObject (fmuInstances[_c->index]->handle_EP, INFINITE);
-		TerminateProcess(fmuInstances[_c->index]->handle_EP, 0);
+		WaitForSingleObject (fmuInstances[_c->index]->pid, INFINITE);
+		TerminateProcess(fmuInstances[_c->index]->pid, 0);
 #else
-		waitpid (fmuInstances[_c->index]->pidLoc, &status, 0);
+		waitpid (fmuInstances[_c->index]->pid, &status, 0);
 #endif
 
 #ifdef _MSC_VER
@@ -1369,7 +1368,7 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 DllExport fmiStatus fmiSetDebugLogging (fmiComponent c, fmiBoolean loggingOn)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
 			"fmiSetDebugLogging: fmiSetDebugLogging(): fmiSetDebugLogging is not provided!\n");
@@ -1391,7 +1390,7 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	int retVal;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		// fmiValueReference to check for input variable
 		fmiValueReference vrTemp;
@@ -1463,7 +1462,7 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		if(nvr>0)
 		{
@@ -1488,7 +1487,7 @@ DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], 
 DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiBoolean value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		if(nvr>0)
 		{
@@ -1513,7 +1512,7 @@ DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], 
 DllExport fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiString value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		if(nvr>0)
 		{
@@ -1539,7 +1538,7 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	int retVal;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		fmiValueReference vrTemp;
 		ScalarVariable** vars;
@@ -1623,7 +1622,7 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiInteger value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		if(nvr>0)
 		{
@@ -1648,7 +1647,7 @@ DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], 
 DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiBoolean value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		if(nvr>0)
 		{
@@ -1673,7 +1672,7 @@ DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], 
 DllExport fmiStatus fmiGetString (fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiString  value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		if(nvr>0)
 		{
@@ -1701,7 +1700,7 @@ DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueRe
 	const fmiInteger order[], fmiReal value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
 			"fmiGetRealOutputDerivatives: fmiGetRealOutputDerivatives(): Real Output Derivatives are not provided!\n");
@@ -1725,7 +1724,7 @@ DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueRef
 	const fmiInteger order[], const fmiReal value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
 			"fmiSetRealInputDerivatives: fmiSetRealInputDerivatives(): Real Input Derivatives are not provided!\n");
@@ -1745,7 +1744,7 @@ DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueRef
 DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatus* value)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
 			"fmiGetStatus: fmiGetStatus(): is not provided!\n");
@@ -1765,7 +1764,7 @@ DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatu
 DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiReal* value)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
 			"fmiGetRealStatus: fmiGetRealStatus(): is not provided!\n");
@@ -1785,7 +1784,7 @@ DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiR
 DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, fmiInteger* value)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
@@ -1805,7 +1804,7 @@ DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, f
 DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, fmiBoolean* value)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
 			"fmiGetBooleanStatus: fmiGetBooleanStatus(): is not provided!\n");
@@ -1825,7 +1824,7 @@ DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, f
 DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, fmiString* value)
 {	
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->pid != 0)
+	if (fmuInstances[_c->index]->proc != 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
 			"fmiGetStringStatus: fmiGetStringStatus(): is not provided!\n");
