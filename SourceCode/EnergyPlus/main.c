@@ -84,13 +84,6 @@ typedef struct idfFmu_t {
 	int flaGetRealCall;
 	int flaGetWri;
 	int flaGetRea;
-	int preInDoStep;
-	int preInGetReal;
-	int preInSetReal;
-	int preInFree;
-	int preInTerm;
-	int preInIni;
-	int preInRes;
 	int flaWri;
 	int flaRea;
 	int readReady;
@@ -712,13 +705,6 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	fmuInstances[_c->index]->flaGetRealCall         = 0;
 
 	fmuInstances[_c->index]->flaGetRea = 0;
-	fmuInstances[_c->index]->preInDoStep = 0;
-	fmuInstances[_c->index]->preInGetReal = 0;
-	fmuInstances[_c->index]->preInSetReal = 0;
-	fmuInstances[_c->index]->preInFree = 0;
-	fmuInstances[_c->index]->preInTerm = 0;
-	fmuInstances[_c->index]->preInIni = 0;
-	fmuInstances[_c->index]->preInRes = 0;
 	fmuInstances[_c->index]->flaWri = 0;
 	fmuInstances[_c->index]->flaRea = 0;
 	fmuInstances[_c->index]->numInVar  = -1;
@@ -729,21 +715,16 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	fmuInstances[_c->index]->writeReady = 0;
 
 	// change the directory to make sure that FMUs are not overwritten
-	if (fmuInstances[_c->index]->firstCallIni || fmuInstances[_c->index]->preInIni!= fmuInstances[_c->index]->index) {
 #ifdef _MSC_VER
-		retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+	retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
 #else
-		retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
+	retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
 #endif
-
-	}
 	if (retVal!=0){
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
 			"fmiInitializeSlave: The path to the resources folder: %s is not valid!\n", fmuInstances[_c->index]->fmuCalLocation);
 		return fmiFatal;
 	}
-	fmuInstances[_c->index]->preInIni = fmuInstances[_c->index]->index;
-
 	///////////////////////////////////////////////////////////////////////////////////
 	// create the socket server
 
@@ -857,7 +838,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	}
 	// fmiInitialize just active when proc of the child is invoked
 	if ((fmuInstances[_c->index]->proc == 0)){
-
+		FILE *fp;
 		// create the input and weather file for the run
 		retVal = createRunInFile(fmuInstances[_c->index]->tStartFMU , fmuInstances[_c->index]->tStopFMU, 
 			fmuInstances[_c->index]->mID,  fmuInstances[_c->index]->resources_p);
@@ -865,7 +846,6 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		// free resources_p which is not longer used
 		free (fmuInstances[_c->index]->resources_p);
 		if  (retVal != 0) {
-
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
 				"Fatal Error", "fmiInitializeSlave: The FMU instance could not be initialized!\n");
 			fprintf(stderr, "fmiInitializeSlave: Can't create input file cfg!\n");
@@ -888,6 +868,17 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 			setenv ("ENERGYPLUS_WEATHER", "WeatherData", 0);
 		}
 #endif
+		if((fp = fopen(FTIMESTEP, "r")) != NULL) {
+			retVal = fscanf(fp, "%d", &(fmuInstances[_c->index]->timeStepIDF));
+			fclose (fp);
+		}
+		else
+		{
+			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
+				"fmiInitializeSlave: A valid time step could not be determined!\n");
+			fprintf(stderr, "fmiInitializeSlave: Can't read time step file!\n");
+			return fmiFatal;
+		}
 
 #ifndef _MSC_VER
 		umask(process_mask);
@@ -948,39 +939,15 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	int retVal;
 	if (fmuInstances[_c->index]->proc != 0)
 	{
-		FILE *fp;
 		// get current communication point
 		fmuInstances[_c->index]->curComm = currentCommunicationPoint;
 		// get current communication step size
 		fmuInstances[_c->index]->communicationStepSize = communicationStepSize;
 		// assign current communication point to value to be sent
 		fmuInstances[_c->index]->simTimSen = fmuInstances[_c->index]->curComm;
-		if (fmuInstances[_c->index]->firstCallDoStep || (fmuInstances[_c->index]->index!=fmuInstances[_c->index]->preInDoStep)){
-			// change the directory to make sure that FMUs are not overwritten
-#ifdef _MSC_VER
-			retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
-#else
-			retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
-#endif
-		}
-		// save previous index of doStep
-		fmuInstances[_c->index]->preInDoStep = fmuInstances[_c->index]->index;
-
-		// check if timeStep is defined
+		// initialize the nexComm value to start communication point
 		if (fmuInstances[_c->index]->firstCallDoStep){
-			// initialize the nexComm value to start communication point
 			fmuInstances[_c->index]->nexComm = fmuInstances[_c->index]->curComm;
-			if((fp = fopen(FTIMESTEP, "r")) != NULL) {
-				retVal = fscanf(fp, "%d", &(fmuInstances[_c->index]->timeStepIDF));
-				fclose (fp);
-			}
-			else
-			{
-				fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-					"fmiDoStep: A valid time step could not be determined!\n");
-				fprintf(stderr, "fmiDoStep: Can't read time step file!\n");
-				return fmiFatal;
-			}
 		}
 
 		// check for the first communication instant
@@ -1116,28 +1083,15 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		}
 
 		// calculate next communication point
-		fmuInstances[_c->index]->nexComm = fmuInstances[_c->index]->curComm + fmuInstances[_c->index]->communicationStepSize;
+		fmuInstances[_c->index]->nexComm = fmuInstances[_c->index]->curComm 
+			+ fmuInstances[_c->index]->communicationStepSize;
 		// set the firstcall flag to zero
 		if (fmuInstances[_c->index]->firstCallDoStep)
 		{
 			fmuInstances[_c->index]->firstCallDoStep = 0;
-		}
-		// reset the current working directory. This is particularly important for Dymola
-		// otherwise Dymola will write results at wrong place
-#ifdef _MSC_VER
-		retVal = _chdir(fmuInstances[_c->index]->cwd);
-#else
-		retVal = chdir(fmuInstances[_c->index]->cwd);
-#endif
+		}		
 		return fmiOK;
 	}
-	// reset the current working directory. This is particularly important for Dymola
-	// otherwise Dymola will write results at wrong place
-#ifdef _MSC_VER
-	retVal = _chdir(fmuInstances[_c->index]->cwd);
-#else
-	retVal = chdir(fmuInstances[_c->index]->cwd);
-#endif
 	return fmiOK;
 }  
 
@@ -1190,17 +1144,12 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 				fmuInstances[_c->index]->instanceName);
 			return fmiOK;
 		}
-		if (fmuInstances[_c->index]->firstCallTerm || (fmuInstances[_c->index]->index!=fmuInstances[_c->index]->preInTerm)){
-			// change the directory to make sure that FMUs are not overwritten
+		// change the directory to make sure that FMUs are not overwritten
 #ifdef _MSC_VER
-			retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+		retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
 #else
-			retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
+		retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
 #endif
-		}
-		// save previous index of doStep
-		fmuInstances[_c->index]->preInTerm = fmuInstances[_c->index]->index;
-
 		// send end of simulation flag
 		fmuInstances[_c->index]->flaWri = 1;
 		fmuInstances[_c->index]->flaRea = 1;
@@ -1239,15 +1188,6 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 		//free (_c);
 		return fmiOK;
 	}
-	// reset the current working directory. This is particularly important for Dymola
-	// otherwise Dymola will terminate the simulation but returns false
-#ifdef _MSC_VER
-	retVal = _chdir(fmuInstances[_c->index]->cwd);
-	// reset the current working directory. This is particularly important for Dymola
-	// otherwise Dymola will write results at wrong place
-#else
-	retVal = chdir(fmuInstances[_c->index]->cwd);
-#endif
 	return fmiOK;
 }
 
@@ -1300,17 +1240,12 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 				fmuInstances[_c->index]->instanceName);
 			return ;
 		}
-		if (fmuInstances[_c->index]->firstCallFree || (fmuInstances[_c->index]->index!=fmuInstances[_c->index]->preInFree)){
-			// change the directory to make sure that FMUs are not overwritten
+		// change the directory to make sure that FMUs are not overwritten
 #ifdef _MSC_VER
-			retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+		retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
 #else
-			retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
+		retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
 #endif
-		}
-		// save previous index of doStep
-		fmuInstances[_c->index]->preInFree = fmuInstances[_c->index]->index;
-
 		// send end of simulation flag
 		fmuInstances[_c->index]->flaWri = 1;
 		fmuInstances[_c->index]->flaRea = 1;
@@ -1346,16 +1281,10 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 		retVal = chdir(fmuInstances[_c->index]->cwd);
 		// FIXME: free FMU instance does not work with Dymola 2014
 		// free (_c);
+		return;
 #endif
 	}
-	// reset the current working directory. This is particularly important for Dymola
-	// otherwise Dymola will terminate the simulation but returns false
-#ifdef _MSC_VER
-	retVal = _chdir(fmuInstances[_c->index]->cwd);
-#else
-	retVal = chdir(fmuInstances[_c->index]->cwd);
-#endif
-
+	return;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1397,17 +1326,6 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 		ScalarVariable** vars;
 		int i, k;
 
-		if (fmuInstances[_c->index]->firstCallSetReal || (fmuInstances[_c->index]->index!=fmuInstances[_c->index]->preInSetReal)){
-			// change the directory to make sure that FMUs are not overwritten
-#ifdef _MSC_VER
-			retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
-#else
-			retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
-#endif
-		}
-		// save previous index of doStep
-		fmuInstances[_c->index]->preInSetReal = fmuInstances[_c->index]->index;
-
 		vars = fmuInstances[_c->index]->md->modelVariables;
 		if (!fmuInstances[_c->index]->writeReady){
 			for(i=0; i<nvr; i++)
@@ -1431,22 +1349,8 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 		if (fmuInstances[_c->index]->firstCallSetReal){
 			fmuInstances[_c->index]->firstCallSetReal = 0;
 		}
-		// reset the current working directory. This is particularly important for Dymola
-		// otherwise Dymola will write results at wrong place
-#ifdef _MSC_VER
-		retVal = _chdir(fmuInstances[_c->index]->cwd);
-#else
-		retVal = chdir(fmuInstances[_c->index]->cwd);
-#endif
 		return fmiOK;
 	}
-	// reset the current working directory. This is particularly important for Dymola
-	// otherwise Dymola will write results at wrong place
-#ifdef _MSC_VER
-	retVal = _chdir(fmuInstances[_c->index]->cwd);
-#else
-	retVal = chdir(fmuInstances[_c->index]->cwd);
-#endif
 	return fmiOK;
 }
 
@@ -1547,17 +1451,6 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 		vars = fmuInstances[_c->index]->md->modelVariables;
 		fmuInstances[_c->index]->flaGetRealCall = 1;
 
-		if (fmuInstances[_c->index]->firstCallGetReal || (fmuInstances[_c->index]->index!=fmuInstances[_c->index]->preInGetReal)){
-			// change the directory to make sure that FMUs are not overwritten
-#ifdef _MSC_VER
-			retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
-#else
-			retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
-#endif
-		}
-		// save previous index of doStep
-		fmuInstances[_c->index]->preInGetReal = fmuInstances[_c->index]->index;
-
 		if (fmuInstances[_c->index]->firstCallGetReal||((fmuInstances[_c->index]->firstCallGetReal == 0) 
 			&& (fmuInstances[_c->index]->flaGetRea)))  {
 				// read the values from the server
@@ -1591,22 +1484,8 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 		{
 			fmuInstances[_c->index]->firstCallGetReal = 0;
 		}
-		// reset the current working directory. This is particularly important for Dymola
-		// otherwise Dymola will write results at wrong place
-#ifdef _MSC_VER
-		retVal = _chdir(fmuInstances[_c->index]->cwd);
-#else
-		retVal = chdir(fmuInstances[_c->index]->cwd);
-#endif
 		return fmiOK;
 	}
-	// reset the current working directory. This is particularly important for Dymola
-	// otherwise Dymola will write results at wrong place
-#ifdef _MSC_VER
-	retVal = _chdir(fmuInstances[_c->index]->cwd);
-#else
-	retVal = chdir(fmuInstances[_c->index]->cwd);
-#endif
 	return fmiOK;
 }
 
