@@ -68,7 +68,6 @@ typedef struct idfFmu_t {
 	int numOutVar;
 	int sockfd;
 	int newsockfd;
-
 	fmiReal timeout; 
 	fmiBoolean visible;
 	fmiBoolean interactive;
@@ -112,10 +111,11 @@ typedef struct idfFmu_t {
 	fmiReal curComm;
 
 #ifdef _MSC_VER
-	int  pid ;
 	HANDLE  handle_EP;
+	int pid;
 #else
 	pid_t  pid;
+	pid_t  pidLoc;
 #endif
 } idfFmu_t;
 
@@ -273,8 +273,6 @@ static int start_sim(fmiComponent c)
 #ifdef _MSC_VER
 	FILE *fpBat;
 #else
-	pid_t pidLoc;
-
 #ifdef __APPLE__
 #include <crt_externs.h>
 #define environ (*_NSGetEnviron())
@@ -310,14 +308,14 @@ static int start_sim(fmiComponent c)
 	if (stat (FRUNWEAFILE, &stat_p)>=0){
 		char *const argv[] = {"runenergyplus", fmuInstances[_c->index]->mID, FRUNWEAFILE, NULL};
 		// execute the command string
-		retVal = posix_spawnp( &pidLoc, argv[0], NULL, NULL, argv, environ);
+		retVal = posix_spawnp( &fmuInstances[_c->index]->pidLoc, argv[0], NULL, NULL, argv, environ);
 		return retVal;
 	}
 	else
 	{
 		char *const argv[] = {"runenergyplus", fmuInstances[_c->index]->mID, NULL};
 		// execute the command string
-		retVal = posix_spawnp( &pidLoc, argv[0], NULL, NULL, argv, environ);
+		retVal = posix_spawnp( &fmuInstances[_c->index]->pidLoc, argv[0], NULL, NULL, argv, environ);
 		return retVal;
 	}
 #endif
@@ -861,7 +859,6 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	// fmiInitialize just active when pid of the child is invoked
 	if ((fmuInstances[_c->index]->pid == 0)){
 
-		printf ("This is the current FMU model ID %s and the resources folder %s\n", fmuInstances[_c->index]->mID, fmuInstances[_c->index]->resources_p);
 		// create the input and weather file for the run
 		retVal = createRunInFile(fmuInstances[_c->index]->tStartFMU , fmuInstances[_c->index]->tStopFMU, 
 			fmuInstances[_c->index]->mID,  fmuInstances[_c->index]->resources_p);
@@ -953,7 +950,6 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	if (fmuInstances[_c->index]->pid != 0)
 	{
 		FILE *fp;
-
 		// get current communication point
 		fmuInstances[_c->index]->curComm = currentCommunicationPoint;
 		// get current communication step size
@@ -982,7 +978,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 			else
 			{
 				fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-					"fmiDoStep: The valid time step could not be determined!\n");
+					"fmiDoStep: A valid time step could not be determined!\n");
 				fprintf(stderr, "fmiDoStep: Can't read time step file!\n");
 				return fmiFatal;
 			}
@@ -993,7 +989,8 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 			fmuInstances[_c->index]->tStartFMU) > 1e-10))
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-				"fmiDoStep: An error occured in a previous call. First communication time != tStart!\n");
+				"fmiDoStep: An error occured in a previous call. First communication time: %f != tStart: %f!\n",
+				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->tStartFMU);
 			return fmiFatal;
 		}
 		// check if FMU needs to reject time step
@@ -1016,7 +1013,8 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		if ( fabs(fmuInstances[_c->index]->communicationStepSize - (3600/fmuInstances[_c->index]->timeStepIDF)) > 1e-10)
 		{
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep:"
-				" An error occured in a previous call. CommunicationStepSize is different from time step in input file!\n");
+				" An error occured in a previous call. CommunicationStepSize: %f is different from time step: %d in input file!\n",
+				fmuInstances[_c->index]->communicationStepSize, fmuInstances[_c->index]->timeStepIDF);
 			return fmiFatal;
 		}
 
@@ -1032,12 +1030,12 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		if ((fmuInstances[_c->index]->firstCallDoStep == 0)
 			&& (fabs(fmuInstances[_c->index]->curComm - fmuInstances[_c->index]->nexComm) > 1e-10))
 		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep: "
+			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", "fmiDoStep: "
 				"Current communication point: %f is not equals to the previous simulation time + "
 				"communicationStepSize: %f + %f!\n",
 				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->nexComm, 
 				fmuInstances[_c->index]->communicationStepSize);
-			return fmiFatal;
+			return fmiError;
 		}
 
 		// check end of simulation
@@ -1220,6 +1218,8 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 		// wait for object to terminate
 		WaitForSingleObject (fmuInstances[_c->index]->handle_EP, INFINITE);
 		TerminateProcess(fmuInstances[_c->index]->handle_EP, 0);
+#else
+		waitpid (fmuInstances[_c->index]->pidLoc, &status, 0);
 #endif
 
 #ifdef _MSC_VER
@@ -1328,6 +1328,8 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 		// wait for object to terminate
 		WaitForSingleObject (fmuInstances[_c->index]->handle_EP, INFINITE);
 		TerminateProcess(fmuInstances[_c->index]->handle_EP, 0);
+#else
+		waitpid (fmuInstances[_c->index]->pidLoc, &status, 0);
 #endif
 
 #ifdef _MSC_VER
