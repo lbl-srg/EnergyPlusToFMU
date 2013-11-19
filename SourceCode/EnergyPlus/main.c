@@ -102,7 +102,6 @@ typedef struct idfFmu_t {
 	fmiReal simTimRec;
 	fmiReal communicationStepSize;
 	fmiReal curComm;
-	int proc;
 
 #ifdef _MSC_VER
 	HANDLE  pid;
@@ -651,6 +650,8 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 #else
 	retVal = chdir(fmuInstances[_c->index]->cwd);
 #endif
+	// This is required to prevent Dymola to call fmiSetReal before the initialization
+	fmuInstances[_c->index]->firstCallIni = 1;
 	return(c); 
 }
 
@@ -667,6 +668,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 {
 	int retVal;
 	idfFmu_t* _c = (idfFmu_t *)c;
+	FILE *fp;
 
 #ifdef _MSC_VER
 	int sockLength;
@@ -700,19 +702,17 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	fmuInstances[_c->index]->firstCallDoStep        = 1;
 	fmuInstances[_c->index]->firstCallFree          = 1;
 	fmuInstances[_c->index]->firstCallTerm          = 1;
-	fmuInstances[_c->index]->firstCallIni           = 1;
 	fmuInstances[_c->index]->firstCallRes           = 1;
 	fmuInstances[_c->index]->flaGetRealCall         = 0;
-
 	fmuInstances[_c->index]->flaGetRea = 0;
 	fmuInstances[_c->index]->flaWri = 0;
 	fmuInstances[_c->index]->flaRea = 0;
-	fmuInstances[_c->index]->numInVar  = -1;
-	fmuInstances[_c->index]->numOutVar = -1;
 	fmuInstances[_c->index]->getCounter = 0;
 	fmuInstances[_c->index]->setCounter = 0;
 	fmuInstances[_c->index]->readReady = 0;
 	fmuInstances[_c->index]->writeReady = 0;
+	fmuInstances[_c->index]->numInVar  = -1;
+	fmuInstances[_c->index]->numOutVar = -1;
 
 	// change the directory to make sure that FMUs are not overwritten
 #ifdef _MSC_VER
@@ -810,8 +810,6 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	}
 	printf("fmiInitializeSlave: TCPServer Server waiting for clients on port: %d.\n", port_num);
 
-	fmuInstances[_c->index]->proc = 0;
-
 	// get the number of input variables of the FMU
 	if (fmuInstances[_c->index]->numInVar ==-1)
 	{
@@ -836,82 +834,67 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 			fmuInstances[_c->index]->instanceName);
 		return fmiFatal;
 	}
-	// fmiInitialize just active when proc of the child is invoked
-	if ((fmuInstances[_c->index]->proc == 0)){
-		FILE *fp;
-		// create the input and weather file for the run
-		retVal = createRunInFile(fmuInstances[_c->index]->tStartFMU , fmuInstances[_c->index]->tStopFMU, 
-			fmuInstances[_c->index]->mID,  fmuInstances[_c->index]->resources_p);
+	// create the input and weather file for the run
+	retVal = createRunInFile(fmuInstances[_c->index]->tStartFMU , fmuInstances[_c->index]->tStopFMU, 
+		fmuInstances[_c->index]->mID,  fmuInstances[_c->index]->resources_p);
 
-		// free resources_p which is not longer used
-		free (fmuInstances[_c->index]->resources_p);
-		if  (retVal != 0) {
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-				"Fatal Error", "fmiInitializeSlave: The FMU instance could not be initialized!\n");
-			fprintf(stderr, "fmiInitializeSlave: Can't create input file cfg!\n");
-			return fmiFatal;
-		}
+	// free resources_p which is not longer used
+	free (fmuInstances[_c->index]->resources_p);
+	if  (retVal != 0) {
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
+			"Fatal Error", "fmiInitializeSlave: The FMU instance could not be initialized!\n");
+		fprintf(stderr, "fmiInitializeSlave: Can't create input file cfg!\n");
+		return fmiFatal;
+	}
 #ifndef _MSC_VER
-		// create a directory and copy the weather file into it
-		if (stat (FRUNWEAFILE, &stat_p)>=0)
+	// create a directory and copy the weather file into it
+	if (stat (FRUNWEAFILE, &stat_p)>=0)
+	{
+		if (stat ("WeatherData", &stat_p)<0)
 		{
-			if (stat ("WeatherData", &stat_p)<0)
-			{
-				char *str;
-				mkdir ("WeatherData", S_IRWXU | S_IRWXG | S_IRWXO);
-				str = (char *)calloc(sizeof(char), strlen (FRUNWEAFILE) + strlen ("WeatherData/") + 50);
-				sprintf(str, "cp -f %s %s", FRUNWEAFILE, "WeatherData/");
-				retVal = system (str);
-				free(str);
-			}
-			// set environment variable for weather file
-			setenv ("ENERGYPLUS_WEATHER", "WeatherData", 0);
+			char *str;
+			mkdir ("WeatherData", S_IRWXU | S_IRWXG | S_IRWXO);
+			str = (char *)calloc(sizeof(char), strlen (FRUNWEAFILE) + strlen ("WeatherData/") + 50);
+			sprintf(str, "cp -f %s %s", FRUNWEAFILE, "WeatherData/");
+			retVal = system (str);
+			free(str);
 		}
+		// set environment variable for weather file
+		setenv ("ENERGYPLUS_WEATHER", "WeatherData", 0);
+	}
 #endif
-		if((fp = fopen(FTIMESTEP, "r")) != NULL) {
-			retVal = fscanf(fp, "%d", &(fmuInstances[_c->index]->timeStepIDF));
-			fclose (fp);
-		}
-		else
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-				"fmiInitializeSlave: A valid time step could not be determined!\n");
-			fprintf(stderr, "fmiInitializeSlave: Can't read time step file!\n");
-			return fmiFatal;
-		}
+	if((fp = fopen(FTIMESTEP, "r")) != NULL) {
+		retVal = fscanf(fp, "%d", &(fmuInstances[_c->index]->timeStepIDF));
+		fclose (fp);
+	}
+	else
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
+			"fmiInitializeSlave: A valid time step could not be determined!\n");
+		fprintf(stderr, "fmiInitializeSlave: Can't read time step file!\n");
+		return fmiFatal;
+	}
 
 #ifndef _MSC_VER
-		umask(process_mask);
+	umask(process_mask);
 #endif
-		// start the simulation
-		retVal = start_sim(c);
-		fmuInstances[_c->index]->newsockfd = accept(fmuInstances[_c->index]->sockfd, NULL, NULL);
-		printf("fmiInitializeSlave: The connection has been accepted!\n");
-		// check whether the simulation could start successfully
-		if  (retVal != 0) {
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-				"Fatal Error", "fmiInitializeSlave: The FMU instance could %s not be initialized. "
-				"EnergyPlus can't start . Check if EnergyPlus is installed and on the system path!\n", 
-				fmuInstances[_c->index]->instanceName);
-			return fmiFatal;
-		}
+	// start the simulation
+	retVal = start_sim(c);
+	fmuInstances[_c->index]->newsockfd = accept(fmuInstances[_c->index]->sockfd, NULL, NULL);
+	printf("fmiInitializeSlave: The connection has been accepted!\n");
+	// check whether the simulation could start successfully
+	if  (retVal != 0) {
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
+			"Fatal Error", "fmiInitializeSlave: The FMU instance could %s not be initialized. "
+			"EnergyPlus can't start . Check if EnergyPlus is installed and on the system path!\n", 
+			fmuInstances[_c->index]->instanceName);
+		return fmiFatal;
+	}
 
-		fmuInstances[_c->index]->proc = 1;
-
-		// reset firstCallIni
-		if (fmuInstances[_c->index]->firstCallIni) 
-		{
-			fmuInstances[_c->index]->firstCallIni = 0;
-		}
-		printf("fmiInitializeSlave: Slave %s is initialized!\n", fmuInstances[_c->index]->instanceName);
-		// reset the current working directory. This is particularly important for Dymola
-		// otherwise Dymola will write results at wrong place
-#ifdef _MSC_VER
-		retVal = _chdir(fmuInstances[_c->index]->cwd);
-#else
-		retVal = chdir(fmuInstances[_c->index]->cwd);
-#endif
-		return fmiOK;
+	// reset firstCallIni
+	if (fmuInstances[_c->index]->firstCallIni) 
+	{
+		fmuInstances[_c->index]->firstCallIni = 0;
 	}
 	printf("fmiInitializeSlave: Slave %s is initialized!\n", fmuInstances[_c->index]->instanceName);
 	// reset the current working directory. This is particularly important for Dymola
@@ -937,161 +920,158 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	int retVal;
-	if (fmuInstances[_c->index]->proc != 0)
+
+	// get current communication point
+	fmuInstances[_c->index]->curComm = currentCommunicationPoint;
+	// get current communication step size
+	fmuInstances[_c->index]->communicationStepSize = communicationStepSize;
+	// assign current communication point to value to be sent
+	fmuInstances[_c->index]->simTimSen = fmuInstances[_c->index]->curComm;
+	// initialize the nexComm value to start communication point
+	if (fmuInstances[_c->index]->firstCallDoStep){
+		fmuInstances[_c->index]->nexComm = fmuInstances[_c->index]->curComm;
+	}
+
+	// check for the first communication instant
+	if (fmuInstances[_c->index]->firstCallDoStep && (fabs(fmuInstances[_c->index]->curComm - 
+		fmuInstances[_c->index]->tStartFMU) > 1e-10))
 	{
-		// get current communication point
-		fmuInstances[_c->index]->curComm = currentCommunicationPoint;
-		// get current communication step size
-		fmuInstances[_c->index]->communicationStepSize = communicationStepSize;
-		// assign current communication point to value to be sent
-		fmuInstances[_c->index]->simTimSen = fmuInstances[_c->index]->curComm;
-		// initialize the nexComm value to start communication point
-		if (fmuInstances[_c->index]->firstCallDoStep){
-			fmuInstances[_c->index]->nexComm = fmuInstances[_c->index]->curComm;
-		}
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
+			"fmiDoStep: An error occured in a previous call. First communication time: %f != tStart: %f!\n",
+			fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->tStartFMU);
+		return fmiFatal;
+	}
+	// check if FMU needs to reject time step
+	if(!newStep)
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
+			"fmiDoStep: FMU can not reject time steps.");
+		return fmiFatal;
+	}
 
-		// check for the first communication instant
-		if (fmuInstances[_c->index]->firstCallDoStep && (fabs(fmuInstances[_c->index]->curComm - 
-			fmuInstances[_c->index]->tStartFMU) > 1e-10))
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-				"fmiDoStep: An error occured in a previous call. First communication time: %f != tStart: %f!\n",
-				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->tStartFMU);
-			return fmiFatal;
-		}
-		// check if FMU needs to reject time step
-		if(!newStep)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-				"fmiDoStep: FMU can not reject time steps.");
-			return fmiFatal;
-		}
+	// check whether the communication step size is different from null
+	if (fmuInstances[_c->index]->communicationStepSize == 0)
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
+			"Fatal Error", "fmiDoStep: An error occured in a previous call. CommunicationStepSize cannot be null!\n");
+		return fmiFatal;
+	}
 
-		// check whether the communication step size is different from null
-		if (fmuInstances[_c->index]->communicationStepSize == 0)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-				"Fatal Error", "fmiDoStep: An error occured in a previous call. CommunicationStepSize cannot be null!\n");
-			return fmiFatal;
-		}
+	// check whether the communication step size is different from time step in input file
+	if ( fabs(fmuInstances[_c->index]->communicationStepSize - (3600/fmuInstances[_c->index]->timeStepIDF)) > 1e-10)
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep:"
+			" An error occured in a previous call. CommunicationStepSize: %f is different from time step: %d in input file!\n",
+			fmuInstances[_c->index]->communicationStepSize, fmuInstances[_c->index]->timeStepIDF);
+		return fmiFatal;
+	}
 
-		// check whether the communication step size is different from time step in input file
-		if ( fabs(fmuInstances[_c->index]->communicationStepSize - (3600/fmuInstances[_c->index]->timeStepIDF)) > 1e-10)
-		{
+	// check whether communication point is valid
+	if ((fmuInstances[_c->index]->curComm) < 0 || ((fmuInstances[_c->index]->firstCallDoStep == 0) 
+		&& (fmuInstances[_c->index]->curComm > fmuInstances[_c->index]->nexComm))){
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep:"
-				" An error occured in a previous call. CommunicationStepSize: %f is different from time step: %d in input file!\n",
-				fmuInstances[_c->index]->communicationStepSize, fmuInstances[_c->index]->timeStepIDF);
+				" An error occured in a previous call. Communication point must be positive and monoton increasing!\n");
 			return fmiFatal;
-		}
+	}
 
-		// check whether communication point is valid
-		if ((fmuInstances[_c->index]->curComm) < 0 || ((fmuInstances[_c->index]->firstCallDoStep == 0) 
-			&& (fmuInstances[_c->index]->curComm > fmuInstances[_c->index]->nexComm))){
-				fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep:"
-					" An error occured in a previous call. Communication point must be positive and monoton increasing!\n");
-				return fmiFatal;
-		}
+	// check whether current communication point is valid
+	if ((fmuInstances[_c->index]->firstCallDoStep == 0)
+		&& (fabs(fmuInstances[_c->index]->curComm - fmuInstances[_c->index]->nexComm) > 1e-10))
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", "fmiDoStep: "
+			"Current communication point: %f is not equals to the previous simulation time + "
+			"communicationStepSize: %f + %f!\n",
+			fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->nexComm, 
+			fmuInstances[_c->index]->communicationStepSize);
+		return fmiError;
+	}
 
-		// check whether current communication point is valid
-		if ((fmuInstances[_c->index]->firstCallDoStep == 0)
-			&& (fabs(fmuInstances[_c->index]->curComm - fmuInstances[_c->index]->nexComm) > 1e-10))
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", "fmiDoStep: "
-				"Current communication point: %f is not equals to the previous simulation time + "
-				"communicationStepSize: %f + %f!\n",
-				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->nexComm, 
-				fmuInstances[_c->index]->communicationStepSize);
-			return fmiError;
-		}
+	// check end of simulation
+	if (fmuInstances[_c->index]->curComm == fmuInstances[_c->index]->tStopFMU){
+		// set the communication flags to 1 to send stop signal to EnergyPlus
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
+			"Warning", "fmiDoStep: Current communication point: %f of FMU instance: %s "
+			"is equals to end of simulation: %f!\n", 
+			fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->instanceName, fmuInstances[_c->index]->tStopFMU);
+		return fmiWarning;
+	}
 
-		// check end of simulation
-		if (fmuInstances[_c->index]->curComm == fmuInstances[_c->index]->tStopFMU){
+	// check if current communication is larger than end of simulation
+	if (fmuInstances[_c->index]->curComm > fmuInstances[_c->index]->tStopFMU){
+		// set the communication flags to 1 to send stop signal to EnergyPlus
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", "fmiDoStep:"
+			" Current communication point: %f is larger than end of simulation time: %f!\n", 
+			fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->tStopFMU);
+		return fmiError;
+	}
+	// check end of simulation
+	if (fmuInstances[_c->index]->curComm + 
+		fmuInstances[_c->index]->communicationStepSize > fmuInstances[_c->index]->tStopFMU){
 			// set the communication flags to 1 to send stop signal to EnergyPlus
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-				"Warning", "fmiDoStep: Current communication point: %f of FMU instance: %s "
-				"is equals to end of simulation: %f!\n", 
-				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->instanceName, fmuInstances[_c->index]->tStopFMU);
-			return fmiWarning;
-		}
+			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep: "
+				"Current communication point: %f  + communicationStepsize: %f  is larger than "
+				"end of simulation time: %f!\n", 
+				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->communicationStepSize,  
+				fmuInstances[_c->index]->tStopFMU);
+			return fmiFatal;
+	}
 
-		// check if current communication is larger than end of simulation
-		if (fmuInstances[_c->index]->curComm > fmuInstances[_c->index]->tStopFMU){
-			// set the communication flags to 1 to send stop signal to EnergyPlus
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", "fmiDoStep:"
-				" Current communication point: %f is larger than end of simulation time: %f!\n", 
-				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->tStopFMU);
-			return fmiError;
-		}
-		// check end of simulation
-		if (fmuInstances[_c->index]->curComm + 
-			fmuInstances[_c->index]->communicationStepSize > fmuInstances[_c->index]->tStopFMU){
-				// set the communication flags to 1 to send stop signal to EnergyPlus
-				fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep: "
-					"Current communication point: %f  + communicationStepsize: %f  is larger than "
-					"end of simulation time: %f!\n", 
-					fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->communicationStepSize,  
-					fmuInstances[_c->index]->tStopFMU);
-				return fmiFatal;
-		}
-
-		// check if inputs are set
-		if ((fmuInstances[_c->index]->firstCallDoStep == 1) 
-			&& !fmuInstances[_c->index]->writeReady) 
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-				"All inputs of FMU instance %s are not set before first call of fmiDoStep.", 
-				fmuInstances[_c->index]->instanceName);
-			return fmiOK;
-		}
-
-		// check if inputs are set
-		if ((fmuInstances[_c->index]->firstCallDoStep == 0) 
-			&& !fmuInstances[_c->index]->writeReady) 
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-				"Warning", "fmiDoStep: All inputs of FMU instance %s are not set!\n", 
-				fmuInstances[_c->index]->instanceName);
-			return fmiOK;
-		}
-		// check whether all input and outputs are available and then do the time stepping
-		if (fmuInstances[_c->index]->firstCallDoStep
-			||
-			(fmuInstances[_c->index]->firstCallDoStep == 0) 
-			&& fmuInstances[_c->index]->curComm <= (fmuInstances[_c->index]->tStopFMU - 
-			fmuInstances[_c->index]->communicationStepSize)) {
-				if (fmuInstances[_c->index]->flaWri != 1){
-					fmuInstances[_c->index]->flaGetRea = 1;
-					if (fmuInstances[_c->index]->flaGetRealCall == 0)
-					{
-						retVal = readfromsocketFMU(&(fmuInstances[_c->index]->newsockfd), &(fmuInstances[_c->index]->flaRea),
-							&(fmuInstances[_c->index]->numOutVar), &zI, &zI, &(fmuInstances[_c->index]->simTimRec), 
-							fmuInstances[_c->index]->outVec, NULL, NULL);
-					}
-					retVal = writetosocketFMU(&(fmuInstances[_c->index]->newsockfd), &(fmuInstances[_c->index]->flaWri),
-						&fmuInstances[_c->index]->numInVar, &zI, &zI, &(fmuInstances[_c->index]->simTimSen),
-						fmuInstances[_c->index]->inVec, NULL, NULL);
-
-					if (fmuInstances[_c->index]->flaGetRealCall = 1)
-					{
-						fmuInstances[_c->index]->flaGetRealCall = 0;
-					}
-				}
-				fmuInstances[_c->index]->readReady = 0;
-				fmuInstances[_c->index]->writeReady = 0;
-				fmuInstances[_c->index]->setCounter = 0;
-				fmuInstances[_c->index]->getCounter = 0;
-		}
-
-		// calculate next communication point
-		fmuInstances[_c->index]->nexComm = fmuInstances[_c->index]->curComm 
-			+ fmuInstances[_c->index]->communicationStepSize;
-		// set the firstcall flag to zero
-		if (fmuInstances[_c->index]->firstCallDoStep)
-		{
-			fmuInstances[_c->index]->firstCallDoStep = 0;
-		}		
+	// check if inputs are set
+	if ((fmuInstances[_c->index]->firstCallDoStep == 1) 
+		&& !fmuInstances[_c->index]->writeReady) 
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
+			"All inputs of FMU instance %s are not set before first call of fmiDoStep.", 
+			fmuInstances[_c->index]->instanceName);
 		return fmiOK;
 	}
+
+	// check if inputs are set
+	if ((fmuInstances[_c->index]->firstCallDoStep == 0) 
+		&& !fmuInstances[_c->index]->writeReady) 
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
+			"Warning", "fmiDoStep: All inputs of FMU instance %s are not set!\n", 
+			fmuInstances[_c->index]->instanceName);
+		return fmiOK;
+	}
+	// check whether all input and outputs are available and then do the time stepping
+	if (fmuInstances[_c->index]->firstCallDoStep
+		||
+		(fmuInstances[_c->index]->firstCallDoStep == 0) 
+		&& fmuInstances[_c->index]->curComm <= (fmuInstances[_c->index]->tStopFMU - 
+		fmuInstances[_c->index]->communicationStepSize)) {
+			if (fmuInstances[_c->index]->flaWri != 1){
+				fmuInstances[_c->index]->flaGetRea = 1;
+				if (fmuInstances[_c->index]->flaGetRealCall == 0)
+				{
+					retVal = readfromsocketFMU(&(fmuInstances[_c->index]->newsockfd), &(fmuInstances[_c->index]->flaRea),
+						&(fmuInstances[_c->index]->numOutVar), &zI, &zI, &(fmuInstances[_c->index]->simTimRec), 
+						fmuInstances[_c->index]->outVec, NULL, NULL);
+				}
+				retVal = writetosocketFMU(&(fmuInstances[_c->index]->newsockfd), &(fmuInstances[_c->index]->flaWri),
+					&fmuInstances[_c->index]->numInVar, &zI, &zI, &(fmuInstances[_c->index]->simTimSen),
+					fmuInstances[_c->index]->inVec, NULL, NULL);
+
+				if (fmuInstances[_c->index]->flaGetRealCall = 1)
+				{
+					fmuInstances[_c->index]->flaGetRealCall = 0;
+				}
+			}
+			fmuInstances[_c->index]->readReady = 0;
+			fmuInstances[_c->index]->writeReady = 0;
+			fmuInstances[_c->index]->setCounter = 0;
+			fmuInstances[_c->index]->getCounter = 0;
+	}
+
+	// calculate next communication point
+	fmuInstances[_c->index]->nexComm = fmuInstances[_c->index]->curComm 
+		+ fmuInstances[_c->index]->communicationStepSize;
+	// set the firstcall flag to zero
+	if (fmuInstances[_c->index]->firstCallDoStep)
+	{
+		fmuInstances[_c->index]->firstCallDoStep = 0;
+	}		
 	return fmiOK;
 }  
 
@@ -1104,12 +1084,8 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 DllExport fmiStatus fmiCancelStep(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-			"Warning", "fmiCancelStep: The function fmiCancelStep(..) is not provided!\n");
-		return fmiWarning;
-	}
+	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
+		"Warning", "fmiCancelStep: The function fmiCancelStep(..) is not provided!\n");
 	return fmiWarning;
 }
 
@@ -1123,71 +1099,68 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	int retVal;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
+
 #ifndef _MSC_VER
-		int status;
+	int status;
 #endif
 
-		if (fmuInstances[_c->index]->firstCallFree == 0)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-				"Warning", "fmiTerminateSlave: fmiFreeSlaveInstance(..) was already called on FMU instance %s!\n", 
-				fmuInstances[_c->index]->instanceName);
-			return fmiOK;
-		}
-
-		if (fmuInstances[_c->index]->firstCallTerm == 0)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-				"Warning", "fmiTerminateSlave: fmiTerminateSlave(..) was already called on FMU instance %s!\n", 
-				fmuInstances[_c->index]->instanceName);
-			return fmiOK;
-		}
-		// change the directory to make sure that FMUs are not overwritten
-#ifdef _MSC_VER
-		retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
-#else
-		retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
-#endif
-		// send end of simulation flag
-		fmuInstances[_c->index]->flaWri = 1;
-		fmuInstances[_c->index]->flaRea = 1;
-		retVal = exchangedoubleswithsocketFMUex (&(fmuInstances[_c->index]->newsockfd), &(fmuInstances[_c->index]->flaWri), 
-			&(fmuInstances[_c->index]->flaRea), &(fmuInstances[_c->index]->numOutVar), &(fmuInstances[_c->index]->numInVar), 
-			&(fmuInstances[_c->index]->simTimRec), fmuInstances[_c->index]->outVec, &(fmuInstances[_c->index]->simTimSen), 
-			fmuInstances[_c->index]->inVec);
-		// close socket
-		closeipcFMU(&(fmuInstances[_c->index]->sockfd));
-		closeipcFMU(&(fmuInstances[_c->index]->newsockfd));
-		// clean-up temporary files
-		findFileDelete();
-#ifdef _MSC_VER
-		// wait for object to terminate
-		WaitForSingleObject (fmuInstances[_c->index]->pid, INFINITE);
-		TerminateProcess(fmuInstances[_c->index]->pid, 0);
-#else
-		waitpid (fmuInstances[_c->index]->pid, &status, 0);
-#endif
-
-#ifdef _MSC_VER
-		// clean-up winsock
-		WSACleanup();
-#endif
-		if (fmuInstances[_c->index]->firstCallTerm){
-			fmuInstances[_c->index]->firstCallTerm = 0;
-		}
-		// reset the current working directory. This is particularly important for Dymola
-		// otherwise Dymola will terminate the simulation but returns false
-#ifdef _MSC_VER
-		retVal = _chdir(fmuInstances[_c->index]->cwd);
-#else
-		retVal = chdir(fmuInstances[_c->index]->cwd);
-#endif
-		// FIXME: free FMU instance does not work with Dymola 2014
-		//free (_c);
+	if (fmuInstances[_c->index]->firstCallFree == 0)
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
+			"Warning", "fmiTerminateSlave: fmiFreeSlaveInstance(..) was already called on FMU instance %s!\n", 
+			fmuInstances[_c->index]->instanceName);
 		return fmiOK;
 	}
+
+	if (fmuInstances[_c->index]->firstCallTerm == 0)
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
+			"Warning", "fmiTerminateSlave: fmiTerminateSlave(..) was already called on FMU instance %s!\n", 
+			fmuInstances[_c->index]->instanceName);
+		return fmiOK;
+	}
+	// change the directory to make sure that FMUs are not overwritten
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+#else
+	retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
+#endif
+	// send end of simulation flag
+	fmuInstances[_c->index]->flaWri = 1;
+	fmuInstances[_c->index]->flaRea = 1;
+	retVal = exchangedoubleswithsocketFMUex (&(fmuInstances[_c->index]->newsockfd), &(fmuInstances[_c->index]->flaWri), 
+		&(fmuInstances[_c->index]->flaRea), &(fmuInstances[_c->index]->numOutVar), &(fmuInstances[_c->index]->numInVar), 
+		&(fmuInstances[_c->index]->simTimRec), fmuInstances[_c->index]->outVec, &(fmuInstances[_c->index]->simTimSen), 
+		fmuInstances[_c->index]->inVec);
+	// close socket
+	closeipcFMU(&(fmuInstances[_c->index]->sockfd));
+	closeipcFMU(&(fmuInstances[_c->index]->newsockfd));
+	// clean-up temporary files
+	findFileDelete();
+#ifdef _MSC_VER
+	// wait for object to terminate
+	WaitForSingleObject (fmuInstances[_c->index]->pid, INFINITE);
+	TerminateProcess(fmuInstances[_c->index]->pid, 0);
+#else
+	waitpid (fmuInstances[_c->index]->pid, &status, 0);
+#endif
+
+#ifdef _MSC_VER
+	// clean-up winsock
+	WSACleanup();
+#endif
+	if (fmuInstances[_c->index]->firstCallTerm){
+		fmuInstances[_c->index]->firstCallTerm = 0;
+	}
+	// reset the current working directory. This is particularly important for Dymola
+	// otherwise Dymola will terminate the simulation but returns false
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+	retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
+	// FIXME: free FMU instance does not work with Dymola 2014
+	//free (_c);
 	return fmiOK;
 }
 
@@ -1200,12 +1173,8 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 DllExport fmiStatus fmiResetSlave(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiResetSlave: fmiResetSlave(..): is not provided!\n");
-		return fmiWarning;
-	}
+	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
+		"fmiResetSlave: fmiResetSlave(..): is not provided!\n");
 	return fmiWarning;
 }
 
@@ -1218,72 +1187,69 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	int retVal;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
+
 #ifndef _MSC_VER
-		int status;
+	int status;
 #endif
-		// if Terminate has already been called, do not do anything here.
-		if (fmuInstances[_c->index]->firstCallTerm == 0)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-				"Warning", "fmiFreeSlaveInstance: fmiTerminateSlave(..) was already called on FMU instance %s!\n", 
-				fmuInstances[_c->index]->instanceName);
-			return ;
-		}
-
-		// if Free has already been called, do not do anything here.
-		if (fmuInstances[_c->index]->firstCallFree == 0)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-				"Warning", "fmiFreeSlaveInstance: fmiFreeSlaveInstance(..) was already called on FMU instance %s!\n", 
-				fmuInstances[_c->index]->instanceName);
-			return ;
-		}
-		// change the directory to make sure that FMUs are not overwritten
-#ifdef _MSC_VER
-		retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
-#else
-		retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
-#endif
-		// send end of simulation flag
-		fmuInstances[_c->index]->flaWri = 1;
-		fmuInstances[_c->index]->flaRea = 1;
-		retVal = exchangedoubleswithsocketFMUex (&(fmuInstances[_c->index]->newsockfd), &(fmuInstances[_c->index]->flaWri), 
-			&(fmuInstances[_c->index]->flaRea), &(fmuInstances[_c->index]->numOutVar), &(fmuInstances[_c->index]->numInVar), 
-			&(fmuInstances[_c->index]->simTimRec), fmuInstances[_c->index]->outVec, &(fmuInstances[_c->index]->simTimSen), 
-			fmuInstances[_c->index]->inVec);
-		// close socket
-		closeipcFMU(&(fmuInstances[_c->index]->sockfd));
-		closeipcFMU(&(fmuInstances[_c->index]->newsockfd));
-		// clean-up temporary files
-		findFileDelete();
-#ifdef _MSC_VER
-		// wait for object to terminate
-		WaitForSingleObject (fmuInstances[_c->index]->pid, INFINITE);
-		TerminateProcess(fmuInstances[_c->index]->pid, 0);
-#else
-		waitpid (fmuInstances[_c->index]->pid, &status, 0);
-#endif
-
-#ifdef _MSC_VER
-		// clean-up winsock
-		WSACleanup();
-#endif
-		if (fmuInstances[_c->index]->firstCallFree){
-			fmuInstances[_c->index]->firstCallFree = 0;
-		}
-		// reset the current working directory. This is particularly important for Dymola
-		// otherwise Dymola will write results at wrong place
-#ifdef _MSC_VER
-		retVal = _chdir(fmuInstances[_c->index]->cwd);
-#else
-		retVal = chdir(fmuInstances[_c->index]->cwd);
-		// FIXME: free FMU instance does not work with Dymola 2014
-		// free (_c);
-		return;
-#endif
+	// if Terminate has already been called, do not do anything here.
+	if (fmuInstances[_c->index]->firstCallTerm == 0)
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
+			"Warning", "fmiFreeSlaveInstance: fmiTerminateSlave(..) was already called on FMU instance %s!\n", 
+			fmuInstances[_c->index]->instanceName);
+		return ;
 	}
+
+	// if Free has already been called, do not do anything here.
+	if (fmuInstances[_c->index]->firstCallFree == 0)
+	{
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
+			"Warning", "fmiFreeSlaveInstance: fmiFreeSlaveInstance(..) was already called on FMU instance %s!\n", 
+			fmuInstances[_c->index]->instanceName);
+		return ;
+	}
+	// change the directory to make sure that FMUs are not overwritten
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->fmuCalLocation);
+#else
+	retVal = chdir(fmuInstances[_c->index]->fmuCalLocation);
+#endif
+	// send end of simulation flag
+	fmuInstances[_c->index]->flaWri = 1;
+	fmuInstances[_c->index]->flaRea = 1;
+	retVal = exchangedoubleswithsocketFMUex (&(fmuInstances[_c->index]->newsockfd), &(fmuInstances[_c->index]->flaWri), 
+		&(fmuInstances[_c->index]->flaRea), &(fmuInstances[_c->index]->numOutVar), &(fmuInstances[_c->index]->numInVar), 
+		&(fmuInstances[_c->index]->simTimRec), fmuInstances[_c->index]->outVec, &(fmuInstances[_c->index]->simTimSen), 
+		fmuInstances[_c->index]->inVec);
+	// close socket
+	closeipcFMU(&(fmuInstances[_c->index]->sockfd));
+	closeipcFMU(&(fmuInstances[_c->index]->newsockfd));
+	// clean-up temporary files
+	findFileDelete();
+#ifdef _MSC_VER
+	// wait for object to terminate
+	WaitForSingleObject (fmuInstances[_c->index]->pid, INFINITE);
+	TerminateProcess(fmuInstances[_c->index]->pid, 0);
+#else
+	waitpid (fmuInstances[_c->index]->pid, &status, 0);
+#endif
+
+#ifdef _MSC_VER
+	// clean-up winsock
+	WSACleanup();
+#endif
+	if (fmuInstances[_c->index]->firstCallFree){
+		fmuInstances[_c->index]->firstCallFree = 0;
+	}
+	// reset the current working directory. This is particularly important for Dymola
+	// otherwise Dymola will write results at wrong place
+#ifdef _MSC_VER
+	retVal = _chdir(fmuInstances[_c->index]->cwd);
+#else
+	retVal = chdir(fmuInstances[_c->index]->cwd);
+#endif
+	// FIXME: free FMU instance does not work with Dymola 2014
+	// free (_c);
 	return;
 }
 
@@ -1297,12 +1263,8 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 DllExport fmiStatus fmiSetDebugLogging (fmiComponent c, fmiBoolean loggingOn)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiSetDebugLogging: fmiSetDebugLogging(): fmiSetDebugLogging is not provided!\n");
-		return fmiOK;
-	}
+	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
+		"fmiSetDebugLogging: fmiSetDebugLogging(): fmiSetDebugLogging is not provided!\n");
 	return fmiOK;
 }
 
@@ -1319,7 +1281,8 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	int retVal;
-	if (fmuInstances[_c->index]->proc != 0)
+	// to prevent the fmiSetReal to be called before the FMU is initialized
+	if (fmuInstances[_c->index]->firstCallIni == 0)
 	{
 		// fmiValueReference to check for input variable
 		fmiValueReference vrTemp;
@@ -1366,15 +1329,11 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
+	if(nvr>0)
 	{
-		if(nvr>0)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-				"fmiSetInteger: fmiSetInteger(..) was called. The FMU does not contain integer variables to set!\n");
-			return fmiError;
-		}
-		return fmiOK;
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
+			"fmiSetInteger: fmiSetInteger(..) was called. The FMU does not contain integer variables to set!\n");
+		return fmiError;
 	}
 	return fmiOK;
 }
@@ -1391,15 +1350,11 @@ DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], 
 DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiBoolean value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
+	if(nvr>0)
 	{
-		if(nvr>0)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-				"fmiSetBoolean: fmiSetBoolean(..) was called. The FMU does not contain boolean variables to set!\n");
-			return fmiError;
-		}
-		return fmiOK;
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
+			"fmiSetBoolean: fmiSetBoolean(..) was called. The FMU does not contain boolean variables to set!\n");
+		return fmiError;
 	}
 	return fmiOK;
 }
@@ -1416,15 +1371,11 @@ DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], 
 DllExport fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiString value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
+	if(nvr>0)
 	{
-		if(nvr>0)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
-				"Error", "fmiSetString: fmiSetString(..) was called. The FMU does not contain string variables to set!\n");
-			return fmiError;
-		}
-		return fmiOK;
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
+			"Error", "fmiSetString: fmiSetString(..) was called. The FMU does not contain string variables to set!\n");
+		return fmiError;
 	}
 	return fmiOK;
 }
@@ -1442,8 +1393,8 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	int retVal;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
+	// to prevent the fmiGetReal to be called before the FMU is initialized
+	if (fmuInstances[_c->index]->firstCallIni == 0){
 		fmiValueReference vrTemp;
 		ScalarVariable** vars;
 		int i, k;
@@ -1501,15 +1452,11 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiInteger value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
+	if(nvr>0)
 	{
-		if(nvr>0)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-				"fmiGetInteger: fmiGetInteger(..) was called. The FMU does not contain integer variables to get!\n");
-			return fmiError;
-		}
-		return fmiOK;
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
+			"fmiGetInteger: fmiGetInteger(..) was called. The FMU does not contain integer variables to get!\n");
+		return fmiError;
 	}
 	return fmiOK;
 }
@@ -1526,15 +1473,11 @@ DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], 
 DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiBoolean value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
+	if(nvr>0)
 	{
-		if(nvr>0)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-				"fmiGetBoolean: fmiGetBoolean(..) was called. The FMU does not contain boolean variables to get!\n");
-			return fmiError;
-		}
-		return fmiOK;
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
+			"fmiGetBoolean: fmiGetBoolean(..) was called. The FMU does not contain boolean variables to get!\n");
+		return fmiError;
 	}
 	return fmiOK;
 }
@@ -1551,15 +1494,11 @@ DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], 
 DllExport fmiStatus fmiGetString (fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiString  value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
+	if(nvr>0)
 	{
-		if(nvr>0)
-		{
-			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
-				"Error", "fmiGetString: fmiGetString(..) was called. The FMU does not contain string variables to get!\n");
-			return fmiError;
-		}
-		return fmiOK;
+		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
+			"Error", "fmiGetString: fmiGetString(..) was called. The FMU does not contain string variables to get!\n");
+		return fmiError;
 	}
 	return fmiOK;
 }
@@ -1579,12 +1518,8 @@ DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueRe
 	const fmiInteger order[], fmiReal value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetRealOutputDerivatives: fmiGetRealOutputDerivatives(): Real Output Derivatives are not provided!\n");
-		return fmiWarning;
-	}
+	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
+		"fmiGetRealOutputDerivatives: fmiGetRealOutputDerivatives(): Real Output Derivatives are not provided!\n");
 	return fmiWarning;
 }
 
@@ -1603,12 +1538,8 @@ DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueRef
 	const fmiInteger order[], const fmiReal value[])
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiSetRealInputDerivatives: fmiSetRealInputDerivatives(): Real Input Derivatives are not provided!\n");
-		return fmiWarning;
-	}
+	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
+		"fmiSetRealInputDerivatives: fmiSetRealInputDerivatives(): Real Input Derivatives are not provided!\n");
 	return fmiWarning;
 }
 
@@ -1623,12 +1554,8 @@ DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueRef
 DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatus* value)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetStatus: fmiGetStatus(): is not provided!\n");
-		return fmiWarning;
-	}
+	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
+		"fmiGetStatus: fmiGetStatus(): is not provided!\n");
 	return fmiWarning;
 }
 
@@ -1643,12 +1570,8 @@ DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatu
 DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiReal* value)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetRealStatus: fmiGetRealStatus(): is not provided!\n");
-		return fmiWarning;
-	}
+	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
+		"fmiGetRealStatus: fmiGetRealStatus(): is not provided!\n");
 	return fmiWarning;
 }
 
@@ -1663,13 +1586,8 @@ DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiR
 DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, fmiInteger* value)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
-
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetIntegerStatus: fmiGetIntegerStatus(): is not provided!\n");
-		return fmiWarning;
-	}
+	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
+		"fmiGetIntegerStatus: fmiGetIntegerStatus(): is not provided!\n");
 	return fmiWarning;
 }
 ////////////////////////////////////////////////////////////////
@@ -1683,12 +1601,8 @@ DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, f
 DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, fmiBoolean* value)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetBooleanStatus: fmiGetBooleanStatus(): is not provided!\n");
-		return fmiWarning;
-	}
+	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
+		"fmiGetBooleanStatus: fmiGetBooleanStatus(): is not provided!\n");
 	return fmiWarning;
 }
 ////////////////////////////////////////////////////////////////
@@ -1703,12 +1617,8 @@ DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, f
 DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, fmiString* value)
 {	
 	idfFmu_t* _c = (idfFmu_t *)c;
-	if (fmuInstances[_c->index]->proc != 0)
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-			"fmiGetStringStatus: fmiGetStringStatus(): is not provided!\n");
-		return fmiWarning;
-	}
+	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
+		"fmiGetStringStatus: fmiGetStringStatus(): is not provided!\n");
 	return fmiWarning;
 }
 
