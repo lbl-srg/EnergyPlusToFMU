@@ -913,7 +913,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 ///\param c The FMU instance.
 ///\param currentCommunicationPoint The communication point.
 ///\param communicationStepSize The communication step size.
-///\param newStep The flag to accept or refect communication step.
+///\param newStep The flag to accept or reflect communication step.
 ///\return fmiOK if no error occurred.
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal communicationStepSize, fmiBoolean newStep)
@@ -1016,25 +1016,6 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 			return fmiFatal;
 	}
 
-	// check if inputs are set
-	if ((fmuInstances[_c->index]->firstCallDoStep == 1) 
-		&& !fmuInstances[_c->index]->writeReady) 
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-			"All inputs of FMU instance %s are not set before first call of fmiDoStep.", 
-			fmuInstances[_c->index]->instanceName);
-		return fmiOK;
-	}
-
-	// check if inputs are set
-	if ((fmuInstances[_c->index]->firstCallDoStep == 0) 
-		&& !fmuInstances[_c->index]->writeReady) 
-	{
-		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-			"Warning", "fmiDoStep: All inputs of FMU instance %s are not set!\n", 
-			fmuInstances[_c->index]->instanceName);
-		return fmiOK;
-	}
 	// check whether all input and outputs are available and then do the time stepping
 	if (fmuInstances[_c->index]->firstCallDoStep
 		||
