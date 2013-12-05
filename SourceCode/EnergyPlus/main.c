@@ -866,6 +866,13 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	if((fp = fopen(FTIMESTEP, "r")) != NULL) {
 		retVal = fscanf(fp, "%d", &(fmuInstances[_c->index]->timeStepIDF));
 		fclose (fp);
+		// check if the timeStepIDF is null to avoid division by zero
+		if (fmuInstances[_c->index]->timeStepIDF == 0){
+			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
+				"fmiInitializeSlave: The time step in IDF cannot be null!\n");
+			fprintf(stderr, "fmiInitializeSlave: Time step in IDF is null!\n");
+			return fmiFatal;
+		}	
 	}
 	else
 	{
