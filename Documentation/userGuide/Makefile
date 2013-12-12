@@ -104,7 +104,7 @@ release-html:
 	-cp -R $(BUILDDIR)/html/_images www/userGuide
 	-cp -R $(BUILDDIR)/html/legal.html ../../
 
-dist:   clean cleanpdf latex html linkcheck release-html copypdftodoc copydoctowww 
+dist:   clean cleanpdf latex html release-html copypdftodoc copydoctowww  
 
 copypdftodoc:
 	@echo "Copy pdf files to the userGuide folder."
