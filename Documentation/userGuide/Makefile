@@ -68,9 +68,6 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/BuildingsPy.qhcp"
-	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/BuildingsPy.qhc"
 
 latex:
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
@@ -112,5 +109,7 @@ copypdftodoc:
 
 copydoctowww:
 	@echo "Sent files to the server excluding .svn."
-	rsync -av --exclude '*.svn' www/* thierry@simulationresearch.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
-	#scp -r release/* thierry@simulationresearch.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
+	@echo "Set permissions to ensure files can be written on gundog."
+	ssh thierry@gundog.lbl.gov "sudo chmod -R g+w /usr/local/www/simulationresearch/fmu/EnergyPlus/export/"
+	rsync -av --exclude '*.svn' www/* thierry@gundog.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
+	#scp -r release/* thierry@gundog.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
