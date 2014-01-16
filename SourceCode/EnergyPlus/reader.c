@@ -128,12 +128,10 @@ void findFileDelete()
 	{
 		remove(ENDMONTH);
 	}
-
 	if (stat(NEWDAYWEEK, &stat_p)>=0)
 	{
 		remove(NEWDAYWEEK);
 	}
-
 	if (stat (OLDDAYWEEK, &stat_p)>=0)
 	{
 		remove(OLDDAYWEEK);
@@ -142,12 +140,10 @@ void findFileDelete()
 	{
 		remove(VARCFG);
 	}
-
 	if (stat (SOCKCFG, &stat_p)>=0)
 	{
 		remove(SOCKCFG);
 	}
-
 	if (stat (EPBAT, &stat_p)>=0)
 	{
 		remove(EPBAT);
@@ -156,13 +152,14 @@ void findFileDelete()
 	{
 		remove(FTIMESTEP);
 	}
-
-	// cleanup .epw files
+	if (stat (FRUNWEAFILE, &stat_p)>=0){
+		// cleanup .epw files
 #ifdef _MSC_VER
-	res = system ("del *.epw");
+		res = system ("del *.epw");
 #else
-	res = system ("rm -f *.epw");
+		res = system ("rm -f *.epw");
 #endif
+	}
 }    
 ///////////////////////////////////////////////////////////////////////////////
 /// This function removes tabs and line ends in a string.
