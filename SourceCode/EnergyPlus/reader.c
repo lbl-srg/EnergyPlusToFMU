@@ -1059,7 +1059,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 				fprintf(fp2, "%s", low_case_temp);
 			}
 			// If time step is found, write to file
-			if((strstr(temp, TIMESTEP)) != NULL) {
+			if((strstr(temp, TIMESTEP)) != NULL && (temp[0] =='T')) {
 				while (foundEndTS != 1){
 					for(i=0; i<strlen(temp); i++)
 					{
@@ -1115,7 +1115,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 				}
 			}
 			// rewrite the runperiod
-			// This implementation assumes a RunPeriod which consits of several comma spearted lines as in the IDD
+			// This implementation assumes a RunPeriod which consits of several comma separated lines as in the IDD
 			// If the the structure of the RunPeriod differs from that the code will not write the values 
 			// found at the appropriate places. Alternative could be to ship an IDD to determine based on
 			// the IDD the current syntax of the IDF file.
@@ -1256,7 +1256,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	free (fruninfile);
 	return 0;
 }
-//
+
 //int main ()
 //{
 //	createRunInFile (0, 86400, "test", "c:\\temp\\");
