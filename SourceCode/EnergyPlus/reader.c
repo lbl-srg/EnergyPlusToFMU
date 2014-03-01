@@ -255,7 +255,7 @@ static void printDataForDate (char *temp, const char* fname){
 		// write timestep in file
 		if((fp = fopen(fname, "w")) == NULL) {
 			printf("Can't open file!\n");
-			exit(42);  // STL error code: File not open.
+			exit(42);  // STL error code: File not open. 
 		}
 		else
 		{   
@@ -1044,7 +1044,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	// open temporary input file
 	if((fp2 = fopen(fruninfile, "w")) == NULL) {
 		printf ("Can't open file %s!\n", fruninfile);
-		return(1);
+		return 1;
 	}
 
 	// read input file and write in TEMP file
@@ -1096,6 +1096,10 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 				}
 				// get time step
 				TS = getTimeStep (old_temp);
+				if (TS==0){
+					printf("The time step found is %d.\n This shouldn't be. Please check the input file!\n", TS);
+					return 1;
+				}
 
 				// write timestep in file
 				if(stat(FTIMESTEP, &st)>=0){
@@ -1105,7 +1109,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 				{
 					if((fp3 = fopen(FTIMESTEP, "w")) == NULL){
 						printf("Can't open and write timestep!\n");
-						exit(42);  // STL error code: File not open.
+						return 1;  
 					}
 					else
 					{   
@@ -1133,7 +1137,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					// check begin month
 					if((NewBeginMonth < 0) || (NewBeginMonth > 12)) {
 						printf("Begin Month cannot be negativ or greater than 12!\n");
-						exit(1);  
+						return 1;  
 					}
 
 					sprintf(intTostr, "%d,\n", NewBeginMonth);
@@ -1147,7 +1151,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					// check begin day of month
 					if((NewBeginDayOfMonth < 0) || (NewBeginDayOfMonth > 31)) {
 						printf("Begin Day of Month cannot be negativ or greater than 31!\n");
-						exit(1); 
+						return 1; 
 					}
 					sprintf(intTostr, "%d,\n", NewBeginDayOfMonth);
 					fprintf(fp2, "%s", intTostr);
@@ -1160,7 +1164,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					// check end month
 					if((NewEndMonth < 0) || (NewEndMonth > 12)) {
 						printf("End Month cannot be negativ or greater than 12!\n");
-						exit(1);  
+						return 1;  
 					}
 					sprintf(intTostr, "%d,\n", NewEndMonth);
 					fprintf(fp2, "%s", intTostr);
@@ -1172,7 +1176,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					// check end day of month
 					if((NewEndDayOfMonth < 0) || (NewEndDayOfMonth > 31)) {
 						printf("End Day of Month cannot be negativ or greater than 31!\n");
-						exit(1);  
+						return 1;  
 					}
 					sprintf(intTostr, "%d,\n", NewEndDayOfMonth);
 					fprintf(fp2, "%s", intTostr);
@@ -1239,7 +1243,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 		// open temporary input file
 		if((fp4 = fopen(LOG, "w")) == NULL) {
 			printf("Can't open log file!\n");
-			exit(42);  // STL error code: File not open.
+			return 1; 
 		}
 		else
 		{
