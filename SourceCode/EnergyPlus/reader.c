@@ -994,10 +994,14 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	int val;
 	int i;
 
-	int NewBeginMonth;
-	int NewBeginDayOfMonth;
-	int NewEndMonth;
-	int NewEndDayOfMonth;
+	int FMUBeginMonth;
+	int FMUBeginDayOfMonth;
+	int FMUEndMonth;
+	int FMUEndDayOfMonth;
+
+	int IDFBeginMonth;
+	int IDFBeginDayOfMonth;
+
 	int leapyear = 0;
 	int foundEndTS = 0;
 
@@ -1007,6 +1011,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	const char* RUNPERIOD= "RUNPERIOD,";
 	char* TIMESTEP= "TIMESTEP,";
 	int find_result_RP = 0;
+	int find_result_TS = 0;
 	int exit_loop;
 
 	// check whether start and end make sense
@@ -1060,6 +1065,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 			}
 			// If time step is found, write to file
 			if((strstr(temp, TIMESTEP)) != NULL && (temp[0] =='T')) {
+				find_result_TS++;
 				while (foundEndTS != 1){
 					for(i=0; i<strlen(temp); i++)
 					{
@@ -1133,52 +1139,52 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
 					printDataForDate(temp, BEGINMONTH);
 
-					NewBeginMonth = getCurrentMonth (t_start_FMU, leapyear);
+					FMUBeginMonth = getCurrentMonth (t_start_FMU, leapyear);
 					// check begin month
-					if((NewBeginMonth < 0) || (NewBeginMonth > 12)) {
+					if((FMUBeginMonth < 0) || (FMUBeginMonth > 12)) {
 						printf("Begin Month cannot be negativ or greater than 12!\n");
 						return 1;  
 					}
 
-					sprintf(intTostr, "%d,\n", NewBeginMonth);
+					sprintf(intTostr, "%d,\n", FMUBeginMonth);
 					fprintf(fp2, "%s", intTostr);
 
 					//write the Begin Day of Month
 					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
 					printDataForDate(temp, BEGINDAYMONTH);
 
-					NewBeginDayOfMonth = getCurrentDay (t_start_FMU, NewBeginMonth, leapyear);
+					FMUBeginDayOfMonth = getCurrentDay (t_start_FMU, FMUBeginMonth, leapyear);
 					// check begin day of month
-					if((NewBeginDayOfMonth < 0) || (NewBeginDayOfMonth > 31)) {
+					if((FMUBeginDayOfMonth < 0) || (FMUBeginDayOfMonth > 31)) {
 						printf("Begin Day of Month cannot be negativ or greater than 31!\n");
 						return 1; 
 					}
-					sprintf(intTostr, "%d,\n", NewBeginDayOfMonth);
+					sprintf(intTostr, "%d,\n", FMUBeginDayOfMonth);
 					fprintf(fp2, "%s", intTostr);
 
 					//write the End Month
 					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
 					printDataForDate(temp, ENDMONTH);
 
-					NewEndMonth = getCurrentMonth (t_end_FMU, leapyear);
+					FMUEndMonth = getCurrentMonth (t_end_FMU, leapyear);
 					// check end month
-					if((NewEndMonth < 0) || (NewEndMonth > 12)) {
+					if((FMUEndMonth < 0) || (FMUEndMonth > 12)) {
 						printf("End Month cannot be negativ or greater than 12!\n");
 						return 1;  
 					}
-					sprintf(intTostr, "%d,\n", NewEndMonth);
+					sprintf(intTostr, "%d,\n", FMUEndMonth);
 					fprintf(fp2, "%s", intTostr);
 					//write the End Day of Month
 					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
 					printDataForDate(temp, ENDDAYMONTH);
 
-					NewEndDayOfMonth = getCurrentDay (t_end_FMU, NewEndMonth, leapyear);
+					FMUEndDayOfMonth = getCurrentDay (t_end_FMU, FMUEndMonth, leapyear);
 					// check end day of month
-					if((NewEndDayOfMonth < 0) || (NewEndDayOfMonth > 31)) {
+					if((FMUEndDayOfMonth < 0) || (FMUEndDayOfMonth > 31)) {
 						printf("End Day of Month cannot be negativ or greater than 31!\n");
 						return 1;  
 					}
-					sprintf(intTostr, "%d,\n", NewEndDayOfMonth);
+					sprintf(intTostr, "%d,\n", FMUEndDayOfMonth);
 					fprintf(fp2, "%s", intTostr);
 					//write the Day of Week
 					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL);
@@ -1186,8 +1192,19 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 
 					//convert start and end time obtained from the master algorithm
 					printDebug("Get simulation time in IDF!\n");
-					t_start_IDF = getSimTimeSeconds( getNumValue (BEGINDAYMONTH), getNumValue (BEGINMONTH), leapyear);
-
+					IDFBeginDayOfMonth = getNumValue (BEGINDAYMONTH);
+					// check begin day of month in IDF to see if correct extracted
+					if(IDFBeginDayOfMonth == 0) {
+						printf("Begin Day of Month cannot be null in IDF. Please correct input file!\n");
+						return 1;  
+					}
+					IDFBeginMonth = getNumValue (BEGINMONTH);
+					// check begin month in IDF to see if correct extracted
+					if(IDFBeginMonth == 0) {
+						printf("Begin Month cannot be null in IDF. Please correct input file!\n");
+						return 1;  
+					}
+					t_start_IDF = getSimTimeSeconds(IDFBeginDayOfMonth, IDFBeginMonth, leapyear);
 					// get the current day of the week
 					printDebug("Get current day of week!\n");
 					val = getCurrentDayOfWeek (t_start_IDF, t_start_FMU, OLDDAYWEEK, NEWDAYWEEK);  
@@ -1236,7 +1253,17 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 	}
 
 	if(find_result_RP == 0) {
-		printf("Could not find a runperiod in input file!\n");
+		printf("Could not find a Runperiod object in input file!\n");
+		return 1;
+	}
+
+	if(find_result_TS == 0) {
+		printf("Could not find a Timestep object in input file!\n");
+		return 1;
+	}
+	if(find_result_TS > 1) {
+		printf("More than one Timestep object (%d) found in input file. Please correct the input file!\n", 
+			find_result_TS);
 		return 1;
 	}
 	if(find_result_RP > 1) {
@@ -1247,7 +1274,8 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 		}
 		else
 		{
-			fprintf(fp4, "More than one RunPeriod found. %d deleted!\n",find_result_RP-1);
+			fprintf(fp4, "More than one Runperiod (%d) object found in input file. %d deleted!\n", 
+				find_result_RP, find_result_RP-1);
 			fclose (fp4);
 		}
 	}
@@ -1263,7 +1291,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 
 //int main ()
 //{
-//	createRunInFile (0, 86400, "test", "c:\\temp\\");
+//	createRunInFile (172800, 8640000, "test", "c:\\temp\\");
 //}
 
 /*
