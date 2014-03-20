@@ -17,7 +17,7 @@ Download `EnergyPlusToFMU-1.0.2.zip <http://simulationresearch.lbl.gov/fmu/Energ
 
 **Release notes**
 
-This version contains a bug fix which was causing a division by zero because of wrong timeStep.
+This version contains a bug fix which was causing a division by zero because of an invalid timeStep.
 
 
 Release 1.0.1 (December 13, 2013)
