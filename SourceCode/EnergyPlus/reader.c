@@ -1126,7 +1126,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 			}
 			// rewrite the runperiod
 			// This implementation assumes a RunPeriod which consits of several comma separated lines as in the IDD
-			// If the the structure of the RunPeriod differs from that the code will not write the values 
+			// If the structure of the RunPeriod differs from that the code will not write the values 
 			// found at the appropriate places. Alternative could be to ship an IDD to determine based on
 			// the IDD the current syntax of the IDF file.
 			if((strstr(temp, RUNPERIOD)) != NULL) {
@@ -1219,8 +1219,7 @@ int createRunInFile (fmiReal t_start_FMU, fmiReal t_end_FMU, fmiString modelID, 
 						sprintf(NewDayOfWeek, "%s,\n", tmpDayWeek);
 					}
 					fclose (fp3);
-
-					if(fgets(temp, MAXBUFFSIZE, fp1) != NULL); 
+					// write new day of the week
 					fprintf(fp2, "%s", NewDayOfWeek);
 				}
 				// delete run period, only one is allowed
