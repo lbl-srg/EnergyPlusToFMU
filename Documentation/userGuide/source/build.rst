@@ -38,6 +38,8 @@ See :doc:`installation` for details.
 All file paths, including those to the weather, IDD, and IDF files, can be absolute or relative.
 For readability, the rest of these instructions omit the paths to the script and input files.
 
+.. note:: If any file path contains spaces, then it must be surrounded with double quotes.
+
 Script ``EnergyPlusToFMU.py`` supports the following command-line switches:
 
 +---------------------------+-------------------------------------------------------+
