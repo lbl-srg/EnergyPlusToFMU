@@ -55,16 +55,19 @@ The following items need to be observed when importing an FMU that contains Ener
 4. A tool that imports the FMU must start and stop the simulation at midnight. 
    [#f4]_
 
-5. The weather file which comes along with an FMU is used to determine 
-   if the year is a leap year. If no weather file is included in the FMU, then the 
-   assumption is that the year is not a leap year.
+5. A tool that imports the FMU must specify the start and stop time in seconds at initialization. 
+   The start and stop time cannot have the value "infinity".
 
-6. During the warm-up period and the autosizing of EnergyPlus, 
+6. The weather file which comes along with an FMU is used to determine 
+   if the year is a ``leap year``. If no weather file is included in the FMU, then the 
+   assumption is that the year is not a ``leap year``.
+
+7. During the warm-up period and the autosizing of EnergyPlus, 
    no data exchange occurs between the FMU and the master program. 
    Thus, inputs of EnergyPlus remain constant during these times and are equal 
    to the initial values specified in the IDF input file.
    
-7. The simulation results are saved in a result folder which is created in the current 
+8. The simulation results are saved in a result folder which is created in the current 
    working directory. The name of the result folder is ``Output_EPExport_xxx``, where 
    ``xxx`` is the FMU model ``instanceName`` as defined in the FMI specifications.
 
