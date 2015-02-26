@@ -34,8 +34,8 @@ static int REQUIRED_WRITE_LENGTH = 0;
 /// version number of the server
 int SERVER_VERSION = 0;
 
-
-#define HEADER_LENGTH 54 // = 10 + 4*(10+1);
+// FIXME: Increase HEADER_LENGTH for large number of Input/Output variables.
+#define HEADER_LENGTH 21600 // = 10 + 4*(10+1);
 
 
 ////////////////////////////////////////////////////////////////
@@ -171,7 +171,7 @@ int getIntCheckErrorFMU(const char *nptr, char **endptr, const int base,
 				return EXIT_FAILURE;
 		}
 		if (*endptr == nptr) {
-			fprintf(stderr, "Error: No digits were found in getIntCheckError.\n");
+			fprintf(stderr, "Error: No digits were found in getIntCheckErrorFMU.\n");
 			fprintf(stderr, "Further characters after number: %s\n", *endptr);
 			fprintf(stderr, "Sending EXIT_FAILURE = : %d\n", EXIT_FAILURE);
 			return EXIT_FAILURE;
