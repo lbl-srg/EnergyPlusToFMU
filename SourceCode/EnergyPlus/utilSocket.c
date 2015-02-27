@@ -477,7 +477,6 @@ int getRequiredReadBufferLengthFMU(const int *sockfd){
 #else
 	retVal = recv(*sockfd, buffer, HEADER_LENGTH, MSG_PEEK);
 #endif
-	printf("recv error: %s\n", strerror(errno));
 	if ( retVal < 1 ){
 		perror("Failed to peek at socket.");
 		return retVal;
