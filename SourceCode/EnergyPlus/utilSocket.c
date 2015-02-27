@@ -60,9 +60,9 @@ int save_appendFMU(char* *buffer, const char *toAdd, int *bufLen){
 		*bufLen = *bufLen + size * (((nNewCha + nBufCha) / size)+1);
 		*buffer = realloc(*buffer, *bufLen);
 		if (*buffer == NULL) {
-			perror("Realloc failed in save_append.");
+			perror("Realloc failed in save_appendFMU.");
 #ifdef NDEBUG
-			fprintf(f1, "Realloc failed in save_append.\n");
+			fprintf(f1, "Realloc failed in save_appendFMU.\n");
 #endif
 			return EXIT_FAILURE;
 		}
@@ -199,7 +199,7 @@ int getDoubleCheckErrorFMU(const char *nptr, char **endptr,
 				return EXIT_FAILURE;
 		}
 		if (*endptr == nptr) {
-			fprintf(stderr, "Error: No digits were found in getDoubleCheckError.\n");
+			fprintf(stderr, "Error: No digits were found in getDoubleCheckErrorFMU.\n");
 			fprintf(stderr, "Further characters after number: %s\n", *endptr);
 			fprintf(stderr, "Sending EXIT_FAILURE = : %d\n", EXIT_FAILURE);
 			return EXIT_FAILURE;
@@ -393,9 +393,9 @@ int writetosocketFMU(const int *sockfd,
 
 	buffer = malloc(bufLen);
 	if (buffer == NULL) {
-		perror("malloc failed in writetosocket.");
+		perror("malloc failed in writetosocketFMU.");
 #ifdef NDEBUG
-		fprintf(f1, "malloc failed in writetosocket.\n");
+		fprintf(f1, "malloc failed in writetosocketFMU.\n");
 #endif
 		return -1;
 	}
@@ -501,7 +501,7 @@ int getrequiredbufferlengthFMU(const int nDbl, const int nInt, const int nBoo){
 	int retVal;
 	if ( ( nInt > 0 ) || ( nBoo > 0) ){
 		fprintf(stderr, "Error: Integers and booleans are currently not\n");
-		fprintf(stderr, "       implemented in utilSocket:getrequiredbufferlength.\n");
+		fprintf(stderr, "       implemented in utilSocket:getrequiredbufferlengthFMU.\n");
 		fprintf(stderr, "       Received %d integers and %d boolean.\n", nInt, nBoo);
 		retVal = -1;
 	}
@@ -563,9 +563,9 @@ int readfromsocketFMU(const int *sockfd, int *flaRea,
 	// Increase the buffer that is used to store the data
 	inpBuf = (char*) malloc(REQUIRED_READ_LENGTH * sizeof(char));
 	if (inpBuf == NULL) {
-		perror("malloc failed in readfromsocket.");
+		perror("malloc failed in readfromsocketFMU.");
 #ifdef NDEBUG
-		fprintf(f1, "malloc failed in readfromsocket.\n");
+		fprintf(f1, "malloc failed in readfromsocketFMU.\n");
 #endif
 		free(inpBuf);
 		return -1;
@@ -628,7 +628,7 @@ int readbufferfromsocketFMU(const int *sockfd,
 #endif
 
 #ifdef NDEBUG
-			fprintf(f1, "In readbufferfromsocket: Read %d chars, maximum is %d.\n", retVal, REQUIRED_READ_LENGTH);
+			fprintf(f1, "In readbufferfromsocketFMU: Read %d chars, maximum is %d.\n", retVal, REQUIRED_READ_LENGTH);
 #endif
 			//FMU export - retVal stderr needed  to be deactivated to avoid the server to close too early
 			if ( retVal == 0 ){

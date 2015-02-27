@@ -7,8 +7,8 @@
 //         one with start, end time and day of week of RUNPERIOD
 //         based on FMU parameters. This function
 //         creates the  runinfile.idf and a runweafile.epw 
-//         for the simulation. This function assumes that the idf
-//         file as well as the weather file are both in the resources
+//         for the simulation. This function assumes a unique idf
+//         file as well as a unique weather file in the resources
 //         folder distributed with the FMU.
 //
 // \author Thierry Stephane Nouidui,
@@ -51,10 +51,10 @@ const char* OLDDAYWEEK    = "oldDayWeek.txt";
 #define MAXBUFFSIZE 1024
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This function calculates the modulo of tow doubles. 
+/// This function calculates the modulo of two doubles. 
 ///
-///\param a First input.
-///\param b Second input.
+///\param a First input double.
+///\param b Second input double.
 ///\return The modulo of two doubles. 
 ///////////////////////////////////////////////////////////////////////////////
 static double modulus(double a, double b)
@@ -67,7 +67,7 @@ static double modulus(double a, double b)
 /// This function finds a file with a specific extension in a folder. 
 /// It returns the name of the found file with its extension.
 ///
-///\param path The path to file.
+///\param path The path to a file.
 ///\param pattern The pattern to search.
 ///\return The name of the file found with extension. 
 ///        Otherwise, return 1 to indicate error. 
@@ -104,7 +104,7 @@ char *findNameFile(char *path, char *pattern)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This function deletes temporary create files. 
+/// This function deletes temporary created files. 
 ///////////////////////////////////////////////////////////////////////////////
 void findFileDelete()      
 {
@@ -173,7 +173,7 @@ static int isEmptyLine(const char *s) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This function removes spaces and make upper characters.
+/// This function removes spaces and makes upper characters.
 ///
 ///\param fname The string.
 ///////////////////////////////////////////////////////////////////////////////
@@ -190,7 +190,7 @@ void remSpaces_makeUpper(char *infile){
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This function replace a character with another one.
+/// This function replaces a character with another one.
 ///
 ///\param from The character to replace
 ///\param to The character to use
@@ -211,7 +211,7 @@ static void replace_char_from_string(char from, char to, char *str)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This function reads a file extracts relevant information for date and print 
+/// This function reads a file extracts relevant information for date and prints 
 /// the information in a file.
 ///
 ///\param temp The string.
@@ -326,7 +326,7 @@ static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu,
 		fclose(fp1);
 
 		//t_start_idf = t_start_idf + 86400;
-		// deternmine th difference between start time in idf and start time in fmu
+		// deternmine the difference between start time in idf and start time in fmu
 		modDat =(((int)(t_start_fmu  - t_start_idf)/86400)%86400)%7;
 
 		// remove blanks line and make upper
