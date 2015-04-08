@@ -163,7 +163,7 @@ static int write_socket_cfg(int portNum, const char* hostName)
 	FILE *fp;
 	fp = fopen("socket.cfg", "w");
 	if (fp == NULL) {
-		printf("Can't open socket.cfg file!\n");
+		printf("Can't open socket.cfg file.\n");
 		exit(42);  // STL error code: File not open.
 	}
 
@@ -200,7 +200,7 @@ static int copy_var_cfg (fmiString str,  fmiString des)
 #elif __APPLE__
 	sprintf(tmp_str, "cp -f %s%s %s%s%s", "\"", str,  "\"", des, "\"");
 #else
-	printf ("Cannot execute %s! The FMU export is only supported on Windows, Linux and Mac OS!\n", tmp_str);
+	printf ("Cannot execute %s. The FMU export is only supported on Windows, Linux and Mac OS.\n", tmp_str);
 #endif
 	printf ("Command executes to copy content of resources folder: %s\n", tmp_str);
 	retVal = system (tmp_str);
@@ -447,14 +447,14 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// check if directory exists and deletes it 
 	errDir = stat(fmuInstances[_c->index]->fmuOutput, &st);
 	if(errDir>=0) {
-		printf("The fmuOutput directory %s already exists and will be deleted!\n", fmuInstances[_c->index]->fmuOutput);
+		printf("The fmuOutput directory %s already exists and will be deleted.\n", fmuInstances[_c->index]->fmuOutput);
 		removeFMUDir (fmuInstances[_c->index]->fmuOutput);
 	}
 
 	// check whether the path to the resources folder has been provided
 	if((fmuLocation == NULL) || (strlen(fmuLocation) == 0)) {
 		fmuLogger(0, instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The path"
-			" to the resources folder: %s is not specified!\n", fmuLocation);
+			" to the resources folder: %s is not specified.\n", fmuLocation);
 		exit(1);
 	}
 	// copy instanceName to the FMU
@@ -517,7 +517,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 					if(errDir<0) 
 					{
 						fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The path to the resources"
-							" folder: %s is not valid! The path does not start with file: file:/, file:// or file:///\n", 
+							" folder: %s is not valid. The path does not start with file: file:/, file:// or file:///\n", 
 							fmuLocation);
 						free (fmuInstances[_c->index]->fmuLocation);
 						exit(1);
@@ -588,7 +588,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 #endif
 	if (retVal!=0){
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The path"
-			" to the resources folder: %s is not valid!\n", fmuInstances[_c->index]->fmuCalLocation);
+			" to the resources folder: %s is not valid.\n", fmuInstances[_c->index]->fmuCalLocation);
 		exit(1);
 	}
 
@@ -622,7 +622,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// check whether the model is exported for FMI version 1.0
 	if(strcmp(getString(fmuInstances[_c->index]->md, att_fmiVersion), FMIVERSION) != 0){
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: Wrong FMI version"
-			" FMI version 1.0 is currently supported!\n");
+			" FMI version 1.0 is currently supported.\n");
 		exit(1);
 	}
 
@@ -631,7 +631,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiInstantiateSlave: The given"
 			" GUID %s is not equal to the GUID of the binary"
-			" (%s)!\n", fmuGUID, fmuInstances[_c->index]->mGUID);
+			" (%s).\n", fmuGUID, fmuInstances[_c->index]->mGUID);
 		exit(1);
 	}
 	// assign FMU parameters
@@ -642,7 +642,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	free (fmuInstances[_c->index]->xml_file_p);
 	// free tmpResCon
 	free (fmuInstances[_c->index]->tmpResCon);
-	printf("fmiInstantiateSlave: Slave %s is instantiated!\n", fmuInstances[_c->index]->instanceName);
+	printf("fmiInstantiateSlave: Slave %s is instantiated.\n", fmuInstances[_c->index]->instanceName);
 	// reset the current working directory. This is particularly important for Dymola
 	// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER
@@ -722,7 +722,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 #endif
 	if (retVal!=0){
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-			"fmiInitializeSlave: The path to the resources folder: %s is not valid!\n", fmuInstances[_c->index]->fmuCalLocation);
+			"fmiInitializeSlave: The path to the resources folder: %s is not valid.\n", fmuInstances[_c->index]->fmuCalLocation);
 		return fmiFatal;
 	}
 	///////////////////////////////////////////////////////////////////////////////////
@@ -733,7 +733,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	if (WSAStartup(wVersionRequested, &wsaData)!= 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName , fmiFatal, 
-			"Fatal Error", "fmiInitializeSlave: WSAStartup failed with error %ld!\n", WSAGetLastError());
+			"Fatal Error", "fmiInitializeSlave: WSAStartup failed with error %ld.\n", WSAGetLastError());
 		WSACleanup();
 		return fmiFatal;
 	}
@@ -741,7 +741,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	if (LOBYTE(wsaData.wVersion)!= 2 || HIBYTE(wsaData.wVersion)!= 2 )
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-			"Fatal Error", "fmiInitializeSlave: Could not find a usable WinSock DLL for WinSock version %u.%u!\n",
+			"Fatal Error", "fmiInitializeSlave: Could not find a usable WinSock DLL for WinSock version %u.%u.\n",
 			LOBYTE(wsaData.wVersion),HIBYTE(wsaData.		wVersion));
 		WSACleanup();
 		return fmiFatal;
@@ -754,7 +754,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
 			"Fatal Error", "fmiInitializeSlave: Opening socket failed"
-			" sockfd = %d!\n", fmuInstances[_c->index]->sockfd);
+			" sockfd = %d.\n", fmuInstances[_c->index]->sockfd);
 		return fmiFatal;
 	}
 	printf("fmiInitializeSlave: The sockfd is %d.\n", fmuInstances[_c->index]->sockfd);
@@ -768,7 +768,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	if (bind(fmuInstances[_c->index]->sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == SOCKET_ERROR)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-			"Fatal Error", "fmiInitializeSlave: bind() failed!\n");
+			"Fatal Error", "fmiInitializeSlave: bind() failed.\n");
 		closeipcFMU (&(fmuInstances[_c->index]->sockfd));
 		return fmiFatal;
 	}
@@ -777,7 +777,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	sockLength = sizeof(server_addr);
 	if ( getsockname (fmuInstances[_c->index]->sockfd, (struct sockaddr *)&server_addr, &sockLength)) {
 		fmuLogger(0,  fmuInstances[_c->index]->instanceName, fmiFatal,
-			"Fatal Error", "fmiInitializeSlave: Get socket name failed!\n");
+			"Fatal Error", "fmiInitializeSlave: Get socket name failed.\n");
 		return fmiFatal;
 	}
 
@@ -789,7 +789,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	gethostname(ThisHost, MAXHOSTNAME);
 	if  ((hp = gethostbyname(ThisHost)) == NULL ) {
 		fmuLogger(0,  fmuInstances[_c->index]->instanceName, fmiFatal, 
-			"Fatal Error", "fmiInitializeSlave: Get host by name failed!\n");
+			"Fatal Error", "fmiInitializeSlave: Get host by name failed.\n");
 		return fmiFatal;
 	}
 
@@ -798,13 +798,13 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	printf("fmiInitializeSlave: This hostname is %s.\n", ThisHost);
 	if  (retVal != 0) {
 		fmuLogger(0,  fmuInstances[_c->index]->instanceName, fmiFatal, 
-			"Fatal Error", "fmiInitializeSlave: Write socket cfg failed!\n");
+			"Fatal Error", "fmiInitializeSlave: Write socket cfg failed.\n");
 		return fmiFatal;
 	}
 	// listen to the port
 	if (listen(fmuInstances[_c->index]->sockfd, 1) == SOCKET_ERROR)
 	{
-		fmuLogger(0,  fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiInitializeSlave: listen() failed!\n");
+		fmuLogger(0,  fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiInitializeSlave: listen() failed.\n");
 		closeipcFMU (&(fmuInstances[_c->index]->sockfd));
 		return fmiFatal;
 	}
@@ -817,7 +817,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		// initialize the input vectors
 		fmuInstances[_c->index]->inVec = (fmiReal*)malloc(fmuInstances[_c->index]->numInVar*sizeof(fmiReal));
 	}
-	printf("fmiInitializeSlave: The number of input variables is %d!\n", fmuInstances[_c->index]->numInVar);
+	printf("fmiInitializeSlave: The number of input variables is %d.\n", fmuInstances[_c->index]->numInVar);
 
 	// get the number of output variables of the FMU
 	if (fmuInstances[_c->index]->numOutVar ==-1)
@@ -826,11 +826,11 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		// initialize the output vector
 		fmuInstances[_c->index]->outVec = (fmiReal*)malloc(fmuInstances[_c->index]->numOutVar*sizeof(fmiReal));
 	}
-	printf("fmiInitializeSlave: The number of output variables is %d!\n", fmuInstances[_c->index]->numOutVar);
+	printf("fmiInitializeSlave: The number of output variables is %d.\n", fmuInstances[_c->index]->numOutVar);
 
 	if ( (fmuInstances[_c->index]->numInVar + fmuInstances[_c->index]->numOutVar) == 0){
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-			"fmiInitializeSlave: The FMU instance %s has no input and output variables. Please check the model description file!\n",
+			"fmiInitializeSlave: The FMU instance %s has no input and output variables. Please check the model description file.\n",
 			fmuInstances[_c->index]->instanceName);
 		return fmiFatal;
 	}
@@ -842,8 +842,8 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	free (fmuInstances[_c->index]->resources_p);
 	if  (retVal != 0) {
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-			"Fatal Error", "fmiInitializeSlave: The FMU instance could not be initialized!\n");
-		fprintf(stderr, "fmiInitializeSlave: Can't create input file cfg!\n");
+			"Fatal Error", "fmiInitializeSlave: The FMU instance could not be initialized.\n");
+		fprintf(stderr, "fmiInitializeSlave: Can't create input file cfg.\n");
 		return fmiFatal;
 	}
 #ifndef _MSC_VER
@@ -869,16 +869,16 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		// check if the timeStepIDF is null to avoid division by zero
 		if (fmuInstances[_c->index]->timeStepIDF == 0){
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-				"fmiInitializeSlave: The time step in IDF cannot be null!\n");
-			fprintf(stderr, "fmiInitializeSlave: Time step in IDF is null!\n");
+				"fmiInitializeSlave: The time step in IDF cannot be null.\n");
+			fprintf(stderr, "fmiInitializeSlave: Time step in IDF is null.\n");
 			return fmiFatal;
 		}	
 	}
 	else
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-			"fmiInitializeSlave: A valid time step could not be determined!\n");
-		fprintf(stderr, "fmiInitializeSlave: Can't read time step file!\n");
+			"fmiInitializeSlave: A valid time step could not be determined.\n");
+		fprintf(stderr, "fmiInitializeSlave: Can't read time step file.\n");
 		return fmiFatal;
 	}
 
@@ -888,12 +888,12 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	// start the simulation
 	retVal = start_sim(c);
 	fmuInstances[_c->index]->newsockfd = accept(fmuInstances[_c->index]->sockfd, NULL, NULL);
-	printf("fmiInitializeSlave: The connection has been accepted!\n");
+	printf("fmiInitializeSlave: The connection has been accepted.\n");
 	// check whether the simulation could start successfully
 	if  (retVal != 0) {
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
 			"Fatal Error", "fmiInitializeSlave: The FMU instance could %s not be initialized. "
-			"EnergyPlus can't start . Check if EnergyPlus is installed and on the system path!\n", 
+			"EnergyPlus can't start . Check if EnergyPlus is installed and on the system path.\n", 
 			fmuInstances[_c->index]->instanceName);
 		return fmiFatal;
 	}
@@ -903,7 +903,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	{
 		fmuInstances[_c->index]->firstCallIni = 0;
 	}
-	printf("fmiInitializeSlave: Slave %s is initialized!\n", fmuInstances[_c->index]->instanceName);
+	printf("fmiInitializeSlave: Slave %s is initialized.\n", fmuInstances[_c->index]->instanceName);
 	// reset the current working directory. This is particularly important for Dymola
 	// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER
@@ -944,7 +944,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		fmuInstances[_c->index]->tStartFMU) > 1e-10))
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", 
-			"fmiDoStep: An error occured in a previous call. First communication time: %f != tStart: %f!\n",
+			"fmiDoStep: An error occured in a previous call. First communication time: %f != tStart: %f.\n",
 			fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->tStartFMU);
 		return fmiFatal;
 	}
@@ -960,7 +960,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	if (fmuInstances[_c->index]->communicationStepSize == 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, 
-			"Fatal Error", "fmiDoStep: An error occured in a previous call. CommunicationStepSize cannot be null!\n");
+			"Fatal Error", "fmiDoStep: An error occured in a previous call. CommunicationStepSize cannot be null.\n");
 		return fmiFatal;
 	}
 
@@ -968,7 +968,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	if ( fabs(fmuInstances[_c->index]->communicationStepSize - (3600/fmuInstances[_c->index]->timeStepIDF)) > 1e-10)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep:"
-			" An error occured in a previous call. CommunicationStepSize: %f is different from time step: %d in input file!\n",
+			" An error occured in a previous call. CommunicationStepSize: %f is different from time step: %d in input file.\n",
 			fmuInstances[_c->index]->communicationStepSize, fmuInstances[_c->index]->timeStepIDF);
 		return fmiFatal;
 	}
@@ -977,7 +977,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	if ((fmuInstances[_c->index]->curComm) < 0 || ((fmuInstances[_c->index]->firstCallDoStep == 0) 
 		&& (fmuInstances[_c->index]->curComm > fmuInstances[_c->index]->nexComm))){
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep:"
-				" An error occured in a previous call. Communication point must be positive and monoton increasing!\n");
+				" An error occured in a previous call. Communication point must be positive and monoton increasing.\n");
 			return fmiFatal;
 	}
 
@@ -987,7 +987,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", "fmiDoStep: "
 			"Current communication point: %f is not equals to the previous simulation time + "
-			"communicationStepSize: %f + %f!\n",
+			"communicationStepSize: %f + %f.\n",
 			fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->nexComm, 
 			fmuInstances[_c->index]->communicationStepSize);
 		return fmiError;
@@ -998,7 +998,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		// set the communication flags to 1 to send stop signal to EnergyPlus
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
 			"Warning", "fmiDoStep: Current communication point: %f of FMU instance: %s "
-			"is equals to end of simulation: %f!\n", 
+			"is equals to end of simulation: %f.\n", 
 			fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->instanceName, fmuInstances[_c->index]->tStopFMU);
 		return fmiWarning;
 	}
@@ -1007,7 +1007,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	if (fmuInstances[_c->index]->curComm > fmuInstances[_c->index]->tStopFMU){
 		// set the communication flags to 1 to send stop signal to EnergyPlus
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", "fmiDoStep:"
-			" Current communication point: %f is larger than end of simulation time: %f!\n", 
+			" Current communication point: %f is larger than end of simulation time: %f.\n", 
 			fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->tStopFMU);
 		return fmiError;
 	}
@@ -1017,7 +1017,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 			// set the communication flags to 1 to send stop signal to EnergyPlus
 			fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiFatal, "Fatal Error", "fmiDoStep: "
 				"Current communication point: %f  + communicationStepsize: %f  is larger than "
-				"end of simulation time: %f!\n", 
+				"end of simulation time: %f.\n", 
 				fmuInstances[_c->index]->curComm, fmuInstances[_c->index]->communicationStepSize,  
 				fmuInstances[_c->index]->tStopFMU);
 			return fmiFatal;
@@ -1073,7 +1073,7 @@ DllExport fmiStatus fmiCancelStep(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-		"Warning", "fmiCancelStep: The function fmiCancelStep(..) is not provided!\n");
+		"Warning", "fmiCancelStep: The function fmiCancelStep(..) is not provided.\n");
 	return fmiWarning;
 }
 
@@ -1095,7 +1095,7 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 	if (fmuInstances[_c->index]->firstCallFree == 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-			"Warning", "fmiTerminateSlave: fmiFreeSlaveInstance(..) was already called on FMU instance %s!\n", 
+			"Warning", "fmiTerminateSlave: fmiFreeSlaveInstance(..) was already called on FMU instance %s.\n", 
 			fmuInstances[_c->index]->instanceName);
 		return fmiOK;
 	}
@@ -1103,7 +1103,7 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 	if (fmuInstances[_c->index]->firstCallTerm == 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-			"Warning", "fmiTerminateSlave: fmiTerminateSlave(..) was already called on FMU instance %s!\n", 
+			"Warning", "fmiTerminateSlave: fmiTerminateSlave(..) was already called on FMU instance %s.\n", 
 			fmuInstances[_c->index]->instanceName);
 		return fmiOK;
 	}
@@ -1162,7 +1162,7 @@ DllExport fmiStatus fmiResetSlave(fmiComponent c)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-		"fmiResetSlave: fmiResetSlave(..): is not provided!\n");
+		"fmiResetSlave: fmiResetSlave(..): is not provided.\n");
 	return fmiWarning;
 }
 
@@ -1183,7 +1183,7 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 	if (fmuInstances[_c->index]->firstCallTerm == 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-			"Warning", "fmiFreeSlaveInstance: fmiTerminateSlave(..) was already called on FMU instance %s!\n", 
+			"Warning", "fmiFreeSlaveInstance: fmiTerminateSlave(..) was already called on FMU instance %s.\n", 
 			fmuInstances[_c->index]->instanceName);
 		return ;
 	}
@@ -1192,7 +1192,7 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 	if (fmuInstances[_c->index]->firstCallFree == 0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, 
-			"Warning", "fmiFreeSlaveInstance: fmiFreeSlaveInstance(..) was already called on FMU instance %s!\n", 
+			"Warning", "fmiFreeSlaveInstance: fmiFreeSlaveInstance(..) was already called on FMU instance %s.\n", 
 			fmuInstances[_c->index]->instanceName);
 		return ;
 	}
@@ -1252,7 +1252,7 @@ DllExport fmiStatus fmiSetDebugLogging (fmiComponent c, fmiBoolean loggingOn)
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-		"fmiSetDebugLogging: fmiSetDebugLogging(): fmiSetDebugLogging is not provided!\n");
+		"fmiSetDebugLogging: fmiSetDebugLogging(): fmiSetDebugLogging is not provided.\n");
 	return fmiOK;
 }
 
@@ -1320,7 +1320,7 @@ DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], 
 	if(nvr>0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-			"fmiSetInteger: fmiSetInteger(..) was called. The FMU does not contain integer variables to set!\n");
+			"fmiSetInteger: fmiSetInteger(..) was called. The FMU does not contain integer variables to set.\n");
 		return fmiError;
 	}
 	return fmiOK;
@@ -1341,7 +1341,7 @@ DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], 
 	if(nvr>0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-			"fmiSetBoolean: fmiSetBoolean(..) was called. The FMU does not contain boolean variables to set!\n");
+			"fmiSetBoolean: fmiSetBoolean(..) was called. The FMU does not contain boolean variables to set.\n");
 		return fmiError;
 	}
 	return fmiOK;
@@ -1362,7 +1362,7 @@ DllExport fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], s
 	if(nvr>0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
-			"Error", "fmiSetString: fmiSetString(..) was called. The FMU does not contain string variables to set!\n");
+			"Error", "fmiSetString: fmiSetString(..) was called. The FMU does not contain string variables to set.\n");
 		return fmiError;
 	}
 	return fmiOK;
@@ -1443,7 +1443,7 @@ DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], 
 	if(nvr>0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-			"fmiGetInteger: fmiGetInteger(..) was called. The FMU does not contain integer variables to get!\n");
+			"fmiGetInteger: fmiGetInteger(..) was called. The FMU does not contain integer variables to get.\n");
 		return fmiError;
 	}
 	return fmiOK;
@@ -1464,7 +1464,7 @@ DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], 
 	if(nvr>0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, "Error", 
-			"fmiGetBoolean: fmiGetBoolean(..) was called. The FMU does not contain boolean variables to get!\n");
+			"fmiGetBoolean: fmiGetBoolean(..) was called. The FMU does not contain boolean variables to get.\n");
 		return fmiError;
 	}
 	return fmiOK;
@@ -1485,7 +1485,7 @@ DllExport fmiStatus fmiGetString (fmiComponent c, const fmiValueReference vr[], 
 	if(nvr>0)
 	{
 		fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiError, 
-			"Error", "fmiGetString: fmiGetString(..) was called. The FMU does not contain string variables to get!\n");
+			"Error", "fmiGetString: fmiGetString(..) was called. The FMU does not contain string variables to get.\n");
 		return fmiError;
 	}
 	return fmiOK;
@@ -1507,7 +1507,7 @@ DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueRe
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-		"fmiGetRealOutputDerivatives: fmiGetRealOutputDerivatives(): Real Output Derivatives are not provided!\n");
+		"fmiGetRealOutputDerivatives: fmiGetRealOutputDerivatives(): Real Output Derivatives are not provided.\n");
 	return fmiWarning;
 }
 
@@ -1527,7 +1527,7 @@ DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueRef
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-		"fmiSetRealInputDerivatives: fmiSetRealInputDerivatives(): Real Input Derivatives are not provided!\n");
+		"fmiSetRealInputDerivatives: fmiSetRealInputDerivatives(): Real Input Derivatives are not provided.\n");
 	return fmiWarning;
 }
 
@@ -1543,7 +1543,7 @@ DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatu
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-		"fmiGetStatus: fmiGetStatus(): is not provided!\n");
+		"fmiGetStatus: fmiGetStatus(): is not provided.\n");
 	return fmiWarning;
 }
 
@@ -1559,7 +1559,7 @@ DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiR
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-		"fmiGetRealStatus: fmiGetRealStatus(): is not provided!\n");
+		"fmiGetRealStatus: fmiGetRealStatus(): is not provided.\n");
 	return fmiWarning;
 }
 
@@ -1575,7 +1575,7 @@ DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, f
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-		"fmiGetIntegerStatus: fmiGetIntegerStatus(): is not provided!\n");
+		"fmiGetIntegerStatus: fmiGetIntegerStatus(): is not provided.\n");
 	return fmiWarning;
 }
 ////////////////////////////////////////////////////////////////
@@ -1590,7 +1590,7 @@ DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, f
 {
 	idfFmu_t* _c = (idfFmu_t *)c;
 	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-		"fmiGetBooleanStatus: fmiGetBooleanStatus(): is not provided!\n");
+		"fmiGetBooleanStatus: fmiGetBooleanStatus(): is not provided.\n");
 	return fmiWarning;
 }
 ////////////////////////////////////////////////////////////////
@@ -1606,7 +1606,7 @@ DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, f
 {	
 	idfFmu_t* _c = (idfFmu_t *)c;
 	fmuLogger(0, fmuInstances[_c->index]->instanceName, fmiWarning, "Warning", 
-		"fmiGetStringStatus: fmiGetStringStatus(): is not provided!\n");
+		"fmiGetStringStatus: fmiGetStringStatus(): is not provided.\n");
 	return fmiWarning;
 }
 
