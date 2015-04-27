@@ -75,7 +75,7 @@ The following items need to be observed when importing an FMU that contains Ener
 .. rubric:: Footnotes
 
 .. [#f1] This is because the FMU implements the FMI for co-simulation 
-         in the `Tool Coupling <https://svn.modelica.org/fmi/branches/public/specifications/FMI_for_CoSimulation_v1.0.pdf>`_ scenario. 
+         in the `Tool Coupling <https://svn.modelica.org/fmi/branches/public/specifications/v1.0/FMI_for_ModelExchange_v1.0.pdf>`_ scenario. 
 .. [#f2] This is because the External Interface in EnergyPlus synchronizes
          the data at the zone time step which is constant throughout
          the simulation. 
