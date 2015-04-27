@@ -143,7 +143,7 @@ For example, in the ``win`` subdirectory, the default batch file ``compile-c.bat
 
 Once you have identified the appropriate batch file subdirectory, you can either:
 
-- Test the existing batch files.
+- Test the existing batch files to determine whether a 32-bit or 64-bit FMU will be created.
   See `Running a basic test`_.
 - Modify the existing files, according to your particular needs.
   See `Modifying the batch files`_.

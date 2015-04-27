@@ -50,7 +50,7 @@ The following items need to be observed when importing an FMU that contains Ener
    This IDF snippet declares January 2 to be a Monday. 
    Hence, if an FMU is simulated with 
    start time equal to 3 days, then the first day of the simulation
-   will be Tuesday.
+   will be Tuesday. There should only be one instance of RunPeriod in the IDF input file.
 
 4. A tool that imports the FMU must start and stop the simulation at midnight. 
    [#f4]_
