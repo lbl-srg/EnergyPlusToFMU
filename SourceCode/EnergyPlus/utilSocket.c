@@ -593,11 +593,8 @@ int readfromsocketFMU(const int *sockfd, int *flaRea,
 #ifdef NDEBUG
 	fprintf(f1, "Disassembled buffer.\n");
 #endif
-#ifndef _MSC_VER
-	// FIXME: Freeing buffer does not work on Windows OS
-	free(inpBuf);
-#endif
-	return retVal;
+    free(inpBuf);
+    return retVal;
 }
 
 /////////////////////////////////////////////////////////////////

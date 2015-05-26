@@ -1148,6 +1148,7 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 	retVal = chdir(fmuInstances[_c->index]->cwd);
 #endif
 	// FIXME: free FMU instance does not work with Dymola 2014
+    // This might not even be needed.
 	//free (_c);
 	return fmiOK;
 }
@@ -1237,6 +1238,7 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 	retVal = chdir(fmuInstances[_c->index]->cwd);
 #endif
 	// FIXME: free FMU instance does not work with Dymola 2014
+    // This might not even be needed.
 	// free (_c);
 	return;
 }
