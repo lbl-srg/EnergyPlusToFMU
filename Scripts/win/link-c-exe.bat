@@ -15,7 +15,7 @@
 ::   Work through a hierarchy of possible directory locations.
 ::
 IF "%DevEnvDir%"=="" (
-  CALL "C:\Program Files\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"  >nul 2>&1
+  CALL "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\amd64\vcvars64.bat"  >nul 2>&1
   IF ERRORLEVEL 1 (
     CALL "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\amd64\vcvars64.bat"  >nul 2>&1
     IF ERRORLEVEL 1 (
