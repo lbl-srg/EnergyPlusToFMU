@@ -34,7 +34,9 @@ static int REQUIRED_WRITE_LENGTH = 0;
 /// version number of the server
 int SERVER_VERSION = 0;
 
-// FIXME: Increase HEADER_LENGTH for large number of Input/Output variables.
+// FIX: Increase HEADER_LENGTH for large number of Input/Output variables.
+// This was necessary to address issues reported by several users  when 
+// a large amount of data was sent through the socket.
 #define HEADER_LENGTH 21600 // = 10 + 4*(10+1);
 
 
