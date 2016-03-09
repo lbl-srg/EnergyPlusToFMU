@@ -22,7 +22,7 @@ To export EnergyPlus as an FMU, four objects have been added to the EnergyPlus d
   EMS actuators, and variables.
   
 These objects are described in the Input/Output reference of the EnergyPlus manual 
-(http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf). 
+(https://energyplus.net/sites/all/modules/custom/nrel_custom/pdfs/pdfs_v8.4.0/InputOutputReference.pdf). 
 
 Configuring an EnergyPlus model which uses the ``Schedule`` object
 ------------------------------------------------------------------
@@ -179,7 +179,7 @@ These specifications are used in the example that is available in ``Examples/Var
 
 Please see the Input/Output reference of the EnergyPlus manual 
 
-(http://apps1.eere.energy.gov/buildings/energyplus/pdfs/inputoutputreference.pdf) 
+(https://energyplus.net/sites/all/modules/custom/nrel_custom/pdfs/pdfs_v8.4.0/InputOutputReference.pdf) 
 for more details.
 
 Please read :doc:`installation` to see how to generate an FMU.
