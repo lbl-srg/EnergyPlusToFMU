@@ -29,7 +29,6 @@
  */
 #define MAINVERSION 2
 
-#endif /*__DEFINES_H__*/
 
 /////////////////////////////////////////////////////////////////////
 /*  Header specific to the FMU export project (added by T. Nouidui) 
@@ -41,14 +40,80 @@
 #define VARCFG       "variables.cfg"
 #define SOCKCFG      "socket.cfg"
 #define EPBAT        "EP.bat"
+#define MAX_VARNAME_LEN 100
+#ifdef _MSC_VER
+#include <windows.h>
+#define PATH_SEP "\\"
+#else
+#define PATH_SEP "//"
+#endif
+#define RESOURCES "resources"
+#define XML_FILE "modelDescription.xml"
+
+#include "fmiPlatformTypes.h"
+#include "fmiFunctions.h"
+#include "xml_parser_cosim.h"
+
+typedef struct idfFmu_t {
+	int index;
+	fmiCallbackFunctions functions;
+	char instanceName[MAX_VARNAME_LEN];
+	char cwd[256];
+	char* fmuResourceLocation;
+	char* fmuUnzipLocation;
+	char *xml_file;
+	char* tmpResCon;
+	char *fmuOutput;
+	char* mID;
+	char *mGUID;
+	int numInVar;
+	int numOutVar;
+	int sockfd;
+	int newsockfd;
+	fmiReal timeout; 
+	fmiBoolean visible;
+	fmiBoolean interactive;
+	fmiBoolean loggingOn;
+
+	int firstCallGetReal;
+	int firstCallSetReal;
+	int firstCallDoStep;
+
+	int firstCallFree;
+	int firstCallTerm;
+	int firstCallIni;
+	int firstCallRes;
+	int flaGetRealCall;
+	int flaGetWri;
+	int flaGetRea;
+	int flaWri;
+	int flaRea;
+	int readReady;
+	int writeReady;
+	int timeStepIDF;
+	int getCounter;
+	int setCounter;
+	ModelDescription* md;
+
+	fmiReal *inVec;
+	fmiReal *outVec;
+	fmiReal tStartFMU;
+	fmiReal tStopFMU;
+	fmiReal nexComm;
+	fmiReal simTimSen;
+	fmiReal simTimRec;
+	fmiReal communicationStepSize;
+	fmiReal curComm;
 
 #ifdef _MSC_VER
-#define RESOURCES "\\resources\\"
-#define XML_FILE "\\modelDescription.xml"
+	HANDLE  pid;
 #else
-#define RESOURCES "//resources//"
-#define XML_FILE "//modelDescription.xml"
+	pid_t  pid;
 #endif
+} idfFmu_t;
+
+#endif /*__DEFINES_H__*/
+
 
 /*
 

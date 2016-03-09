@@ -38,7 +38,7 @@ char *getTmpPath(const char *nam, int length);
 
 void printDebug(const char* msg);
 
-void printfDebug(const char* str1, const char* str2);
+//void printfDebug(const char* str1, const char* str2);
 
 void printfIntDebug(const char* str1, const int integer);
 

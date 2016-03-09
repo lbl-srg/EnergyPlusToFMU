@@ -25,24 +25,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// This function creates the input file to be used for the run.
 ///
-///\param t_start_FMU The FMU start time.
-///\param t_stop_FMU The FMU stop time.
-///\param t_start_FMU The FMU model ID.
-///\param resources_p The path to resources folder
+///\param _c The FMU instance.
 ///////////////////////////////////////////////////////////////////////////////
-int createRunInFile (fmiReal t_start_FMU, fmiReal t_stop_FMU, 
-	fmiString modelID, char * resources_p);
+int createRunInfile(idfFmu_t *_c);
 
 ///////////////////////////////////////////////////////////////////////////////
 /// This function finds a file with a specific extension in a folder. 
 /// It returns the name of the found file with its extension.
 ///
-///\param path The path to file.
+///\param _c The FMU instance.
 ///\param pattern The pattern to search.
 ///\return The name of the file found with extension. 
 ///        Otherwise, return 1 to indicate error. 
 ///////////////////////////////////////////////////////////////////////////////
-char *findNameFile(char *path, char *pattern);
+char *findNameFile(idfFmu_t *_c, char *pattern);
 
 ///////////////////////////////////////////////////////////////////////////////
 /// This function deletes temporary create files. 

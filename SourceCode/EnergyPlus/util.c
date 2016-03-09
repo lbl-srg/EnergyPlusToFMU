@@ -127,19 +127,19 @@ void printDebug(const char* msg){
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
-/// Print formatted debug message
-///
-///\param str1 Message to be printed for debugging 
-///\param str2 String variable to be printed for debugging
-//////////////////////////////////////////////////////////////////////////////
-void printfDebug(const char* str1, const char* str2){
-	if (debug == 1)
-	{
-		fprintf(stdout, "Debug: ");
-		fprintf(stdout, str1, str2);
-	}
-}
+////////////////////////////////////////////////////////////////////////////////
+///// Print formatted debug message
+/////
+/////\param str1 Message to be printed for debugging 
+/////\param str2 String variable to be printed for debugging
+////////////////////////////////////////////////////////////////////////////////
+//void printfDebug(const char* str1, const char* str2){
+//	if (debug == 1)
+//	{
+//		fprintf(stdout, "Debug: ");
+//		fprintf(stdout, str1, str2);
+//	}
+//}
 
 //////////////////////////////////////////////////////////////////////////////
 /// Print formatted debug message with Integer
