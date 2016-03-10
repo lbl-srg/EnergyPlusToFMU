@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.4',
+        VERSION:     '1.0.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -28,12 +28,12 @@
     <link rel="next" title="11. Glossary" href="glossary.html" />
     <link rel="prev" title="9. Notation" href="notation.html" /> 
   </head>
-  <body>
+  <body role="document">
 <div class="headerStyle">
 <img src="_static/lbl-logo.png" alt="LBL logo" />
 </div>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -49,11 +49,11 @@
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
  
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="notation.html"
@@ -61,12 +61,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="glossary.html"
                         title="next chapter">11. Glossary</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/help.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/help.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -85,7 +87,7 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="help">
 <h1>10. Help<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h1>
@@ -107,9 +109,9 @@
 <p>To report the bug, send email to <a class="reference external" href="https://groups.google.com/group/energyplus-fmu">https://groups.google.com/group/energyplus-fmu</a>. This is an open group and everyone can join it. No invitation is needed.</p>
 <p><strong>Known Issues</strong></p>
 <p><strong>Release 1.0.0</strong></p>
-<p><a class="reference internal" href="glossary.html#term-dymola"><em class="xref std std-term">Dymola</em></a> 2014 cannot import EnergyPlus as an FMU. The reason is a bug in <a class="reference internal" href="glossary.html#term-dymola"><em class="xref std std-term">Dymola</em></a> 2014 which does not pass the path to the resources location folder to the FMU when invoking the <tt class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></tt> method.
-This information is needed by the FMU for its correct execution. A workaround will be to manually specify the path to the resources location in the <tt class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></tt> method in <tt class="docutils literal"><span class="pre">main.c</span></tt>. <tt class="docutils literal"><span class="pre">main.c</span></tt> can be found in the
-<tt class="docutils literal"><span class="pre">SourceCode</span></tt> folder of the EnergyPlusToFMU installation.</p>
+<p><a class="reference internal" href="glossary.html#term-dymola"><span class="xref std std-term">Dymola</span></a> 2014 cannot import EnergyPlus as an FMU. The reason is a bug in <a class="reference internal" href="glossary.html#term-dymola"><span class="xref std std-term">Dymola</span></a> 2014 which does not pass the path to the resources location folder to the FMU when invoking the <code class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></code> method.
+This information is needed by the FMU for its correct execution. A workaround will be to manually specify the path to the resources location in the <code class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></code> method in <code class="docutils literal"><span class="pre">main.c</span></code>. <code class="docutils literal"><span class="pre">main.c</span></code> can be found in the
+<code class="docutils literal"><span class="pre">SourceCode</span></code> folder of the EnergyPlusToFMU installation.</p>
 </div>
 
 
@@ -118,7 +120,7 @@ This information is needed by the FMU for its correct execution. A workaround wi
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -134,13 +136,13 @@ This information is needed by the FMU for its correct execution. A workaround wi
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
  
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2013-2015, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2013-2016, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
     </div>
   </body>
 </html>

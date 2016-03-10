@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.4',
+        VERSION:     '1.0.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,12 +27,12 @@
     <link rel="top" title="FMU Export of EnergyPlus User Guide" href="#" />
     <link rel="next" title="1. Introduction" href="introduction.html" /> 
   </head>
-  <body>
+  <body role="document">
 <div class="headerStyle">
 <img src="_static/lbl-logo.png" alt="LBL logo" />
 </div>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -45,21 +45,23 @@
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li><a href="#">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="#">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
  
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Next topic</h4>
   <p class="topless"><a href="introduction.html"
                         title="next chapter">1. Introduction</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/index.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -78,7 +80,7 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="user-guide">
 <h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
@@ -86,11 +88,13 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="download.html">2. Download</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-4-april-27-2015">2.1. Release 1.0.4 (April 27, 2015)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-3-may-23-2014">2.2. Release 1.0.3 (May 23, 2014)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-2-march-20-2014">2.3. Release 1.0.2 (March 20, 2014)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-1-december-13-2013">2.4. Release 1.0.1 (December 13, 2013)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-0-november-01-2013">2.5. Release 1.0.0 (November 01, 2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-6-march-09-2016">2.1. Release 1.0.6 (March 09, 2016)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-5-may-26-2015">2.2. Release 1.0.5 (May 26, 2015)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-4-april-27-2015">2.3. Release 1.0.4 (April 27, 2015)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-3-may-23-2014">2.4. Release 1.0.3 (May 23, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-2-march-20-2014">2.5. Release 1.0.2 (March 20, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-1-december-13-2013">2.6. Release 1.0.1 (December 13, 2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#release-1-0-0-november-01-2013">2.7. Release 1.0.0 (November 01, 2013)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">3. Installation and Configuration</a><ul>
@@ -104,7 +108,7 @@
 <li class="toctree-l2"><a class="reference internal" href="installation.html#modifying-the-batch-files">3.8. Modifying the batch files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#finding-a-compiler-linker-unix">3.9. Finding a compiler/linker (Unix)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-permissions-unix">3.10. Troubleshooting permissions (Unix)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-the-memmove-function">3.11. Troubleshooting the <tt class="docutils literal"><span class="pre">memmove</span></tt> function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-the-memmove-function">3.11. Troubleshooting the <code class="docutils literal"><span class="pre">memmove</span></code> function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting-missing-libraries">3.12. Troubleshooting missing libraries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#uninstallation">3.13. Uninstallation</a></li>
 </ul>
@@ -118,9 +122,9 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">5. Usage of EnergyPlus as an FMU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mathematics.html">6. Mathematical Description</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bestPractice.html">7. Best Practice</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-schedule-object">7.1. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">Schedule</span></tt> object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-ems-actuator-object">7.2. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">EMS</span> <span class="pre">Actuator</span></tt> object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-ems-variable-object">7.3. Configuring an EnergyPlus model which uses the <tt class="docutils literal"><span class="pre">EMS</span> <span class="pre">Variable</span></tt> object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-schedule-object">7.1. Configuring an EnergyPlus model which uses the <code class="docutils literal"><span class="pre">Schedule</span></code> object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-ems-actuator-object">7.2. Configuring an EnergyPlus model which uses the <code class="docutils literal"><span class="pre">EMS</span> <span class="pre">Actuator</span></code> object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bestPractice.html#configuring-an-energyplus-model-which-uses-the-ems-variable-object">7.3. Configuring an EnergyPlus model which uses the <code class="docutils literal"><span class="pre">EMS</span> <span class="pre">Variable</span></code> object</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">8. Development</a></li>
@@ -140,7 +144,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -153,13 +157,13 @@
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li><a href="#">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="#">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
  
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2013-2015, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2013-2016, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
     </div>
   </body>
 </html>
