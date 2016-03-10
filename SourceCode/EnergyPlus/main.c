@@ -1111,7 +1111,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 					&_c->numInVar, &zI, &zI, &(_c->simTimSen),
 					_c->inVec, NULL, NULL);
 
-				if (_c->flaGetRealCall=1)
+				if (_c->flaGetRealCall==1)
 				{
 					_c->flaGetRealCall=0;
 				}
