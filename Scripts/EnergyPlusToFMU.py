@@ -241,6 +241,8 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
   addToZipFile(workZipFile, OUT_modelDescFileName, None, None)
   addToZipFile(workZipFile, idfFileName, 'resources', modelIdName+'.idf')
   addToZipFile(workZipFile, OUT_variablesFileName, 'resources', None)
+  addToZipFile(workZipFile, iddFileName, 'resources', None)
+  addToZipFile(workZipFile, exportPrepExeName, 'resources', None)
   if( wthFileName is not None ):
     addToZipFile(workZipFile, wthFileName, 'resources', None)
   addToZipFile(workZipFile, OUT_fmuSharedLibName, os.path.join('binaries',fmuBinDirName), None)
