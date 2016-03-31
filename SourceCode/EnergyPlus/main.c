@@ -909,6 +909,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	char command[100];
 	char *tmpstr;
 	char *cmdstr;
+	char *cmdstrEXE;
 
 #ifdef _MSC_VER
 	int sockLength;
@@ -1121,6 +1122,19 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	if (_c->wea_file != NULL){
 		cmdstr = (char *)_c->functions.allocateMemory(strlen(_c->fmuResourceLocation) + strlen(command) + 10, sizeof(char));
 		sprintf(cmdstr, "%s%s", _c->fmuResourceLocation, command);
+		//Make file executable if UNIX
+#ifndef __MSC_VER
+		cmdstrEXE = (char *)_c->functions.allocateMemory(strlen(cmdstr) + 10, sizeof(char));
+		sprintf(cmdstrEXE, "%s %s", "chmod +x", cmdstr);
+		retVal = system(cmdstrEXE);
+		if (retVal != 0){
+			_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInitializeSlave: Could not"
+				" make preprocessor executable. Initialization of %s failed.\n",
+				_c->instanceName);
+			return fmiError;
+		}
+		_c->functions.freeMemory(cmdstrEXE);
+#endif
 		tmpstr = (char *)_c->functions.allocateMemory(strlen(cmdstr) + strlen(_c->wea_file) +
 			strlen(_c->idd_file) + strlen(_c->in_file) + strlen(tStartFMUstr) + strlen(tStopFMUstr) + 50, sizeof(char));
 		sprintf(tmpstr, "%s -w %s -b %s -e %s %s %s", cmdstr, _c->wea_file, tStartFMUstr, tStopFMUstr, _c->idd_file, _c->in_file);
@@ -1129,6 +1143,18 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	else{
 		cmdstr = (char *)_c->functions.allocateMemory(strlen(_c->fmuResourceLocation) + strlen(command) + 10, sizeof(char));
 		sprintf(cmdstr, "%s%s", _c->fmuResourceLocation, command);
+#ifndef __MSC_VER
+		cmdstrEXE = (char *)_c->functions.allocateMemory(strlen(cmdstr) + 10, sizeof(char));
+		sprintf(cmdstrEXE, "%s %s", "chmod +x", cmdstr);
+		retVal = system(cmdstrEXE);
+		if (retVal != 0){
+			_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInitializeSlave: Could not"
+				" make preprocessor executable. Initialization of %s failed.\n",
+				_c->instanceName);
+			return fmiError;
+		}
+		_c->functions.freeMemory(cmdstrEXE);
+#endif
 		tmpstr = (char *)_c->functions.allocateMemory(strlen(cmdstr) + 
 			strlen(_c->idd_file) + strlen(_c->in_file) + strlen(tStartFMUstr) + strlen(tStopFMUstr) + 50, sizeof(char));
 		sprintf(tmpstr, "%s -b %s -e %s %s %s", cmdstr, tStartFMUstr, tStopFMUstr, _c->idd_file, _c->in_file);
