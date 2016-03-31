@@ -53,7 +53,7 @@ int main(int argc, const char* argv[])
 	// Read data from IDF file.
 	fmuExportIdfData fmuIdfData;
 
-	if ((cmdlnInput.tStartFMU!=NULL) && (cmdlnInput.tStopFMU!= NULL)){
+	if (cmdlnInput.tStartFMU && cmdlnInput.tStopFMU){
 		cout << "Reading input and weather file for preprocessor program." << endl;
 		getInputData(cmdlnInput, fmuIdfData);
 	}
