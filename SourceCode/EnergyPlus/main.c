@@ -22,13 +22,15 @@
 #define PATHLEN 10000
 #define MAXHOSTNAME  10000
 #define MAX_MSG_SIZE 1000
+#define MAXBUFFSIZE 1000
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "util.h"
 #include "utilSocket.h" 
 #include "defines.h"
-#include "reader.h" 
+//#include "reader.h" 
 #include <errno.h>
 #include <sys/stat.h>
 
@@ -39,7 +41,9 @@
 #include <process.h>
 #include <windows.h>
 #include <direct.h>
+#include "dirent_win.h"
 #else
+#include <dirent.h>
 #include <stdarg.h>
 #include <netdb.h>
 #include <unistd.h>
@@ -56,9 +60,43 @@ int insNum=0;
 int firstCallIns=1;
 
 int arrsize=0;
-idfFmu_t **fmuInstances;
+ModelInstance **fmuInstances;
 int fmuLocCoun=0;
 #define DELTA 10
+
+///////////////////////////////////////////////////////////////////////////////
+/// This function deletes temporary created files. 
+///////////////////////////////////////////////////////////////////////////////
+void findFileDelete()
+{
+	struct stat stat_p;
+	int res;
+
+	if (stat(VARCFG, &stat_p) >= 0)
+	{
+		remove(VARCFG);
+	}
+	if (stat(SOCKCFG, &stat_p) >= 0)
+	{
+		remove(SOCKCFG);
+	}
+	if (stat(EPBAT, &stat_p) >= 0)
+	{
+		remove(EPBAT);
+	}
+	if (stat(FTIMESTEP, &stat_p) >= 0)
+	{
+		remove(FTIMESTEP);
+	}
+	if (stat(FRUNWEAFILE, &stat_p) >= 0){
+		// cleanup .epw files
+#ifdef _MSC_VER
+		res = system("del *.epw");
+#else
+		res = system("rm -f *.epw");
+#endif
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 /// Replace forward slash with backward slash
@@ -80,10 +118,10 @@ void replace_char (char *s, const char find, const char replace) {
 ///
 ///\param s The Pointer to FMU.
 ////////////////////////////////////////////////////////////////////////////////////
-void addfmuInstances(idfFmu_t* s){
-	idfFmu_t **temp;
+void addfmuInstances(ModelInstance* s){
+	ModelInstance **temp;
 	if(fmuLocCoun==arrsize){
-		temp=(idfFmu_t**)malloc(sizeof(idfFmu_t*) * (DELTA + arrsize));
+		temp=(ModelInstance**)malloc(sizeof(ModelInstance*) * (DELTA + arrsize));
 		arrsize +=DELTA;
 		memcpy(temp, fmuInstances, fmuLocCoun);
 		free(fmuInstances);
@@ -91,6 +129,110 @@ void addfmuInstances(idfFmu_t* s){
 	}
 	fmuInstances[fmuLocCoun++]=s;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+/// This function finds a file with a specific extension in a folder. 
+/// It returns the name of the found file with its extension.
+///
+///\param path The path to a file.
+///\param pattern The pattern to search.
+///\return The name of the file found with extension. 
+///        Otherwise, return 1 to indicate error. 
+///////////////////////////////////////////////////////////////////////////////
+int findNameFile(ModelInstance * _c, char* in_file, fmiString pattern)
+{
+	int found = 0;
+	char name[MAXBUFFSIZE];
+	DIR *dirp = opendir(_c->fmuResourceLocation);
+	struct dirent entry;
+	struct dirent *dp = &entry;
+	// read directory 
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+		"Searching for follwoing pattern %s\n", pattern);
+	while ((dp = readdir(dirp)))
+	{
+		_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+			"Read directory and search for *.idf, *.epw, or *.idd file.\n");
+		// search pattern the filename
+		if ((strstr(dp->d_name, pattern)) != 0)
+		{
+			_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", "Found matching file %s.\n", dp->d_name);
+			found++;
+			strcpy(name, dp->d_name);
+			// copy filename to be returned
+			strncpy(in_file, name, strlen(name));
+			//close directory
+			closedir(dirp);
+			return found;
+		}
+	}
+	closedir(dirp);
+	return found;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// This function finds a file with a specific extension in a folder. 
+/// It returns the name of the found file with its extension.
+///
+///\param file The input file.
+///\param path The path to a file.
+///\param pattern The pattern to search.
+///\return The name of the file found with extension. 
+///        Otherwise, return 1 to indicate error. 
+///////////////////////////////////////////////////////////////////////////////
+int getResFile(ModelInstance *_c, fmiString pattern)
+{
+	char in_file[MAXBUFFSIZE] = { 0 };
+	int found;
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+		"Get input file from resource folder %s.\n", _c->fmuResourceLocation);
+	found = findNameFile(_c, in_file, pattern);
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+		"done searching pattern %s\n", pattern);
+	if (found > 1){
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInstantiate: Found more than "
+			" (%d) with extension %s in directory %s. This is not valid.\n", found, pattern, _c->fmuResourceLocation);
+		return 1;
+	}
+	if (in_file != NULL && strlen(in_file) != 0)
+	{
+		if (strncmp(pattern, ".idf", 4) == 0){
+			_c->in_file = (char*)(_c->functions.allocateMemory(strlen(in_file) + strlen(_c->fmuResourceLocation) + 1, sizeof(char)));
+			sprintf(_c->in_file, "%s%s", _c->fmuResourceLocation, in_file);
+		}
+		else if (strncmp(pattern, ".epw", 4) == 0){
+			_c->wea_file = (char*)(_c->functions.allocateMemory(strlen(in_file) + strlen(_c->fmuResourceLocation) + 1, sizeof(char)));
+			sprintf(_c->wea_file, "%s%s", _c->fmuResourceLocation, in_file);
+		}
+		else if (strncmp(pattern, ".idd", 4) == 0){
+			_c->idd_file = (char*)(_c->functions.allocateMemory(strlen(in_file) + strlen(_c->fmuResourceLocation) + 1, sizeof(char)));
+			sprintf(_c->idd_file, "%s%s", _c->fmuResourceLocation, in_file);
+		}
+	}
+	else
+	{
+		if (strncmp(pattern, ".idf", 4) == 0){
+			_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", "Input file not found.");
+			_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInstantiate: No file with extension"
+				" .idf found in the resource location %s. This is not valid.\n", _c->fmuResourceLocation);
+			return 1;
+		}
+		if (strncmp(pattern, ".idd", 4) == 0){
+			_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", "IDD file not found.\n");
+			_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInstantiate: No file with extension"
+				" .idd found in the resource location %s. This is not valid.\n", _c->fmuResourceLocation);
+			return 1;
+		}
+		if (strncmp(pattern, ".epw", 4) == 0){
+			_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", "Weather file not found.\n");
+			_c->functions.logger(NULL, _c->instanceName, fmiWarning, "warning", "fmiInstantiate: No file with extension"
+				" .epw found in the resource location %s.\n", _c->fmuResourceLocation);
+			return 0;
+		}
+	}
+	return 0;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 /// write socket description file
@@ -100,7 +242,7 @@ void addfmuInstances(idfFmu_t* s){
 ///\param hostName The host name.
 ///\return 0 if no error occurred.
 ////////////////////////////////////////////////////////////////////////////////////
-int write_socket_cfg(idfFmu_t *_c, int portNum, const char* hostName)
+int write_socket_cfg(ModelInstance *_c, int portNum, const char* hostName)
 {
 	FILE *fp;
 	fp=fopen("socket.cfg", "w");
@@ -127,7 +269,7 @@ int write_socket_cfg(idfFmu_t *_c, int portNum, const char* hostName)
 ///\param _c The FMU instance.
 ///\return 0 if no error occurred.
 ////////////////////////////////////////////////////////////////////////////////////
-int copy_var_cfg(idfFmu_t *_c)
+int copy_var_cfg(ModelInstance *_c)
 {
 	char *tmp_str;
 	int retVal;
@@ -156,7 +298,7 @@ int copy_var_cfg(idfFmu_t *_c)
 ///\param _c The FMU instance.
 ///\return 0 if no error occurred.
 ////////////////////////////////////////////////////////////////////////////////////
-int create_res(idfFmu_t *_c)
+int create_res(ModelInstance *_c)
 {
 	char *tmp_str;
 	int retVal;
@@ -176,7 +318,7 @@ int create_res(idfFmu_t *_c)
 ///\param _c The FMU instance.
 ///\return 0 if no error occurred.
 ////////////////////////////////////////////////////////////////////////////////////
-int removeFMUDir (idfFmu_t* _c)
+int removeFMUDir (ModelInstance* _c)
 {
 	int retVal;
 	char *tmp_str;
@@ -203,7 +345,7 @@ int removeFMUDir (idfFmu_t* _c)
 ///\param _c The FMU instance.
 ///\return 0 if no error occurred.
 ////////////////////////////////////////////////////////////////////////////////////
-int start_sim(idfFmu_t* _c)
+int start_sim(ModelInstance* _c)
 {
 	struct stat stat_p;
 
@@ -218,19 +360,22 @@ int start_sim(idfFmu_t* _c)
 #endif
 	int retVal;
 #endif
-
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
+		"**runenergyplus** has been deprecated as of August 2015."
+		" EnergyPlusToFMU uses **energyplus** to call the EnergyPlus executable.");
 #ifdef _MSC_VER
 	fpBat=fopen("EP.bat", "w");
 	if (stat(FRUNWEAFILE, &stat_p)>=0){
 		// write the command string
-		fprintf(fpBat, "Epl-run.bat %s %s %s %s %s %s %s %s %s %s %s", _c->mID,
-			_c->mID, "idf", FRUNWEAFILE, "EP", "N", "nolimit", "N", "Y", "N", "1");
+		fprintf(fpBat, "energyplus %s %s %s %s %s %s %s %s", 
+			"-w", FRUNWEAFILE, "-p", _c->mID, "-s", "C", 
+			"-r", _c->in_file_name);
 	}
 	else
 	{
 		// write the command string
-		fprintf(fpBat, "Epl-run.bat %s %s %s %s %s %s %s %s %s %s %s", _c->mID,
-			_c->mID, "idf", "\" \"", "NONE", "N", "nolimit", "N", "Y", "N", "1");
+		fprintf(fpBat, "energyplus %s %s %s %s %s %s", 
+			"-p", _c->mID, "-s", "C", "-r", _c->in_file_name);
 	}
 	fclose (fpBat);
 	_c->pid=(HANDLE)_spawnl(P_NOWAIT, "EP.bat", "EP.bat", NULL); 
@@ -240,17 +385,18 @@ int start_sim(idfFmu_t* _c)
 	else {
 		return 1;
 	}
-
 #else
 	if (stat (FRUNWEAFILE, &stat_p)>=0){
-		char *const argv[]={"runenergyplus", _c->mID, FRUNWEAFILE, NULL};
+		//char *const argv[]={"runenergyplus", _c->mID, FRUNWEAFILE, NULL};
+		char *const argv[]={"energyplus", "-w", FRUNWEAFILE, "-p", _c->mID, "-s", "C", "-r", _c->in_file_name, NULL};
 		// execute the command string
 		retVal=posix_spawnp( &_c->pid, argv[0], NULL, NULL, argv, environ);
 		return retVal;
 	}
 	else
 	{
-		char *const argv[]={"runenergyplus", _c->mID, NULL};
+		//char *const argv[]={"runenergyplus", _c->mID, NULL};
+		char *const argv[]={"energyplus", "-p", _c->mID, "-s", "C", "-r", _c->in_file_name, NULL};
 		// execute the command string
 		retVal=posix_spawnp( &_c->pid, argv[0], NULL, NULL, argv, environ);
 		return retVal;
@@ -275,17 +421,17 @@ const char* fmiStatusToString(fmiStatus status){
 	}
 }
 //#endif
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// FMU logger
-///
-///\param c The FMU instance.
-///\param instanceName FMI string.
-///\param status FMI status.
-///\param category FMI string.
-///\param message Message to be recorded.
-///////////////////////////////////////////////////////////////////////////////
+//
+//
+/////////////////////////////////////////////////////////////////////////////////
+///// FMU logger
+/////
+/////\param c The FMU instance.
+/////\param instanceName FMI string.
+/////\param status FMI status.
+/////\param category FMI string.
+/////\param message Message to be recorded.
+/////////////////////////////////////////////////////////////////////////////////
 void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,
 	fmiString category, fmiString message, ...) {
 		char msg[MAX_MSG_SIZE];
@@ -324,27 +470,27 @@ DllExport const char* fmiGetVersion()
 	return FMIVERSION;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-/// Print formatted debug message
-///
-///\param _c The FMU instance.
-///\param str1 Message to be printed for debugging 
-///\param str2 String variable to be printed for debugging
-//////////////////////////////////////////////////////////////////////////////
-void printfDebug(idfFmu_t *_c, const char* str1, const char* str2){
-	if (_c->loggingOn==1)
-	{
-		fprintf(stdout, "Debug: ");
-		fprintf(stdout, str1, str2);
-	}
-}
+////////////////////////////////////////////////////////////////////////////////
+///// Print formatted debug message
+/////
+/////\param _c The FMU instance.
+/////\param str1 Message to be printed for debugging 
+/////\param str2 String variable to be printed for debugging
+////////////////////////////////////////////////////////////////////////////////
+//void printfDebug(ModelInstance *_c, const char* str1, const char* str2){
+//	if (_c->loggingOn==1)
+//	{
+//		fprintf(stdout, "Debug: ");
+//		fprintf(stdout, str1, str2);
+//	}
+//}
 
 ////////////////////////////////////////////////////////////////
 ///  This method is used to free the FMU instance
 ///
 ///\param _c The FMU instance.
 ////////////////////////////////////////////////////////////////
-void freeInstanceResources(idfFmu_t* _c) {
+void freeInstanceResources(ModelInstance* _c) {
 	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
 		"freeInstanceResources: %s will be freed.\n", _c->instanceName);
 	// free model ID
@@ -356,6 +502,15 @@ void freeInstanceResources(idfFmu_t* _c) {
 	// free xml file
 	if (_c->xml_file!=NULL) _c->functions.freeMemory(_c->xml_file);
 	_c->xml_file = NULL;
+	// free input file
+	if (_c->in_file != NULL) _c->functions.freeMemory(_c->in_file);
+	_c->in_file = NULL;
+	// free weather file
+	if (_c->wea_file != NULL) _c->functions.freeMemory(_c->wea_file);
+	_c->wea_file = NULL;
+	// free idd file
+	if (_c->idd_file != NULL) _c->functions.freeMemory(_c->idd_file);
+	_c->idd_file = NULL;
 	// free resource location
 	if (_c->fmuResourceLocation!=NULL) _c->functions.freeMemory(_c->fmuResourceLocation);
 	_c->fmuResourceLocation = NULL;
@@ -368,6 +523,12 @@ void freeInstanceResources(idfFmu_t* _c) {
 	// free temporary result folder
 	if (_c->tmpResCon!=NULL) _c->functions.freeMemory(_c->tmpResCon);
 	_c->tmpResCon=NULL;
+	// deallocate memory for inVec
+	if (_c->inVec != NULL)  _c->functions.freeMemory(_c->inVec);
+	_c->inVec = NULL;
+	// deallocate memory for outVec
+	if (_c->outVec != NULL)  _c->functions.freeMemory(_c->outVec);
+	_c->outVec = NULL;
 	 // free fmu instance
 	if (_c!=NULL) _c->functions.freeMemory(_c);
 	_c=NULL;
@@ -380,7 +541,7 @@ void freeInstanceResources(idfFmu_t* _c) {
 ///\param path The path to the resource location.
 ///\return 0 if no error.
 ///////////////////////////////////////////////////////////////////////////////
-int getResourceLocation(idfFmu_t *_c, fmiString fmuLocation)      
+int getResourceLocation(ModelInstance *_c, fmiString fmuLocation)      
 {
 	char tmpResLoc[5]={0};
 	struct stat st;
@@ -519,7 +680,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	fmiString mFmiVers;
 	struct stat st;
 	fmiBoolean errDir;
-	idfFmu_t* _c;
+	ModelInstance* _c;
 
 	// Perform checks.
 	if (!functions.logger)
@@ -540,7 +701,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	}
 
 	//initialize the model instance
-	_c=(idfFmu_t *)functions.allocateMemory(1, sizeof(struct idfFmu_t));
+	_c=(ModelInstance *)functions.allocateMemory(1, sizeof(struct ModelInstance));
 
 	// write instanceName to the struct
 	strcpy(_c->instanceName, instanceName);
@@ -741,8 +902,13 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
 {
 	int retVal;
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	FILE *fp;
+	char tStartFMUstr[100];
+	char tStopFMUstr[100];
+	char command[100];
+	char *tmpstr;
+	char *cmdstr;
 
 #ifdef _MSC_VER
 	int sockLength;
@@ -781,6 +947,9 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	_c->flaGetRea=0;
 	_c->flaWri=0;
 	_c->flaRea=0;
+	_c->wea_file = NULL;
+	_c->in_file = NULL;
+	_c->in_file = NULL;
 	_c->getCounter=0;
 	_c->setCounter=0;
 	_c->readReady=0;
@@ -909,30 +1078,101 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		return fmiError;
 	}
 	// create the input and weather file for the run
-	retVal=createRunInfile(_c);
-	if  (retVal !=0) {
-		_c->functions.logger(NULL, _c->instanceName, fmiError, 
-			"error", "fmiInitializeSlave: The FMU instance could not be initialized.\n");
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "error",   "fmiInitializeSlave: Can't create input file cfg.\n");
+	// Need to see how we will parste the start and stop time so 
+	// they become strings and can be used by str when calling the system command.
+
+	// get input file from the folder. There must be only one input file in the folder.
+	retVal = getResFile(_c, ".idf");
+	if (retVal != 0){
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInitializeSlave: Could not get"
+			" the .idf input file. Instantiation of %s failed.\n",
+			_c->instanceName);
 		return fmiError;
 	}
-#ifndef _MSC_VER
-	// create a directory and copy the weather file into it
-	if (stat (FRUNWEAFILE, &stat_p)>=0)
-	{
-		if (stat ("WeatherData", &stat_p)<0)
-		{
-			char *str;
-			mkdir ("WeatherData", S_IRWXU | S_IRWXG | S_IRWXO);
-			str=(char *)_c->functions.allocateMemory(strlen (FRUNWEAFILE) + strlen ("WeatherData/") + 10, sizeof(char));
-			sprintf(str, "cp -f %s %s", FRUNWEAFILE, "WeatherData/");
-			retVal=system (str);
-			_c->functions.freeMemory(str);
-		}
-		// set environment variable for weather file
-		setenv ("ENERGYPLUS_WEATHER", "WeatherData", 0);
+	// get the weather file from the folder. there must be only one weather file in the folder.
+	retVal = getResFile(_c, ".epw");
+	if (retVal != 0){
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInitializeSlave: Could not"
+			" get the .epw weather file. Instantiation of %s failed.\n",
+			_c->instanceName);
+		return fmiError;
 	}
+	// get the idd file from the folder. there must be only one idd file in the folder.
+	retVal = getResFile(_c, ".idd");
+	if (retVal != 0){
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInitializeSlave: Could not"
+			" get the .idd dictionary file. Instantiation of %s failed.\n",
+			_c->instanceName);
+		return fmiError;
+	}
+	sprintf(tStartFMUstr, "%f", _c->tStartFMU);
+	sprintf(tStopFMUstr, "%f", _c->tStopFMU);
+
+	//retVal=createRunInfile(_c);
+	
+#ifdef _MSC_VER
+	strcpy(command, "idf-to-fmu-export-prep-win.exe");
+#elif __linux__
+	strcpy(command, "idf-to-fmu-export-prep-linux");
+#elif __APPLE__
+	strcpy(command, "idf-to-fmu-export-prep-darwin");
 #endif
+
+	if (_c->wea_file != NULL){
+		cmdstr = (char *)_c->functions.allocateMemory(strlen(_c->fmuResourceLocation) + strlen(command) + 10, sizeof(char));
+		sprintf(cmdstr, "%s%s", _c->fmuResourceLocation, command);
+		tmpstr = (char *)_c->functions.allocateMemory(strlen(cmdstr) + strlen(_c->wea_file) +
+			strlen(_c->idd_file) + strlen(_c->in_file) + strlen(tStartFMUstr) + strlen(tStopFMUstr) + 50, sizeof(char));
+		sprintf(tmpstr, "%s -w %s -b %s -e %s %s %s", cmdstr, _c->wea_file, tStartFMUstr, tStopFMUstr, _c->idd_file, _c->in_file);
+		retVal = system(tmpstr);
+	}
+	else{
+		cmdstr = (char *)_c->functions.allocateMemory(strlen(_c->fmuResourceLocation) + strlen(command) + 10, sizeof(char));
+		sprintf(cmdstr, "%s%s", _c->fmuResourceLocation, command);
+		tmpstr = (char *)_c->functions.allocateMemory(strlen(cmdstr) + 
+			strlen(_c->idd_file) + strlen(_c->in_file) + strlen(tStartFMUstr) + strlen(tStopFMUstr) + 50, sizeof(char));
+		sprintf(tmpstr, "%s -b %s -e %s %s %s", cmdstr, tStartFMUstr, tStopFMUstr, _c->idd_file, _c->in_file);
+		retVal = system(tmpstr);
+	}
+	_c->functions.freeMemory(cmdstr);
+	_c->functions.freeMemory(tmpstr);
+	if (retVal != 0){
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInitializeSlave: Could not"
+			" create the input and weather file. Initialization of %s failed.\n",
+			_c->instanceName);
+		return fmiError;
+	}
+//#ifndef _MSC_VER
+//	// create a directory and copy the weather file into it
+//	if (stat (FRUNWEAFILE, &stat_p)>=0)
+//	{
+//		if (stat ("WeatherData", &stat_p)<0)
+//		{
+//			mkdir ("WeatherData", S_IRWXU | S_IRWXG | S_IRWXO);
+//			tmpstr=(char *)_c->functions.allocateMemory(strlen (FRUNWEAFILE) + strlen ("WeatherData/") + 10, sizeof(char));
+//			sprintf(tmpstr, "cp -f %s %s", FRUNWEAFILE, "WeatherData/");
+//			retVal=system (tmpstr);
+//			_c->functions.freeMemory(tmpstr);
+//		}
+//		// set environment variable for weather file
+//		setenv ("ENERGYPLUS_WEATHER", "WeatherData", 0);
+//	}
+//#endif
+
+	// rename found idf to have the correct name.
+	tmpstr = (char *)_c->functions.allocateMemory(strlen(_c->mID) + strlen(".idf") + 1, sizeof(char));
+	sprintf(tmpstr, "%s%s", _c->mID, ".idf");
+	strcpy(_c->in_file_name, tmpstr);
+	// free tmpstr
+	_c->functions.freeMemory(tmpstr);
+	retVal = rename(FRUNINFILE, _c->in_file_name);
+	if (retVal != 0){
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInitializeSlave: Could not"
+			" rename the temporary input file. Initialization of %s failed.\n",
+			_c->instanceName);
+		return fmiError;
+	}
+
 	if((fp=fopen(FTIMESTEP, "r")) !=NULL) {
 		retVal=fscanf(fp, "%d", &(_c->timeStepIDF));
 		fclose (fp);
@@ -995,7 +1235,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal communicationStepSize, fmiBoolean newStep)
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	int retVal;
 
 	// get current communication point
@@ -1141,7 +1381,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiCancelStep(fmiComponent c)
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	_c->functions.logger(NULL, _c->instanceName, fmiWarning, 
 		"Warning", "fmiCancelStep: The function fmiCancelStep: is not provided.\n");
 	return fmiWarning;
@@ -1155,7 +1395,7 @@ DllExport fmiStatus fmiCancelStep(fmiComponent c)
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 {
-		idfFmu_t* _c=(idfFmu_t *)c;
+		ModelInstance* _c=(ModelInstance *)c;
 		_c->functions.logger(NULL, _c->instanceName, fmiOK, 
 		"ok", "fmiTerminateSlave: fmiFreeInstanceSlave must be called to free the FMU instance.\n");
 		return fmiOK;
@@ -1169,7 +1409,7 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiResetSlave(fmiComponent c)
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiResetSlave: fmiResetSlave:: is not provided.\n");
 	return fmiWarning;
@@ -1183,7 +1423,7 @@ DllExport fmiStatus fmiResetSlave(fmiComponent c)
 DllExport void fmiFreeSlaveInstance(fmiComponent c)
 {
 	if (c!=NULL){
-		idfFmu_t* _c=(idfFmu_t *)c;
+		ModelInstance* _c=(ModelInstance *)c;
 		int retVal;
 
 #ifndef _MSC_VER
@@ -1250,7 +1490,7 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetDebugLogging (fmiComponent c, fmiBoolean loggingOn)
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiSetDebugLogging: fmiSetDebugLogging(): fmiSetDebugLogging is not provided.\n");
 	return fmiOK;
@@ -1267,7 +1507,7 @@ DllExport fmiStatus fmiSetDebugLogging (fmiComponent c, fmiBoolean loggingOn)
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiReal value[])
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	int retVal;
 	// to prevent the fmiSetReal to be called before the FMU is initialized
 	if (_c->firstCallIni==0)
@@ -1316,7 +1556,7 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger value[])
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
 		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error", 
@@ -1337,7 +1577,7 @@ DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], 
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiBoolean value[])
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
 		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error", 
@@ -1358,7 +1598,7 @@ DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], 
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiString value[])
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
 		_c->functions.logger(NULL, _c->instanceName, fmiError, 
@@ -1379,7 +1619,7 @@ DllExport fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], s
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	int retVal;
 	// to prevent the fmiGetReal to be called before the FMU is initialized
 	if (_c->firstCallIni==0){
@@ -1439,7 +1679,7 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiInteger value[])
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
 		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error", 
@@ -1460,7 +1700,7 @@ DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], 
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiBoolean value[])
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
 		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error", 
@@ -1481,7 +1721,7 @@ DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], 
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetString (fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiString  value[])
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
 		_c->functions.logger(NULL, _c->instanceName, fmiError, 
@@ -1505,7 +1745,7 @@ DllExport fmiStatus fmiGetString (fmiComponent c, const fmiValueReference vr[], 
 DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, 
 	const fmiInteger order[], fmiReal value[])
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetRealOutputDerivatives: fmiGetRealOutputDerivatives: Real Output Derivatives are not provided.\n");
 	return fmiWarning;
@@ -1525,7 +1765,7 @@ DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueRe
 DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, 
 	const fmiInteger order[], const fmiReal value[])
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiSetRealInputDerivatives: fmiSetRealInputDerivatives: Real Input Derivatives are not provided.\n");
 	return fmiWarning;
@@ -1541,7 +1781,7 @@ DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueRef
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatus* value)
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetStatus: fmiGetStatus: is not provided.\n");
 	return fmiWarning;
@@ -1557,7 +1797,7 @@ DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatu
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiReal* value)
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetRealStatus: fmiGetRealStatus: is not provided.\n");
 	return fmiWarning;
@@ -1573,7 +1813,7 @@ DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiR
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, fmiInteger* value)
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetIntegerStatus: fmiGetIntegerStatus: is not provided.\n");
 	return fmiWarning;
@@ -1588,7 +1828,7 @@ DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, f
 ////////////////////////////////////////////////////////////////
 DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, fmiBoolean* value)
 {
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetBooleanStatus: fmiGetBooleanStatus: is not provided.\n");
 	return fmiWarning;
@@ -1604,7 +1844,7 @@ DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, f
 
 DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, fmiString* value)
 {	
-	idfFmu_t* _c=(idfFmu_t *)c;
+	ModelInstance* _c=(ModelInstance *)c;
 	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetStringStatus: fmiGetStringStatus: is not provided.\n");
 	return fmiWarning;
@@ -1617,7 +1857,7 @@ DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, f
 //	const char* guid="b2bb88a46354b2a1a56ca004d67bb91a";                // global unique id of the fmu
 //	fmiComponent c;                  // instance of the fmu 
 //	fmiStatus fmiFlag;               // return code of the fmu functions
-//	const char* fmuLocation="file:///Z:\\linux\\proj\\fmi\\src\\svn\\fmu\\EnergyPlus\\export\\trunk\\Scripts\\Resources\\Library\\FMU\\_fmu_export_schedule"; // path to the fmu as URL, "file://C:\QTronic\sales"
+//	const char* fmuLocation="file:///Z:\\linux\\proj\\fmi\\src\\svn\\fmu\\EnergyPlus\\export\\trunk\\Scripts\\_fmu_export_schedule"; // path to the fmu as URL, "file://C:\QTronic\sales"
 //	const char* mimeType="application/x-fmu-sharedlibrary"; // denotes tool in case of tool coupling
 //	fmiReal timeout=1000;          // wait period in milli seconds, 0 for unlimited wait period"
 //	fmiBoolean visible=fmiFalse;   // no simulator user interface

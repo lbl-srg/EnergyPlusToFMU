@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "fmiModelTypes.h"
+#include "fmiFunctions.h"
 #include "defines.h"
 #include <string.h>
 #include<sys/stat.h>
@@ -189,7 +190,7 @@ void remSpaces_makeUpper(char *infile){
 	int i,j=0;
 
 	for(i=0;i<=strlen(infile);i++){
-		if(infile[i]!=' '){
+		if((infile[i]!=' ')){
 			tmp[j]=toupper(infile[i]);
 			j++;
 		}
@@ -803,6 +804,55 @@ static int getCurrentDay(idfFmu_t * _c, double time_s, int month, int leapyear){
 	}
 	return day;
 }
+///////////////////////////////////////////////////////////////////////////////
+// This function gets a line in the weather file
+// and check whether this line says whether we have
+// a leap year or not.
+///\param wea The line of weather data.
+///////////////////////////////////////////////////////////////////////////////
+int isLeapYear (char * wea){
+	const char* WEATHER="HOLIDAYS/DAYLIGHT";
+	int i;
+	int found=0;
+	int ncount=0;
+	char leapIndic [2*MAXBUFFSIZE]={0};
+	int leapyear=0;
+	if((strstr(wea, WEATHER))!=NULL) {
+		for(i=0; i<strlen(wea); i++)
+		{
+			if (wea[i]!=',' && found !=1)
+			{
+				ncount++;
+				continue;
+			}
+			else if (wea[i]==',')
+			{
+				found=1;
+				ncount++;
+				continue;
+			}
+			else
+			{
+				if (wea[i]!=',')
+				{
+					leapIndic[i-ncount]=wea[i];
+				}
+				else if (wea[i]==',')
+				{
+					break;
+				}
+				else{
+					continue;
+				}
+			}
+		}
+		if((strstr(leapIndic, "YES")) !=NULL)
+		{
+			leapyear=1;
+		}
+	}
+	return leapyear;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -816,7 +866,7 @@ static int getLeapYear(idfFmu_t *_c)
 	struct stat st;
 	FILE *fp1;
 	FILE *fp2;
-	int leapyear=0;
+	int leapyear;
 	int i;
 
 	int found=0;
@@ -826,6 +876,8 @@ static int getLeapYear(idfFmu_t *_c)
 	char low_case_wea[2*MAXBUFFSIZE]={0};
 	char wea[2*MAXBUFFSIZE]={0};
 	const char* WEATHER="HOLIDAYS/DAYLIGHT";
+	// Check if weather file exists.
+	// weather file name is runweafile.epw
 	if (stat(FRUNWEAFILE, &st)>=0)
 	{
 		fp1=fopen(FRUNWEAFILE, "r");
@@ -833,40 +885,42 @@ static int getLeapYear(idfFmu_t *_c)
 		while(fgets(wea, sizeof wea, fp1) !=NULL) {
 			//remove space and make upper case
 			remSpaces_makeUpper(wea);
-			if((strstr(wea, WEATHER)) !=NULL) {
-				for(i=0; i<strlen(wea); i++)
-				{
-					if (wea[i] !=',' && found !=1)
-					{
-						ncount++;
-						continue;
-					}
-					else if (wea [i]==',')
-					{
-						found=1;
-						ncount++;
-						continue;
-					}
-					else
-					{
-						if (wea[i]!=',')
-						{
-							leapIndic[i-ncount]=wea [i];
-						}
-						else if (wea[i]==',')
-						{
-							break;
-						}
-						else{
-							continue;
-						}
-					}
-				}
-				if((strstr(leapIndic, "YES")) !=NULL)
-				{
-					leapyear=1;
-				}
-			}
+			leapyear=isLeapYear(wea);
+			if (leapyear==1) break;
+			//if((strstr(wea, WEATHER)) !=NULL) {
+			//	for(i=0; i<strlen(wea); i++)
+			//	{
+			//		if (wea[i] !=',' && found !=1)
+			//		{
+			//			ncount++;
+			//			continue;
+			//		}
+			//		else if (wea [i]==',')
+			//		{
+			//			found=1;
+			//			ncount++;
+			//			continue;
+			//		}
+			//		else
+			//		{
+			//			if (wea[i]!=',')
+			//			{
+			//				leapIndic[i-ncount]=wea [i];
+			//			}
+			//			else if (wea[i]==',')
+			//			{
+			//				break;
+			//			}
+			//			else{
+			//				continue;
+			//			}
+			//		}
+			//	}
+			//	if((strstr(leapIndic, "YES")) !=NULL)
+			//	{
+			//		leapyear=1;
+			//	}
+			//}
 		}
 		fclose (fp1);
 	}
@@ -888,42 +942,44 @@ static int getLeapYear(idfFmu_t *_c)
 				strcpy (low_case_wea, wea);
 				//remove space and make upper case
 				remSpaces_makeUpper(wea);
-				fprintf(fp2, "%s", low_case_wea);  
-				if((strstr(wea, WEATHER))!=NULL) {
-					for(i=0; i<strlen(wea); i++)
-					{
-						if (wea[i]!=',' && found!=1)
-						{
-							ncount++;
-							continue;
-						}
-						else if (wea[i]==',')
-						{
-							found=1;
-							ncount++;
-							continue;
-						}
-						else
-						{
-							if (wea[i]!=',')
-							{
-								leapIndic[i-ncount]=wea[i];
-							}
-							else if (wea[i]==',')
-							{
-								break;
-							}
-							else{
-								continue;
-							}
+				fprintf(fp2, "%s", low_case_wea); 
+				leapyear=isLeapYear(wea);
+				if (leapyear==1) break;
+				//if((strstr(wea, WEATHER))!=NULL) {
+				//	for(i=0; i<strlen(wea); i++)
+				//	{
+				//		if (wea[i]!=',' && found!=1)
+				//		{
+				//			ncount++;
+				//			continue;
+				//		}
+				//		else if (wea[i]==',')
+				//		{
+				//			found=1;
+				//			ncount++;
+				//			continue;
+				//		}
+				//		else
+				//		{
+				//			if (wea[i]!=',')
+				//			{
+				//				leapIndic[i-ncount]=wea[i];
+				//			}
+				//			else if (wea[i]==',')
+				//			{
+				//				break;
+				//			}
+				//			else{
+				//				continue;
+				//			}
 
-						}
-					}
-					if((strstr(leapIndic, "YES")) !=NULL)
-					{
-						leapyear=1;
-					}
-				}
+				//		}
+				//	}
+				//	if((strstr(leapIndic, "YES")) !=NULL)
+				//	{
+				//		leapyear=1;
+				//	}
+				//}
 			}
 			fclose (fp1);
 			fclose (fp2);
@@ -955,7 +1011,7 @@ static int getTimeStep (char *str)
 	replace_char_from_string ('\n', ' ', str);
 	for(i=0; i<strlen(str); i++)
 	{
-		if (str[i]!=',' && found !=1)
+		if (str[i]!=',' && found!=1)
 		{
 			ncount++;
 			continue;
@@ -966,12 +1022,11 @@ static int getTimeStep (char *str)
 			ncount++;
 			continue;
 		}
-
 		else
 		{
 			if (str[i]!=';')
 			{
-				TSStr[i-ncount]=str [i];
+				TSStr[i-ncount]=str[i];
 			}
 			else
 			{
@@ -980,7 +1035,7 @@ static int getTimeStep (char *str)
 		}
 	}
 	// convert the string to an integer
-	return atoi (TSStr);
+	return atoi(TSStr);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1018,7 +1073,7 @@ int createRunInfile(idfFmu_t *_c)
 	int IDFBeginMonth;
 	int IDFBeginDayOfMonth;
 
-	int leapyear=0;
+	int leapyear;
 	int foundEndTS=0;
 
 	double t_start_IDF;
@@ -1030,6 +1085,10 @@ int createRunInfile(idfFmu_t *_c)
 	int find_result_TS=0;
 	int exit_loop;
 	int retVal;
+	char c=' ';
+
+	char month[100]={0};
+	int iMonth=0;
 
 	// check whether start and end make sense
 	if (_c->tStopFMU<=_c->tStartFMU)
@@ -1076,14 +1135,14 @@ int createRunInfile(idfFmu_t *_c)
 		strcpy (low_case_temp, temp);
 		remSpaces_makeUpper(temp);
 		if ((temp[0]!='!') && (isEmptyLine(temp)==0)){
-			// This implementation assumes a RunPeriod which consits of several lines as in the IDD
-			// If the the structure of the RunPeriod differs from that the code will not work
+			// This implementation assumes a RunPeriod which consists of several lines as in the IDD
+			// If the structure of the RunPeriod differs from that, the code will not work
 			if((strstr(temp, RUNPERIOD) !=NULL && find_result_RP<1) || strstr(temp, RUNPERIOD)==NULL)
 			{
 				fprintf(fp2, "%s", low_case_temp);
 			}
 			// If time step is found, write to file
-			if((strstr(temp, TIMESTEP)) !=NULL && (temp[0]=='T')) {
+			if((strstr(temp, TIMESTEP))!=NULL && (temp[0]=='T')) {
 				find_result_TS++;
 				while (foundEndTS !=1){
 					for(i=0; i<strlen(temp); i++)
@@ -1151,7 +1210,18 @@ int createRunInfile(idfFmu_t *_c)
 			// If the structure of the RunPeriod differs from that the code will not write the values 
 			// found at the appropriate places. Alternative could be to ship an IDD to determine based on
 			// the IDD the current syntax of the IDF file.
-			if((strstr(temp, RUNPERIOD)) !=NULL) {
+			if((strstr(temp, RUNPERIOD))!=NULL) {
+				// read character to find the next line
+				int idx=0;
+				while(temp[iMonth]!=','){
+						iMonth++;
+				};
+				month[idx]=temp[iMonth++];
+				while(temp[iMonth]!=','){
+					iMonth++;
+					month[idx++]=temp[iMonth];
+				}
+
 				find_result_RP++;
 				if (find_result_RP <=1){
 					//skip first line
@@ -1347,10 +1417,85 @@ int createRunInfile(idfFmu_t *_c)
 	return 0;
 }
 
-//int main ()
-//{
-//	createRunInFile (172800, 8640000, "test", "c:\\temp\\");
-//}
+///////////////////////////////////////////////////////////////////////////////
+/// FMI status
+///
+///\param status FMI status.
+///////////////////////////////////////////////////////////////////////////////
+//#if 0
+const char* fmiStatusToString(fmiStatus status){
+	switch (status){
+	case fmiOK:      return "ok";
+	case fmiWarning: return "warning";
+	case fmiDiscard: return "discard";
+	case fmiError:   return "error";		
+	case fmiPending: return "pending";	
+	default:         return "?";
+	}
+}
+//#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// FMU logger
+///
+///\param c The FMU instance.
+///\param instanceName FMI string.
+///\param status FMI status.
+///\param category FMI string.
+///\param message Message to be recorded.
+///////////////////////////////////////////////////////////////////////////////
+void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,
+	fmiString category, fmiString message, ...) {
+		char msg[1000];
+		char* copy;
+		va_list argp;
+
+		// Replace C format strings
+		va_start(argp, message);
+		vsprintf(msg, message, argp);
+
+		// Replace e.g. ## and #r12#
+		copy=strdup(msg);
+		free(copy);
+
+		// Print the final message
+		if (!instanceName) instanceName="?";
+		if (!category) category="?";
+		printf("%s %s (%s): %s\n", fmiStatusToString(status), instanceName, category, msg);
+}
+     
+//typedef void  (*fmiCallbackLogger) (fmiComponent c, fmiString instanceName, fmiStatus status,
+//                                         fmiString category, fmiString message, ...);
+//typedef void* (*fmiCallbackAllocateMemory)(size_t nobj, size_t size);
+//typedef void  (*fmiCallbackFreeMemory)    (void* obj);
+//typedef void  (*fmiStepFinished)          (fmiComponent c, fmiStatus status);
+//
+//typedef struct {
+//     fmiCallbackLogger         logger;
+//     fmiCallbackAllocateMemory allocateMemory;
+//     fmiCallbackFreeMemory     freeMemory;
+//     fmiStepFinished           stepFinished;
+//     } fmiCallbackFunctions;
+
+int main ()
+{
+	idfFmu_t* _c;
+	fmiCallbackFunctions functions;
+	functions.logger=fmuLogger;
+	functions.allocateMemory=calloc;
+	functions.freeMemory=free;
+	functions.stepFinished=NULL; // fmiDoStep has to be carried out synchronously
+	_c=(idfFmu_t *)calloc(1, sizeof(struct idfFmu_t));
+	_c->functions=functions;
+	_c->tStartFMU=0;
+	_c->mID="_fmu-export-schedule";
+	_c->tStopFMU=172800;
+	_c->fmuUnzipLocation="c:\\temp\\";
+	_c->fmuResourceLocation="c:\\temp\\resources\\";
+	strcpy(_c->instanceName, "_fmu-export-schedule");
+	createRunInfile (_c);
+}
 
 /*
 

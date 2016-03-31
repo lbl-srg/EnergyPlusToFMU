@@ -23,6 +23,8 @@ typedef struct cmdlnInput_s
   const char *iddFileName;
   const char *idfFileName;
   const char *wthFileName;
+  const char* tStartFMU;
+  const char* tStopFMU;
   } cmdlnInput_s;
 
 
@@ -54,6 +56,10 @@ bool cmdlnInput_get(const int argc, const char *argv[],
   cmdlnInput_s *const cmdlnInputP,
   void (*errFcn)(std::ostringstream& errorMessage));
 
+
+bool cmdlnInput_get(const int argc, const char *argv[],
+	cmdlnInput_s *const cmdlnInputP,
+	void(*errFcn)(std::ostringstream& errorMessage), int alone);
 
 #endif // __APP_CMDLN_INPUT__
 

@@ -8,6 +8,7 @@
 // #include <sstream>
 #include <cstdlib>
 #include <fstream>
+#include <cstring>
 
 #include <iostream>
 using std::cout;
@@ -34,51 +35,106 @@ using std::endl;
 //
 static void getIdfData(cmdlnInput_s& cmdlnInput, fmuExportIdfData& fmuIdfData);
 
+//
+static void getInputData(cmdlnInput_s& cmdlnInput, fmuExportIdfData& fmuIdfData);
+
 
 //--- Main driver.
 //
 int main(int argc, const char* argv[])
-  {
-  //
-  // Read command line.
-  cmdlnInput_s cmdlnInput;
-  if( false == cmdlnInput_get(argc, argv, &cmdlnInput, reportInputError) )
-    {
-    return( EXIT_FAILURE );
-    }
-  //
-  // Read data from IDF file.
-  fmuExportIdfData fmuIdfData;
-  getIdfData(cmdlnInput, fmuIdfData);
-  //
-  // Write {modelDescription.xml}.
-  std::ofstream outStream;
-  std::string errStr;
-  if( ! openOutputFile(outStream, "modelDescription.xml", std::ios::out | std::ios::trunc, errStr) )
-    {
-    reportError(errStr);
-    return( EXIT_FAILURE );
-    }
-  char currTimeUTC[21];
-  getCurrTimeUTC(currTimeUTC);
-  modelDescXml_write(outStream,
-    argv[0], currTimeUTC, cmdlnInput.idfFileName, fmuIdfData, cmdlnInput.wthFileName);
-  if( outStream.is_open() )
-    outStream.close();
-  //
-  // Write {variables.cfg}.
-  if( ! openOutputFile(outStream, "variables.cfg", std::ios::out | std::ios::trunc, errStr) )
-    {
-    reportError(errStr);
-    return( EXIT_FAILURE );
-    }
-  varsCfg_write(outStream, cmdlnInput.idfFileName, fmuIdfData);
-  if( outStream.is_open() )
-    outStream.close();
-  //
-  // Finalize.
-  //
-  }  // End fcn main().
+{
+	//
+	// Read command line.
+	cmdlnInput_s cmdlnInput;
+	if (false == cmdlnInput_get(argc, argv, &cmdlnInput, reportInputError))
+	{
+		return(EXIT_FAILURE);
+	}
+	// Read data from IDF file.
+	fmuExportIdfData fmuIdfData;
+
+	if ((cmdlnInput.tStartFMU!=NULL) && (cmdlnInput.tStopFMU!= NULL)){
+		cout << "Reading input and weather file for preprocessor program." << endl;
+		getInputData(cmdlnInput, fmuIdfData);
+	}
+	else{
+		cout << "Reading input and weather file for EnergyPlusToFMU program." << endl;
+		getIdfData(cmdlnInput, fmuIdfData);
+		//
+		// Write {modelDescription.xml}.
+		std::ofstream outStream;
+		std::string errStr;
+		if (!openOutputFile(outStream, "modelDescription.xml", std::ios::out | std::ios::trunc, errStr))
+		{
+			reportError(errStr);
+			return(EXIT_FAILURE);
+		}
+		char currTimeUTC[21];
+		getCurrTimeUTC(currTimeUTC);
+		modelDescXml_write(outStream,
+			argv[0], currTimeUTC, cmdlnInput.idfFileName, fmuIdfData, cmdlnInput.wthFileName);
+		if (outStream.is_open())
+			outStream.close();
+		//
+		// Write {variables.cfg}.
+		if (!openOutputFile(outStream, "variables.cfg", std::ios::out | std::ios::trunc, errStr))
+		{
+			reportError(errStr);
+			return(EXIT_FAILURE);
+		}
+		varsCfg_write(outStream, cmdlnInput.idfFileName, fmuIdfData);
+		if (outStream.is_open())
+			outStream.close();
+	}
+	//
+	// Finalize.
+	//
+}  // End fcn main().
+
+////--- Main driver.
+////
+//int main(int argc, const char* argv[])
+//  {
+//  //
+//  // Read command line.
+//  cmdlnInput_s cmdlnInput;
+//  if( false == cmdlnInput_get(argc, argv, &cmdlnInput, reportInputError) )
+//    {
+//    return( EXIT_FAILURE );
+//    }
+//  //
+//  // Read data from IDF file.
+//  fmuExportIdfData fmuIdfData;
+//  getIdfData(cmdlnInput, fmuIdfData);
+//  //
+//  // Write {modelDescription.xml}.
+//  std::ofstream outStream;
+//  std::string errStr;
+//  if( ! openOutputFile(outStream, "modelDescription.xml", std::ios::out | std::ios::trunc, errStr) )
+//    {
+//    reportError(errStr);
+//    return( EXIT_FAILURE );
+//    }
+//  char currTimeUTC[21];
+//  getCurrTimeUTC(currTimeUTC);
+//  modelDescXml_write(outStream,
+//    argv[0], currTimeUTC, cmdlnInput.idfFileName, fmuIdfData, cmdlnInput.wthFileName);
+//  if( outStream.is_open() )
+//    outStream.close();
+//  //
+//  // Write {variables.cfg}.
+//  if( ! openOutputFile(outStream, "variables.cfg", std::ios::out | std::ios::trunc, errStr) )
+//    {
+//    reportError(errStr);
+//    return( EXIT_FAILURE );
+//    }
+//  varsCfg_write(outStream, cmdlnInput.idfFileName, fmuIdfData);
+//  if( outStream.is_open() )
+//    outStream.close();
+//  //
+//  // Finalize.
+//  //
+//  }  // End fcn main().
 
 
 //--- Read required data from IDF file.
@@ -125,6 +181,58 @@ static void getIdfData(cmdlnInput_s& cmdlnInput, fmuExportIdfData& fmuIdfData)
   //
   // Here, successfully extracted data of interest from the IDF file.
   }  // End fcn getIdfData().
+
+
+//--- Read required data from IDF file.
+//
+static void getInputData(cmdlnInput_s& cmdlnInput, fmuExportIdfData& fmuIdfData)
+{
+	//
+	// Set up data dictionary.
+	fileReaderDictionary frIdd(cmdlnInput.iddFileName);
+	frIdd.attachErrorFcn(reportInputError);
+	frIdd.open();
+	iddMap idd;
+	int timeStep;
+	int leapYear;
+	frIdd.getMap(idd);  // Terminates on error.
+	//
+	// Check data dictionary.
+	string errStr;
+	if (!fmuIdfData.haveValidIDD(idd, errStr))
+	{
+		cout << "Incompatible IDD file " << cmdlnInput.iddFileName <<
+			endl << errStr << endl;
+		exit(EXIT_FAILURE);
+	}
+	//
+	// Initialize weather data file.
+	fileReaderData frIdf1(cmdlnInput.wthFileName, IDF_DELIMITERS_ENTRY, IDF_DELIMITERS_SECTION);
+	frIdf1.attachErrorFcn(reportInputError);
+	frIdf1.open();
+	// Read IDF file for data of interest.
+	int failLine = fmuIdfData.isLeapYear(frIdf1, leapYear);
+	if (0 < failLine)
+	{
+		cout << "Error detected while reading Weather file " << cmdlnInput.wthFileName << ", at line #" << failLine << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	// Initialize input data file.
+	fileReaderData frIdf2(cmdlnInput.idfFileName, IDF_DELIMITERS_ENTRY, IDF_DELIMITERS_SECTION);
+	frIdf2.attachErrorFcn(reportInputError);
+	frIdf2.open();
+	//
+	// Read IDF file for data of interest.
+	failLine = fmuIdfData.writeInputFile(frIdf2, leapYear, timeStep, cmdlnInput.tStartFMU, cmdlnInput.tStopFMU);
+	if (0 < failLine)
+	{
+		cout << "Error detected while reading IDF file " << cmdlnInput.idfFileName << ", at line #" << failLine << endl;
+		exit(EXIT_FAILURE);
+	}
+	//
+	// Here, successfully extracted data of interest from the IDF file.
+}  // End fcn getInputData().
 
 
 /*

@@ -166,6 +166,49 @@ void fileReader::getToken(const string& delimiters, const string& illegalChars,
   return;
 }  // End method fileReader::getToken().
 
+void fileReader::getToken(const string& delimiters, const string& illegalChars,
+	string& token, string& tokenExt){
+	//
+	token = "";
+	tokenExt = "";
+	char ch;
+	//
+	if (!fileStream.eof()){
+		while (1){
+			// Get next character (which may or may not be part of the token).
+			fileStream.get(ch);
+			// Reasons to end the token:
+			// ** Hit EOF.
+			// ** Hit a delimiter.
+			// ** Hit a comment (which is an error).
+			//   Note hitting EOL does not end a token.
+			if (fileStream.eof())
+				break;
+			if ('\n' == ch)
+				++lineNumber;
+			if (delimiters.find(ch) != std::string::npos){
+				// Here, found delimiter.
+				//   Put delimiter back before finish.
+				tokenExt += ch;
+				fileStream.putback(ch);
+				break;
+			}
+			//if (illegalChars.find(ch) != std::string::npos){
+			//	// Error, illegal character.
+			//	std::ostringstream os;
+			//	os << "Encountered illegal character '" << ch << "' while reading a token.";
+			//	reportError(os);
+			//	exit(1);
+			//}
+			// Here, still reading token.
+			token += ch;
+			tokenExt += ch;
+		}
+	}
+	//
+	return;
+}  // End method fileReader::getToken().
+
 
 ///////////////////////////////////////////////////////
 void fileReader::getLine(string& line, int& lineNo){

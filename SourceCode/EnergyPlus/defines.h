@@ -35,6 +35,7 @@
 *   Filename for input file and weather file 
 */
 /////////////////////////////////////////////////////////////////////
+#define FRUNINFILE   "runinfile.idf" 
 #define FRUNWEAFILE  "runweafile.epw" 
 #define FTIMESTEP    "tstep.txt"
 #define VARCFG       "variables.cfg"
@@ -54,11 +55,15 @@
 #include "fmiFunctions.h"
 #include "xml_parser_cosim.h"
 
-typedef struct idfFmu_t {
+typedef struct ModelInstance {
 	int index;
 	fmiCallbackFunctions functions;
 	char instanceName[MAX_VARNAME_LEN];
 	char cwd[256];
+	char in_file_name[100];
+	char* wea_file;
+	char* in_file;
+	char* idd_file;
 	char* fmuResourceLocation;
 	char* fmuUnzipLocation;
 	char *xml_file;
@@ -110,7 +115,7 @@ typedef struct idfFmu_t {
 #else
 	pid_t  pid;
 #endif
-} idfFmu_t;
+} ModelInstance;
 
 #endif /*__DEFINES_H__*/
 

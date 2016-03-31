@@ -70,7 +70,7 @@ int deleteTmpDir(char* tmpPat){
   	sprintf(cmd, "rm -r %s", tmpPat); // Command in Linux
 
 
-	printfDebug("Generated cmd: \"%s\".\n", cmd);
+	printf("Generated cmd: \"%s\".\n", cmd);
 	if ( system(cmd) != 0 ){	
 	  printError("Fail to delete the temporary files");
 	  return -1;

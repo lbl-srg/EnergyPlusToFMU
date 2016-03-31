@@ -81,6 +81,17 @@ public:
   //   delimiter with no actual token, returns without indication something out-of-ordinary happened.
   void getToken(const std::string& delimiters, const std::string& illegalChars, std::string& token);
 
+  /// Gets the current token.
+  /// \param delimiters Characters that mark end of token.
+  /// \param illegalChars Characters that should never appear.  If encountered, reports and dies.
+  /// \retval token String where the current token is stored.
+  /// \retval token String where the current token with delimiter is stored.
+  // hoho dml  Why not fetch {lineNo} here, as do with other methods?  Seems like caller might
+  //   like to know, e.g., for error reporting.
+  // hoho dml  Caller has no direct way to determine whether or not got a token.  If hit EOF, or if hit
+  //   delimiter with no actual token, returns without indication something out-of-ordinary happened.
+  void getToken(const std::string& delimiters, const std::string& illegalChars, std::string& token, std::string& tokenExt);
+
   /// Gets the current line number.
   /// \retval The current line number.
   inline int getLineNumber(){ return lineNumber; }
