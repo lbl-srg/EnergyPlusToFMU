@@ -317,8 +317,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
   srcFileNameList.append(modMainName)
   #
   srcDirName = os.path.join(scriptDirName, '../SourceCode/EnergyPlus')
-  for theRootName in ['reader',
-    'stack',
+  for theRootName in ['stack',
     'util',
     'utilSocket',
     'xml_parser_cosim'
