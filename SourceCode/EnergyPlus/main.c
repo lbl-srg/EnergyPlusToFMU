@@ -194,7 +194,7 @@ int getResFile(ModelInstance *_c, fmiString pattern)
 			" (%d) with extension %s in directory %s. This is not valid.\n", found, pattern, _c->fmuResourceLocation);
 		return 1;
 	}
-	if (in_file && strlen(in_file)!= 0)
+	if (in_file != NULL && strlen(in_file) != 0)
 	{
 		if (strncmp(pattern, ".idf", 4) == 0){
 			_c->in_file = (char*)(_c->functions.allocateMemory(strlen(in_file) + strlen(_c->fmuResourceLocation) + 1, sizeof(char)));

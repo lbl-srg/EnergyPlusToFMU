@@ -52,12 +52,7 @@ int main(int argc, const char* argv[])
 	}
 	// Read data from IDF file.
 	fmuExportIdfData fmuIdfData;
-
-	if (cmdlnInput.tStartFMU && cmdlnInput.tStopFMU){
-		cout << "Reading input and weather file for preprocessor program." << endl;
-		getInputData(cmdlnInput, fmuIdfData);
-	}
-	else{
+	if (!cmdlnInput.tStartFMU && !cmdlnInput.tStopFMU){
 		cout << "Reading input and weather file for EnergyPlusToFMU program." << endl;
 		getIdfData(cmdlnInput, fmuIdfData);
 		//
@@ -85,6 +80,10 @@ int main(int argc, const char* argv[])
 		varsCfg_write(outStream, cmdlnInput.idfFileName, fmuIdfData);
 		if (outStream.is_open())
 			outStream.close();
+	}
+	else{
+			cout << "Reading input and weather file for preprocessor program." << endl;
+			getInputData(cmdlnInput, fmuIdfData);
 	}
 	//
 	// Finalize.
