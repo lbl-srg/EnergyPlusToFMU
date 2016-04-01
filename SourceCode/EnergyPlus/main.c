@@ -1168,22 +1168,6 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 			_c->instanceName);
 		return fmiError;
 	}
-//#ifndef _MSC_VER
-//	// create a directory and copy the weather file into it
-//	if (stat (FRUNWEAFILE, &stat_p)>=0)
-//	{
-//		if (stat ("WeatherData", &stat_p)<0)
-//		{
-//			mkdir ("WeatherData", S_IRWXU | S_IRWXG | S_IRWXO);
-//			tmpstr=(char *)_c->functions.allocateMemory(strlen (FRUNWEAFILE) + strlen ("WeatherData/") + 10, sizeof(char));
-//			sprintf(tmpstr, "cp -f %s %s", FRUNWEAFILE, "WeatherData/");
-//			retVal=system (tmpstr);
-//			_c->functions.freeMemory(tmpstr);
-//		}
-//		// set environment variable for weather file
-//		setenv ("ENERGYPLUS_WEATHER", "WeatherData", 0);
-//	}
-//#endif
 
 	// rename found idf to have the correct name.
 	tmpstr = (char *)_c->functions.allocateMemory(strlen(_c->mID) + strlen(".idf") + 1, sizeof(char));
