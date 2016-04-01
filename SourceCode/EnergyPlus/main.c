@@ -194,7 +194,7 @@ int getResFile(ModelInstance *_c, fmiString pattern)
 			" (%d) with extension %s in directory %s. This is not valid.\n", found, pattern, _c->fmuResourceLocation);
 		return 1;
 	}
-	if (in_file != NULL && strlen(in_file) != 0)
+	if (strlen(in_file) != 0)
 	{
 		if (strncmp(pattern, ".idf", 4) == 0){
 			_c->in_file = (char*)(_c->functions.allocateMemory(strlen(in_file) + strlen(_c->fmuResourceLocation) + 1, sizeof(char)));
@@ -1123,7 +1123,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		cmdstr = (char *)_c->functions.allocateMemory(strlen(_c->fmuResourceLocation) + strlen(command) + 10, sizeof(char));
 		sprintf(cmdstr, "%s%s", _c->fmuResourceLocation, command);
 		//Make file executable if UNIX
-#ifndef __MSC_VER
+#ifndef _MSC_VER
 		cmdstrEXE = (char *)_c->functions.allocateMemory(strlen(cmdstr) + 10, sizeof(char));
 		sprintf(cmdstrEXE, "%s %s", "chmod +x", cmdstr);
 		retVal = system(cmdstrEXE);
@@ -1143,7 +1143,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	else{
 		cmdstr = (char *)_c->functions.allocateMemory(strlen(_c->fmuResourceLocation) + strlen(command) + 10, sizeof(char));
 		sprintf(cmdstr, "%s%s", _c->fmuResourceLocation, command);
-#ifndef __MSC_VER
+#ifndef _MSC_VER
 		cmdstrEXE = (char *)_c->functions.allocateMemory(strlen(cmdstr) + 10, sizeof(char));
 		sprintf(cmdstrEXE, "%s %s", "chmod +x", cmdstr);
 		retVal = system(cmdstrEXE);
