@@ -82,8 +82,8 @@ int main(int argc, const char* argv[])
 			outStream.close();
 	}
 	else{
-			cout << "Reading input and weather file for preprocessor program." << endl;
-			getInputData(cmdlnInput, fmuIdfData);
+		cout << "Reading input and weather file for preprocessor program." << endl;
+		getInputData(cmdlnInput, fmuIdfData);
 	}
 	//
 	// Finalize.
@@ -224,6 +224,19 @@ static void getInputData(cmdlnInput_s& cmdlnInput, fmuExportIdfData& fmuIdfData)
 	//
 	// Read IDF file for data of interest.
 	failLine = fmuIdfData.writeInputFile(frIdf2, leapYear, timeStep, cmdlnInput.tStartFMU, cmdlnInput.tStopFMU);
+	if (0 < failLine)
+	{
+		cout << "Error detected while reading IDF file " << cmdlnInput.idfFileName << ", at line #" << failLine << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	// Initialize input data file.
+	fileReaderData frIdf3(cmdlnInput.idfFileName, IDF_DELIMITERS_ENTRY, IDF_DELIMITERS_SECTION);
+	frIdf3.attachErrorFcn(reportInputError);
+	frIdf3.open();
+	//
+	// Read IDF file for data of interest.
+	failLine = fmuIdfData.getTimeStep(frIdf3);
 	if (0 < failLine)
 	{
 		cout << "Error detected while reading IDF file " << cmdlnInput.idfFileName << ", at line #" << failLine << endl;

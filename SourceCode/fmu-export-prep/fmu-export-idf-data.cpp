@@ -37,6 +37,9 @@ using std::endl;
 const string g_key_timeStep = "TIMESTEP";
 const string g_desc_timeStep = "N";
 
+const string g_key_output = "OUTPUT:";
+//const string g_desc_timeStep = "N";
+
 // Expected keywords and dictionary descriptors.
 const string g_key_runPer = "RUNPERIOD";
 const string g_desc_runPer = "ANNNNAAAAAANAN";
@@ -67,64 +70,64 @@ const string g_desc_extInt_fmuExport_toVar = "AAN";
 //--- Constructor.
 //
 fmuExportIdfData::fmuExportIdfData(void)
-{
-	_goodRead = false;
-	_externalErrorFcn = 0;
-	_gotKeyExtInt = false;
-	//
-#ifdef _DEBUG
-	// Vectors, on construction, should be initialized to zero length.
-	assert(_toActuator_idfLineNo.empty());
-	assert(_toActuator_epName.empty());
-	assert(_toActuator_fmuVarName.empty());
-	assert(_toActuator_initValue.empty());
-	//
-	assert(_toSched_idfLineNo.empty());
-	assert(_toSched_epSchedName.empty());
-	assert(_toSched_fmuVarName.empty());
-	assert(_toSched_initValue.empty());
-	//
-	assert(_toVar_idfLineNo.empty());
-	assert(_toVar_epName.empty());
-	assert(_toVar_fmuVarName.empty());
-	assert(_toVar_initValue.empty());
-	//
-	assert(_fromVar_idfLineNo.empty());
-	assert(_fromVar_epKeyName.empty());
-	assert(_fromVar_epVarName.empty());
-	assert(_fromVar_fmuVarName.empty());
+  {
+  _goodRead = false;
+  _externalErrorFcn = 0;
+  _gotKeyExtInt = false;
+  //
+  #ifdef _DEBUG
+    // Vectors, on construction, should be initialized to zero length.
+    assert( _toActuator_idfLineNo.empty() );
+    assert( _toActuator_epName.empty() );
+    assert( _toActuator_fmuVarName.empty() );
+    assert( _toActuator_initValue.empty() );
+    //
+    assert( _toSched_idfLineNo.empty() );
+    assert( _toSched_epSchedName.empty() );
+    assert( _toSched_fmuVarName.empty() );
+    assert( _toSched_initValue.empty() );
+    //
+    assert( _toVar_idfLineNo.empty() );
+    assert( _toVar_epName.empty() );
+    assert( _toVar_fmuVarName.empty() );
+    assert( _toVar_initValue.empty() );
+    //
+    assert( _fromVar_idfLineNo.empty() );
+    assert( _fromVar_epKeyName.empty() );
+    assert( _fromVar_epVarName.empty() );
+    assert( _fromVar_fmuVarName.empty() );
 	assert(_runPer_numerics.empty())
-#endif
-}  // End constructor fmuExportIdfData::fmuExportIdfData().
+  #endif
+  }  // End constructor fmuExportIdfData::fmuExportIdfData().
 
 
 //--- Attach an error-reporting function.
 //
-void fmuExportIdfData::attachErrorFcn(void(*errFcn)(std::ostringstream& errorMessage))
-{
-	_externalErrorFcn = errFcn;
-}  // End method fmuExportIdfData::attachErrorFcn().
+void fmuExportIdfData::attachErrorFcn(void (*errFcn)(std::ostringstream& errorMessage))
+  {
+  _externalErrorFcn = errFcn;
+  }  // End method fmuExportIdfData::attachErrorFcn().
 
 
 //--- Validate IDD file.
 //
 bool fmuExportIdfData::haveValidIDD(const iddMap& idd, string& errStr) const
-{
-	//
-#ifdef _DEBUG
-	assert(!idd.empty());
-#endif
-	//
-	return(
-		0 == iddMap_compareEntry(idd, g_key_timeStep, g_desc_timeStep, errStr) &&
-		0 == iddMap_compareEntry(idd, g_key_runPer, g_desc_runPer, errStr) &&
-		0 == iddMap_compareEntry(idd, g_key_extInt, g_desc_extInt, errStr) &&
-		0 == iddMap_compareEntry(idd, g_key_extInt_fmuExport_toActuator, g_desc_extInt_fmuExport_toActuator, errStr) &&
-		0 == iddMap_compareEntry(idd, g_key_extInt_fmuExport_toSched, g_desc_extInt_fmuExport_toSched, errStr) &&
-		0 == iddMap_compareEntry(idd, g_key_extInt_fmuExport_fromVar, g_desc_extInt_fmuExport_fromVar, errStr) &&
-		0 == iddMap_compareEntry(idd, g_key_extInt_fmuExport_toVar, g_desc_extInt_fmuExport_toVar, errStr)
-		);
-}  // End method fmuExportIdfData::haveValidIDD().
+  {
+  //
+  #ifdef _DEBUG
+    assert( ! idd.empty() );
+  #endif
+  //
+  return(
+	//0== iddMap_compareEntry(idd, g_key_timeStep, g_desc_timeStep, errStr) &&
+	0== iddMap_compareEntry(idd, g_key_runPer, g_desc_runPer, errStr) &&
+    0==iddMap_compareEntry(idd, g_key_extInt, g_desc_extInt, errStr) &&
+    0==iddMap_compareEntry(idd, g_key_extInt_fmuExport_toActuator, g_desc_extInt_fmuExport_toActuator, errStr) &&
+    0==iddMap_compareEntry(idd, g_key_extInt_fmuExport_toSched, g_desc_extInt_fmuExport_toSched, errStr) &&
+    0==iddMap_compareEntry(idd, g_key_extInt_fmuExport_fromVar, g_desc_extInt_fmuExport_fromVar, errStr) &&
+    0==iddMap_compareEntry(idd, g_key_extInt_fmuExport_toVar, g_desc_extInt_fmuExport_toVar, errStr)
+    );
+  }  // End method fmuExportIdfData::haveValidIDD().
 
 ///////////////////////////////////////////////////////////////////////////////
 /// This function calculates the modulo of two doubles. 
@@ -531,169 +534,169 @@ static int getCurrentDay(double time_s, int month, int leapyear){
 ///\param fname The filename to write new date information.
 ///\return 0 if no error occurred.
 ///////////////////////////////////////////////////////////////////////////////
-static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu,
+static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu, 
 	string day_of_week, char *new_day_week){
-	int modDat;
-	char arr[7][10] = { "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" };
-	int new_index;
-	int old_index;
-	int change = 1;
+		int modDat;
+		char arr[7][10]={ "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" };
+		int new_index;
+		int old_index;
+		int change=1;
 
-	// deternmine the difference between start time in idf and start time in fmu
-	modDat = (((int)(t_start_fmu - t_start_idf) / 86400) % 86400) % 7;
+		// deternmine the difference between start time in idf and start time in fmu
+		modDat=(((int)(t_start_fmu  - t_start_idf)/86400)%86400)%7;
 
-	capitalize(day_of_week);
-	if (day_of_week.compare("SUNDAY") == 0)
-	{
-		old_index = 0;
-	}
-	else if (day_of_week.compare("MONDAY") == 0)
-	{
-		old_index = 1;
-	}
-	else if (day_of_week.compare("TUESDAY") == 0)
-	{
-		old_index = 2;
-	}
-	else if (day_of_week.compare("WEDNESDAY") == 0)
-	{
-		old_index = 3;
-	}
-	else if (day_of_week.compare("THURSDAY") == 0)
-	{
-		old_index = 4;
-	}
-	else if (day_of_week.compare("FRIDAY") == 0)
-	{
-		old_index = 5;
-	}
-
-	else if (day_of_week.compare("SATURDAY") == 0)
-	{
-		old_index = 6;
-	}
-
-	else if (day_of_week.compare("USEWEATHERFILE") == 0)
-	{
-		change = 0;
-		cout << "Day of week: UseWeatherFile has been specified and will be used." << endl;
-		return 0;
-	}
-	else
-	{
-		// write the new day of week, no day of week was specified.
-		sprintf(new_day_week, "%s", " ");
-		cout << "Day of week was left blank in input file." << endl;
-		return 0;
-	}
-	if (change != 0) {
-		// determine the new index
-		if (modDat > 0)
+		capitalize(day_of_week);
+		if (day_of_week.compare("SUNDAY")==0) 
 		{
-			new_index = (old_index + modDat) % 7;
+			old_index=0;
+		} 
+		else if (day_of_week.compare("MONDAY")==0)
+		{
+			old_index=1;
 		}
-		else if (modDat < 0)
+		else if (day_of_week.compare("TUESDAY")==0)
 		{
-			new_index = modDat + 7;
-			new_index = (new_index + old_index) % 7;
+			old_index= 2;
+		}
+		else if (day_of_week.compare("WEDNESDAY")==0)
+		{
+			old_index=3;
+		}
+		else if (day_of_week.compare("THURSDAY")==0)
+		{
+			old_index=4;
+		}
+		else if (day_of_week.compare("FRIDAY")==0)
+		{
+			old_index=5;
+		}
+
+		else if (day_of_week.compare("SATURDAY")== 0)
+		{
+			old_index=6;
+		}
+
+		else if (day_of_week.compare("USEWEATHERFILE")== 0)
+		{
+			change=0;
+			cout << "Day of week: UseWeatherFile has been specified and will be used." << endl;
+			return 0;
 		}
 		else
 		{
-			new_index = old_index;
+			// write the new day of week, no day of week was specified.
+			sprintf(new_day_week, "%s", " ");
+			cout << "Day of week was left blank in input file." << endl;
+			return 0;
 		}
-		// write the new day of week
-		sprintf(new_day_week, "%s", arr[new_index]);
-	}
+		if (change !=0) {
+			// determine the new index
+			if (modDat > 0)
+			{
+				new_index=(old_index + modDat)%7; 
+			}
+			else if (modDat < 0)
+			{
+				new_index=modDat + 7;
+				new_index=(new_index + old_index)%7;
+			}
+			else
+			{
+				new_index=old_index;
+			}
+			// write the new day of week
+			sprintf(new_day_week, "%s", arr[new_index]);
+		}
 
-	// close file
-	return 0;
+		// close file
+		return 0;
 }
 
 //--- Read IDF file, collecting data needed to export an EnergyPlus simulation as an FMU.
 //
 int fmuExportIdfData::populateFromIDF(fileReaderData& frIdf)
-{
-	//
-	int lineNo;
-	string idfKey, iddDesc;
-	//
-#ifdef _DEBUG
-	assert(!frIdf.isEOF());
-#endif
-	//
-	// Initialize.
-	lineNo = 0;
-	_goodRead = true;
-	//
-	// Run through the IDF file.
-	while (_goodRead)
-	{
-		// Here, assume looking for next keyword.
-		frIdf.skipComment(IDF_COMMENT_CHARS, lineNo);
-		frIdf.getToken(IDF_DELIMITERS_ALL, IDF_COMMENT_CHARS, idfKey);
-		// Consume the delimiter that caused getToken() to return.
-		const char delimChar = frIdf.getChar();
-		if (frIdf.isEOF())
-		{
-			// Here, hit EOF.
-			//   OK to hit EOF, provided don't actually have a keyword.
-			if (0 != idfKey.length())
-			{
-				_goodRead = false;
-				std::ostringstream os;
-				os << "Error: IDF file ends after keyword '" << idfKey << "' on line " << lineNo;
-				reportError(os);
-			}
-			break;
-		}
-		// Here, have a keyword (although may be zero length).
-		capitalize(idfKey);
-		// Handle or skip IDF entry for this keyword.
-		if (0 == g_key_extInt.compare(idfKey))
-		{
-			handleKey_extInt(frIdf);
-		}
-		else if (0 == g_key_extInt_fmuExport_toActuator.compare(idfKey))
-		{
-			handleKey_extInt_fmuExport_toActuator(frIdf);
-		}
-		else if (0 == g_key_extInt_fmuExport_toSched.compare(idfKey))
-		{
-			handleKey_extInt_fmuExport_toSched(frIdf);
-		}
-		else if (0 == g_key_extInt_fmuExport_fromVar.compare(idfKey))
-		{
-			handleKey_extInt_fmuExport_fromVar(frIdf);
-		}
-		else if (0 == g_key_extInt_fmuExport_toVar.compare(idfKey))
-		{
-			handleKey_extInt_fmuExport_toVar(frIdf);
-		}
-		else
-		{
-			// Here, don't need to know about this key, or its contents, in order to
-			// export the IDF file for use as an FMU.
-			//   Skip to the next keyword, without attempting to diagnose any problems.
-			// Note if {delimChar}==';', means section had only a keyword, and no
-			// need to skip.
-			if (';' != delimChar && frIdf.skipSection())
-			{
-				// Here, hit EOF.
-				break;
-			}
-		}
-		// Here, ready to look for next keyword.
-	}
-	//
-	// Here, ran through whole IDF file.
-	frIdf.close();
-	//
-	if (_goodRead)
-	{
-		lineNo = 0;
-	}
-	return(lineNo);
-}  // End method fmuExportIdfData::populateFromIDF().
+  {
+  //
+  int lineNo;
+  string idfKey, iddDesc;
+  //
+  #ifdef _DEBUG
+    assert( ! frIdf.isEOF() );
+  #endif
+  //
+  // Initialize.
+  lineNo = 0;
+  _goodRead = true;
+  //
+  // Run through the IDF file.
+  while( _goodRead )
+    {
+    // Here, assume looking for next keyword.
+    frIdf.skipComment(IDF_COMMENT_CHARS, lineNo);
+    frIdf.getToken(IDF_DELIMITERS_ALL, IDF_COMMENT_CHARS, idfKey);
+    // Consume the delimiter that caused getToken() to return.
+    const char delimChar = frIdf.getChar();
+    if( frIdf.isEOF() )
+      {
+      // Here, hit EOF.
+      //   OK to hit EOF, provided don't actually have a keyword.
+      if( 0 != idfKey.length() )
+        {
+        _goodRead = false;
+        std::ostringstream os;
+        os << "Error: IDF file ends after keyword '" << idfKey << "' on line " << lineNo;
+        reportError(os);
+        }
+      break;
+      }
+    // Here, have a keyword (although may be zero length).
+    capitalize(idfKey);
+    // Handle or skip IDF entry for this keyword.
+    if( 0 == g_key_extInt.compare(idfKey) )
+      {
+      handleKey_extInt(frIdf);
+      }
+    else if( 0 == g_key_extInt_fmuExport_toActuator.compare(idfKey) )
+      {
+      handleKey_extInt_fmuExport_toActuator(frIdf);
+      }
+    else if( 0 == g_key_extInt_fmuExport_toSched.compare(idfKey) )
+      {
+      handleKey_extInt_fmuExport_toSched(frIdf);
+      }
+    else if( 0 == g_key_extInt_fmuExport_fromVar.compare(idfKey) )
+      {
+      handleKey_extInt_fmuExport_fromVar(frIdf);
+      }
+    else if( 0 == g_key_extInt_fmuExport_toVar.compare(idfKey) )
+      {
+      handleKey_extInt_fmuExport_toVar(frIdf);
+      }
+    else
+      {
+      // Here, don't need to know about this key, or its contents, in order to
+      // export the IDF file for use as an FMU.
+      //   Skip to the next keyword, without attempting to diagnose any problems.
+      // Note if {delimChar}==';', means section had only a keyword, and no
+      // need to skip.
+      if( ';'!=delimChar && frIdf.skipSection() )
+        {
+        // Here, hit EOF.
+        break;
+        }
+      }
+    // Here, ready to look for next keyword.
+    }
+  //
+  // Here, ran through whole IDF file.
+  frIdf.close();
+  //
+  if( _goodRead )
+    {
+    lineNo = 0;
+    }
+  return( lineNo );
+  }  // End method fmuExportIdfData::populateFromIDF().
 
 //--- Read IDF file, collecting data needed to run an EnergyPlus simulation as an FMU.
 //
@@ -702,11 +705,9 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &t
 	//
 	int lineNo;
 	int nRunPer;
-	int nTStep;
 	string inputKey, iddDesc, inputKeyExt;
 	string line;
 	ofstream runInfile;
-	ofstream tStepfile;
 	//
 #ifdef _DEBUG
 	assert(!frIdf.isEOF());
@@ -715,36 +716,46 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &t
 	// Initialize.
 	lineNo = 0;
 	nRunPer = 0;
-	nTStep = 0;
+	//nTStep = 0;
 	_goodRead = true;
 	//
 	// Run through the IDF file.
 #define HS_MAX 10
 
 	runInfile.open("runinfile.idf");
-	tStepfile.open("tstep.txt");
 	char valueStr[HS_MAX];
 	while (_goodRead)
 	{
 		frIdf.skipComment(IDF_COMMENT_CHARS, lineNo);
+		//frIdf.getToken(IDF_DELIMITERS_ALL, IDF_COMMENT_CHARS, inputKey, inputKeyExt);
 		frIdf.getToken(IDF_DELIMITERS_ALL, IDF_COMMENT_CHARS, inputKey, inputKeyExt);
 		// Consume the delimiter that caused getToken() to return.
-		const char delimChar = frIdf.getChar();
-
+		char delimChar = frIdf.getChar();		
 		capitalize(inputKey);
-		//// handle time step
-		//if (0 == g_key_timeStep.compare(inputKey)){
-		//	nTStep++;
-		//	handleKey_timeStep(frIdf);
-		//	double tStepVal = _timeStep[0];
-		//	snprintf(valueStr, HS_MAX, "%d", (int)tStepVal);
-		//	tStepfile << valueStr;
-		//}
-		if (0 == g_key_runPer.compare(inputKey) || 0 == g_key_timeStep.compare(inputKey)){
-			if (0 == g_key_runPer.compare(inputKey)){
-				handleKey_runPer(frIdf);
+
+		// handle all Output: explicitely to make sure that we do not 
+		// get a runperiod which we shouldn't be getting.
+		// key RunPeriod is only used in Output: thus we can handle them 
+		// exactly and preven them to be used later one.
+		if (inputKey.find(g_key_output) != string::npos){
+			// write token till we reach end of 
+			runInfile << inputKeyExt << '\n';
+			// obtained from the scripts.
+			while (';' != delimChar)
+			{
+				// Here, hit EOF.
+				frIdf.skipComment(IDF_COMMENT_CHARS, lineNo);
+				frIdf.getToken(IDF_DELIMITERS_ALL, IDF_COMMENT_CHARS, inputKey, inputKeyExt);
+				runInfile << inputKeyExt << '\n';
+				delimChar = frIdf.getChar();
+			}
+		}
+
+		// handle RunPeriod
+		else if ((0 == g_key_runPer.compare(inputKey)) && !(inputKey.find(g_key_output) != string::npos)){
 				nRunPer++;
 				if (nRunPer < 2){
+					handleKey_runPer(frIdf);
 					std::string runPeriod("RUNPERIOD, \n");
 					if (_runPer_strings.size() > 1){
 						runPeriod.append(_runPer_strings[0]);
@@ -813,8 +824,6 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &t
 						cout << "The field **Start Year** of the RunPeriod object is ignored."
 							" This entry will be set to its default." << endl;
 						runPeriod.append(",\n");
-						//snprintf(valueStr, HS_MAX, "%d", (int)_runPer_numerics[5]);
-						//runPeriod.append(valueStr);
 						runPeriod.append(" ");
 					}
 					runPeriod.append(";\n");
@@ -824,24 +833,6 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &t
 					cout << "There is more than one RunPeriod(" << nRunPer << ") in the IDF file."
 						" The first RunPeriod will be considered. Other RunPeriods will be ignored." << endl;
 				}
-			}
-			else if (0 == g_key_timeStep.compare(inputKey)){
-				nTStep++;
-				handleKey_timeStep(frIdf);
-				double tStepVal = _timeStep[0];
-				snprintf(valueStr, HS_MAX, "%d", (int)tStepVal);
-				tStepfile << valueStr;
-				std::string timeStep("TIMESTEP, \n");
-				timeStep.append(valueStr);
-				timeStep.append(";\n");
-				runInfile << timeStep;
-			}
-			// obtained from the scripts.
-			if (';' != delimChar && frIdf.skipSection())
-			{
-				// Here, hit EOF.
-				break;
-			}
 		}
 		else{
 			runInfile << inputKeyExt << '\n';
@@ -861,18 +852,10 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &t
 		}
 		// Here, ready to look for next keyword.
 	}
-	// Report if we couldn't find a time step in the file.
-	if (nTStep == 0){
-		_goodRead = false;
-		std::ostringstream os;
-		os << "Error: There is no TimeStep object in the IDF input file";
-		reportError(os);
-	}
 
 	// Here, ran through whole IDF file.
 	frIdf.close();
 	runInfile.close();
-	tStepfile.close();
 	//
 	if (_goodRead)
 	{
@@ -882,14 +865,13 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &t
 	return(lineNo);
 }  // End method fmuExportIdfData::writeInputFile().
 
-
+//--- Read Weather file, collecting data needed to run an EnergyPlus simulation as an FMU.
+//
 int fmuExportIdfData::isLeapYear(fileReaderData& frIdf, int &leapYear)
 {
 	//
 	int lineNo;
 	int nLeapYear;
-	int foundIndic = 0;
-	//int leapYear;
 	string inputKey, iddDesc;
 	string line, inputKeyExt;
 	ofstream runWeafile;
@@ -912,16 +894,13 @@ int fmuExportIdfData::isLeapYear(fileReaderData& frIdf, int &leapYear)
 		// Consume the delimiter that caused getToken() to return.
 		const char delimChar = frIdf.getChar();
 		capitalize(inputKey);
-		nLeapYear++;
-		if (nLeapYear < 2){
-			if (inputKey.find(g_key_leapYear) != string::npos){
-				foundIndic = 1;
-				frIdf.getToken(",", IDF_COMMENT_CHARS, inputKey, inputKeyExt);
-				capitalize(inputKey);
-				if (0 == inputKey.compare("YES")){
-					leapYear = 1;
-					//break;
-				}
+		if (inputKey.find(g_key_leapYear) != string::npos){
+			nLeapYear++;
+			runWeafile << inputKeyExt;
+			frIdf.getToken(",", IDF_COMMENT_CHARS, inputKey, inputKeyExt);
+			capitalize(inputKey);
+			if (0== inputKey.compare("YES")){
+				leapYear = 1;
 			}
 		}
 		// Write weather file
@@ -930,7 +909,7 @@ int fmuExportIdfData::isLeapYear(fileReaderData& frIdf, int &leapYear)
 		{
 			// Here, hit EOF.
 			//   OK to hit EOF, provided don't actually have a keyword.
-			if (foundIndic != 1){
+			if (nLeapYear == 0){
 				cout << "Finish reading weather file without finding leap year indicator." << endl;
 			}
 			else{
@@ -952,7 +931,76 @@ int fmuExportIdfData::isLeapYear(fileReaderData& frIdf, int &leapYear)
 	return(lineNo);
 }  // End method fmuExportIdfData::isLeapYear().
 
+//--- Read IDF file, collecting data needed to run an EnergyPlus simulation as an FMU.
+//
+int fmuExportIdfData::getTimeStep(fileReaderData& frIdf)
+{
+	//
+	int lineNo;
+	int nTStep;
+	//int leapYear;
+	string inputKey, iddDesc;
+	string line, inputKeyExt;
+	ofstream tStepfile;
+	tStepfile.open("tStep.txt");
+	//
+#ifdef _DEBUG
+	assert(!frIdf.isEOF());
+#endif
+	//
+	// Initialize.
+	lineNo = 0;
+	nTStep = 0;
+	_goodRead = true;
+	//
+	// Run through the IDF file.
+	while (_goodRead)
+	{
+		frIdf.skipComment(IDF_COMMENT_CHARS, lineNo);
+		frIdf.getToken(",", IDF_COMMENT_CHARS, inputKey, inputKeyExt);
+		// Consume the delimiter that caused getToken() to return.
+		const char delimChar = frIdf.getChar();
+		capitalize(inputKey);
+		if (inputKey.find(g_key_timeStep) != string::npos){
+			nTStep++;
+			frIdf.skipComment(IDF_COMMENT_CHARS, lineNo);
+			frIdf.getToken(";", IDF_COMMENT_CHARS, inputKey, inputKeyExt);
+			capitalize(inputKey);
+			if ((inputKey.find(",") != string::npos)){
+				//this is not the correct timestep
+				continue;
+			}
+			else{
+				tStepfile << inputKey;
+				break;
+			}
+		}
+		if (frIdf.isEOF())
+		{
+			break;
+		}
+		// Here, ready to look for next keyword.
+	}
 
+	// Report if we couldn't find a time step in the file.
+	if (nTStep==0){
+		_goodRead = false;
+		std::ostringstream os;
+		os << "Error: There is no TimeStep object in the IDF input file";
+		reportError(os);
+	}
+
+	// Here, ran through whole IDF file.
+	frIdf.close();
+	tStepfile.close();
+	//
+	if (_goodRead)
+	{
+		lineNo = 0;
+	}
+#undef HS_MAX
+	return(lineNo);
+}  // End method fmuExportIdfData::getTimeStep().
 
 
 //--- Check have a complete set of data.
@@ -960,51 +1008,51 @@ int fmuExportIdfData::isLeapYear(fileReaderData& frIdf, int &leapYear)
 //   Assume have already called method populateFromIDF().
 //
 bool fmuExportIdfData::check(void)
-{
-	std::ostringstream os;
-	//
-	if (!_goodRead)
-	{
-		os << "IDF file was not parsed, or error encountered during parsing.";
-	}
-	//
-	// Require got keyword {g_key_extInt}.
-	// hoho  What if IDF file defines nothing for FMU to do?
-	if (_goodRead && !_gotKeyExtInt)
-	{
-		_goodRead = false;
-		os << "IDF file missing keyword '" << g_key_extInt << "'.";
-	}
-	//
-	if (!_goodRead)
-	{
-		reportError(os);
-	}
-	//
-	return(_goodRead);
-}  // End method fmuExportIdfData::check().
+  {
+  std::ostringstream os;
+  //
+  if( ! _goodRead )
+    {
+    os << "IDF file was not parsed, or error encountered during parsing.";
+    }
+  //
+  // Require got keyword {g_key_extInt}.
+  // hoho  What if IDF file defines nothing for FMU to do?
+  if( _goodRead && !_gotKeyExtInt )
+    {
+    _goodRead = false;
+    os << "IDF file missing keyword '" << g_key_extInt << "'.";
+    }
+  //
+  if( ! _goodRead )
+    {
+    reportError(os);
+    }
+  //
+  return( _goodRead );
+  }  // End method fmuExportIdfData::check().
 
 
 //--- Report an error.
 //
 void fmuExportIdfData::reportError(std::ostringstream& errorMessage) const
-{
-	//
-	// Call user-supplied error fcn if available.
-	if (_externalErrorFcn)
-	{
-		(*_externalErrorFcn)(errorMessage);
-	}
-	else
-	{
-		// Here, no user-supplied error fcn.
-		//   Note flush both {cout} and {cerr}, to avoid overlapped writes.
-		cout.flush();
-		cerr << "=== Error ===" << endl
-			<< errorMessage.str() << endl << endl;
-		cerr.flush();
-	}
-}  // End method fmuExportIdfData::reportError().
+  {
+  //
+  // Call user-supplied error fcn if available.
+  if( _externalErrorFcn )
+    {
+    (*_externalErrorFcn)(errorMessage);
+    }
+  else
+    {
+    // Here, no user-supplied error fcn.
+    //   Note flush both {cout} and {cerr}, to avoid overlapped writes.
+    cout.flush();
+    cerr << "=== Error ===" << endl
+      << errorMessage.str() << endl << endl;
+    cerr.flush();
+    }
+  }  // End method fmuExportIdfData::reportError().
 
 
 //--- Read IDF values for key {g_key_extInt}.
@@ -1014,60 +1062,60 @@ void fmuExportIdfData::reportError(std::ostringstream& errorMessage) const
 //   FunctionalMockupUnitExport; !- Name of external interface
 //
 void fmuExportIdfData::handleKey_extInt(fileReaderData& frIdf)
-{
-	bool entryOK;
-	vString strVals;
-	vDouble dblVals;
-	std::ostringstream os;
-	//
-	// Assume just read key {g_key_extInt} from the IDF file.
-	const int keyLineNo = frIdf.getLineNumber();
-	//
-	// Read values from IDF file.
-	entryOK = true;
-	if (!frIdf.getValues(g_desc_extInt, strVals, dblVals))
-	{
-		entryOK = false;
-		os << "IDF parsing error.";
-	}
-	//
-	// Check count of values.
-	if (entryOK
-		&&
-		(1 != strVals.size() || 0 != dblVals.size()))
-	{
-		entryOK = false;
-		os << "Wrong number of entries.";
-	}
-	//
-	// Interface name.
-	if (entryOK)
-	{
-		const char *const expectInterfaceName = "FUNCTIONALMOCKUPUNITEXPORT";
-		string &gotInterfaceName = strVals[0];
-		capitalize(gotInterfaceName);
-		if (0 != gotInterfaceName.compare(expectInterfaceName))
-		{
-			entryOK = false;
-			os << "Expecting external interface '" << expectInterfaceName << "'; got '" << gotInterfaceName << "'.";
-		}
-		else
-		{
-			// Note don't bother testing whether got this IDF input twice.
-			_gotKeyExtInt = true;
-		}
-	}
-	//
-	if (!entryOK)
-	{
-		_goodRead = false;
-		os << "\nError encountered while reading values for keyword '" << g_key_extInt
-			<< "', starting on line " << keyLineNo << " of IDF file.";
-		reportError(os);
-	}
-	//
-	return;
-}  // End method fmuExportIdfData::handleKey_extInt().
+  {
+  bool entryOK;
+  vString strVals;
+  vDouble dblVals;
+  std::ostringstream os;
+  //
+  // Assume just read key {g_key_extInt} from the IDF file.
+  const int keyLineNo = frIdf.getLineNumber();
+  //
+  // Read values from IDF file.
+  entryOK = true;
+  if( ! frIdf.getValues(g_desc_extInt, strVals, dblVals) )
+    {
+    entryOK = false;
+    os << "IDF parsing error.";
+    }
+  //
+  // Check count of values.
+  if( entryOK
+    &&
+    ( 1!=strVals.size() || 0!=dblVals.size() ) )
+    {
+    entryOK = false;
+    os << "Wrong number of entries.";
+    }
+  //
+  // Interface name.
+  if( entryOK )
+    {
+    const char *const expectInterfaceName = "FUNCTIONALMOCKUPUNITEXPORT";
+    string &gotInterfaceName = strVals[0];
+    capitalize(gotInterfaceName);
+    if( 0 != gotInterfaceName.compare(expectInterfaceName) )
+      {
+      entryOK = false;
+      os << "Expecting external interface '" << expectInterfaceName << "'; got '" << gotInterfaceName << "'.";
+      }
+    else
+      {
+      // Note don't bother testing whether got this IDF input twice.
+      _gotKeyExtInt = true;
+      }
+    }
+  //
+  if( ! entryOK )
+    {
+    _goodRead = false;
+    os << "\nError encountered while reading values for keyword '" << g_key_extInt
+      << "', starting on line " << keyLineNo << " of IDF file.";
+    reportError(os);
+    }
+  //
+  return;
+  }  // End method fmuExportIdfData::handleKey_extInt().
 
 
 //--- Read IDF values for key {g_key_extInt_fmuExport_toActuator}.
@@ -1082,100 +1130,100 @@ void fmuExportIdfData::handleKey_extInt(fileReaderData& frIdf)
 //   0;                       !- Initial value
 //
 void fmuExportIdfData::handleKey_extInt_fmuExport_toActuator(fileReaderData& frIdf)
-{
-	bool entryOK;
-	vString strVals;
-	vDouble dblVals;
-	std::ostringstream os;
-	//
-	// Assume just read key {g_key_extInt_fmuExport_toActuator} from the IDF file.
-	const int keyLineNo = frIdf.getLineNumber();
-	_toActuator_idfLineNo.push_back(keyLineNo);
-	//
-	// Read values from IDF file.
-	entryOK = true;
-	if (!frIdf.getValues(g_desc_extInt_fmuExport_toActuator, strVals, dblVals))
-	{
-		entryOK = false;
-		os << "IDF parsing error.";
-	}
-	//
-	// Check count of values.
-	if (entryOK
-		&&
-		(5 != strVals.size() || 1 != dblVals.size()))
-	{
-		entryOK = false;
-		os << "Wrong number of entries.";
-	}
-	//
-	// Name (actuator name in IDF file).
-	if (entryOK)
-	{
-		_toActuator_epName.push_back(strVals[0]);
-		// In principle, could check that the IDF file contains the corresponding
-		// entry.  However, this would complicate the code here considerably.
-	}
-	//
-	// Actuated component unique name.
-	//   Not needed for FMU export.
-	//
-	// Actuated component type.
-	//   Not needed for FMU export.
-	//
-	// Actuated component control type.
-	//   Not needed for FMU export.
-	//
-	// FMU variable name (name in FMU master).
-	if (entryOK)
-	{
-		_toActuator_fmuVarName.push_back(strVals[4]);
-	}
-	//
-	// Initial value.
-	if (entryOK)
-	{
-		_toActuator_initValue.push_back(dblVals[0]);
-	}
-	//
-	// Check for duplicate names.
-	if (entryOK)
-	{
-		const int elCt = (int)_toActuator_idfLineNo.size();
-		//
-#ifdef _DEBUG
-		assert(elCt == (int)_toActuator_epName.size());
-		assert(elCt == (int)_toActuator_fmuVarName.size());
-		assert(elCt == (int)_toActuator_initValue.size());
-#endif
-		//
-		const string &epName = _toActuator_epName[elCt - 1];
-		for (int idx = 0; idx<elCt - 1; ++idx)
-		{
-			if (0 == epName.compare(_toActuator_epName[idx]))
-			{
-				entryOK = false;
-				os << "FMU master already sets value of IDF actuator '" << epName
-					<< "'. See line " << _toActuator_idfLineNo[idx] << " of IDF file.";
-				break;
-			}
-			// hoho dml  Presumably it's OK for one named value in the FMU master to
-			// control more than one actuator (or an actuator and something else) in
-			// the EnergyPlus simulation.  If not, should add a comparison of
-			// {_toActuator_fmuVarName[idx]} here.
-		}
-	}
-	//
-	if (!entryOK)
-	{
-		_goodRead = false;
-		os << "\nError encountered while reading values for keyword '" << g_key_extInt_fmuExport_toActuator
-			<< "', starting on line " << keyLineNo << " of IDF file.";
-		reportError(os);
-	}
-	//
-	return;
-}  // End method fmuExportIdfData::handleKey_extInt_fmuExport_toActuator().
+  {
+  bool entryOK;
+  vString strVals;
+  vDouble dblVals;
+  std::ostringstream os;
+  //
+  // Assume just read key {g_key_extInt_fmuExport_toActuator} from the IDF file.
+  const int keyLineNo = frIdf.getLineNumber();
+  _toActuator_idfLineNo.push_back(keyLineNo);
+  //
+  // Read values from IDF file.
+  entryOK = true;
+  if( ! frIdf.getValues(g_desc_extInt_fmuExport_toActuator, strVals, dblVals) )
+    {
+    entryOK = false;
+    os << "IDF parsing error.";
+    }
+  //
+  // Check count of values.
+  if( entryOK
+    &&
+    ( 5!=strVals.size() || 1!=dblVals.size() ) )
+    {
+    entryOK = false;
+    os << "Wrong number of entries.";
+    }
+  //
+  // Name (actuator name in IDF file).
+  if( entryOK )
+    {
+    _toActuator_epName.push_back(strVals[0]);
+    // In principle, could check that the IDF file contains the corresponding
+    // entry.  However, this would complicate the code here considerably.
+    }
+  //
+  // Actuated component unique name.
+  //   Not needed for FMU export.
+  //
+  // Actuated component type.
+  //   Not needed for FMU export.
+  //
+  // Actuated component control type.
+  //   Not needed for FMU export.
+  //
+  // FMU variable name (name in FMU master).
+  if( entryOK )
+    {
+    _toActuator_fmuVarName.push_back(strVals[4]);
+    }
+  //
+  // Initial value.
+  if( entryOK )
+    {
+    _toActuator_initValue.push_back(dblVals[0]);
+    }
+  //
+  // Check for duplicate names.
+  if( entryOK )
+    {
+    const int elCt = (int)_toActuator_idfLineNo.size();
+    //
+    #ifdef _DEBUG
+      assert( elCt == (int)_toActuator_epName.size() );
+      assert( elCt == (int)_toActuator_fmuVarName.size() );
+      assert( elCt == (int)_toActuator_initValue.size() );
+    #endif
+    //
+    const string &epName = _toActuator_epName[elCt-1];
+    for( int idx=0; idx<elCt-1; ++idx )
+      {
+      if( 0 == epName.compare(_toActuator_epName[idx]) )
+        {
+        entryOK = false;
+        os << "FMU master already sets value of IDF actuator '" << epName
+          << "'. See line " << _toActuator_idfLineNo[idx] << " of IDF file.";
+        break;
+        }
+      // hoho dml  Presumably it's OK for one named value in the FMU master to
+      // control more than one actuator (or an actuator and something else) in
+      // the EnergyPlus simulation.  If not, should add a comparison of
+      // {_toActuator_fmuVarName[idx]} here.
+      }
+    }
+  //
+  if( ! entryOK )
+    {
+    _goodRead = false;
+    os << "\nError encountered while reading values for keyword '" << g_key_extInt_fmuExport_toActuator
+      << "', starting on line " << keyLineNo << " of IDF file.";
+    reportError(os);
+    }
+  //
+  return;
+  }  // End method fmuExportIdfData::handleKey_extInt_fmuExport_toActuator().
 
 
 //--- Read IDF values for key {g_key_extInt_fmuExport_toSched}.
@@ -1188,94 +1236,94 @@ void fmuExportIdfData::handleKey_extInt_fmuExport_toActuator(fileReaderData& frI
 //   0;                          !- Initial value
 //
 void fmuExportIdfData::handleKey_extInt_fmuExport_toSched(fileReaderData& frIdf)
-{
-	bool entryOK;
-	vString strVals;
-	vDouble dblVals;
-	std::ostringstream os;
-	//
-	// Assume just read key {g_key_extInt_fmuExport_toSched} from the IDF file.
-	const int keyLineNo = frIdf.getLineNumber();
-	_toSched_idfLineNo.push_back(keyLineNo);
-	//
-	// Read values from IDF file.
-	entryOK = true;
-	if (!frIdf.getValues(g_desc_extInt_fmuExport_toSched, strVals, dblVals))
-	{
-		entryOK = false;
-		os << "IDF parsing error.";
-	}
-	//
-	// Check count of values.
-	if (entryOK
-		&&
-		(3 != strVals.size() || 1 != dblVals.size()))
-	{
-		entryOK = false;
-		os << "Wrong number of entries.";
-	}
-	//
-	// Schedule Name (schedule name in IDF file).
-	if (entryOK)
-	{
-		_toSched_epSchedName.push_back(strVals[0]);
-		// In principle, could check that the IDF file contains the corresponding
-		// entry.  However, this would complicate the code here considerably.
-	}
-	//
-	// Schedule type limits name.
-	//   Not needed for FMU export.
-	//
-	// FMU variable name (name in FMU master).
-	if (entryOK)
-	{
-		_toSched_fmuVarName.push_back(strVals[2]);
-	}
-	//
-	// Initial value.
-	if (entryOK)
-	{
-		_toSched_initValue.push_back(dblVals[0]);
-	}
-	//
-	// Check for duplicate names.
-	if (entryOK)
-	{
-		const int elCt = (int)_toSched_idfLineNo.size();
-		//
-#ifdef _DEBUG
-		assert(elCt == (int)_toSched_epSchedName.size());
-		assert(elCt == (int)_toSched_fmuVarName.size());
-		assert(elCt == (int)_toSched_initValue.size());
-#endif
-		//
-		const string &epSchedName = _toSched_epSchedName[elCt - 1];
-		for (int idx = 0; idx<elCt - 1; ++idx)
-		{
-			if (0 == epSchedName.compare(_toSched_epSchedName[idx]))
-			{
-				entryOK = false;
-				os << "FMU master already sets value of IDF schedule '" << epSchedName
-					<< "'. See line " << _toSched_idfLineNo[idx] << " of IDF file.";
-				break;
-			}
-			// hoho dml  Presumably it's OK for one named value in the FMU master to
-			// control more than one schedule (or a schedule and something else) in
-			// the EnergyPlus simulation.  If not, should add a comparison of
-			// {_toSched_fmuVarName[idx]} here.
-		}
-	}
-	//
-	if (!entryOK)
-	{
-		_goodRead = false;
-		os << "\nError encountered while reading values for keyword '" << g_key_extInt_fmuExport_toSched
-			<< "', starting on line " << keyLineNo << " of IDF file.";
-		reportError(os);
-	}
-	//
-	return;
-}  // End method fmuExportIdfData::handleKey_extInt_fmuExport_toSched().
+  {
+  bool entryOK;
+  vString strVals;
+  vDouble dblVals;
+  std::ostringstream os;
+  //
+  // Assume just read key {g_key_extInt_fmuExport_toSched} from the IDF file.
+  const int keyLineNo = frIdf.getLineNumber();
+  _toSched_idfLineNo.push_back(keyLineNo);
+  //
+  // Read values from IDF file.
+  entryOK = true;
+  if( ! frIdf.getValues(g_desc_extInt_fmuExport_toSched, strVals, dblVals) )
+    {
+    entryOK = false;
+    os << "IDF parsing error.";
+    }
+  //
+  // Check count of values.
+  if( entryOK
+    &&
+    ( 3!=strVals.size() || 1!=dblVals.size() ) )
+    {
+    entryOK = false;
+    os << "Wrong number of entries.";
+    }
+  //
+  // Schedule Name (schedule name in IDF file).
+  if( entryOK )
+    {
+    _toSched_epSchedName.push_back(strVals[0]);
+    // In principle, could check that the IDF file contains the corresponding
+    // entry.  However, this would complicate the code here considerably.
+    }
+  //
+  // Schedule type limits name.
+  //   Not needed for FMU export.
+  //
+  // FMU variable name (name in FMU master).
+  if( entryOK )
+    {
+    _toSched_fmuVarName.push_back(strVals[2]);
+    }
+  //
+  // Initial value.
+  if( entryOK )
+    {
+    _toSched_initValue.push_back(dblVals[0]);
+    }
+  //
+  // Check for duplicate names.
+  if( entryOK )
+    {
+    const int elCt = (int)_toSched_idfLineNo.size();
+    //
+    #ifdef _DEBUG
+      assert( elCt == (int)_toSched_epSchedName.size() );
+      assert( elCt == (int)_toSched_fmuVarName.size() );
+      assert( elCt == (int)_toSched_initValue.size() );
+    #endif
+    //
+    const string &epSchedName = _toSched_epSchedName[elCt-1];
+    for( int idx=0; idx<elCt-1; ++idx )
+      {
+      if( 0 == epSchedName.compare(_toSched_epSchedName[idx]) )
+        {
+        entryOK = false;
+        os << "FMU master already sets value of IDF schedule '" << epSchedName
+          << "'. See line " << _toSched_idfLineNo[idx] << " of IDF file.";
+        break;
+        }
+      // hoho dml  Presumably it's OK for one named value in the FMU master to
+      // control more than one schedule (or a schedule and something else) in
+      // the EnergyPlus simulation.  If not, should add a comparison of
+      // {_toSched_fmuVarName[idx]} here.
+      }
+    }
+  //
+  if( ! entryOK )
+    {
+    _goodRead = false;
+    os << "\nError encountered while reading values for keyword '" << g_key_extInt_fmuExport_toSched
+      << "', starting on line " << keyLineNo << " of IDF file.";
+    reportError(os);
+    }
+  //
+  return;
+  }  // End method fmuExportIdfData::handleKey_extInt_fmuExport_toSched().
 
 
 //--- Read IDF values for key {g_key_extInt_fmuExport_fromVar}.
@@ -1287,93 +1335,93 @@ void fmuExportIdfData::handleKey_extInt_fmuExport_toSched(fileReaderData& frIdf)
 //   TRoom;                      !- FMU variable name
 //
 void fmuExportIdfData::handleKey_extInt_fmuExport_fromVar(fileReaderData& frIdf)
-{
-	bool entryOK;
-	vString strVals;
-	vDouble dblVals;
-	std::ostringstream os;
-	//
-	// Assume just read key {g_key_extInt_fmuExport_fromVar} from the IDF file.
-	const int keyLineNo = frIdf.getLineNumber();
-	_fromVar_idfLineNo.push_back(keyLineNo);
-	//
-	// Read values from IDF file.
-	entryOK = true;
-	if (!frIdf.getValues(g_desc_extInt_fmuExport_fromVar, strVals, dblVals))
-	{
-		entryOK = false;
-		os << "IDF parsing error.";
-	}
-	//
-	// Check count of values.
-	if (entryOK
-		&&
-		(3 != strVals.size() || 0 != dblVals.size()))
-	{
-		entryOK = false;
-		os << "Wrong number of entries.";
-	}
-	//
-	// Output:Variable Index Key Name (key name in IDF file).
-	if (entryOK)
-	{
-		_fromVar_epKeyName.push_back(strVals[0]);
-		// In principle, could check that the IDF file contains the corresponding
-		// entry.  However, this would complicate the code here considerably.
-	}
-	//
-	// Output:Variable Name (variable name in IDF file).
-	if (entryOK)
-	{
-		_fromVar_epVarName.push_back(strVals[1]);
-		// In principle, could check that the IDF file contains the corresponding
-		// entry.  However, this would complicate the code here considerably.
-	}
-	//
-	// FMU variable name (Name in FMU master).
-	if (entryOK)
-	{
-		_fromVar_fmuVarName.push_back(strVals[2]);
-	}
-	//
-	// Check for duplicate names.
-	if (entryOK)
-	{
-		const int elCt = (int)_fromVar_idfLineNo.size();
-		//
-#ifdef _DEBUG
-		assert(elCt == (int)_fromVar_epKeyName.size());
-		assert(elCt == (int)_fromVar_epVarName.size());
-		assert(elCt == (int)_fromVar_fmuVarName.size());
-#endif
-		//
-		const string &fmuVarName = _fromVar_fmuVarName[elCt - 1];
-		for (int idx = 0; idx<elCt - 1; ++idx)
-		{
-			if (0 == fmuVarName.compare(_fromVar_fmuVarName[idx]))
-			{
-				entryOK = false;
-				os << "FMU master already reading variable '" << fmuVarName
-					<< "'. See line " << _fromVar_idfLineNo[idx] << " of IDF file.";
-				break;
-			}
-			// hoho dml  Presumably it's OK for the FMU master to read the same
-			// EnergyPlus value into more than one variable.  If not, should add
-			// comparisons of {_fromVar_epKeyName[idx]} and {_fromVar_epVarName[idx]}
-			// here.
-		}
-	}
-	//
-	if (!entryOK)
-	{
-		_goodRead = false;
-		os << "\nError encountered while reading values for keyword '" << g_key_extInt_fmuExport_fromVar
-			<< "', starting on line " << keyLineNo << " of IDF file.";
-		reportError(os);
-	}
-	//
-	return;
-}  // End method fmuExportIdfData::handleKey_extInt_fmuExport_fromVar().
+  {
+  bool entryOK;
+  vString strVals;
+  vDouble dblVals;
+  std::ostringstream os;
+  //
+  // Assume just read key {g_key_extInt_fmuExport_fromVar} from the IDF file.
+  const int keyLineNo = frIdf.getLineNumber();
+  _fromVar_idfLineNo.push_back(keyLineNo);
+  //
+  // Read values from IDF file.
+  entryOK = true;
+  if( ! frIdf.getValues(g_desc_extInt_fmuExport_fromVar, strVals, dblVals) )
+    {
+    entryOK = false;
+    os << "IDF parsing error.";
+    }
+  //
+  // Check count of values.
+  if( entryOK
+    &&
+    ( 3!=strVals.size() || 0!=dblVals.size() ) )
+    {
+    entryOK = false;
+    os << "Wrong number of entries.";
+    }
+  //
+  // Output:Variable Index Key Name (key name in IDF file).
+  if( entryOK )
+    {
+    _fromVar_epKeyName.push_back(strVals[0]);
+    // In principle, could check that the IDF file contains the corresponding
+    // entry.  However, this would complicate the code here considerably.
+    }
+  //
+  // Output:Variable Name (variable name in IDF file).
+  if( entryOK )
+    {
+    _fromVar_epVarName.push_back(strVals[1]);
+    // In principle, could check that the IDF file contains the corresponding
+    // entry.  However, this would complicate the code here considerably.
+    }
+  //
+  // FMU variable name (Name in FMU master).
+  if( entryOK )
+    {
+    _fromVar_fmuVarName.push_back(strVals[2]);
+    }
+  //
+  // Check for duplicate names.
+  if( entryOK )
+    {
+    const int elCt = (int)_fromVar_idfLineNo.size();
+    //
+    #ifdef _DEBUG
+      assert( elCt == (int)_fromVar_epKeyName.size() );
+      assert( elCt == (int)_fromVar_epVarName.size() );
+      assert( elCt == (int)_fromVar_fmuVarName.size() );
+    #endif
+    //
+    const string &fmuVarName = _fromVar_fmuVarName[elCt-1];
+    for( int idx=0; idx<elCt-1; ++idx )
+      {
+      if( 0 == fmuVarName.compare(_fromVar_fmuVarName[idx]) )
+        {
+        entryOK = false;
+        os << "FMU master already reading variable '" << fmuVarName
+          << "'. See line " << _fromVar_idfLineNo[idx] << " of IDF file.";
+        break;
+        }
+      // hoho dml  Presumably it's OK for the FMU master to read the same
+      // EnergyPlus value into more than one variable.  If not, should add
+      // comparisons of {_fromVar_epKeyName[idx]} and {_fromVar_epVarName[idx]}
+      // here.
+      }
+    }
+  //
+  if( ! entryOK )
+    {
+    _goodRead = false;
+    os << "\nError encountered while reading values for keyword '" << g_key_extInt_fmuExport_fromVar
+      << "', starting on line " << keyLineNo << " of IDF file.";
+    reportError(os);
+    }
+  //
+  return;
+  }  // End method fmuExportIdfData::handleKey_extInt_fmuExport_fromVar().
 
 
 //--- Read IDF values for key {g_key_extInt_fmuExport_toVar}.
@@ -1385,143 +1433,144 @@ void fmuExportIdfData::handleKey_extInt_fmuExport_fromVar(fileReaderData& frIdf)
 //   1;                       !- Initial Value
 //
 void fmuExportIdfData::handleKey_extInt_fmuExport_toVar(fileReaderData& frIdf)
-{
-	bool entryOK;
-	vString strVals;
-	vDouble dblVals;
-	std::ostringstream os;
-	//
-	// Assume just read key {g_key_extInt_fmuExport_toVar} from the IDF file.
-	const int keyLineNo = frIdf.getLineNumber();
-	_toVar_idfLineNo.push_back(keyLineNo);
-	//
-	// Read values from IDF file.
-	entryOK = true;
-	if (!frIdf.getValues(g_desc_extInt_fmuExport_toVar, strVals, dblVals))
-	{
-		entryOK = false;
-		os << "IDF parsing error.";
-	}
-	//
-	// Check count of values.
-	if (entryOK
-		&&
-		(2 != strVals.size() || 1 != dblVals.size()))
-	{
-		entryOK = false;
-		os << "Wrong number of entries.";
-	}
-	//
-	// Name (variable name in IDF file).
-	if (entryOK)
-	{
-		_toVar_epName.push_back(strVals[0]);
-		// In principle, could check that the IDF file contains the corresponding
-		// entry.  However, this would complicate the code here considerably.
-	}
-	//
-	// FMU variable name (name in FMU master).
-	if (entryOK)
-	{
-		_toVar_fmuVarName.push_back(strVals[1]);
-	}
-	//
-	// Initial value.
-	if (entryOK)
-	{
-		_toVar_initValue.push_back(dblVals[0]);
-	}
-	//
-	// Check for duplicate names.
-	if (entryOK)
-	{
-		const int elCt = (int)_toVar_idfLineNo.size();
-		//
-#ifdef _DEBUG
-		assert(elCt == (int)_toVar_epName.size());
-		assert(elCt == (int)_toVar_fmuVarName.size());
-		assert(elCt == (int)_toVar_initValue.size());
-#endif
-		//
-		const string &epName = _toVar_epName[elCt - 1];
-		for (int idx = 0; idx<elCt - 1; ++idx)
-		{
-			if (0 == epName.compare(_toVar_epName[idx]))
-			{
-				entryOK = false;
-				os << "FMU master already sets value of IDF variable '" << epName
-					<< "'. See line " << _toVar_idfLineNo[idx] << " of IDF file.";
-				break;
-			}
-			// hoho dml  Presumably it's OK for one named value in the FMU master to
-			// control more than one variable (or a variable and something else) in
-			// the EnergyPlus simulation.  If not, should add a comparison of
-			// {_toVar_fmuVarName[idx]} here.
-		}
-	}
-	//
-	if (!entryOK)
-	{
-		_goodRead = false;
-		os << "\nError encountered while reading values for keyword '" << g_key_extInt_fmuExport_toVar
-			<< "', starting on line " << keyLineNo << " of IDF file.";
-		reportError(os);
-	}
-	//
-	return;
-}  // End method fmuExportIdfData::handleKey_extInt_fmuExport_toVar().
+  {
+  bool entryOK;
+  vString strVals;
+  vDouble dblVals;
+  std::ostringstream os;
+  //
+  // Assume just read key {g_key_extInt_fmuExport_toVar} from the IDF file.
+  const int keyLineNo = frIdf.getLineNumber();
+  _toVar_idfLineNo.push_back(keyLineNo);
+  //
+  // Read values from IDF file.
+  entryOK = true;
+  if( ! frIdf.getValues(g_desc_extInt_fmuExport_toVar, strVals, dblVals) )
+    {
+    entryOK = false;
+    os << "IDF parsing error.";
+    }
+  //
+  // Check count of values.
+  if( entryOK
+    &&
+    ( 2!=strVals.size() || 1!=dblVals.size() ) )
+    {
+    entryOK = false;
+    os << "Wrong number of entries.";
+    }
+  //
+  // Name (variable name in IDF file).
+  if( entryOK )
+    {
+    _toVar_epName.push_back(strVals[0]);
+    // In principle, could check that the IDF file contains the corresponding
+    // entry.  However, this would complicate the code here considerably.
+    }
+  //
+  // FMU variable name (name in FMU master).
+  if( entryOK )
+    {
+    _toVar_fmuVarName.push_back(strVals[1]);
+    }
+  //
+  // Initial value.
+  if( entryOK )
+    {
+    _toVar_initValue.push_back(dblVals[0]);
+    }
+  //
+  // Check for duplicate names.
+  if( entryOK )
+    {
+    const int elCt = (int)_toVar_idfLineNo.size();
+    //
+    #ifdef _DEBUG
+      assert( elCt == (int)_toVar_epName.size() );
+      assert( elCt == (int)_toVar_fmuVarName.size() );
+      assert( elCt == (int)_toVar_initValue.size() );
+    #endif
+    //
+    const string &epName = _toVar_epName[elCt-1];
+    for( int idx=0; idx<elCt-1; ++idx )
+      {
+      if( 0 == epName.compare(_toVar_epName[idx]) )
+        {
+        entryOK = false;
+        os << "FMU master already sets value of IDF variable '" << epName
+          << "'. See line " << _toVar_idfLineNo[idx] << " of IDF file.";
+        break;
+        }
+      // hoho dml  Presumably it's OK for one named value in the FMU master to
+      // control more than one variable (or a variable and something else) in
+      // the EnergyPlus simulation.  If not, should add a comparison of
+      // {_toVar_fmuVarName[idx]} here.
+      }
+    }
+  //
+  if( ! entryOK )
+    {
+    _goodRead = false;
+    os << "\nError encountered while reading values for keyword '" << g_key_extInt_fmuExport_toVar
+      << "', starting on line " << keyLineNo << " of IDF file.";
+    reportError(os);
+    }
+  //
+  return;
+  }  // End method fmuExportIdfData::handleKey_extInt_fmuExport_toVar().
 
 
-//--- Read IDF values for key {g_key_timeStep}.
-// Timestep, 4;
+////--- Read IDF values for key {g_key_timeStep}.
+//// Timestep, 4;
+////
+//int fmuExportIdfData::handleKey_timeStep(fileReaderData& frIdf)
+//{
+//	bool entryOK;
+//	vString strVals;
+//	vDouble dblVals;
+//	std::ostringstream os;
+//	//
+//	// Assume just read key {g_key_timeStep} from the IDF file.
+//	const int keyLineNo = frIdf.getLineNumber();
+//	_fromVar_idfLineNo.push_back(keyLineNo);
+//	//
+//	// Read values from IDF file.
+//	entryOK = true;
+//	if (!frIdf.getValues(g_desc_timeStep, strVals, dblVals))
+//	{
+//		entryOK = false;
+//		os << "IDF parsing error.";
+//	}
+//	//
+//	// Check count of values.
+//	if (entryOK
+//		&&
+//		(1 != dblVals.size()))
+//	{
+//		entryOK = false;
+//		os << "Wrong number of entries.";
+//	}
+//	//
+//	// TimeStep value (key name in IDF file).
+//	if (entryOK)
+//	{
+//		_timeStep.push_back(dblVals[0]);
+//		// In principle, could check that the IDF file contains the corresponding
+//		// entry.  However, this would complicate the code here considerably.
+//	}
+//	//
 //
-void fmuExportIdfData::handleKey_timeStep(fileReaderData& frIdf)
-{
-	bool entryOK;
-	vString strVals;
-	vDouble dblVals;
-	std::ostringstream os;
-	//
-	// Assume just read key {g_key_timeStep} from the IDF file.
-	const int keyLineNo = frIdf.getLineNumber();
-	_fromVar_idfLineNo.push_back(keyLineNo);
-	//
-	// Read values from IDF file.
-	entryOK = true;
-	if (!frIdf.getValues(g_desc_timeStep, strVals, dblVals))
-	{
-		entryOK = false;
-		os << "IDF parsing error.";
-	}
-	//
-	// Check count of values.
-	if (entryOK
-		&&
-		(1 != dblVals.size()))
-	{
-		entryOK = false;
-		os << "Wrong number of entries.";
-	}
-	//
-	// TimeStep value (key name in IDF file).
-	if (entryOK)
-	{
-		_timeStep.push_back(dblVals[0]);
-		// In principle, could check that the IDF file contains the corresponding
-		// entry.  However, this would complicate the code here considerably.
-	}
-	//
-
-	if (!entryOK)
-	{
-		_goodRead = false;
-		os << "\nError encountered while reading values for keyword '" << g_key_timeStep
-			<< "', starting on line " << keyLineNo << " of IDF file.";
-		reportError(os);
-	}
-	//
-	return;
-}  // End method fmuExportIdfDa
+//	if (!entryOK)
+//	{
+//		_goodRead = false;
+//		cout << "\nError encountered while reading values for keyword '" << g_key_timeStep
+//			<< "', starting on line " << keyLineNo << " of IDF file.";
+//		return 1;
+//		//reportError(os);
+//	}
+//	//
+//	return 0;
+//}  // End method fmuExportIdfDa
 
 //--- Read IDF values for key {g_key_runPer}.
 //RunPeriod,//
@@ -1550,7 +1599,7 @@ void fmuExportIdfData::handleKey_runPer(fileReaderData& frIdf)
 	// Assume just read key {g_key_runPer} from the IDF file.
 	const int keyLineNo = frIdf.getLineNumber();
 	_fromVar_idfLineNo.push_back(keyLineNo);
-
+	
 	// Read values from IDF file.
 	entryOK = true;
 	if (!frIdf.getValues(g_desc_runPer, strVals, dblVals))
@@ -1691,6 +1740,6 @@ void fmuExportIdfData::handleKey_runPer(fileReaderData& frIdf)
 			<< "', starting on line " << keyLineNo << " of IDF file.";
 		reportError(os);
 	}
-
+	
 	return;
 }  // End method fmuExportIdfData::handleKey_runPer().

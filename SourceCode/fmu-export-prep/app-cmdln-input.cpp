@@ -206,7 +206,8 @@ void cmdlnInput_showHelp(ostream& toStream, const char *const progName)
   {
   cmdlnInput_showVersion(toStream, progName);
   toStream << "Prepare to export an EnergyPlus input file for use as an FMU" << endl;
-  toStream << "Usage:\n " << progName << " [-h] [-v] [-w weatherFile] iddFile idfFile" << endl;
+  toStream << "Usage:\n " << progName << " [-h] [-v] [-w weatherFile] "
+	  "[-b simulation starttime] [-e simulation stoptime] iddFile idfFile" << endl;
   toStream << " -h: show this help message\n -v: show version information" << endl;
   }  // End fcn cmdlnInput_showHelp().
 

@@ -65,6 +65,12 @@ public:
   /// \return 1 if Leapyear success; or Weather line number where encountered a problem.
   int isLeapYear(fileReaderData& frIdf, int &leapYear);
 
+  /// Read Weather file, collecting data needed to export an EnergyPlus simulation as an FMU.
+  //
+  /// \param frIdf Input-file reader, configured to read from EnergyPlus Weather Data File of interest.
+  /// \return 0 on success; or IDF line number where encountered a problem.
+  int getTimeStep(fileReaderData& frIdf);
+
   /// Check have a complete set of data.
   bool check(void);
 
@@ -114,7 +120,7 @@ private:
   void handleKey_extInt_fmuExport_fromVar(fileReaderData& frIdf);
   void handleKey_extInt_fmuExport_toVar(fileReaderData& frIdf);
   void handleKey_runPer(fileReaderData& frIdf);
-  void handleKey_timeStep(fileReaderData& frIdf);
+  //int handleKey_timeStep(fileReaderData& frIdf);
 
 };
 
