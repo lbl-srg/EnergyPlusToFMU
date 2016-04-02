@@ -942,7 +942,7 @@ int fmuExportIdfData::getTimeStep(fileReaderData& frIdf)
 	string inputKey, iddDesc;
 	string line, inputKeyExt;
 	ofstream tStepfile;
-	tStepfile.open("tStep.txt");
+	tStepfile.open("tstep.txt");
 	//
 #ifdef _DEBUG
 	assert(!frIdf.isEOF());
