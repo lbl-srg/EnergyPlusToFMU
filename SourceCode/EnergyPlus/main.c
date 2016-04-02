@@ -1659,7 +1659,7 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 					if (getCausality(svTemp) !=enu_output) continue; 
 					vrTemp=getValueReference(svTemp);
 					if (vrTemp==vr[i]){
-						value[i]=_c->outVec[vr[i]-10001];
+						value[i]=_c->outVec[vr[i]-100001];
 						_c->getCounter++;
 					}
 				}

@@ -111,7 +111,7 @@ void modelDescXml_write(std::ostream& outStream,
   xmlOutput_startTag(outStream, 1, modelVarsTagName);
   xmlOutput_startTag_finish(outStream);
   xmlOutput_comment(outStream, 2, "Note valueReferences are (1, 2, 3...) for causality=\"input\" (to E+).");
-  xmlOutput_comment(outStream, 2, "Note valueReferences are (10001, 10002, 10003...) for \"output\" (from E+).");
+  xmlOutput_comment(outStream, 2, "Note valueReferences are (100001, 100002, 100003...) for \"output\" (from E+).");
   xmlOutput_comment(outStream, 2, "Note the order of valueReferences should match the order of elements in file 'variables.cfg'.");
   //
   //-- Prepare to write tags corresponding to data passed to EnergyPlus.
@@ -148,7 +148,7 @@ void modelDescXml_write(std::ostream& outStream,
   //
   //-- Prepare to write tags corresponding to data passed out of EnergyPlus.
   toEP = false;
-  valRef = 10001;  // hoho  Should test against unlikely case that have 10001 {toEP} variables.
+  valRef = 100001;  // hoho  Should test against unlikely case that have 100001 {toEP} variables.
   double dummyInitValue = 0.0;
   //
   //-- Write tags corresponding to {fromVar} data exchange.
