@@ -1331,8 +1331,8 @@
     FunctionalMockupUnitExport;  !- Name of External Interface
 
   ExternalInterface:FunctionalMockupUnitExport:To:Variable,
-    Shade_Signal,            !- Name
-    yShade,                  !- FMU Variable Name
+    yShade,                  !- Name
+    yShadeFMU,               !- FMU Variable Name
     6;                       !- Initial Value
 
   ExternalInterface:FunctionalMockupUnitExport:From:Variable,
