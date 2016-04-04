@@ -10,6 +10,17 @@ EnergyPlus version 8.0 or higher as an FMU for co-simulation for Windows 32/64 b
 
 To install EnergyPlusToFMU, follow the section :doc:`installation`. 
 
+Release 2.0.0 (April 04, 2016)
+------------------------------
+
+Download `EnergyPlusToFMU-2.0.0.zip <http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/releases/2.0.0/EnergyPlusToFMU-2.0.0.zip>`_. 
+
+**Release notes**
+
+This version is a major release which supports EnergyPlus 8.5.0 and higher. This version is not backward compatible with 
+previous versions of EnergyPlus. This is because the legacy `runenergyplus` script 
+which was used in previous versions of EnergyPlusToFMUs has been deprecated as of August 2015.
+
 Release 1.0.6 (March 09, 2016)
 ------------------------------
 

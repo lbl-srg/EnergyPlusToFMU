@@ -163,15 +163,15 @@ Configuring an EnergyPlus model which uses the ``EMS Variable`` object
 
 This configuration is almost the same as in the previous example with the only 
 difference being that the shading actuation signal will be written to an EMS variable
-``Shade_Signal`` that can be used in an EMS program.
+``yShade`` that can be used in an EMS program.
 
 To define the input of the FMU, we use: 
 
    .. code-block:: text
    
 	ExternalInterface:FunctionalMockupUnitExport:To:Variable,
-	Shade_Signal,            !- Name
-	yShade,                  !- FMU Variable Name
+	yShade,                  !- Name
+	yShadeFMU,               !- FMU Variable Name
 	6;                       !- Initial Value
 
 These specifications are used in the example that is available in ``Examples/Variable``.
