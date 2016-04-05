@@ -148,7 +148,7 @@ int findNameFile(ModelInstance * _c, char* in_file, fmiString pattern)
 	struct dirent *dp = &entry;
 	// read directory 
 	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
-		"Searching for follwoing pattern %s\n", pattern);
+		"Searching for following pattern %s\n", pattern);
 	while ((dp = readdir(dirp)))
 	{
 		_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
@@ -367,15 +367,15 @@ int start_sim(ModelInstance* _c)
 	fpBat=fopen("EP.bat", "w");
 	if (stat(FRUNWEAFILE, &stat_p)>=0){
 		// write the command string
-		fprintf(fpBat, "energyplus %s %s %s %s %s %s %s %s", 
-			"-w", FRUNWEAFILE, "-p", _c->mID, "-s", "C", 
+		fprintf(fpBat, "energyplus %s %s %s %s %s %s %s %s %s %s", 
+			"-w", FRUNWEAFILE, "-p", _c->mID, "-s", "C", "-x", "-m",
 			"-r", _c->in_file_name);
 	}
 	else
 	{
 		// write the command string
-		fprintf(fpBat, "energyplus %s %s %s %s %s %s", 
-			"-p", _c->mID, "-s", "C", "-r", _c->in_file_name);
+		fprintf(fpBat, "energyplus %s %s %s %s %s %s %s %s", 
+			"-p", _c->mID, "-s", "C", "-x", "-m", "-r", _c->in_file_name);
 	}
 	fclose (fpBat);
 	_c->pid=(HANDLE)_spawnl(P_NOWAIT, "EP.bat", "EP.bat", NULL); 
@@ -388,7 +388,8 @@ int start_sim(ModelInstance* _c)
 #else
 	if (stat (FRUNWEAFILE, &stat_p)>=0){
 		//char *const argv[]={"runenergyplus", _c->mID, FRUNWEAFILE, NULL};
-		char *const argv[]={"energyplus", "-w", FRUNWEAFILE, "-p", _c->mID, "-s", "C", "-r", _c->in_file_name, NULL};
+		char *const argv[]={"energyplus", "-w", FRUNWEAFILE, "-p", _c->mID, 
+			"-s", "C", "-x", "-m", "-r", _c->in_file_name, NULL};
 		// execute the command string
 		retVal=posix_spawnp( &_c->pid, argv[0], NULL, NULL, argv, environ);
 		return retVal;
@@ -396,7 +397,8 @@ int start_sim(ModelInstance* _c)
 	else
 	{
 		//char *const argv[]={"runenergyplus", _c->mID, NULL};
-		char *const argv[]={"energyplus", "-p", _c->mID, "-s", "C", "-r", _c->in_file_name, NULL};
+		char *const argv[]={"energyplus", "-p", _c->mID, "-s", "C", "-x", 
+			"-m", "-r", _c->in_file_name, NULL};
 		// execute the command string
 		retVal=posix_spawnp( &_c->pid, argv[0], NULL, NULL, argv, environ);
 		return retVal;
