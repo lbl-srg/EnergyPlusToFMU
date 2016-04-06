@@ -361,8 +361,9 @@ int start_sim(ModelInstance* _c)
 	int retVal;
 #endif
 	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
-		"**runenergyplus** has been deprecated as of August 2015."
-		" EnergyPlusToFMU uses **energyplus** to call the EnergyPlus executable.");
+		"This version uses the **energyplus** command line interface to "
+		" call the EnergyPlus executable. **RunEPlus.bat** and **runenergyplus** ," 
+		" which were used in earlier versions, were deprecated as of August 2015.");
 #ifdef _MSC_VER
 	fpBat=fopen("EP.bat", "w");
 	if (stat(FRUNWEAFILE, &stat_p)>=0){
