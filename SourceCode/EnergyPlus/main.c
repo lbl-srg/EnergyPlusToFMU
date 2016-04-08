@@ -407,53 +407,54 @@ int start_sim(ModelInstance* _c)
 #endif
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/// FMI status
-///
-///\param status FMI status.
-///////////////////////////////////////////////////////////////////////////////
-//#if 0
-const char* fmiStatusToString(fmiStatus status){
-	switch (status){
-	case fmiOK:      return "ok";
-	case fmiWarning: return "warning";
-	case fmiDiscard: return "discard";
-	case fmiError:   return "error";		
-	case fmiPending: return "pending";	
-	default:         return "?";
-	}
-}
-//#endif
-//
-//
+// The methods below should be used only when testing the main program below.
 /////////////////////////////////////////////////////////////////////////////////
-///// FMU logger
+///// FMI status
 /////
-/////\param c The FMU instance.
-/////\param instanceName FMI string.
 /////\param status FMI status.
-/////\param category FMI string.
-/////\param message Message to be recorded.
 /////////////////////////////////////////////////////////////////////////////////
-void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,
-	fmiString category, fmiString message, ...) {
-		char msg[MAX_MSG_SIZE];
-		char* copy;
-		va_list argp;
-
-		// Replace C format strings
-		va_start(argp, message);
-		vsprintf(msg, message, argp);
-
-		// Replace e.g. ## and #r12#
-		copy=strdup(msg);
-		free(copy);
-
-		// Print the final message
-		if (!instanceName) instanceName="?";
-		if (!category) category="?";
-		printf("%s %s (%s): %s\n", fmiStatusToString(status), instanceName, category, msg);
-}
+////#if 0
+//const char* fmiStatusToString(fmiStatus status){
+//	switch (status){
+//	case fmiOK:      return "ok";
+//	case fmiWarning: return "warning";
+//	case fmiDiscard: return "discard";
+//	case fmiError:   return "error";		
+//	case fmiPending: return "pending";	
+//	default:         return "?";
+//	}
+//}
+////#endif
+////
+////
+///////////////////////////////////////////////////////////////////////////////////
+/////// FMU logger
+///////
+///////\param c The FMU instance.
+///////\param instanceName FMI string.
+///////\param status FMI status.
+///////\param category FMI string.
+///////\param message Message to be recorded.
+///////////////////////////////////////////////////////////////////////////////////
+//void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,
+//	fmiString category, fmiString message, ...) {
+//		char msg[MAX_MSG_SIZE];
+//		char* copy;
+//		va_list argp;
+//
+//		// Replace C format strings
+//		va_start(argp, message);
+//		vsprintf(msg, message, argp);
+//
+//		// Replace e.g. ## and #r12#
+//		copy=strdup(msg);
+//		free(copy);
+//
+//		// Print the final message
+//		if (!instanceName) instanceName="?";
+//		if (!category) category="?";
+//		printf("%s %s (%s): %s\n", fmiStatusToString(status), instanceName, category, msg);
+//}
 
 ////////////////////////////////////////////////////////////////
 ///  This method is used to get the fmi types of platform
