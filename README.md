@@ -1,6 +1,6 @@
 # EnergyPlusToFMU - Functional Mock-up Unit Export of EnergyPlus
 
-This is the development site for EnergyPlusToFMU.
+This is the development site for the EnergyPlusToFMU program.
 
 Stable releases including all previous releases are available from the main project site
 at http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/index.html.
@@ -23,6 +23,6 @@ EnergyPlusToFMU is available under the following [open-source license] (http://s
 
 
 ## Development and contribution
-You may report any issues with using the [Issues](https://github.com/lbl-srg/fmuexport-energyplus/issues) button.
+You may report any issues with using the [Issues](https://github.com/lbl-srg/energyplustofmu/issues) button.
 
-Contributions in the form of [Pull Requests](https://github.com/lbl-srg/fmuexport-energyplus/pulls) are always welcome.
+Contributions in the form of [Pull Requests](https://github.com/lbl-srg/energyplustofmu/pulls) are always welcome.
