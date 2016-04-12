@@ -1,25 +1,25 @@
 Checklist of EnergyPlusToFMU
 ****************************
 Update the copyright notices to ....-20xx. in 
-trunk/Documentation/userGuide/source/legal.rst
+Documentation/userGuide/source/legal.rst
 
 Update the version number 1.0.xxx. in 
-trunk/Documentation/userGuide/source/conf.py
+Documentation/userGuide/source/conf.py
 
 Update the release notes. in 
-trunk/Documentation/userGuide/source/download.rst
+Documentation/userGuide/source/download.rst
 
 Update the News and copyright date. in 
-trunk/Documentation/userGuide/www/index.html
+Documentation/userGuide/www/index.html
 
-cd to trunk/
+cd to the repository which contains the file (folderxxx)
 
 Run
 
 ../cleanfilesystem to clean ~ files that might have been created
 
 
-cd to trunk/Documentation/userGuide
+cd to Documentation/userGuide
 
 Run
 
@@ -31,11 +31,9 @@ i) the first two ones refer to links which exist but can't be open because they 
 
 ii) The second one relates to the .zip folder which cannot be found. This error is normal since the .zip folder has not been uploaded yet.
 
-iii) The third one relates to the link to /trunk. This error shouldn't be since the link can be found when typed in the browser. 
-
 
 Login to gundog thierry@gundog and create a folder in the /usr/local/simulationresearch/www/fmu/EnergyPlus/releases folder.
-This folder should be the version of the release (1.0.7)
+This folder should be the version of the release (2.0.0)
 
 Run 
 
@@ -49,11 +47,11 @@ make clean (if it doesn't work you might have to use sudo)
 
 to delete the build folder created
 
-cd to the root before the trunk 
+cd to the root before the folder which contains the repository (folderxx)
 
 Run
 
-python createPostRelease.py trunk + version number 
+python createPostRelease.py folderxx + version number 
 
 to post the release on gundog
 
