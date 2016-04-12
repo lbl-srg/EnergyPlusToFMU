@@ -1,0 +1,9 @@
+#!/bin/bash
+# deletes temporary files and directories, if empty
+# michael@mwetter.com                    2007-02-21
+###################################################
+
+# run first to print the files that will be deleted
+find . \( -name '*~' -or -name '*.bak' -or -name '*.BAK' -or -name 'core' -or -name '.nautilus-metafile.xml' \) 
+
+find . \( -name '*~' -or -name '*.bak' -or -name '*.BAK' -or -name 'core' -or -name '.nautilus-metafile.xml' -or -name '.DS_Store' \) -delete
