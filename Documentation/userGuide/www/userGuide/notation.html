@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>10. Help &mdash; FMU Export of EnergyPlus User Guide</title>
+    <title>9. Notation &mdash; FMU Export of EnergyPlus User Guide</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,8 +25,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="FMU Export of EnergyPlus User Guide" href="index.html" />
-    <link rel="next" title="11. Glossary" href="glossary.html" />
-    <link rel="prev" title="9. Notation" href="notation.html" /> 
+    <link rel="next" title="10. Help" href="help.html" />
+    <link rel="prev" title="8. Development" href="development.html" /> 
   </head>
   <body role="document">
 <div class="headerStyle">
@@ -40,10 +40,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="glossary.html" title="11. Glossary"
+          <a href="help.html" title="10. Help"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="notation.html" title="9. Notation"
+          <a href="development.html" title="8. Development"
              accesskey="P">previous</a> |</li>
     <li><a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/index.html">Home</a> |
     <a href="index.html">User Guide</a></li>
@@ -56,15 +56,15 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="notation.html"
-                        title="previous chapter">9. Notation</a></p>
+  <p class="topless"><a href="development.html"
+                        title="previous chapter">8. Development</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="glossary.html"
-                        title="next chapter">11. Glossary</a></p>
+  <p class="topless"><a href="help.html"
+                        title="next chapter">10. Help</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/help.txt"
+      <li><a href="_sources/notation.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -89,29 +89,25 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="help">
-<h1>10. Help<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h1>
-<dl class="docutils">
-<dt>Before submitting a bug report,</dt>
-<dd><ul class="first last simple">
-<li>Check <a class="reference external" href="https://corbu.lbl.gov/trac/fmu/browser/EnergyPlus#export/trunk">https://corbu.lbl.gov/trac/fmu/browser/EnergyPlus#export/trunk</a> if the bug is already known.</li>
-<li>Make sure that it is a bug of the FMU implementation and not a bug of the EnergyPlus model. EnergyPlus bugs should be isolated so that they do not require use of an FMU, and then sent to the EnergyPlus help desk at <a class="reference external" href="http://energyplus.helpserve.com/">http://energyplus.helpserve.com/</a>.</li>
-</ul>
-</dd>
-<dt>When submitting a bug report, please provide:</dt>
-<dd><ul class="first last simple">
-<li>A model that is as small as possible and still reproduces your error. The chances of quickly finding and fixing a bug are much higher if the bug is part of a small test problem. In addition, creating a small test problem may help finding the root cause for the bug yourself, or realizing that there is no bug at all, and hence your problem can be solved much sooner.</li>
-<li>A description of the expected and the observed results.</li>
-<li>Information about the operating system and the EnergyPlus version.</li>
-</ul>
-</dd>
-</dl>
-<p>To report the bug, send email to <a class="reference external" href="https://groups.google.com/group/energyplus-fmu">https://groups.google.com/group/energyplus-fmu</a>. This is an open group and everyone can join it. No invitation is needed.</p>
-<p><strong>Known Issues</strong></p>
-<p><strong>Release 1.0.0</strong></p>
-<p><a class="reference internal" href="glossary.html#term-dymola"><span class="xref std std-term">Dymola</span></a> 2014 cannot import EnergyPlus as an FMU. The reason is a bug in <a class="reference internal" href="glossary.html#term-dymola"><span class="xref std std-term">Dymola</span></a> 2014 which does not pass the path to the resources location folder to the FMU when invoking the <code class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></code> method.
-This information is needed by the FMU for its correct execution. A workaround will be to manually specify the path to the resources location in the <code class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></code> method in <code class="docutils literal"><span class="pre">main.c</span></code>. <code class="docutils literal"><span class="pre">main.c</span></code> can be found in the
-<code class="docutils literal"><span class="pre">SourceCode</span></code> folder of the EnergyPlusToFMU installation.</p>
+  <div class="section" id="notation">
+<span id="id1"></span><h1>9. Notation<a class="headerlink" href="#notation" title="Permalink to this headline">¶</a></h1>
+<p>This chapter shows the formatting conventions used throughout the User Guide.</p>
+<p>The command-line is an interactive session for issuing commands to the operating system.
+Examples include a DOS prompt on Windows, a command shell on Linux, and a Terminal window on MacOS.</p>
+<p>The User Guide represents a command window like this:</p>
+<div class="highlight-none"><div class="highlight"><pre><span></span># This is a comment.
+&gt; (This is the command prompt, where you enter a command)
+(If shown, this is sample output in response to the command)
+</pre></div>
+</div>
+<p>For example, to see a list of files in the current directory on Linux or MacOS:</p>
+<div class="highlight-none"><div class="highlight"><pre><span></span># List all Python files.
+&gt; ls  *.py
+EnergyPlusToFMU.py   makeExportPrepApp.py   ...
+</pre></div>
+</div>
+<p>Note that your system may use a different symbol than &#8220;<code class="docutils literal"><span class="pre">&gt;</span></code>&#8221; as the command prompt (for example, &#8220;<code class="docutils literal"><span class="pre">$</span></code>&#8221;).
+Furthermore, the prompt may include information such as the name of your system, or the name of the current subdirectory.</p>
 </div>
 
 
@@ -127,10 +123,10 @@ This information is needed by the FMU for its correct execution. A workaround wi
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="glossary.html" title="11. Glossary"
+          <a href="help.html" title="10. Help"
              >next</a> |</li>
         <li class="right" >
-          <a href="notation.html" title="9. Notation"
+          <a href="development.html" title="8. Development"
              >previous</a> |</li>
     <li><a href="http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/index.html">Home</a> |
     <a href="index.html">User Guide</a></li>
