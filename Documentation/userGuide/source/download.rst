@@ -13,7 +13,7 @@ To install EnergyPlusToFMU, follow the section :doc:`installation`.
 Release 2.0.0 (April 14, 2016)
 ------------------------------
 
-Download `EnergyPlusToFMU-2.0.0.zip <http://github.com/lbl-srg/energyplustofmu/releases/2.0.0/EnergyPlusToFMU-2.0.0.zip>`_. 
+Download `EnergyPlusToFMU-v2.0.0.zip <http://github.com/lbl-srg/energyplustofmu/releases/v2.0.0/EnergyPlusToFMU-v2.0.0.zip>`_. 
 
 **Release notes**
 
