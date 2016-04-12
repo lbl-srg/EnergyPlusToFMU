@@ -1,4 +1,4 @@
-# EnergyPlusToFMU - Functional Mock-up Unit Export of EnergyPlus
+# Functional Mock-up Unit Export of EnergyPlus
 
 This is the development site for the EnergyPlusToFMU program.
 
