@@ -2,7 +2,7 @@ Help
 ====
 
 Before submitting a bug report, 
- * Check https://corbu.lbl.gov/trac/fmu/browser/EnergyPlus#export/trunk if the bug is already known. 
+ * Check https://github.com/lbl-srg/energyplustofmu/issues if the bug is already known. 
  * Make sure that it is a bug of the FMU implementation and not a bug of the EnergyPlus model. EnergyPlus bugs should be isolated so that they do not require use of an FMU, and then sent to the EnergyPlus help desk at http://energyplus.helpserve.com/.
  
 When submitting a bug report, please provide:
