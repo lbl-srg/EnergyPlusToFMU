@@ -3,10 +3,10 @@
 Development
 ===========
 
-The development site of this software is at https://corbu.lbl.gov/svn/fmu/EnergyPlus/export/.
+The development site of this software is at https://github.com/lbl-srg/energyplustofmu.
 
-To check out the trunk, type
+To clone the master branch, type
    
-svn checkout https://corbu.lbl.gov/svn/fmu/EnergyPlus/export/trunk/
+git clone https://github.com/lbl-srg/energyplustofmu.git
 
 

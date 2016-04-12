@@ -10,17 +10,16 @@ EnergyPlus version 8.0 or higher as an FMU for co-simulation for Windows 32/64 b
 
 To install EnergyPlusToFMU, follow the section :doc:`installation`. 
 
-Release 2.0.0 (April 04, 2016)
+Release 2.0.0 (April 14, 2016)
 ------------------------------
 
-Download `EnergyPlusToFMU-2.0.0.zip <http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/releases/2.0.0/EnergyPlusToFMU-2.0.0.zip>`_. 
+Download `EnergyPlusToFMU-2.0.0.zip <http://github.com/lbl-srg/energyplustofmu/releases/2.0.0/EnergyPlusToFMU-2.0.0.zip>`_. 
 
 **Release notes**
 
-This version is a major release which supports EnergyPlus 8.5.0 and higher. This version uses the `energyplus` command line interface 
-to call EnergyPlus. Details about the interface can be found at https://github.com/NREL/EnergyPlus/blob/develop/doc/running-energyplus-from-command-line.md.
-As a result, this version might not be compatible with earlier versions of EnergyPlus. This is because legacy EnergyPlus scripts such as `RunEPlus.bat`, and `runenergyplus`,
-which were used in earlier versions of EnergyPlusToFMU, were deprecated as of August 2015.
+* This version is a major release which supports EnergyPlus 8.5.0 and higher. This version uses the `energyplus` command line interface to call EnergyPlus. Details about the interface can be found at https://github.com/NREL/EnergyPlus/blob/develop/doc/running-energyplus-from-command-line.md. As a result, this version might not be compatible with earlier versions of EnergyPlus. This is because legacy EnergyPlus scripts such as `RunEPlus.bat`, and `runenergyplus`, which were used in earlier versions of EnergyPlusToFMU, were deprecated as of August 2015.
+
+* The development site of EnergyPlusToFMU was migrated from svn to github.
 
 Release 1.0.6 (March 09, 2016)
 ------------------------------
