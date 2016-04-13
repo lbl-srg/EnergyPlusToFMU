@@ -64,5 +64,5 @@ print("*********************************************************")
 print("Posting tag to repository.")
 print("*********************************************************")
 
-call(['rsync', archivename, "thierry@simulationresearch.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/releases/" + releasenumber + "/"])
+#call(['rsync', archivename, "thierry@simulationresearch.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/releases/" + #releasenumber + "/"])
 
