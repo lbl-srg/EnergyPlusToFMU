@@ -42,8 +42,8 @@ def zipdir(basedir, archivename):
     with closing(ZipFile(archivename, "w", ZIP_DEFLATED)) as z:
         for root, dirs, files in os.walk(basedir):
             #NOTE: ignore empty directories
-            if '.svn' in dirs:
-                dirs.remove('.svn')
+            if '.git' in dirs:
+                dirs.remove('.git')
             else:
                 for fn in files:
                     absfn = os.path.join(root, fn)
@@ -60,9 +60,9 @@ if __name__ == '__main__':
         releasenumber = sys.argv[2]
         archivename = 'EnergyPlusToFMU-' + releasenumber + '.zip' 
         zipdir(basedir, archivename)
-print("*********************************************************")
-print("Posting tag to repository.")
-print("*********************************************************")
+print("************************************************************")
+print("Create tag for release with version number: " + releasenumber)
+print("************************************************************")
 
 #call(['rsync', archivename, "thierry@simulationresearch.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/releases/" + #releasenumber + "/"])
 
