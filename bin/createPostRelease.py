@@ -44,11 +44,10 @@ def zipdir(basedir, archivename):
             #NOTE: ignore empty directories
             if '.git' in dirs:
                 dirs.remove('.git')
-            else:
-                for fn in files:
-                    absfn = os.path.join(root, fn)
-                    zfn = absfn[len(basedir) + len(os.sep):] 
-                    z.write(absfn, zfn)
+            for fn in files:
+                absfn = os.path.join(root, fn)
+                zfn = absfn[len(basedir) + len(os.sep):] 
+                z.write(absfn, zfn)
 
 if __name__ == '__main__':
     import sys
