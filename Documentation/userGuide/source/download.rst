@@ -13,7 +13,7 @@ To install EnergyPlusToFMU, follow the section :doc:`installation`.
 Release 2.0.0 (April 14, 2016)
 ------------------------------
 
-Download `EnergyPlusToFMU-v2.0.0.zip <http://github.com/lbl-srg/EnergyplusToFMU/releases/v2.0.0/EnergyPlusToFMU-v2.0.0.zip>`_. 
+Download `EnergyPlusToFMU-v2.0.0.zip <https://github.com/lbl-srg/EnergyplusToFMU/releases/v2.0.0/EnergyPlusToFMU-v2.0.0.zip>`_. 
 
 **Release notes**
 
@@ -21,7 +21,7 @@ Download `EnergyPlusToFMU-v2.0.0.zip <http://github.com/lbl-srg/EnergyplusToFMU/
 
   .. note:: As a result, this version might not be compatible with earlier versions of EnergyPlus. This is because legacy EnergyPlus scripts such as `RunEPlus.bat` and `runenergyplus` were deprecated as of August 2015.
 
-* The development site of EnergyPlusToFMU was migrated from svn to `github <http://github.com/lbl-srg/EnergyplusToFMU>`_.
+* The development site of EnergyPlusToFMU was migrated from svn to `github <https://github.com/lbl-srg/EnergyplusToFMU>`_.
 
 Release 1.0.6 (March 09, 2016)
 ------------------------------
