@@ -19,7 +19,7 @@ Download `EnergyPlusToFMU-v2.0.0.zip <http://github.com/lbl-srg/energyplustofmu/
 
 * This version is a major release which supports EnergyPlus 8.5.0 and higher. This version uses the `energyplus` command line interface to call EnergyPlus. Details about the interface can be found at https://github.com/NREL/EnergyPlus/blob/develop/doc/running-energyplus-from-command-line.md. 
 
-  .. note:: As a result, this version might not be compatible with earlier versions of EnergyPlus. This is because legacy EnergyPlus scripts such as `RunEPlus.bat`, and `runenergyplus`, which were used in earlier versions of EnergyPlusToFMU, were deprecated as of August 2015.
+  .. note:: As a result, this version might not be compatible with earlier versions of EnergyPlus. This is because legacy EnergyPlus scripts such as `RunEPlus.bat` and `runenergyplus`, which were used in earlier versions of EnergyPlusToFMU, were deprecated as of August 2015.
 
 * The development site of EnergyPlusToFMU was migrated from svn to `github <http://github.com/lbl-srg/energyplustofmu>`_.
 
