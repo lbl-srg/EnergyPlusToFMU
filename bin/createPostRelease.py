@@ -46,8 +46,7 @@ def zipdir(basedir, archivename):
                 dirs.remove('.git')
             for fn in files:
                 if (fn.endswith('.md')):
-                    absfn = os.path.join(root, fn)
-                    os.remove(absfn)
+                    continue
                 else:
                     absfn = os.path.join(root, fn)
                     zfn = absfn[len(basedir) + len(os.sep):] 
