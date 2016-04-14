@@ -36,21 +36,34 @@ def quitWithError(messageStr, showCmdLine):
 from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
 import os
+import sys
 
 def zipdir(basedir, archivename):
+    n_gits=0
+    n_md=0
     assert os.path.isdir(basedir)
     with closing(ZipFile(archivename, "w", ZIP_DEFLATED)) as z:
         for root, dirs, files in os.walk(basedir):
             #NOTE: ignore empty directories
             if '.git' in dirs:
+                n_gits=n_gits+1
+                print "found .git folder in " + str(dirs)
+                #continue
                 dirs.remove('.git')
             for fn in files:
                 if (fn.endswith('.md')):
+                    absfn = os.path.join(root, fn)
+                    print "found file with extension '.md'. The file is in " + absfn
+                    n_md=n_md+1
                     continue
                 else:
                     absfn = os.path.join(root, fn)
                     zfn = absfn[len(basedir) + len(os.sep):] 
                     z.write(absfn, zfn)
+    if(n_md>1):
+        print "found more than one file (" + str(n_md) + ")" + " with extension .md. Program terminated."
+        sys.exit()
+        
 
 if __name__ == '__main__':
     import sys
