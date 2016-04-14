@@ -62,7 +62,7 @@ python createPostRelease.py folderxx + version number
 
 to create the zip file which contains a folder with the name of the file
 
-Lastlty
+Lastly
 
 In github create a new release which will point to the tag.
 
