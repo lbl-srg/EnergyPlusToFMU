@@ -763,9 +763,17 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &t
 					}
 					// FMU start time
 					double t_start_fmu = 0.0;
+					double t_start_fmuDofW = 0.0;
 					double t_stop_fmu = 86400.0;
+
 					istringstream(tStartFMU) >> t_start_fmu;
 					istringstream(tStopFMU) >> t_stop_fmu;
+
+					// Save original FMU start time to be used to determine the day of the week
+					t_start_fmuDofW = t_start_fmu;
+
+					// Change the start time so we compute the correct time.
+					if (t_start_fmu >= 86400) t_start_fmu = t_start_fmu + 86400;
 
 					// get the start month
 					int begMonth = getCurrentMonth(t_start_fmu, leapYear);
@@ -792,7 +800,7 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &t
 					// get the idf start time in seconds
 					double t_start_idf = getSimTimeSeconds(_runPer_numerics[1], _runPer_numerics[0], 0);
 					char new_day_week[20];
-					int retVal = getCurrentDayOfWeek(t_start_idf, t_start_fmu, _runPer_strings[1], new_day_week);
+					int retVal = getCurrentDayOfWeek(t_start_idf, t_start_fmuDofW, _runPer_strings[1], new_day_week);
 
 					if (_runPer_strings.size() > 6){
 						runPeriod.append(",\n");

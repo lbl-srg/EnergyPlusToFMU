@@ -98,6 +98,19 @@ void findFileDelete()
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// This function calculates the modulo of two doubles. 
+///
+///\param a First input double.
+///\param b Second input double.
+///\return The modulo of two doubles. 
+///////////////////////////////////////////////////////////////////////////////
+static double modulusOp(double a, double b)
+{
+	int result = (int)(a / b);
+	return a - (double)(result)* b;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 /// Replace forward slash with backward slash
 ///
@@ -1110,6 +1123,16 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 			_c->instanceName);
 		return fmiError;
 	}
+
+	// Check the validity of the FMU start and stop time
+	if (modulusOp((_c->tStopFMU - _c->tStartFMU), 86400) != 0){
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInitializeSlave: The delta"
+			" between the FMU stop time %f and the FMU start time %f must be a multiple of 86400."
+			" This is required by EnergyPlus. The current delta is %f. Instantiation of %s failed.\n",
+			_c->tStopFMU, _c->tStartFMU, _c->tStopFMU - _c->tStartFMU, _c->instanceName);
+		return fmiError;
+	}
+
 	sprintf(tStartFMUstr, "%f", _c->tStartFMU);
 	sprintf(tStopFMUstr, "%f", _c->tStopFMU);
 
