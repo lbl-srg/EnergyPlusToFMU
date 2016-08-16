@@ -1315,7 +1315,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	if ( fabs(_c->communicationStepSize - (3600/_c->timeStepIDF)) > 1e-10)
 	{
 		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiDoStep:"
-			" An error occured in a previous call. CommunicationStepSize: %f is different from time step: %d in input file.\n",
+			" An error occured in a previous call. CommunicationStepSize: %f sec is different from time step: %d 1/h in input file.\n",
 			_c->communicationStepSize, _c->timeStepIDF);
 		return fmiError;
 	}
