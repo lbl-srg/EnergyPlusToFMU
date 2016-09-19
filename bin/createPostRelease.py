@@ -60,6 +60,10 @@ def zipdir(basedir, archivename):
                     print "found file with extension '.md'. The file is in " + absfn
                     n_md=n_md+1
                     continue
+                elif (fn.endswith('.pyc')):
+                    absfn = os.path.join(root, fn)
+                    print "found file with extension '.pyc'. The file is in " + absfn
+                    continue
                 else:
                     absfn = os.path.join(root, fn)
                     zfn = absfn[len(basedir) + len(os.sep):] 
