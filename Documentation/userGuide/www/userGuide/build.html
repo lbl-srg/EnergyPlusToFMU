@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.0.0',
+        VERSION:     '2.0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -86,9 +86,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -102,11 +99,11 @@
   <div class="section" id="creating-an-fmu">
 <span id="build"></span><h1>4. Creating an FMU<a class="headerlink" href="#creating-an-fmu" title="Permalink to this headline">¶</a></h1>
 <p>This chapter describes how to create a Functional Mockup Unit, starting from an EnergyPlus IDF file.
-It assumes you have followed the <a class="reference internal" href="installation.html"><em>Installation and Configuration</em></a> instructions, and that you have created an IDF file following the <a class="reference internal" href="bestPractice.html"><em>Best Practice</em></a> guidelines.</p>
+It assumes you have followed the <a class="reference internal" href="installation.html"><span class="doc">Installation and Configuration</span></a> instructions, and that you have created an IDF file following the <a class="reference internal" href="bestPractice.html"><span class="doc">Best Practice</span></a> guidelines.</p>
 <div class="section" id="command-line-use">
 <h2>4.1. Command-line use<a class="headerlink" href="#command-line-use" title="Permalink to this headline">¶</a></h2>
 <p>To create an FMU,
-open a command-line window (see <a class="reference internal" href="notation.html"><em>Notation</em></a>).
+open a command-line window (see <a class="reference internal" href="notation.html"><span class="doc">Notation</span></a>).
 The standard invocation of the EnergyPlusToFMU tool is:</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span>&gt; python  &lt;path-to-scripts-subdir&gt;EnergyPlusToFMU.py  -i &lt;path-to-idd-file&gt;  \
   -w &lt;path-to-weather-file&gt;  &lt;path-to-idf-file&gt;
@@ -122,7 +119,7 @@ The standard invocation of the EnergyPlusToFMU tool is:</p>
 </div>
 <p>where <code class="docutils literal"><span class="pre">scriptDir</span></code> is the path to the scripts directory of EnergyPlusToFMU.
 Typically this is the <code class="docutils literal"><span class="pre">Scripts/</span></code> subdirectory of the installation directory.
-See <a class="reference internal" href="installation.html"><em>Installation and Configuration</em></a> for details.</p>
+See <a class="reference internal" href="installation.html"><span class="doc">Installation and Configuration</span></a> for details.</p>
 <p>All file paths, including those to the weather, IDD, and IDF files, can be absolute or relative.
 For readability, the rest of these instructions omit the paths to the script and input files.</p>
 <div class="admonition note">
@@ -207,7 +204,7 @@ tools, and may be deleted.</p>
 <li>A utility executable <code class="docutils literal"><span class="pre">util-get-address-size.exe</span></code>.
 This program is rebuilt every time you run the EnergyPlusToFMU tools
 (to ensure it uses the most recent compiler/linker batch files, as described
-in <a class="reference internal" href="installation.html"><em>Installation and Configuration</em></a>).</li>
+in <a class="reference internal" href="installation.html"><span class="doc">Installation and Configuration</span></a>).</li>
 <li>Build directories, named like <code class="docutils literal"><span class="pre">bld-*</span></code>.</li>
 <li>A shared library, named like <code class="docutils literal"><span class="pre">*.dll</span></code> or <code class="docutils literal"><span class="pre">*.so</span></code> or <code class="docutils literal"><span class="pre">*.dylib</span></code>,
 depending on the system.</li>
@@ -244,7 +241,7 @@ Otherwise, it should produce an error message, which should also be echoed to an
 It does not attempt to identify modeling errors, or problems in IDF sections that do not relate to the FMU.
 Therefore EnergyPlus may fail to run an IDF file, even if the export-preparation application handles it successfully.</p>
 <p>If you do not find the export-preparation application in your working directory, then EnergyPlusToFMU did not advance to creating the application.
-Therefore you should check the configuration, according to the instructions in <a class="reference internal" href="installation.html"><em>Installation and Configuration</em></a>.</p>
+Therefore you should check the configuration, according to the instructions in <a class="reference internal" href="installation.html"><span class="doc">Installation and Configuration</span></a>.</p>
 <p>If the export-preparation application runs, then try turning on option <code class="docutils literal"><span class="pre">-d</span></code> when running <code class="docutils literal"><span class="pre">EnergyPlusToFMU.py</span></code>.
 By announcing each major step before it is taken, this option helps to localize the problem.</p>
 </div>
@@ -278,7 +275,7 @@ By announcing each major step before it is taken, this option helps to localize 
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2013-2016, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

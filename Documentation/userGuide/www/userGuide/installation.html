@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.0.0',
+        VERSION:     '2.0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -96,9 +96,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -131,7 +128,7 @@
 <span id="id1"></span><h2>3.2. Installation<a class="headerlink" href="#installation-directory" title="Permalink to this headline">¶</a></h2>
 <p>To install EnergyPlusToFMU, proceed as follows:</p>
 <ol class="arabic simple">
-<li>Download the installation file from the <a class="reference internal" href="download.html"><em>Download</em></a> page.</li>
+<li>Download the installation file from the <a class="reference internal" href="download.html"><span class="doc">Download</span></a> page.</li>
 <li>Unzip the installation file into any subdirectory (hereafter referred to as the &#8220;installation directory&#8221;).</li>
 </ol>
 <p>The installation directory should contain the following subdirectories:</p>
@@ -160,7 +157,7 @@
 <div class="section" id="configuration">
 <h2>3.3. Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
 <p>EnergyPlusToFMU comes pre-configured to handle the most common system configurations.
-Usually, you can simply create an FMU, as described in <a class="reference internal" href="build.html"><em>Creating an FMU</em></a>, and everything will work.</p>
+Usually, you can simply create an FMU, as described in <a class="reference internal" href="build.html"><span class="doc">Creating an FMU</span></a>, and everything will work.</p>
 <p>The remainder of this section provides tips for configuring EnergyPlusToFMU to match your particular system and needs.
 This may be needed in case problems arise.
 In addition, you may wish to reconfigure EnergyPlusToFMU, for example to optimize the FMU code, or to change the memory model under which it runs.</p>
@@ -251,7 +248,7 @@ Once these batch files work, it should not be difficult to make the other compil
 <p>The batch file <code class="docutils literal"><span class="pre">test-c-exe.bat</span></code> runs the appropriate compiler and linker batch files, and tests the resulting executable.
 It reports its progress, and so should give information as to where problems occur, if any.</p>
 <p>To run the basic test,
-open a command-line window (see <a class="reference internal" href="notation.html"><em>Notation</em></a>).
+open a command-line window (see <a class="reference internal" href="notation.html"><span class="doc">Notation</span></a>).
 Next, change to the appropriate batch file directory, and run the test batch file.</p>
 <p>A sample session at the Windows DOS prompt:</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span># Change to the batch file directory.
@@ -320,7 +317,7 @@ A later section describes <a class="reference internal" href="#checking-link-c-e
 Once these batch files work, it should not be difficult to make the other compiler and linker batch files work.</p>
 <p>The check is to build and then run one of the EnergyPlusToFMU supporting applications.
 If the application builds and runs correctly, it reports whether your compiler generates 32-bit or 64-bit executables.</p>
-<p>To check the compiler batch file, open a command-line window (see <a class="reference internal" href="notation.html"><em>Notation</em></a>).
+<p>To check the compiler batch file, open a command-line window (see <a class="reference internal" href="notation.html"><span class="doc">Notation</span></a>).
 Next, change to the appropriate batch file directory, and run the compiler batch file.
 The compiler should produce an object file in the same directory.</p>
 <p>A sample session at the Windows DOS prompt:</p>
@@ -584,7 +581,7 @@ Furthermore, the order in which libraries are linked can matter, and you may nee
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2013-2016, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>
