@@ -398,7 +398,7 @@ static int getMonth(int time_s, int leapyear){
 		}
 		//if the time is larger than a year
 		else{
-			cout << "Time set is larger than maximum allowed (365 days)."
+			cout << "Time (" << time_s << ") set is larger than maximum allowed (365 days)."
 				" Month will be set to 12." << endl;
 			month = 12;
 		}
@@ -443,7 +443,7 @@ static int getMonth(int time_s, int leapyear){
 		}
 		//if the time is larger than a year
 		else{
-			cout << "Time set is larger than maximum allowed (366 days)."
+			cout << "Time (" << time_s << ") set is larger than maximum allowed (366 days)."
 				" Month will be set to 12." << endl;
 			month = 12;
 		}
@@ -481,7 +481,7 @@ static int getCurrentDay(double time_s, int month, int leapyear){
 
 	num_days = getNumDays(month, leapyear);
 	if ((time_s == 0) || (int)(time_s / 86400)< 1){
-		cout << "Time set is smaller than minimun allowed (1 day)."
+		cout << "Time (" << time_s << ") set is smaller than minimun allowed (1 day)."
 			" Day will be set to 1." << endl;
 		day = 1;
 	}
@@ -494,7 +494,7 @@ static int getCurrentDay(double time_s, int month, int leapyear){
 			else{
 				if (time_s > tmp)
 				{
-					cout << "Time set is larger than maximum allowed (365 days)."
+					cout << "Time (" << time_s << ") set is larger than maximum allowed (365 days)."
 						" Day will be set to 31." << endl;
 					day = 31;
 				}
@@ -511,7 +511,7 @@ static int getCurrentDay(double time_s, int month, int leapyear){
 			else{
 				if (time_s > tmpp)
 				{
-					cout << "Time set is larger than maximum allowed (366 days)."
+					cout << "Time (" << time_s << ") set is larger than maximum allowed (366 days)."
 						" Day will be set to 31." << endl;
 					day = 31;
 				}
@@ -781,11 +781,15 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &t
 					runPeriod.append(valueStr);
 					runPeriod.append(",\n");
 
+					cout << "This is the Begin Month: " << begMonth << endl;
+	
 					// get the day of the month 
 					int begDayMonth = getCurrentDay(t_start_fmu, begMonth, leapYear);
 					snprintf(valueStr, HS_MAX, "%d", begDayMonth);
 					runPeriod.append(valueStr);
 					runPeriod.append(",\n");
+
+					cout << "This is the Day of the Begin Month: " << begDayMonth << endl;
 
 					// get the end month
 					int endMonth = getCurrentMonth(t_stop_fmu, leapYear);
@@ -793,14 +797,21 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &t
 					runPeriod.append(valueStr);
 					runPeriod.append(",\n");
 
+					cout << "This is the End Month: " << endMonth << endl;
+
 					// get the day of the month
-					int endDayMonth = getCurrentDay(t_stop_fmu, begMonth, leapYear);
+					int endDayMonth = getCurrentDay(t_stop_fmu, endMonth, leapYear);
 					snprintf(valueStr, HS_MAX, "%d", endDayMonth);
 					runPeriod.append(valueStr);
+
+					cout << "This is the Day of the End Month: " << endDayMonth << endl;
+
 					// get the idf start time in seconds
 					double t_start_idf = getSimTimeSeconds(_runPer_numerics[1], _runPer_numerics[0], 0);
 					char new_day_week[20];
 					int retVal = getCurrentDayOfWeek(t_start_idf, t_start_fmuDofW, _runPer_strings[1], new_day_week);
+
+					cout << "This is the New Day of Week: " << new_day_week << endl;
 
 					if (_runPer_strings.size() > 6){
 						runPeriod.append(",\n");
