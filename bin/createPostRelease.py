@@ -45,6 +45,10 @@ def zipdir(basedir, archivename):
     with closing(ZipFile(archivename, "w", ZIP_DEFLATED)) as z:
         for root, dirs, files in os.walk(basedir):
             #NOTE: ignore empty directories
+            if 'bin' in dirs:
+                print "found bin folder in " + str(dirs)
+                #continue
+                dirs.remove('bin')
             if '.git' in dirs:
                 n_gits=n_gits+1
                 print "found .git folder in " + str(dirs)
