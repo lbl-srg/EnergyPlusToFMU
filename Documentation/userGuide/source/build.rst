@@ -26,10 +26,10 @@ For example:
 .. code-block:: none
 
   # Windows:
-  > python  scriptDir\EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  test.epw  test.idf
+  > python  scriptDir\EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  -w test.epw  test.idf
 
   # Linux, MacOS:
-  > python  scriptDir/EnergyPlusToFMU.py  -i ~/eplus/Energy+.idd  test.epw  test.idf
+  > python  scriptDir/EnergyPlusToFMU.py  -i ~/eplus/Energy+.idd  -w test.epw  test.idf
 
 where ``scriptDir`` is the path to the scripts directory of EnergyPlusToFMU.
 Typically this is the ``Scripts/`` subdirectory of the installation directory.
