@@ -580,6 +580,7 @@ static int getCurrentDayOfWeek(double t_start_idf, double t_start_fmu,
 		{
 			change=0;
 			cout << "Day of week: UseWeatherFile has been specified and will be used." << endl;
+            sprintf(new_day_week, "%s", "USEWEATHERFILE");
 			return 0;
 		}
 		else
