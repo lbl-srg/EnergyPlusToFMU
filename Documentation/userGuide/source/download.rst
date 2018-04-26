@@ -11,13 +11,13 @@ EnergyPlus version 8.0 or higher as an FMU for co-simulation for Windows 32/64 b
 To install EnergyPlusToFMU, follow the section :doc:`installation`. 
 
 Release 2.0.3 (April 26, 2018)
-----------------------------------
+------------------------------
 
 Download `EnergyPlusToFMU-v2.0.3.zip <https://github.com/lbl-srg/EnergyplusToFMU/releases/download/v2.0.3/EnergyPlusToFMU-v2.0.3.zip>`_. 
 
 **Release notes**
 
-This version includes enhancements to support the use of EnergyPlus FMU with toolboxes such as `MPCPy <https://github.com/lbl-srg/MPCPy`_. 
+This version includes enhancements to support the use of EnergyPlus FMU with toolboxes such as `MPCPy <https://github.com/lbl-srg/MPCPy>`_. 
 
 Release 2.0.2 (September 19, 2016)
 ----------------------------------
