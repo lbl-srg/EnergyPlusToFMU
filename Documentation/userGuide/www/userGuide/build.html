@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>4. Creating an FMU &mdash; FMU Export of EnergyPlus User Guide</title>
+    <title>4. Creating an FMU &#8212; FMU Export of EnergyPlus User Guide</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,17 +14,19 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.0.2',
+        VERSION:     '2.0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="FMU Export of EnergyPlus User Guide" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="5. Usage of EnergyPlus as an FMU" href="usage.html" />
     <link rel="prev" title="3. Installation and Configuration" href="installation.html" /> 
   </head>
@@ -49,7 +51,7 @@
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
@@ -74,15 +76,15 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/build.txt"
+      <li><a href="_sources/build.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -105,16 +107,16 @@ It assumes you have followed the <a class="reference internal" href="installatio
 <p>To create an FMU,
 open a command-line window (see <a class="reference internal" href="notation.html"><span class="doc">Notation</span></a>).
 The standard invocation of the EnergyPlusToFMU tool is:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>&gt; python  &lt;path-to-scripts-subdir&gt;EnergyPlusToFMU.py  -i &lt;path-to-idd-file&gt;  \
+<div class="highlight-none"><div class="highlight"><pre>&gt; python  &lt;path-to-scripts-subdir&gt;EnergyPlusToFMU.py  -i &lt;path-to-idd-file&gt;  \
   -w &lt;path-to-weather-file&gt;  &lt;path-to-idf-file&gt;
 </pre></div>
 </div>
 <p>For example:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Windows:
-&gt; python  scriptDir\EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  test.epw  test.idf
+<div class="highlight-none"><div class="highlight"><pre># Windows:
+&gt; python  scriptDir\EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  -w test.epw  test.idf
 
 # Linux, MacOS:
-&gt; python  scriptDir/EnergyPlusToFMU.py  -i ~/eplus/Energy+.idd  test.epw  test.idf
+&gt; python  scriptDir/EnergyPlusToFMU.py  -i ~/eplus/Energy+.idd  -w test.epw  test.idf
 </pre></div>
 </div>
 <p>where <code class="docutils literal"><span class="pre">scriptDir</span></code> is the path to the scripts directory of EnergyPlusToFMU.
@@ -164,7 +166,7 @@ This option lets you inspect intermediate output.</td>
 However, all must appear before the name of the IDF file.
 For repeated switches such as <code class="docutils literal"><span class="pre">-i</span></code> or <code class="docutils literal"><span class="pre">-w</span></code>, the last one specified will be used.</p>
 <p>For example:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Windows:
+<div class="highlight-none"><div class="highlight"><pre># Windows:
 &gt; python  EnergyPlusToFMU.py  -d  -i C:\eplus\Energy+.idd  test.idf
 </pre></div>
 </div>
@@ -223,7 +225,7 @@ If you do not get an FMU, there will be some error output, indicating the nature
 If not, consider the following hints.</p>
 <p>If you have successfully made an FMU in the past, the problem is most likely with your IDF file.
 Try running the export-preparation application directly on your IDF file:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Windows:
+<div class="highlight-none"><div class="highlight"><pre># Windows:
 &gt; idf-to-fmu-export-prep-win.exe  Energy+.idd  test.idf
 
 # Linux:
@@ -269,13 +271,13 @@ By announcing each major step before it is taken, this option helps to localize 
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2013-2016, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright 2013-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>

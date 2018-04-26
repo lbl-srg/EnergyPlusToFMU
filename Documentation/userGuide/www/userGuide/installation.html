@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3. Installation and Configuration &mdash; FMU Export of EnergyPlus User Guide</title>
+    <title>3. Installation and Configuration &#8212; FMU Export of EnergyPlus User Guide</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,17 +14,19 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.0.2',
+        VERSION:     '2.0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="FMU Export of EnergyPlus User Guide" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="4. Creating an FMU" href="build.html" />
     <link rel="prev" title="2. Download" href="download.html" /> 
   </head>
@@ -49,7 +51,7 @@
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
@@ -84,15 +86,15 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/installation.txt"
+      <li><a href="_sources/installation.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -251,7 +253,7 @@ It reports its progress, and so should give information as to where problems occ
 open a command-line window (see <a class="reference internal" href="notation.html"><span class="doc">Notation</span></a>).
 Next, change to the appropriate batch file directory, and run the test batch file.</p>
 <p>A sample session at the Windows DOS prompt:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Change to the batch file directory.
+<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
 &gt; cd  epfmu_install_dir\Scripts\win
 
 # Run the batch file.
@@ -269,7 +271,7 @@ get-address-size.c
 </pre></div>
 </div>
 <p>A sample session in a Linux command shell:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Change to the batch file directory.
+<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
 &gt; cd  epfmu_install_dir/Scripts/linux
 
 # Run the batch file.
@@ -287,7 +289,7 @@ get-address-size.c
 </pre></div>
 </div>
 <p>A sample session in a MacOS Terminal window:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Change to the batch file directory.
+<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
 &gt; cd  epfmu_install_dir/Scripts/darwin
 
 # Run the batch file.
@@ -321,7 +323,7 @@ If the application builds and runs correctly, it reports whether your compiler g
 Next, change to the appropriate batch file directory, and run the compiler batch file.
 The compiler should produce an object file in the same directory.</p>
 <p>A sample session at the Windows DOS prompt:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Change to the batch file directory.
+<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
 &gt; cd  epfmu_install_dir\Scripts\win
 
 # Run the batch file.
@@ -333,7 +335,7 @@ get-address-size.obj
 </pre></div>
 </div>
 <p>A sample session in a Linux command shell:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Change to the batch file directory.
+<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
 &gt; cd  epfmu_install_dir/Scripts/linux
 
 # Run the batch file.
@@ -346,7 +348,7 @@ get-address-size.o
 </pre></div>
 </div>
 <p>A sample session in MacOS Terminal:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Change to the batch file directory.
+<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
 &gt; cd  epfmu_install_dir/Scripts/darwin
 
 # Run the batch file.
@@ -397,7 +399,7 @@ See the sample batch files in the standard distribution.</li>
 <p>Working in the same subdirectory where you built the object file, run the linker batch file.
 In response, the linker should produce an executable, called <code class="docutils literal"><span class="pre">test.exe</span></code>, which you should be able to run.</p>
 <p>A sample session at the Windows DOS prompt:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Run the batch file.
+<div class="highlight-none"><div class="highlight"><pre># Run the batch file.
 &gt; link-c-exe.bat  test.exe  get-address-size.obj
 
 # Check the executable.
@@ -410,7 +412,7 @@ test.exe
 </pre></div>
 </div>
 <p>A sample session for both a Linux command shell and MacOS Terminal:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Run the batch file.
+<div class="highlight-none"><div class="highlight"><pre># Run the batch file.
 # Note the &quot;./&quot; before the batch file name.
 &gt; ./link-c-exe.sh  test.exe  get-address-size.o
 
@@ -475,14 +477,14 @@ Therefore if you are having problems compiling a source code file with a provide
 <p>Unix-like environments often define <code class="docutils literal"><span class="pre">cc</span></code> as a link to the standard C compiler, and <code class="docutils literal"><span class="pre">c++</span></code> as a link to the standard C++ compiler.</p>
 <p>If you have a standard compiler on your search path, the <code class="docutils literal"><span class="pre">which</span></code> command will locate it.
 For example, entering the command:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>&gt; which gcc
+<div class="highlight-none"><div class="highlight"><pre>&gt; which gcc
 </pre></div>
 </div>
 <p>will return the path to the <code class="docutils literal"><span class="pre">gcc</span></code> compiler, provided your system has it, and provided it is on the search path.
 Otherwise, <code class="docutils literal"><span class="pre">which</span> <span class="pre">gcc</span></code> will return nothing.</p>
 <p>If you believe you have a certain compiler, but cannot find it on your search path, try the <code class="docutils literal"><span class="pre">find</span></code> command.
 For example, to locate the <code class="docutils literal"><span class="pre">icc</span></code> compiler, try:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>&gt; find /usr -name icc
+<div class="highlight-none"><div class="highlight"><pre>&gt; find /usr -name icc
 &gt; find /bin -name icc
 &gt; find /opt -name icc
 &gt; find / -name icc
@@ -493,12 +495,12 @@ The last command searches the entire directory tree (and may take quite a while)
 <p>The <code class="docutils literal"><span class="pre">find</span></code> command accepts wildcards.
 Put them in quote marks, in order to prevent the shell from operating on the wildcard.
 For example:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>&gt; find /usr -name &quot;*icc*&quot;
+<div class="highlight-none"><div class="highlight"><pre>&gt; find /usr -name &quot;*icc*&quot;
 </pre></div>
 </div>
 <p>searches the <code class="docutils literal"><span class="pre">/usr</span></code> directory for any file whose name contains the string <code class="docutils literal"><span class="pre">icc</span></code>.</p>
 <p>Finally, the <code class="docutils literal"><span class="pre">apropos</span></code> command may help:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>&gt; apropos compiler
+<div class="highlight-none"><div class="highlight"><pre>&gt; apropos compiler
 </pre></div>
 </div>
 <p>will search your help files for information pertaining to compilers.
@@ -509,7 +511,7 @@ Unfortunately, it may return many entries unrelated to compiling C and C++ sourc
 <p>Permissions problems arise on Unix-like systems.
 The batch files must have &#8220;execute&#8221; permission, meaning you are allowed to run the file as a set of commands.
 To check the permissions:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Linux, MacOS:
+<div class="highlight-none"><div class="highlight"><pre># Linux, MacOS:
 &gt; ls -lt  *.sh
 -rwxr--r--  ...  link-c-lib.sh
 -rwxr--r--  ...  link-c-exe.sh
@@ -520,7 +522,7 @@ To check the permissions:</p>
 </div>
 <p>All five of the default batch files should have &#8220;<code class="docutils literal"><span class="pre">-rwx</span></code>&#8221; at the beginning of the permissions block (indicating you are allowed to read, write, and execute the file).
 If not, then set the permissions:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span># Linux, MacOS:
+<div class="highlight-none"><div class="highlight"><pre># Linux, MacOS:
 &gt; chmod  u=rwx,g=r,o=r  *.sh
 </pre></div>
 </div>
@@ -575,13 +577,13 @@ Furthermore, the order in which libraries are linked can matter, and you may nee
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2013-2016, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright 2013-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>7. Best Practice &mdash; FMU Export of EnergyPlus User Guide</title>
+    <title>7. Best Practice &#8212; FMU Export of EnergyPlus User Guide</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,17 +14,19 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.0.2',
+        VERSION:     '2.0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="FMU Export of EnergyPlus User Guide" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="8. Development" href="development.html" />
     <link rel="prev" title="6. Mathematical Description" href="mathematics.html" /> 
   </head>
@@ -49,7 +51,7 @@
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
@@ -74,15 +76,15 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/bestPractice.txt"
+      <li><a href="_sources/bestPractice.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -129,14 +131,14 @@ time schedule, whereas the output of the FMU will read the room dry-bulb tempera
 <p>The code below shows how to declare these objects in the IDF.
 To activate the external interface, we use:</p>
 <blockquote>
-<div><div class="highlight-text"><div class="highlight"><pre><span></span>ExternalInterface,           !- Object to activate external interface
+<div><div class="highlight-text"><div class="highlight"><pre>ExternalInterface,           !- Object to activate external interface
 FunctionalMockupUnitExport;  !- Name of external interface
 </pre></div>
 </div>
 </div></blockquote>
 <p>To define the input of the FMU, we use:</p>
 <blockquote>
-<div><div class="highlight-text"><div class="highlight"><pre><span></span>ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
+<div><div class="highlight-text"><div class="highlight"><pre>ExternalInterface:FunctionalMockupUnitExport:To:Schedule,
 FMU_OthEqu_ZoneOne,      !- Name
 Any Number,              !- Schedule Type Limits Names
 Q,                       !- FMU Variable Name
@@ -146,7 +148,7 @@ Q,                       !- FMU Variable Name
 </div></blockquote>
 <p>To define the output of the FMU, we use:</p>
 <blockquote>
-<div><div class="highlight-text"><div class="highlight"><pre><span></span>ExternalInterface: FunctionalMockupUnitExport:From:Variable,
+<div><div class="highlight-text"><div class="highlight"><pre>ExternalInterface: FunctionalMockupUnitExport:From:Variable,
 ZONE ONE,                  !- Output:Variable Index Key Name
 Zone Mean Air Temperature, !- Output:Variable Name
 TRooMea;                   !- FMU Variable Name
@@ -157,7 +159,7 @@ TRooMea;                   !- FMU Variable Name
 EnergyPlus output variable which corresponds to the FMU output needs
 to be specified in the IDF file:</p>
 <blockquote>
-<div><div class="highlight-text"><div class="highlight"><pre><span></span>Output:Variable,
+<div><div class="highlight-text"><div class="highlight"><pre>Output:Variable,
 ZONE ONE,                    !- Key Value
 Zone Mean Air Temperature,   !- Variable Name
 TimeStep;                    !- Reporting Frequency
@@ -184,14 +186,14 @@ whereas the outputs will read the outside temperature <code class="docutils lite
 <p>The code below shows how to declare these objects in the IDF.
 To activate the external interface, we use:</p>
 <blockquote>
-<div><div class="highlight-text"><div class="highlight"><pre><span></span>ExternalInterface,           !- Object to activate external interface
+<div><div class="highlight-text"><div class="highlight"><pre>ExternalInterface,           !- Object to activate external interface
 FunctionalMockupUnitExport;  !- Name of external interface
 </pre></div>
 </div>
 </div></blockquote>
 <p>To define the input of the FMU, we use:</p>
 <blockquote>
-<div><div class="highlight-text"><div class="highlight"><pre><span></span>ExternalInterface:FunctionalMockupUnitExport:To:Actuator,
+<div><div class="highlight-text"><div class="highlight"><pre>ExternalInterface:FunctionalMockupUnitExport:To:Actuator,
 Zn001_Wall001_Win001_Shading_Deploy_Status,  !- Name
 Zn001:Wall001:Win001,                        !- Actuated Component Unique Name
 Window Shading Control,                      !- Actuated Component Type
@@ -203,7 +205,7 @@ yShade,                                      !- FMU Variable Name
 </div></blockquote>
 <p>To define the outputs of the FMU, we use:</p>
 <blockquote>
-<div><div class="highlight-text"><div class="highlight"><pre><span></span>ExternalInterface:FunctionalMockupUnitExport:From:Variable,
+<div><div class="highlight-text"><div class="highlight"><pre>ExternalInterface:FunctionalMockupUnitExport:From:Variable,
 WEST ZONE,                                   !- Output:Variable Index Key Name
 Zone Mean Air Temperature,                   !- Output:Variable Name
 TRoo;                                        !- FMU Variable Name
@@ -219,7 +221,7 @@ ISolExt;                                                     !- FMU Variable Nam
 EnergyPlus output variables which correspond to the FMU outputs need
 to be specified in the IDF file:</p>
 <blockquote>
-<div><div class="highlight-text"><div class="highlight"><pre><span></span>Output:Variable,
+<div><div class="highlight-text"><div class="highlight"><pre>Output:Variable,
 Zn001:Wall001:Win001,                                         !- Key Value
 Surface Outside Face Incident Solar Radiation Rate per Area,  !- Variable Name
 TimeStep;                                                     !- Reporting Frequency
@@ -246,7 +248,7 @@ difference being that the shading actuation signal will be written to an EMS var
 <code class="docutils literal"><span class="pre">yShade</span></code> that can be used in an EMS program.</p>
 <p>To define the input of the FMU, we use:</p>
 <blockquote>
-<div><div class="highlight-text"><div class="highlight"><pre><span></span>ExternalInterface:FunctionalMockupUnitExport:To:Variable,
+<div><div class="highlight-text"><div class="highlight"><pre>ExternalInterface:FunctionalMockupUnitExport:To:Variable,
 yShade,                  !- Name
 yShadeFMU,               !- FMU Variable Name
 6;                       !- Initial Value
@@ -281,13 +283,13 @@ yShadeFMU,               !- FMU Variable Name
     <a href="index.html">User Guide</a></li>
     </br>
 <!--    
-        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &raquo;</li> -->
+        <li class="nav-item nav-item-0"><a href="index.html">FMU Export of EnergyPlus User Guide</a> &#187;</li> -->
  
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2013-2016, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright 2013-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>
