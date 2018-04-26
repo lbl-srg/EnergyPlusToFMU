@@ -976,10 +976,10 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	_c->numOutVar=-1;
 
 	if (StopTimeDefined==fmiFalse){
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", 
-			"fmiInitializeSlave: The StopTimeDefined is set to %d. This is not valid."
-                        " EnergyPlus FMu requires a stop time\n", StopTimeDefined);
-		return fmiError;
+		_c->functions.logger(NULL, _c->instanceName, fmiWarning, "warning", 
+			"fmiInitializeSlave: The StopTimeDefined parameter is set to %d. This is not valid."
+                        " EnergyPlus FMU requires a stop time and will use the stop time %f which is provided.\n", 
+                        StopTimeDefined, tStop);
 	}
 
 	// change the directory to make sure that FMUs are not overwritten
@@ -1951,7 +1951,7 @@ DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, f
 Copyright Notice
 ----------------
 
-Functional Mock-up Unit Export of EnergyPlus ©2013, The Regents of 
+Functional Mock-up Unit Export of EnergyPlus \A92013, The Regents of 
 the University of California, through Lawrence Berkeley National 
 Laboratory (subject to receipt of any required approvals from 
 the U.S. Department of Energy). All rights reserved.
