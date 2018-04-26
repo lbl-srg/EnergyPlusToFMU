@@ -975,6 +975,13 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	_c->numInVar =-1;
 	_c->numOutVar=-1;
 
+	if (StopTimeDefined==fmiFalse){
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", 
+			"fmiInitializeSlave: The StopTimeDefined is set to %d. This is not valid."
+                        " EnergyPlus FMu requires a stop time\n", StopTimeDefined);
+		return fmiError;
+	}
+
 	// change the directory to make sure that FMUs are not overwritten
 #ifdef _MSC_VER
 	retVal=_chdir(_c->fmuOutput);
@@ -1449,7 +1456,7 @@ DllExport fmiStatus fmiResetSlave(fmiComponent c)
 	ModelInstance* _c=(ModelInstance *)c;
 	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiResetSlave: fmiResetSlave:: is not provided.\n");
-	return fmiWarning;
+	return fmiOK;
 }
 
 ////////////////////////////////////////////////////////////////
