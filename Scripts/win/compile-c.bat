@@ -27,7 +27,7 @@ IF "%DevEnvDir%"=="" (
 
 ::--- Check command-line arguments.
 ::
-IF "%1"=="" (
+IF -%1-==-- (
   ECHO Error: compiler batch file requires one command-line argument
   GOTO done
   )
