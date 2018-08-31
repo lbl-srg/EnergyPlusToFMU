@@ -28,7 +28,7 @@ IF "%DevEnvDir%"=="" (
 
 ::--- Get command-line argument giving {outputName}.
 ::
-IF "%1"=="" (
+IF -%1-==-- (
   ECHO Error: linker batch file requires first command-line argument naming output executable
   GOTO done
   )
@@ -42,7 +42,7 @@ SHIFT
 
 ::--- Get command-line arguments giving object file names.
 ::
-IF "%1"=="" (
+IF -%1-==-- (
   ECHO Error: linker batch file requires command-line arguments listing object files
   GOTO done
   )
@@ -53,7 +53,7 @@ SET objList=%1
 :: Here, assume have just added %1 to {objList}.
 :addNextObjFile
 SHIFT
-IF "%1"=="" (
+IF -%1-==-- (
   GOTO noMoreObjFiles
   )
 SET objList=%objList% %1
