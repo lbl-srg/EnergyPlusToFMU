@@ -55,9 +55,9 @@ public:
   //
   /// \param frIdf IDF-file reader, configured to read from EnergyPlus Input Data File of interest.
   /// \param leapYear 1 if leap year 0 else.
-  /// \param timeStep The eimstep extracted from the IDF file.
+  /// \param idfVer The IDF version extracted from the IDF file.
   /// \return 0 on success; or IDF line number where encountered a problem.
-  int writeInputFile(fileReaderData& frIdf, int leapYear, int &tStep, string tStartFMU, string tStopFMU);
+  int writeInputFile(fileReaderData& frIdf, int leapYear, int idfVer, string tStartFMU, string tStopFMU);
 
   /// Read Weather file, collecting data needed to export an EnergyPlus simulation as an FMU.
   //
@@ -70,6 +70,12 @@ public:
   /// \param frIdf Input-file reader, configured to read from EnergyPlus Weather Data File of interest.
   /// \return 0 on success; or IDF line number where encountered a problem.
   int getTimeStep(fileReaderData& frIdf);
+
+  /// Read IDF file and get IDF version, collecting data needed to export an EnergyPlus simulation as an FMU.
+  //
+  /// \param frIdf Input-file reader, configured to read from EnergyPlus Weather Data File of interest.
+  /// \return 0 on success; or IDF line number where encountered a problem.
+  int getIDFVersion(fileReaderData& frIdf, int &idfVersion);
 
   /// Check have a complete set of data.
   bool check(void);
@@ -119,7 +125,7 @@ private:
   void handleKey_extInt_fmuExport_toSched(fileReaderData& frIdf);
   void handleKey_extInt_fmuExport_fromVar(fileReaderData& frIdf);
   void handleKey_extInt_fmuExport_toVar(fileReaderData& frIdf);
-  void handleKey_runPer(fileReaderData& frIdf);
+  void handleKey_runPer(fileReaderData& frIdf, int idfVer);
   //int handleKey_timeStep(fileReaderData& frIdf);
 
 };

@@ -42,7 +42,12 @@ const string g_key_output = "OUTPUT:";
 
 // Expected keywords and dictionary descriptors.
 const string g_key_runPer = "RUNPERIOD";
-const string g_desc_runPer = "ANNNNAAAAAANAN";
+
+// Expected keywords and dictionary descriptors.
+const string g_key_idfVer = "VERSION";
+const string g_desc_idfVer = "A";
+
+//'ANNNNNNAAAAAAA', but expecting 'ANNNNAAAAAANAN'
 
 // Expected keywords and dictionary descriptors.
 const string g_key_leapYear = "HOLIDAYS/DAYLIGHT SAVINGS";
@@ -120,7 +125,8 @@ bool fmuExportIdfData::haveValidIDD(const iddMap& idd, string& errStr) const
   //
   return(
 	//0== iddMap_compareEntry(idd, g_key_timeStep, g_desc_timeStep, errStr) &&
-	0== iddMap_compareEntry(idd, g_key_runPer, g_desc_runPer, errStr) &&
+	// We do not check the Runperiod at this point since the descriptor depends on the version 
+	//0== iddMap_compareEntry(idd, g_key_runPer, g_desc_runPer, errStr) &&
     0==iddMap_compareEntry(idd, g_key_extInt, g_desc_extInt, errStr) &&
     0==iddMap_compareEntry(idd, g_key_extInt_fmuExport_toActuator, g_desc_extInt_fmuExport_toActuator, errStr) &&
     0==iddMap_compareEntry(idd, g_key_extInt_fmuExport_toSched, g_desc_extInt_fmuExport_toSched, errStr) &&
@@ -701,7 +707,7 @@ int fmuExportIdfData::populateFromIDF(fileReaderData& frIdf)
 
 //--- Read IDF file, collecting data needed to run an EnergyPlus simulation as an FMU.
 //
-int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &tStepVal, string tStartFMU, string tStopFMU)
+int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int idfVer, string tStartFMU, string tStopFMU)
 {
 	//
 	int lineNo;
@@ -756,98 +762,241 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int &t
 		else if ((0 == g_key_runPer.compare(inputKey)) && !(inputKey.find(g_key_output) != string::npos)){
 				nRunPer++;
 				if (nRunPer < 2){
-					handleKey_runPer(frIdf);
-					std::string runPeriod("RUNPERIOD, \n");
-					if (_runPer_strings.size() > 1){
-						runPeriod.append(_runPer_strings[0]);
-						runPeriod.append(",\n");
-					}
 					// FMU start time
 					double t_start_fmu = 0.0;
 					double t_start_fmuDofW = 0.0;
 					double t_stop_fmu = 86400.0;
+					if (idfVer < 9) {
+						// g_desc_runPer_idf = "ANNNNAAAAAANAN";
+						handleKey_runPer(frIdf, idfVer);
+						std::string runPeriod("RUNPERIOD, \n");
+						if (_runPer_strings.size() > 1) {
+							runPeriod.append(_runPer_strings[0]);
+							runPeriod.append(",\n");
+						}
 
-					istringstream(tStartFMU) >> t_start_fmu;
-					istringstream(tStopFMU) >> t_stop_fmu;
+						istringstream(tStartFMU) >> t_start_fmu;
+						istringstream(tStopFMU) >> t_stop_fmu;
 
-					// Save original FMU start time to be used to determine the day of the week
-					t_start_fmuDofW = t_start_fmu;
+						// Save original FMU start time to be used to determine the day of the week
+						t_start_fmuDofW = t_start_fmu;
 
-					// Change the start time so we compute the correct time.
-					if (t_start_fmu >= 86400) t_start_fmu = t_start_fmu + 86400;
+						// Change the start time so we compute the correct time.
+						if (t_start_fmu >= 86400) t_start_fmu = t_start_fmu + 86400;
 
-					// get the start month
-					int begMonth = getCurrentMonth(t_start_fmu, leapYear);
-					snprintf(valueStr, HS_MAX, "%d", begMonth);
-					runPeriod.append(valueStr);
-					runPeriod.append(",\n");
-
-					cout << "This is the Begin Month: " << begMonth << endl;
-	
-					// get the day of the month 
-					int begDayMonth = getCurrentDay(t_start_fmu, begMonth, leapYear);
-					snprintf(valueStr, HS_MAX, "%d", begDayMonth);
-					runPeriod.append(valueStr);
-					runPeriod.append(",\n");
-
-					cout << "This is the Day of the Begin Month: " << begDayMonth << endl;
-
-					// get the end month
-					int endMonth = getCurrentMonth(t_stop_fmu, leapYear);
-					snprintf(valueStr, HS_MAX, "%d", endMonth);
-					runPeriod.append(valueStr);
-					runPeriod.append(",\n");
-
-					cout << "This is the End Month: " << endMonth << endl;
-
-					// get the day of the month
-					int endDayMonth = getCurrentDay(t_stop_fmu, endMonth, leapYear);
-					snprintf(valueStr, HS_MAX, "%d", endDayMonth);
-					runPeriod.append(valueStr);
-
-					cout << "This is the Day of the End Month: " << endDayMonth << endl;
-
-					// get the idf start time in seconds
-					double t_start_idf = getSimTimeSeconds(_runPer_numerics[1], _runPer_numerics[0], 0);
-					char new_day_week[20];
-					int retVal = getCurrentDayOfWeek(t_start_idf, t_start_fmuDofW, _runPer_strings[1], new_day_week);
-
-					cout << "This is the New Day of Week: " << new_day_week << endl;
-
-					if (_runPer_strings.size() > 6){
+						// get the start month
+						int begMonth = getCurrentMonth(t_start_fmu, leapYear);
+						snprintf(valueStr, HS_MAX, "%d", begMonth);
+						runPeriod.append(valueStr);
 						runPeriod.append(",\n");
-						// write new day of the week
-						runPeriod.append(new_day_week);
+
+						cout << "This is the Begin Month: " << begMonth << endl;
+
+						// get the day of the month 
+						int begDayMonth = getCurrentDay(t_start_fmu, begMonth, leapYear);
+						snprintf(valueStr, HS_MAX, "%d", begDayMonth);
+						runPeriod.append(valueStr);
 						runPeriod.append(",\n");
-						runPeriod.append(_runPer_strings[2] + ",\n");
-						runPeriod.append(_runPer_strings[3] + ",\n");
-						runPeriod.append(_runPer_strings[4] + ",\n");
-						runPeriod.append(_runPer_strings[5] + ",\n");
-						runPeriod.append(_runPer_strings[6]);
+
+						cout << "This is the Day of the Begin Month: " << begDayMonth << endl;
+
+						// get the end month
+						int endMonth = getCurrentMonth(t_stop_fmu, leapYear);
+						snprintf(valueStr, HS_MAX, "%d", endMonth);
+						runPeriod.append(valueStr);
+						runPeriod.append(",\n");
+
+						cout << "This is the End Month: " << endMonth << endl;
+
+						// get the day of the month
+						int endDayMonth = getCurrentDay(t_stop_fmu, endMonth, leapYear);
+						snprintf(valueStr, HS_MAX, "%d", endDayMonth);
+						runPeriod.append(valueStr);
+
+						cout << "This is the Day of the End Month: " << endDayMonth << endl;
+
+						// get the idf start time in seconds
+						double t_start_idf = getSimTimeSeconds(_runPer_numerics[1], _runPer_numerics[0], 0);
+						char new_day_week[20];
+						int retVal = getCurrentDayOfWeek(t_start_idf, t_start_fmuDofW, _runPer_strings[1], new_day_week);
+
+						cout << "This is the New Day of Week: " << new_day_week << endl;
+
+						if (_runPer_strings.size() > 6) {
+							runPeriod.append(",\n");
+							// write new day of the week
+							runPeriod.append(new_day_week);
+							runPeriod.append(",\n");
+							runPeriod.append(_runPer_strings[2] + ",\n");
+							runPeriod.append(_runPer_strings[3] + ",\n");
+							runPeriod.append(_runPer_strings[4] + ",\n");
+							runPeriod.append(_runPer_strings[5] + ",\n");
+							runPeriod.append(_runPer_strings[6]);
+						}
+						if (_runPer_numerics.size() > 4) {
+							cout << "The field **Number of Times Runperiod to be Repeated**"
+								"  of the RunPeriod object is ignored. This entry will be set to its default." << endl;
+							runPeriod.append(",\n");
+							//snprintf(valueStr, HS_MAX, "%d", (int)_runPer_numerics[4]);
+							runPeriod.append(" ");
+
+						}
+						if (_runPer_strings.size() > 7) {
+							cout << "The field **Increment Day of Week on repeat**"
+								" of the RunPeriod object is ignored. This entry will be set to its default." << endl;
+							runPeriod.append(",\n");
+							//runPeriod.append(_runPer_strings[7]);
+							runPeriod.append(" ");
+						}
+						if (_runPer_numerics.size() > 5) {
+							cout << "The field **Start Year** of the RunPeriod object is ignored."
+								" This entry will be set to its default." << endl;
+							runPeriod.append(",\n");
+							runPeriod.append(" ");
+						}
+						runPeriod.append(";\n");
+						runInfile << runPeriod;
 					}
-					if (_runPer_numerics.size() > 4){
-						cout << "The field **Number of Times Runperiod to be Repeated**"
-							"  of the RunPeriod object is ignored. This entry will be set to its default." << endl;
+					else {
+						// g_desc_runPer_idf = "ANNNNNNAAAAAAA";
+						string startYear;
+						string endYear;
+
+						istringstream(tStartFMU) >> t_start_fmu;
+						istringstream(tStopFMU) >> t_stop_fmu;
+
+						istringstream(startYear) >> _runPer_numerics[2];
+						istringstream(endYear) >> _runPer_numerics[5];
+
+						handleKey_runPer(frIdf, idfVer);
+						std::string runPeriod("RUNPERIOD, \n");
+						if (_runPer_strings.size() > 1) {
+							runPeriod.append(_runPer_strings[0]);
+							runPeriod.append(",\n");
+						}
+						// FMU start time
+						double t_start_fmu = 0.0;
+						double t_start_fmuDofW = 0.0;
+						double t_stop_fmu = 86400.0;
+
+						istringstream(tStartFMU) >> t_start_fmu;
+						istringstream(tStopFMU) >> t_stop_fmu;
+
+						// Save original FMU start time to be used to determine the day of the week
+						t_start_fmuDofW = t_start_fmu;
+
+						// Change the start time so we compute the correct time.
+						if (t_start_fmu >= 86400) t_start_fmu = t_start_fmu + 86400;
+
+						// get the start month
+						int begMonth = getCurrentMonth(t_start_fmu, leapYear);
+						snprintf(valueStr, HS_MAX, "%d", begMonth);
+						runPeriod.append(valueStr);
 						runPeriod.append(",\n");
-						//snprintf(valueStr, HS_MAX, "%d", (int)_runPer_numerics[4]);
-						runPeriod.append(" ");
+
+						cout << "This is the Begin Month: " << begMonth << endl;
+
+						// get the day of the month 
+						int begDayMonth = getCurrentDay(t_start_fmu, begMonth, leapYear);
+						snprintf(valueStr, HS_MAX, "%d", begDayMonth);
+						runPeriod.append(valueStr);
+						runPeriod.append(",\n");
+
+						cout << "This is the Day of the Begin Month: " << begDayMonth << endl;
+
+						// get the start year
+
+						// get the end year
+						if (_runPer_numerics[2] != 0) {
+							snprintf(valueStr, HS_MAX, "%d", (int)_runPer_numerics[2]);
+							runPeriod.append(valueStr);
+						}
+						else {
+							runPeriod.append("");
+						}
+						runPeriod.append(",\n");
+
+						// get the end month
+						int endMonth = getCurrentMonth(t_stop_fmu, leapYear);
+						snprintf(valueStr, HS_MAX, "%d", endMonth);
+						runPeriod.append(valueStr);
+						runPeriod.append(",\n");
+
+						cout << "This is the End Month: " << endMonth << endl;
+
+						// get the day of the month
+						int endDayMonth = getCurrentDay(t_stop_fmu, endMonth, leapYear);
+						snprintf(valueStr, HS_MAX, "%d", endDayMonth);
+						runPeriod.append(valueStr);
+						runPeriod.append(",\n");
+
+						cout << "This is the Day of the End Month: " << endDayMonth << endl;
+
+						// get the end year
+						if (_runPer_numerics[5] != 0) {
+							snprintf(valueStr, HS_MAX, "%d", (int)_runPer_numerics[5]);
+							runPeriod.append(valueStr);
+						}
+						else {
+							runPeriod.append("");
+						}
+
+						// get the idf start time in seconds
+						double t_start_idf = getSimTimeSeconds(_runPer_numerics[1], _runPer_numerics[0], 0);
+						char new_day_week[20];
+						int retVal = getCurrentDayOfWeek(t_start_idf, t_start_fmuDofW, _runPer_strings[1], new_day_week);
+
+						cout << "This is the New Day of Week: " << new_day_week << endl;
+
+						if (_runPer_strings.size() <=7) {
+							runPeriod.append(",\n");
+							// write new day of the week
+							runPeriod.append(new_day_week);
+							runPeriod.append(",\n");
+							runPeriod.append(_runPer_strings[2] + ",\n");
+							runPeriod.append(_runPer_strings[3] + ",\n");
+							runPeriod.append(_runPer_strings[4] + ",\n");
+							runPeriod.append(_runPer_strings[5] + ",\n");
+							//runPeriod.append(_runPer_strings[6] + ",\n");
+							runPeriod.append(_runPer_strings[6]);
+						}
+						else if (_runPer_strings.size() > 7) {
+							runPeriod.append(",\n");
+							// write new day of the week
+							runPeriod.append(new_day_week);
+							runPeriod.append(",\n");
+							runPeriod.append(_runPer_strings[2] + ",\n");
+							runPeriod.append(_runPer_strings[3] + ",\n");
+							runPeriod.append(_runPer_strings[4] + ",\n");
+							runPeriod.append(_runPer_strings[5] + ",\n");
+							runPeriod.append(_runPer_strings[6] + ",\n");
+							runPeriod.append(_runPer_strings[7]);
+						}
+						//if (_runPer_numerics.size() > 4) {
+						//	cout << "The field **Number of Times Runperiod to be Repeated**"
+						//		"  of the RunPeriod object is ignored. This entry will be set to its default." << endl;
+						//	runPeriod.append(",\n");
+						//	//snprintf(valueStr, HS_MAX, "%d", (int)_runPer_numerics[4]);
+						//	runPeriod.append(" ");
+
+						//}
+						//if (_runPer_strings.size() > 7) {
+						//	cout << "The field **Increment Day of Week on repeat**"
+						//		" of the RunPeriod object is ignored. This entry will be set to its default." << endl;
+						//	runPeriod.append(",\n");
+						//	//runPeriod.append(_runPer_strings[7]);
+						//	runPeriod.append(" ");
+						//}
+						//if (_runPer_numerics.size() > 5) {
+						//	cout << "The field **Start Year** of the RunPeriod object is ignored."
+						//		" This entry will be set to its default." << endl;
+						//	runPeriod.append(",\n");
+						//	runPeriod.append(" ");
+						//}
+						runPeriod.append(";\n");
+						runInfile << runPeriod;
 
 					}
-					if (_runPer_strings.size() > 7){
-						cout << "The field **Increment Day of Week on repeat**"
-							" of the RunPeriod object is ignored. This entry will be set to its default." << endl;
-						runPeriod.append(",\n");
-						//runPeriod.append(_runPer_strings[7]);
-						runPeriod.append(" ");
-					}
-					if (_runPer_numerics.size() > 5){
-						cout << "The field **Start Year** of the RunPeriod object is ignored."
-							" This entry will be set to its default." << endl;
-						runPeriod.append(",\n");
-						runPeriod.append(" ");
-					}
-					runPeriod.append(";\n");
-					runInfile << runPeriod;
 				}
 				else{
 					cout << "There is more than one RunPeriod(" << nRunPer << ") in the IDF file."
@@ -1021,6 +1170,61 @@ int fmuExportIdfData::getTimeStep(fileReaderData& frIdf)
 #undef HS_MAX
 	return(lineNo);
 }  // End method fmuExportIdfData::getTimeStep().
+
+
+   //--- Read version of the IDF file, collecting data needed to run an EnergyPlus simulation as an FMU.
+   //
+int fmuExportIdfData::getIDFVersion(fileReaderData& frIdf, int &idfVersion)
+{
+	//
+	int lineNo;
+	string inputKey, iddDesc;
+	string line, inputKeyExt;
+	//string idfVer
+
+	//
+#ifdef _DEBUG
+	assert(!frIdf.isEOF());
+#endif
+	//
+	// Initialize.
+	lineNo = 0;
+	_goodRead = true;
+	//
+	// Run through the IDF file.
+	while (_goodRead)
+	{
+		frIdf.getToken(",", IDF_COMMENT_CHARS, inputKey, inputKeyExt);
+		// Consume the delimiter that caused getToken() to return.
+		const char delimChar = frIdf.getChar();
+		capitalize(inputKey);
+		if (inputKey.find(g_key_idfVer) != string::npos) {
+			frIdf.getToken(",", IDF_COMMENT_CHARS, inputKey, inputKeyExt);
+			capitalize(inputKey);
+			//idfVer.assign(inputKeyExt);
+			idfVersion = inputKeyExt[0] - '0';
+			cout << "The IDF version found is :" << idfVersion << endl;
+		}
+		if (frIdf.isEOF())
+		{
+			// Here, hit EOF.
+			//   OK to hit EOF, provided don't actually have a keyword.
+			//cout << "The IDF version found is :" << idfVersion << endl;
+			break;
+		}
+		// Here, ready to look for next keyword.
+	}
+
+	// Here, ran through whole IDF file.
+	frIdf.close();
+	//
+	if (_goodRead)
+	{
+		lineNo = 0;
+	}
+	return(lineNo);
+}  // End method fmuExportIdfData::getIDFVersion().
+
 
 
 //--- Check have a complete set of data.
@@ -1609,16 +1813,26 @@ void fmuExportIdfData::handleKey_extInt_fmuExport_toVar(fileReaderData& frIdf)
 //,- Increment Day of Week on repeat
 //;- Start Year
 
-void fmuExportIdfData::handleKey_runPer(fileReaderData& frIdf)
+void fmuExportIdfData::handleKey_runPer(fileReaderData& frIdf, int idfVer)
 {
 	bool entryOK;
 	vString strVals;
 	vDouble dblVals;
+	string g_desc_runPer;
 	std::ostringstream os;
 	//
 	// Assume just read key {g_key_runPer} from the IDF file.
 	const int keyLineNo = frIdf.getLineNumber();
 	_fromVar_idfLineNo.push_back(keyLineNo);
+
+	// determine the descriptor based on the IDF version number.
+	if (idfVer < 9) {
+		g_desc_runPer = "ANNNNAAAAAANAN";
+
+	}
+	else {
+		g_desc_runPer = "ANNNNNNAAAAAAA";
+	}
 	
 	// Read values from IDF file.
 	entryOK = true;
@@ -1628,7 +1842,6 @@ void fmuExportIdfData::handleKey_runPer(fileReaderData& frIdf)
 		os << "IDF parsing error.";
 	}
 
-	//
 	// Check count of values.
 	if (entryOK && ((dblVals.size() < 4)))
 	{
@@ -1636,7 +1849,8 @@ void fmuExportIdfData::handleKey_runPer(fileReaderData& frIdf)
 		os << "Wrong number of entries. The number of numeric "
 			<< "entries must be higher than 3. Now it is " << dblVals.size();
 	}
-	//const string g_desc_runPer = "ANNNNAAAAAANAN";
+	
+	// get the proper version and set the decriptor according to the version
 	// Name of the RunPeriod.
 	if (strVals.size() > 1){
 		if (entryOK)
@@ -1647,110 +1861,221 @@ void fmuExportIdfData::handleKey_runPer(fileReaderData& frIdf)
 		}
 	}
 	// The next sections are required field so they must be present in the IDF
-	// Begin Month.
-	if (entryOK)
-	{
-		_runPer_numerics.push_back(dblVals[0]);
-		// In principle, could check that the IDF file contains the corresponding
-		// entry.  However, this would complicate the code here considerably.
-	}
+	if (idfVer < 9) {
 
-	// Begin Day of Month.
-	if (entryOK)
-	{
-		_runPer_numerics.push_back(dblVals[1]);
-		// In principle, could check that the IDF file contains the corresponding
-		// entry.  However, this would complicate the code here considerably.
-	}
-
-	// End Month.
-	if (entryOK)
-	{
-		_runPer_numerics.push_back(dblVals[2]);
-		// In principle, could check that the IDF file contains the corresponding
-		// entry.  However, this would complicate the code here considerably.
-	}
-
-	// End Day of Month.
-	if (entryOK)
-	{
-		_runPer_numerics.push_back(dblVals[3]);
-		// In principle, could check that the IDF file contains the corresponding
-		// entry.  However, this would complicate the code here considerably.
-	}
-	if (strVals.size()>6)
-	{
-		// Day of Week for Start Day.
+		// Begin Month.
 		if (entryOK)
 		{
-			_runPer_strings.push_back(strVals[1]);
+			_runPer_numerics.push_back(dblVals[0]);
 			// In principle, could check that the IDF file contains the corresponding
 			// entry.  However, this would complicate the code here considerably.
 		}
 
-		// Use Weather File Holidays and Special Days.
+		// Begin Day of Month.
 		if (entryOK)
 		{
-			_runPer_strings.push_back(strVals[2]);
+			_runPer_numerics.push_back(dblVals[1]);
 			// In principle, could check that the IDF file contains the corresponding
 			// entry.  However, this would complicate the code here considerably.
 		}
 
-		//
-		// Use Weather File Daylight Saving Period.
+		// End Month.
 		if (entryOK)
 		{
-			_runPer_strings.push_back(strVals[3]);
+			_runPer_numerics.push_back(dblVals[2]);
+			// In principle, could check that the IDF file contains the corresponding
+			// entry.  However, this would complicate the code here considerably.
 		}
 
-		//
-		// Apply Weekend Holiday Rule.
+		// End Day of Month.
 		if (entryOK)
 		{
-			_runPer_strings.push_back(strVals[4]);
+			_runPer_numerics.push_back(dblVals[3]);
+			// In principle, could check that the IDF file contains the corresponding
+			// entry.  However, this would complicate the code here considerably.
+		}
+		if (strVals.size() > 6)
+		{
+			// Day of Week for Start Day.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[1]);
+				// In principle, could check that the IDF file contains the corresponding
+				// entry.  However, this would complicate the code here considerably.
+			}
+
+			// Use Weather File Holidays and Special Days.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[2]);
+				// In principle, could check that the IDF file contains the corresponding
+				// entry.  However, this would complicate the code here considerably.
+			}
+
+			//
+			// Use Weather File Daylight Saving Period.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[3]);
+			}
+
+			//
+			// Apply Weekend Holiday Rule.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[4]);
+			}
+
+			//
+			// Use Weather File Rain Indicators.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[5]);
+			}
+
+			//
+			// Use Weather File Snow Indicators.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[6]);
+			}
+
+		}
+		if (dblVals.size() > 4) {
+			//
+			// Number of Times Runperiod to be Repeated.
+			if (entryOK)
+			{
+				_runPer_numerics.push_back(dblVals[4]);
+			}
 		}
 
-		//
-		// Use Weather File Rain Indicators.
-		if (entryOK)
+		if (strVals.size() > 7)
 		{
-			_runPer_strings.push_back(strVals[5]);
+			//
+			// Increment Day of Week on repeat.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[7]);
+			}
 		}
 
-		//
-		// Use Weather File Snow Indicators.
-		if (entryOK)
-		{
-			_runPer_strings.push_back(strVals[6]);
+		if (dblVals.size() > 5) {
+			//
+			// Start Year.
+			if (entryOK)
+			{
+				_runPer_numerics.push_back(dblVals[5]);
+			}
 		}
 	}
+	else {
 
-	if (dblVals.size()>4){
-		//
-		// Number of Times Runperiod to be Repeated.
+		// Begin Month.
+		if (entryOK)
+		{
+			_runPer_numerics.push_back(dblVals[0]);
+			// In principle, could check that the IDF file contains the corresponding
+			// entry.  However, this would complicate the code here considerably.
+		}
+
+		// Begin Day of Month.
+		if (entryOK)
+		{
+			_runPer_numerics.push_back(dblVals[1]);
+			// In principle, could check that the IDF file contains the corresponding
+			// entry.  However, this would complicate the code here considerably.
+		}
+
+		// Begin Year.
+		if (entryOK)
+		{
+			_runPer_numerics.push_back(dblVals[2]);
+			// In principle, could check that the IDF file contains the corresponding
+			// entry.  However, this would complicate the code here considerably.
+		}
+
+		// End Month.
+		if (entryOK)
+		{
+			_runPer_numerics.push_back(dblVals[3]);
+			// In principle, could check that the IDF file contains the corresponding
+			// entry.  However, this would complicate the code here considerably.
+		}
+
+		// End Day of Month.
 		if (entryOK)
 		{
 			_runPer_numerics.push_back(dblVals[4]);
+			// In principle, could check that the IDF file contains the corresponding
+			// entry.  However, this would complicate the code here considerably.
 		}
-	}
 
-	if (strVals.size()>7)
-	{
-		//
-		// Increment Day of Week on repeat.
-		if (entryOK)
-		{
-			_runPer_strings.push_back(strVals[7]);
-		}
-	}
-
-	if (dblVals.size()>5){
-		//
-		// Start Year.
+		// End Year.
 		if (entryOK)
 		{
 			_runPer_numerics.push_back(dblVals[5]);
+			// In principle, could check that the IDF file contains the corresponding
+			// entry.  However, this would complicate the code here considerably.
 		}
+
+		if (strVals.size() <= 7)
+		{
+			// Day of Week for Start Day.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[1]);
+				// In principle, could check that the IDF file contains the corresponding
+				// entry.  However, this would complicate the code here considerably.
+			}
+
+			// Use Weather File Holidays and Special Days.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[2]);
+				// In principle, could check that the IDF file contains the corresponding
+				// entry.  However, this would complicate the code here considerably.
+			}
+
+			//
+			// Use Weather File Daylight Saving Period.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[3]);
+			}
+
+			//
+			// Apply Weekend Holiday Rule.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[4]);
+			}
+
+			//
+			// Use Weather File Rain Indicators.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[5]);
+			}
+
+			//
+			// Use Weather File Snow Indicators.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[6]);
+			}
+		}
+		if (strVals.size() > 7)
+		{
+			//
+			// Treat Weather as Actual.
+			if (entryOK)
+			{
+				_runPer_strings.push_back(strVals[7]);
+			}
+
+		}
+	
 	}
 	//
 	if (!entryOK)
