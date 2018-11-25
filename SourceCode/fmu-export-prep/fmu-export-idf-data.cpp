@@ -905,8 +905,6 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int id
 						cout << "This is the Day of the Begin Month: " << begDayMonth << endl;
 
 						// get the start year
-
-						// get the end year
 						if (_runPer_numerics[2] != 0) {
 							snprintf(valueStr, HS_MAX, "%d", (int)_runPer_numerics[2]);
 							runPeriod.append(valueStr);
@@ -948,8 +946,7 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int id
 
 						cout << "This is the New Day of Week: " << new_day_week << endl;
 
-						if (_runPer_strings.size() <=7) {
-							runPeriod.append(",\n");
+						if (_runPer_strings.size() > 5) {
 							// write new day of the week
 							runPeriod.append(new_day_week);
 							runPeriod.append(",\n");
@@ -957,42 +954,17 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int id
 							runPeriod.append(_runPer_strings[3] + ",\n");
 							runPeriod.append(_runPer_strings[4] + ",\n");
 							runPeriod.append(_runPer_strings[5] + ",\n");
+							runPeriod.append(",\n");
+						}
+
+						if (_runPer_strings.size() == 7) {
 							//runPeriod.append(_runPer_strings[6] + ",\n");
 							runPeriod.append(_runPer_strings[6]);
 						}
-						else if (_runPer_strings.size() > 7) {
-							runPeriod.append(",\n");
-							// write new day of the week
-							runPeriod.append(new_day_week);
-							runPeriod.append(",\n");
-							runPeriod.append(_runPer_strings[2] + ",\n");
-							runPeriod.append(_runPer_strings[3] + ",\n");
-							runPeriod.append(_runPer_strings[4] + ",\n");
-							runPeriod.append(_runPer_strings[5] + ",\n");
+						else if (_runPer_strings.size() == 8) {
 							runPeriod.append(_runPer_strings[6] + ",\n");
 							runPeriod.append(_runPer_strings[7]);
 						}
-						//if (_runPer_numerics.size() > 4) {
-						//	cout << "The field **Number of Times Runperiod to be Repeated**"
-						//		"  of the RunPeriod object is ignored. This entry will be set to its default." << endl;
-						//	runPeriod.append(",\n");
-						//	//snprintf(valueStr, HS_MAX, "%d", (int)_runPer_numerics[4]);
-						//	runPeriod.append(" ");
-
-						//}
-						//if (_runPer_strings.size() > 7) {
-						//	cout << "The field **Increment Day of Week on repeat**"
-						//		" of the RunPeriod object is ignored. This entry will be set to its default." << endl;
-						//	runPeriod.append(",\n");
-						//	//runPeriod.append(_runPer_strings[7]);
-						//	runPeriod.append(" ");
-						//}
-						//if (_runPer_numerics.size() > 5) {
-						//	cout << "The field **Start Year** of the RunPeriod object is ignored."
-						//		" This entry will be set to its default." << endl;
-						//	runPeriod.append(",\n");
-						//	runPeriod.append(" ");
-						//}
 						runPeriod.append(";\n");
 						runInfile << runPeriod;
 
@@ -1208,8 +1180,6 @@ int fmuExportIdfData::getIDFVersion(fileReaderData& frIdf, int &idfVersion)
 		if (frIdf.isEOF())
 		{
 			// Here, hit EOF.
-			//   OK to hit EOF, provided don't actually have a keyword.
-			//cout << "The IDF version found is :" << idfVersion << endl;
 			break;
 		}
 		// Here, ready to look for next keyword.
@@ -1797,7 +1767,7 @@ void fmuExportIdfData::handleKey_extInt_fmuExport_toVar(fileReaderData& frIdf)
 //}  // End method fmuExportIdfDa
 
 //--- Read IDF values for key {g_key_runPer}.
-//RunPeriod,//
+//RunPeriod for EnergyPlus version < 9,//
 //, !- Name
 //1, !- Begin Month
 //1, !- Begin Day of Month
@@ -1808,10 +1778,28 @@ void fmuExportIdfData::handleKey_extInt_fmuExport_toVar(fileReaderData& frIdf)
 //, !- Use Weather File Daylight Saving Period
 //, !- Apply Weekend Holiday Rule
 //, !- Use Weather File Rain Indicators
-//,- Use Weather File Snow Indicators
-//,- Number of Times Runperiod to be Repeated
-//,- Increment Day of Week on repeat
-//;- Start Year
+//, !- Use Weather File Snow Indicators
+//, !- Number of Times Runperiod to be Repeated
+//, !- Increment Day of Week on repeat
+//; !- Start Year
+
+
+//RunPeriod for EnergyPlus version >= 9,//
+//,     !- Name
+//1,    !- Begin Month
+//1,    !- Begin Day of Month
+//2002, ! - Start Year
+//12,   !- End Month
+//31,   !- End Day of Month
+//2002, ! - Start Year
+//,     !- Day of Week for Start Day
+//,     !- Use Weather File Holidays and Special Days
+//,     !- Use Weather File Daylight Saving Period
+//,     !- Apply Weekend Holiday Rule
+//,     !- Use Weather File Rain Indicators
+//,     !- Use Weather File Snow Indicators
+//;     !- Treat Weather as Actual
+
 
 void fmuExportIdfData::handleKey_runPer(fileReaderData& frIdf, int idfVer)
 {
@@ -1827,10 +1815,12 @@ void fmuExportIdfData::handleKey_runPer(fileReaderData& frIdf, int idfVer)
 
 	// determine the descriptor based on the IDF version number.
 	if (idfVer < 9) {
+		// Runperiod descriptor for E+ version < 9
 		g_desc_runPer = "ANNNNAAAAAANAN";
 
 	}
 	else {
+		// Runperiod descriptor for E+ version >= 9
 		g_desc_runPer = "ANNNNNNAAAAAAA";
 	}
 	
@@ -2019,7 +2009,7 @@ void fmuExportIdfData::handleKey_runPer(fileReaderData& frIdf, int idfVer)
 			// entry.  However, this would complicate the code here considerably.
 		}
 
-		if (strVals.size() <= 7)
+		if (strVals.size() > 6)
 		{
 			// Day of Week for Start Day.
 			if (entryOK)
@@ -2073,9 +2063,7 @@ void fmuExportIdfData::handleKey_runPer(fileReaderData& frIdf, int idfVer)
 			{
 				_runPer_strings.push_back(strVals[7]);
 			}
-
 		}
-	
 	}
 	//
 	if (!entryOK)
