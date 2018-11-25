@@ -1,9 +1,10 @@
-! EMSWindowShadeControl.idf
+! _fmu-export-variable.idf derived from _ExternalInterface-variable.idf
 !
 !
-! Highlights:              Demonstrates using EMS to control a window blind.
+! Highlights:              Demonstrates using the external interface with an ExternalInterface:Variable to
+!                          control a window blind.
 !
-! Basic file description:  This file is derived from PurchAirWindowBlind.idf
+! Basic file description:  This file is derived from EMSWindowShadeControl.idf
 !                          1 story building divided into 3 interior conditioned zones. Roof with no plenum.
 !                          No ground contact with floor.
 !
@@ -12,8 +13,8 @@
 !
 ! Location:                Chicago, IL
 !
-! Design Days:             CHICAGO_IL_USA Annual Heating 99% Design Conditions DB, MaxDB= -17.3캜
-!                          CHICAGO_IL_USA Annual Cooling 1% Design Conditions, MaxDB=  31.5캜 MCWB=  23.0캜
+! Design Days:             CHICAGO_IL_USA Annual Heating 99% Design Conditions DB, MaxDB= -17.3째C
+!                          CHICAGO_IL_USA Annual Cooling 1% Design Conditions, MaxDB=  31.5째C MCWB=  23.0째C
 !
 ! Run Period (Weather File): none
 !
@@ -23,7 +24,7 @@
 !           There is a single window in West Zone's south wall. The walls are 1 in stucco over 4 in common brick
 !           and gypboard. The roof is a built up roof with 1/2 in stone over 3/8 in felt over 1 in dense insulation
 !           supported by 2 in heavy weight concrete. The window is single pane 3mm clear.
-!           The window to wall ratio is approxomately 0.07.
+!           The window to wall ratio is approximately 0.07.
 !
 !           The building is oriented due north.
 !
@@ -96,15 +97,9 @@
 ! Environmental Emissions:        None
 ! Utility Tariffs:                None
 
-  Version,8.5;
+  Version,9.0;
 
   Timestep,6;
-
-  ZoneCapacitanceMultiplier:ResearchSpecial,
-    1.0,                     !- Temperature Capacity Multiplier
-    1.0,                     !- Humidity Capacity Multiplier
-    1.0,                     !- Carbon Dioxide Capacity Multiplier
-    1.0;                     !- Generic Contaminant Capacity Multiplier
 
   Building,
     NONE,                    !- Name
@@ -133,8 +128,10 @@
     ,                        !- Name
     3,                       !- Begin Month
     1,                       !- Begin Day of Month
+    ,                        !- Begin Year
     3,                       !- End Month
     4,                       !- End Day of Month
+    ,                        !- End Year
     Tuesday,                 !- Day of Week for Start Day
     Yes,                     !- Use Weather File Holidays and Special Days
     Yes,                     !- Use Weather File Daylight Saving Period
@@ -149,7 +146,7 @@
     -6.00,                   !- Time Zone {hr}
     190.00;                  !- Elevation {m}
 
- ! CHICAGO_IL_USA Annual Heating 99% Design Conditions DB, MaxDB= -17.3캜
+ ! CHICAGO_IL_USA Annual Heating 99% Design Conditions DB, MaxDB= -17.3째C
 
   SizingPeriod:DesignDay,
     CHICAGO_IL_USA Annual Heating 99% Design Conditions DB,  !- Name
@@ -158,7 +155,7 @@
     WinterDesignDay,         !- Day Type
     -17.3,                   !- Maximum Dry-Bulb Temperature {C}
     0.0,                     !- Daily Dry-Bulb Temperature Range {deltaC}
-    DefaultMultipliers,      !- Dry-Bulb Temperature Range Modifier Type
+    ,                        !- Dry-Bulb Temperature Range Modifier Type
     ,                        !- Dry-Bulb Temperature Range Modifier Day Schedule Name
     Wetbulb,                 !- Humidity Condition Type
     -17.3,                   !- Wetbulb or DewPoint at Maximum Dry-Bulb {C}
@@ -175,11 +172,11 @@
     ASHRAEClearSky,          !- Solar Model Indicator
     ,                        !- Beam Solar Day Schedule Name
     ,                        !- Diffuse Solar Day Schedule Name
-    0,                       !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub) {dimensionless}
-    0,                       !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud) {dimensionless}
+    ,                        !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub) {dimensionless}
+    ,                        !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud) {dimensionless}
     0.0;                     !- Sky Clearness
 
- ! CHICAGO_IL_USA Annual Cooling 1% Design Conditions, MaxDB=  31.5캜 MCWB=  23.0캜
+ ! CHICAGO_IL_USA Annual Cooling 1% Design Conditions, MaxDB=  31.5째C MCWB=  23.0째C
 
   SizingPeriod:DesignDay,
     CHICAGO_IL_USA Annual Cooling 1% Design Conditions DB/MCWB,  !- Name
@@ -188,7 +185,7 @@
     SummerDesignDay,         !- Day Type
     31.5,                    !- Maximum Dry-Bulb Temperature {C}
     10.7,                    !- Daily Dry-Bulb Temperature Range {deltaC}
-    DefaultMultipliers,      !- Dry-Bulb Temperature Range Modifier Type
+    ,                        !- Dry-Bulb Temperature Range Modifier Type
     ,                        !- Dry-Bulb Temperature Range Modifier Day Schedule Name
     Wetbulb,                 !- Humidity Condition Type
     23.0,                    !- Wetbulb or DewPoint at Maximum Dry-Bulb {C}
@@ -205,8 +202,8 @@
     ASHRAEClearSky,          !- Solar Model Indicator
     ,                        !- Beam Solar Day Schedule Name
     ,                        !- Diffuse Solar Day Schedule Name
-    0,                       !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub) {dimensionless}
-    0,                       !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud) {dimensionless}
+    ,                        !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub) {dimensionless}
+    ,                        !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud) {dimensionless}
     1.0;                     !- Sky Clearness
 
   Material,
@@ -387,8 +384,10 @@
     SINGLEPANE,              !- Outside Layer
     BLIND;                   !- Layer 2
 
-  WindowProperty:ShadingControl,
-    INCIDENT SOLAR ON BLIND, !- Name
+  WindowShadingControl,
+    INCIDENT SOLAR ON BLIND-West Zone,  !- Name
+    West Zone,               !- Zone Name
+    1,                       !- Shading Control Sequence Number
     InteriorBlind,           !- Shading Type
     WIN-CON-SINGLEPANE WITH INTERIOR BLIND,  !- Construction with Shading Name
     OnIfHighSolarOnWindow,   !- Shading Control Type
@@ -398,7 +397,11 @@
     NO,                      !- Glare Control Is Active
     ,                        !- Shading Device Material Name
     FixedSlatAngle,          !- Type of Slat Angle Control for Blinds
-    ;                        !- Slat Angle Schedule Name
+    ,                        !- Slat Angle Schedule Name
+    ,                        !- Setpoint 2 {W/m2 or deg C}
+    ,                        !- Daylighting Control Object Name
+    Sequential,              !- Multiple Surface Control Type
+    Zn001:Wall001:Win001;    !- Fenestration Surface 1 Name
 
   ScheduleTypeLimits,
     Any Number;              !- Name
@@ -596,10 +599,10 @@
     ,                        !- People per Zone Floor Area {person/m2}
     ,                        !- Zone Floor Area per Person {m2/person}
     0.3000000,               !- Fraction Radiant
-    Autocalculate,           !- Sensible Heat Fraction
+    ,                        !- Sensible Heat Fraction
     Activity Sch,            !- Activity Level Schedule Name
     3.82E-8,                 !- Carbon Dioxide Generation Rate {m3/s-W}
-    No,                      !- Enable ASHRAE 55 Comfort Warnings
+    ,                        !- Enable ASHRAE 55 Comfort Warnings
     zoneaveraged,            !- Mean Radiant Temperature Calculation Type
     ,                        !- Surface Name/Angle Factor List Name
     Work Eff Sch,            !- Work Efficiency Schedule Name
@@ -630,10 +633,10 @@
     ,                        !- People per Zone Floor Area {person/m2}
     ,                        !- Zone Floor Area per Person {m2/person}
     0.3000000,               !- Fraction Radiant
-    Autocalculate,           !- Sensible Heat Fraction
+    ,                        !- Sensible Heat Fraction
     Activity Sch,            !- Activity Level Schedule Name
     3.82E-8,                 !- Carbon Dioxide Generation Rate {m3/s-W}
-    No,                      !- Enable ASHRAE 55 Comfort Warnings
+    ,                        !- Enable ASHRAE 55 Comfort Warnings
     zoneaveraged,            !- Mean Radiant Temperature Calculation Type
     ,                        !- Surface Name/Angle Factor List Name
     Work Eff Sch,            !- Work Efficiency Schedule Name
@@ -678,10 +681,10 @@
     ,                        !- People per Zone Floor Area {person/m2}
     ,                        !- Zone Floor Area per Person {m2/person}
     0.3000000,               !- Fraction Radiant
-    Autocalculate,           !- Sensible Heat Fraction
+    ,                        !- Sensible Heat Fraction
     Activity Sch,            !- Activity Level Schedule Name
     3.82E-8,                 !- Carbon Dioxide Generation Rate {m3/s-W}
-    No,                      !- Enable ASHRAE 55 Comfort Warnings
+    ,                        !- Enable ASHRAE 55 Comfort Warnings
     zoneaveraged,            !- Mean Radiant Temperature Calculation Type
     ,                        !- Surface Name/Angle Factor List Name
     Work Eff Sch,            !- Work Efficiency Schedule Name
@@ -720,7 +723,7 @@
   GlobalGeometryRules,
     UpperLeftCorner,         !- Starting Vertex Position
     CounterClockWise,        !- Vertex Entry Direction
-    WorldCoordinateSystem;   !- Coordinate System
+    World;                   !- Coordinate System
 
   BuildingSurface:Detailed,
     Zn001:Wall001,           !- Name
@@ -745,7 +748,6 @@
     Zn001:Wall001,           !- Building Surface Name
     ,                        !- Outside Boundary Condition Object
     0.5000000,               !- View Factor to Ground
-    INCIDENT SOLAR ON BLIND, !- Shading Control Name
     ,                        !- Frame and Divider Name
     1.0,                     !- Multiplier
     4,                       !- Number of Vertices
@@ -1099,7 +1101,7 @@
     Zone1Inlets,             !- Zone Air Inlet Node or NodeList Name
     ,                        !- Zone Air Exhaust Node or NodeList Name
     NODE_4,                  !- Zone Air Node Name
-    NODE_5;                  !- Zone Return Air Node Name
+    NODE_5;                  !- Zone Return Air Node or NodeList Name
 
   ZoneHVAC:EquipmentConnections,
     EAST ZONE,               !- Zone Name
@@ -1107,7 +1109,7 @@
     Zone2Inlets,             !- Zone Air Inlet Node or NodeList Name
     ,                        !- Zone Air Exhaust Node or NodeList Name
     NODE_6,                  !- Zone Air Node Name
-    NODE_7;                  !- Zone Return Air Node Name
+    NODE_7;                  !- Zone Return Air Node or NodeList Name
 
   ZoneHVAC:EquipmentConnections,
     NORTH ZONE,              !- Zone Name
@@ -1115,10 +1117,11 @@
     Zone3Inlets,             !- Zone Air Inlet Node or NodeList Name
     ,                        !- Zone Air Exhaust Node or NodeList Name
     NODE_8,                  !- Zone Air Node Name
-    NODE_9;                  !- Zone Return Air Node Name
+    NODE_9;                  !- Zone Return Air Node or NodeList Name
 
   ZoneHVAC:EquipmentList,
     Zone1Equipment,          !- Name
+    SequentialLoad,          !- Load Distribution Scheme
     ZoneHVAC:IdealLoadsAirSystem,  !- Zone Equipment 1 Object Type
     Zone1Air,                !- Zone Equipment 1 Name
     1,                       !- Zone Equipment 1 Cooling Sequence
@@ -1126,6 +1129,7 @@
 
   ZoneHVAC:EquipmentList,
     Zone2Equipment,          !- Name
+    SequentialLoad,          !- Load Distribution Scheme
     ZoneHVAC:IdealLoadsAirSystem,  !- Zone Equipment 1 Object Type
     Zone2Air,                !- Zone Equipment 1 Name
     1,                       !- Zone Equipment 1 Cooling Sequence
@@ -1133,6 +1137,7 @@
 
   ZoneHVAC:EquipmentList,
     Zone3Equipment,          !- Name
+    SequentialLoad,          !- Load Distribution Scheme
     ZoneHVAC:IdealLoadsAirSystem,  !- Zone Equipment 1 Object Type
     Zone3Air,                !- Zone Equipment 1 Name
     1,                       !- Zone Equipment 1 Cooling Sequence
@@ -1143,10 +1148,11 @@
     ,                        !- Availability Schedule Name
     NODE_1,                  !- Zone Supply Air Node Name
     ,                        !- Zone Exhaust Air Node Name
+    ,                        !- System Inlet Air Node Name
     50,                      !- Maximum Heating Supply Air Temperature {C}
     13,                      !- Minimum Cooling Supply Air Temperature {C}
     0.015,                   !- Maximum Heating Supply Air Humidity Ratio {kgWater/kgDryAir}
-    0.010,                   !- Minimum Cooling Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.009,                   !- Minimum Cooling Supply Air Humidity Ratio {kgWater/kgDryAir}
     NoLimit,                 !- Heating Limit
     autosize,                !- Maximum Heating Air Flow Rate {m3/s}
     ,                        !- Maximum Sensible Heating Capacity {W}
@@ -1156,25 +1162,26 @@
     ,                        !- Heating Availability Schedule Name
     ,                        !- Cooling Availability Schedule Name
     ConstantSupplyHumidityRatio,  !- Dehumidification Control Type
-    0.7,                     !- Cooling Sensible Heat Ratio {dimensionless}
+    ,                        !- Cooling Sensible Heat Ratio {dimensionless}
     ConstantSupplyHumidityRatio,  !- Humidification Control Type
     ,                        !- Design Specification Outdoor Air Object Name
     ,                        !- Outdoor Air Inlet Node Name
-    None,                    !- Demand Controlled Ventilation Type
-    NoEconomizer,            !- Outdoor Air Economizer Type
-    None,                    !- Heat Recovery Type
-    0.70,                    !- Sensible Heat Recovery Effectiveness {dimensionless}
-    0.65;                    !- Latent Heat Recovery Effectiveness {dimensionless}
+    ,                        !- Demand Controlled Ventilation Type
+    ,                        !- Outdoor Air Economizer Type
+    ,                        !- Heat Recovery Type
+    ,                        !- Sensible Heat Recovery Effectiveness {dimensionless}
+    ;                        !- Latent Heat Recovery Effectiveness {dimensionless}
 
   ZoneHVAC:IdealLoadsAirSystem,
     Zone2Air,                !- Name
     ,                        !- Availability Schedule Name
     NODE_2,                  !- Zone Supply Air Node Name
     ,                        !- Zone Exhaust Air Node Name
+    ,                        !- System Inlet Air Node Name
     50,                      !- Maximum Heating Supply Air Temperature {C}
     13,                      !- Minimum Cooling Supply Air Temperature {C}
     0.015,                   !- Maximum Heating Supply Air Humidity Ratio {kgWater/kgDryAir}
-    0.010,                   !- Minimum Cooling Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.009,                   !- Minimum Cooling Supply Air Humidity Ratio {kgWater/kgDryAir}
     NoLimit,                 !- Heating Limit
     autosize,                !- Maximum Heating Air Flow Rate {m3/s}
     ,                        !- Maximum Sensible Heating Capacity {W}
@@ -1184,25 +1191,26 @@
     ,                        !- Heating Availability Schedule Name
     ,                        !- Cooling Availability Schedule Name
     ConstantSupplyHumidityRatio,  !- Dehumidification Control Type
-    0.7,                     !- Cooling Sensible Heat Ratio {dimensionless}
+    ,                        !- Cooling Sensible Heat Ratio {dimensionless}
     ConstantSupplyHumidityRatio,  !- Humidification Control Type
     ,                        !- Design Specification Outdoor Air Object Name
     ,                        !- Outdoor Air Inlet Node Name
-    None,                    !- Demand Controlled Ventilation Type
-    NoEconomizer,            !- Outdoor Air Economizer Type
-    None,                    !- Heat Recovery Type
-    0.70,                    !- Sensible Heat Recovery Effectiveness {dimensionless}
-    0.65;                    !- Latent Heat Recovery Effectiveness {dimensionless}
+    ,                        !- Demand Controlled Ventilation Type
+    ,                        !- Outdoor Air Economizer Type
+    ,                        !- Heat Recovery Type
+    ,                        !- Sensible Heat Recovery Effectiveness {dimensionless}
+    ;                        !- Latent Heat Recovery Effectiveness {dimensionless}
 
   ZoneHVAC:IdealLoadsAirSystem,
     Zone3Air,                !- Name
     ,                        !- Availability Schedule Name
     NODE_3,                  !- Zone Supply Air Node Name
     ,                        !- Zone Exhaust Air Node Name
+    ,                        !- System Inlet Air Node Name
     50,                      !- Maximum Heating Supply Air Temperature {C}
     13,                      !- Minimum Cooling Supply Air Temperature {C}
     0.015,                   !- Maximum Heating Supply Air Humidity Ratio {kgWater/kgDryAir}
-    0.010,                   !- Minimum Cooling Supply Air Humidity Ratio {kgWater/kgDryAir}
+    0.009,                   !- Minimum Cooling Supply Air Humidity Ratio {kgWater/kgDryAir}
     NoLimit,                 !- Heating Limit
     autosize,                !- Maximum Heating Air Flow Rate {m3/s}
     ,                        !- Maximum Sensible Heating Capacity {W}
@@ -1212,15 +1220,15 @@
     ,                        !- Heating Availability Schedule Name
     ,                        !- Cooling Availability Schedule Name
     ConstantSupplyHumidityRatio,  !- Dehumidification Control Type
-    0.7,                     !- Cooling Sensible Heat Ratio {dimensionless}
+    ,                        !- Cooling Sensible Heat Ratio {dimensionless}
     ConstantSupplyHumidityRatio,  !- Humidification Control Type
     ,                        !- Design Specification Outdoor Air Object Name
     ,                        !- Outdoor Air Inlet Node Name
-    None,                    !- Demand Controlled Ventilation Type
-    NoEconomizer,            !- Outdoor Air Economizer Type
-    None,                    !- Heat Recovery Type
-    0.70,                    !- Sensible Heat Recovery Effectiveness {dimensionless}
-    0.65;                    !- Latent Heat Recovery Effectiveness {dimensionless}
+    ,                        !- Demand Controlled Ventilation Type
+    ,                        !- Outdoor Air Economizer Type
+    ,                        !- Heat Recovery Type
+    ,                        !- Sensible Heat Recovery Effectiveness {dimensionless}
+    ;                        !- Latent Heat Recovery Effectiveness {dimensionless}
 
   NodeList,
     Zone1Inlets,             !- Name
@@ -1328,7 +1336,8 @@
     Set_Shade_Control_State; !- Program Name 1
 
   ExternalInterface,
-    FunctionalMockupUnitExport;  !- Name of External Interface
+    FunctionalMockupUnitExport;           !- Name of External Interface
+
 
   ExternalInterface:FunctionalMockupUnitExport:To:Variable,
     yShade,                  !- Name
@@ -1336,14 +1345,14 @@
     6;                       !- Initial Value
 
   ExternalInterface:FunctionalMockupUnitExport:From:Variable,
-    WEST ZONE,               !- Output:Variable Index Key Name
+    WEST ZONE,                  !- Output:Variable Index Key Name
     Zone Mean Air Temperature,  !- Output:Variable Name
-    TRoo;                    !- FMU Variable Name
+    TRoo;                       !- FMU Variable Name
 
   ExternalInterface:FunctionalMockupUnitExport:From:Variable,
-    Zn001:Wall001:Win001,    !- Output:Variable Index Key Name
+    Zn001:Wall001:Win001,                                         !- Output:Variable Index Key Name
     Surface Outside Face Incident Solar Radiation Rate per Area,  !- Output:Variable Name
-    ISolExt;                 !- FMU Variable Name
+    ISolExt;                                                      !- FMU Variable Name
 
 ! EMS program. The first assignments sets the shading status and converts it into the
 !              EnergyPlus signal (i.e., replace 1 by 6).
@@ -1354,8 +1363,7 @@
   EnergyManagementSystem:Program,
     Set_Shade_Control_State, !- Name
     Set Shade_Signal = 6*yShade,  !- Program Line 1
-    Set Shade_Signal = @MIN 6 Shade_Signal,  !- Program Line 2
-    Set Shade_Signal_01 = Shade_Signal+0.1;  !- <none>
+    Set Shade_Signal_01 = yShade+0.1;  !- Program Line 2
 
 ! Declare an actuator to which the EnergyManagementSystem:Program will write
 
@@ -1446,15 +1454,15 @@
           !  20: window has switchable glazing that is unswitched but may be switched later
           !       to control daylight glare or daylight illuminance
           !  30: window has exterior shade that is off but may be triggered on later
-          !       to control daylaight glare or daylight illuminance
+          !       to control daylight glare or daylight illuminance
           !  60: window has interior blind that is off but may be triggered on later
-          !       to control daylaight glare or daylight illuminance
+          !       to control daylight glare or daylight illuminance
           !  70: window has exterior blind that is off but may be triggered on later
-          !       to control daylaight glare or daylight illuminance
+          !       to control daylight glare or daylight illuminance
           !  80: window has between-glass shade that is off but may be triggered on later
-          !       to control daylaight glare or daylight illuminance
+          !       to control daylight glare or daylight illuminance
           !  90: window has between-glass blind that is off but may be triggered on later
-          !       to control daylaight glare or daylight illuminance
+          !       to control daylight glare or daylight illuminance
           ! A "shading device" may be an exterior, interior or between-glass shade or blind,
           ! or the lower-transmitting (dark) state of switchable glazing (e.g., electrochromic).
           ! In all cases, the unshaded condition is represented
