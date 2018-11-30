@@ -938,6 +938,7 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int id
 						else {
 							runPeriod.append("");
 						}
+						runPeriod.append(",\n");
 
 						// get the idf start time in seconds
 						double t_start_idf = getSimTimeSeconds(_runPer_numerics[1], _runPer_numerics[0], 0);
@@ -954,7 +955,6 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int id
 							runPeriod.append(_runPer_strings[3] + ",\n");
 							runPeriod.append(_runPer_strings[4] + ",\n");
 							runPeriod.append(_runPer_strings[5] + ",\n");
-							runPeriod.append(",\n");
 						}
 
 						if (_runPer_strings.size() == 7) {
