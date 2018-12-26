@@ -1,16 +1,16 @@
 Checklist to release EnergyPlusToFMU
 ************************************
 
-Update the copyright notices to ....-20xx. in 
+Update the copyright notices to ....-20xx. in
 Documentation/userGuide/source/legal.rst
 
-Update the version number 1.0.xxx. in 
+Update the version number 1.0.xxx. in
 Documentation/userGuide/source/conf.py
 
-Update the release notes. in 
+Update the release notes. in
 Documentation/userGuide/source/download.rst
 
-Update the News and copyright date. in 
+Update the News and copyright date. in
 Documentation/userGuide/www/index.html
 
 cd to the repository which contains the file (folderxxx)
@@ -24,7 +24,7 @@ cd to Documentation/userGuide
 
 Run
 
-make linkcheck. 
+make linkcheck.
 
 There shouldn't be more than four errors:
 
@@ -33,7 +33,7 @@ i) the first two ones refer to links which exist but can't be open because they 
 ii) The second one relates to the .zip folder which cannot be found. This error is normal since the .zip folder has not been uploaded yet.
 
 
-Run 
+Run
 
 make dist (if it doesn't work you might have to use sudo)
 
@@ -50,15 +50,15 @@ Run
 
 git tag + version number (git tag -a v2.0.0 -m"Version 2.0.0")
 
-to create a tag for the current release version and 
+to create a tag for the current release version and
 
 git push origin v2.0.0 to push to the origin
 
 cd to the root before the folder which contains the repository (folderxx)
 
-Run 
+Run
 
-python createPostRelease.py folderxx + version number 
+python createPostRelease.py folderxx + version number
 
 to create the zip file which contains a folder with the name of the file
 
@@ -67,5 +67,3 @@ Lastly
 In github create a new release which will point to the tag.
 
 Add this as an additional resource when creating the new release.
-
-
