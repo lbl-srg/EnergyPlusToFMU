@@ -88,7 +88,7 @@ is (a) installed and (b) added to the system PATH environment variable. Otherwis
 the simulation will fail with an error. If EnergyPlus has been properly added to the
 system PATH environment variable, then it can be started from any DOS prompt on
 Windows, command shell console on Linux, or Terminal window on Mac OS by
-typing <code class="docutils literal notranslate"><span class="pre">energyplus</span></code>. <a class="footnote-reference" href="#f1" id="id1">[1]</a></p>
+typing <code class="docutils literal notranslate"><span class="pre">energyplus</span></code> <a class="footnote-reference" href="#f1" id="id1">[1]</a> .</p>
 </li>
 <li><p class="first">The <code class="docutils literal notranslate"><span class="pre">Number</span> <span class="pre">of</span> <span class="pre">Timesteps</span> <span class="pre">per</span> <span class="pre">Hour</span></code> in EnergyPlus must be equal
 to the sampling time of the FMU. For example, consider the following
@@ -98,12 +98,12 @@ EnergyPlus IDF snippet:</p>
 </pre></div>
 </div>
 <p>Then, a tool that imports the FMU must synchronize it every 10 minutes.
-Otherwise, the simulation will stop with an error. <a class="footnote-reference" href="#f2" id="id2">[2]</a></p>
+Otherwise, the simulation will stop with an error <a class="footnote-reference" href="#f2" id="id2">[2]</a> .</p>
 </li>
 <li><p class="first">EnergyPlus contains the object <code class="docutils literal notranslate"><span class="pre">RunPeriod</span></code>.
 The start and end day of this object is ignored and replaced by the
 start and stop time provided by the master algorithm which imports
-the EnergyPlus FMU. <a class="footnote-reference" href="#f3" id="id3">[3]</a> However, the entry <code class="docutils literal notranslate"><span class="pre">Day</span> <span class="pre">of</span> <span class="pre">Week</span> <span class="pre">for</span> <span class="pre">Start</span> <span class="pre">Day</span></code>
+the EnergyPlus FMU <a class="footnote-reference" href="#f3" id="id3">[3]</a> . However, the entry <code class="docutils literal notranslate"><span class="pre">Day</span> <span class="pre">of</span> <span class="pre">Week</span> <span class="pre">for</span> <span class="pre">Start</span> <span class="pre">Day</span></code>
 will be used. For example, consider the following IDF snippet:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>RunPeriod,         ! Winter Simulation
 Winter Simulation, !- Name
@@ -128,7 +128,7 @@ will be used. Any other RunPeriod object will be ignored.</p>
 </li>
 <li><p class="first">A tool that imports the FMU must specify the start and stop time in seconds at initialization.
 The start and stop time will be converted to days and used by the EnergyPlus FMU.
-The start and stop time cannot have the value “infinity”.</p>
+The start and stop time cannot have the value <code class="docutils literal notranslate"><span class="pre">infinity</span></code>.</p>
 </li>
 <li><p class="first">The weather file which comes along with an FMU is used to determine
 if the year is a <code class="docutils literal notranslate"><span class="pre">leap</span> <span class="pre">year</span></code>. If no weather file is included in the FMU, then the

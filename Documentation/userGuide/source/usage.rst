@@ -13,7 +13,7 @@ The following items need to be observed when importing an FMU that contains Ener
    the simulation will fail with an error. If EnergyPlus has been properly added to the
    system PATH environment variable, then it can be started from any DOS prompt on
    Windows, command shell console on Linux, or Terminal window on Mac OS by
-   typing ``energyplus``. [#f1]_
+   typing ``energyplus`` [#f1]_ .
 
 2. The ``Number of Timesteps per Hour`` in EnergyPlus must be equal
    to the sampling time of the FMU. For example, consider the following
@@ -25,12 +25,12 @@ The following items need to be observed when importing an FMU that contains Ener
      6;        !- Number of Timesteps per Hour
 
    Then, a tool that imports the FMU must synchronize it every 10 minutes.
-   Otherwise, the simulation will stop with an error. [#f2]_
+   Otherwise, the simulation will stop with an error [#f2]_ .
 
 3. EnergyPlus contains the object ``RunPeriod``.
    The start and end day of this object is ignored and replaced by the
    start and stop time provided by the master algorithm which imports
-   the EnergyPlus FMU. [#f3]_ However, the entry ``Day of Week for Start Day``
+   the EnergyPlus FMU [#f3]_ . However, the entry ``Day of Week for Start Day``
    will be used. For example, consider the following IDF snippet:
 
    .. code-block:: text
@@ -57,7 +57,7 @@ The following items need to be observed when importing an FMU that contains Ener
 
 4. A tool that imports the FMU must specify the start and stop time in seconds at initialization.
    The start and stop time will be converted to days and used by the EnergyPlus FMU.
-   The start and stop time cannot have the value "infinity".
+   The start and stop time cannot have the value ``infinity``.
 
 5. The weather file which comes along with an FMU is used to determine
    if the year is a ``leap year``. If no weather file is included in the FMU, then the
