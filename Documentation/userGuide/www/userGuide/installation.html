@@ -1,36 +1,24 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>3. Installation and Configuration &#8212; FMU Export of EnergyPlus User Guide</title>
-    
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2.0.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="4. Creating an FMU" href="build.html" />
     <link rel="prev" title="2. Download" href="download.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
 <div class="headerStyle">
 <img src="_static/lbl-logo.png" alt="LBL logo" />
 </div>
@@ -57,7 +45,7 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">3. Installation and Configuration</a><ul>
 <li><a class="reference internal" href="#software-requirements">3.1. Software requirements</a></li>
@@ -70,7 +58,7 @@
 <li><a class="reference internal" href="#modifying-the-batch-files">3.8. Modifying the batch files</a></li>
 <li><a class="reference internal" href="#finding-a-compiler-linker-unix">3.9. Finding a compiler/linker (Unix)</a></li>
 <li><a class="reference internal" href="#troubleshooting-permissions-unix">3.10. Troubleshooting permissions (Unix)</a></li>
-<li><a class="reference internal" href="#troubleshooting-the-memmove-function">3.11. Troubleshooting the <code class="docutils literal"><span class="pre">memmove</span></code> function</a></li>
+<li><a class="reference internal" href="#troubleshooting-the-memmove-function">3.11. Troubleshooting the <code class="docutils literal notranslate"><span class="pre">memmove</span></code> function</a></li>
 <li><a class="reference internal" href="#troubleshooting-missing-libraries">3.12. Troubleshooting missing libraries</a></li>
 <li><a class="reference internal" href="#uninstallation">3.13. Uninstallation</a></li>
 </ul>
@@ -92,12 +80,14 @@
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -131,27 +121,27 @@
 <p>To install EnergyPlusToFMU, proceed as follows:</p>
 <ol class="arabic simple">
 <li>Download the installation file from the <a class="reference internal" href="download.html"><span class="doc">Download</span></a> page.</li>
-<li>Unzip the installation file into any subdirectory (hereafter referred to as the &#8220;installation directory&#8221;).</li>
+<li>Unzip the installation file into any subdirectory (hereafter referred to as the “installation directory”).</li>
 </ol>
 <p>The installation directory should contain the following subdirectories:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">Scripts/</span></code>
+<li><code class="docutils literal notranslate"><span class="pre">Scripts/</span></code>
 (Python scripts that create an FMU from an IDF file)<ul>
-<li><code class="docutils literal"><span class="pre">win/</span></code>
+<li><code class="docutils literal notranslate"><span class="pre">win/</span></code>
 (batch files for Windows)</li>
-<li><code class="docutils literal"><span class="pre">linux/</span></code>
+<li><code class="docutils literal notranslate"><span class="pre">linux/</span></code>
 (shell scripts for Linux)</li>
-<li><code class="docutils literal"><span class="pre">darwin/</span></code>
+<li><code class="docutils literal notranslate"><span class="pre">darwin/</span></code>
 (shell scripts for Mac OS X)</li>
 </ul>
 </li>
-<li><code class="docutils literal"><span class="pre">SourceCode/</span></code>
+<li><code class="docutils literal notranslate"><span class="pre">SourceCode/</span></code>
 (C and C++ source code for creating an EnergyPlus FMU)<ul>
-<li><code class="docutils literal"><span class="pre">EnergyPlus/</span></code></li>
-<li><code class="docutils literal"><span class="pre">Expat/</span></code></li>
-<li><code class="docutils literal"><span class="pre">fmu-export-prep/</span></code></li>
-<li><code class="docutils literal"><span class="pre">read-ep-file/</span></code></li>
-<li><code class="docutils literal"><span class="pre">utility/</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">EnergyPlus/</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">Expat/</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">fmu-export-prep/</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">read-ep-file/</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">utility/</span></code></li>
 </ul>
 </li>
 </ul>
@@ -173,7 +163,7 @@ Configuring EnergyPlusToFMU mainly consists of:</p>
 <li>Passing the compiler or linker different options than the default.</li>
 </ul>
 <p>EnergyPlusToFMU controls both aspects of the configuration using batch files on Windows, and shell scripts on Linux and Macintosh.
-Batch files have the extension <code class="docutils literal"><span class="pre">.bat</span></code>, while shell scripts have the <code class="docutils literal"><span class="pre">.sh</span></code> extension.
+Batch files have the extension <code class="docutils literal notranslate"><span class="pre">.bat</span></code>, while shell scripts have the <code class="docutils literal notranslate"><span class="pre">.sh</span></code> extension.
 For convenience, this guide refers to all such files as batch files.</p>
 <p>EnergyPlusToFMU includes the following batch files:</p>
 <table border="1" class="docutils">
@@ -187,27 +177,27 @@ For convenience, this guide refers to all such files as batch files.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">compile-c.bat</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">compile-c.bat</span></code></td>
 <td>Compiles a C source code file into an object file.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">link-c-exe.bat</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">link-c-exe.bat</span></code></td>
 <td>Links object files, generated by the C compiler,
 into an executable (i.e., a stand-alone application).</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">link-c-lib.bat</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">link-c-lib.bat</span></code></td>
 <td>Links object files, generated by the C compiler,
 into a shared or dynamic link library.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">compile-cpp.bat</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">compile-cpp.bat</span></code></td>
 <td>Compiles a C++ source code file into an object file.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">link-cpp-exe.bat</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">link-cpp-exe.bat</span></code></td>
 <td>Links object files, generated by the C++ compiler,
 into an executable (i.e. a stand-alone application).</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">test-c-exe.bat</span></code></td>
-<td>Automates a test of batch files <code class="docutils literal"><span class="pre">compile-c.bat</span></code> and
-<code class="docutils literal"><span class="pre">link-c-exe.bat</span></code>.</td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">test-c-exe.bat</span></code></td>
+<td>Automates a test of batch files <code class="docutils literal notranslate"><span class="pre">compile-c.bat</span></code> and
+<code class="docutils literal notranslate"><span class="pre">link-c-exe.bat</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -226,14 +216,14 @@ Therefore if you are using an emulator or virtual machine (for example, Cygwin u
 In addition to the default versions, some alternate versions also may be present.
 The alternate versions can be identified in two ways:</p>
 <ol class="arabic simple">
-<li>The file extension is &#8220;<code class="docutils literal"><span class="pre">.txt</span></code>&#8221;, rather than &#8220;<code class="docutils literal"><span class="pre">.bat</span></code>&#8221; (or &#8220;<code class="docutils literal"><span class="pre">.sh</span></code>&#8221;).</li>
+<li>The file extension is “<code class="docutils literal notranslate"><span class="pre">.txt</span></code>”, rather than “<code class="docutils literal notranslate"><span class="pre">.bat</span></code>” (or “<code class="docutils literal notranslate"><span class="pre">.sh</span></code>”).</li>
 <li>The file name indicates the associated options.
-For example, a file <code class="docutils literal"><span class="pre">compile-c-gcc-32bit.txt</span></code> is one possible version of <code class="docutils literal"><span class="pre">compile-c.sh</span></code>.
+For example, a file <code class="docutils literal notranslate"><span class="pre">compile-c-gcc-32bit.txt</span></code> is one possible version of <code class="docutils literal notranslate"><span class="pre">compile-c.sh</span></code>.
 It is specific to the gcc compiler/linker environment, and it generates
 32-bit object files, even on a 64-bit operating system.</li>
 </ol>
 <p>Note that the default batch file is an exact copy of one of the supplied alternate versions.
-For example, in the <code class="docutils literal"><span class="pre">win</span></code> subdirectory, the default batch file <code class="docutils literal"><span class="pre">compile-c.bat</span></code> is the same as <code class="docutils literal"><span class="pre">compile-c-mvs10.txt</span></code> (the version for Microsoft Visual Studio 10).</p>
+For example, in the <code class="docutils literal notranslate"><span class="pre">win</span></code> subdirectory, the default batch file <code class="docutils literal notranslate"><span class="pre">compile-c.bat</span></code> is the same as <code class="docutils literal notranslate"><span class="pre">compile-c-mvs10.txt</span></code> (the version for Microsoft Visual Studio 10).</p>
 <p>Once you have identified the appropriate batch file subdirectory, you can either:</p>
 <ul class="simple">
 <li>Test the existing batch files to determine whether a 32-bit or 64-bit FMU will be created.
@@ -245,15 +235,15 @@ See <a class="reference internal" href="#modifying-the-batch-files">Modifying th
 <div class="section" id="running-a-basic-test">
 <h2>3.5. Running a basic test<a class="headerlink" href="#running-a-basic-test" title="Permalink to this headline">¶</a></h2>
 <p>In addition to the batch files that run the compiler and linker, EnergyPlusToFMU includes a batch file that tests some of the existing batch files.
-In particular, batch file <code class="docutils literal"><span class="pre">test-c-exe.bat</span></code> tests the compiler and linker batch files which build an executable from <code class="docutils literal"><span class="pre">C</span></code> source code.
+In particular, batch file <code class="docutils literal notranslate"><span class="pre">test-c-exe.bat</span></code> tests the compiler and linker batch files which build an executable from <code class="docutils literal notranslate"><span class="pre">C</span></code> source code.
 Once these batch files work, it should not be difficult to make the other compiler and linker batch files work.</p>
-<p>The batch file <code class="docutils literal"><span class="pre">test-c-exe.bat</span></code> runs the appropriate compiler and linker batch files, and tests the resulting executable.
+<p>The batch file <code class="docutils literal notranslate"><span class="pre">test-c-exe.bat</span></code> runs the appropriate compiler and linker batch files, and tests the resulting executable.
 It reports its progress, and so should give information as to where problems occur, if any.</p>
 <p>To run the basic test,
 open a command-line window (see <a class="reference internal" href="notation.html"><span class="doc">Notation</span></a>).
 Next, change to the appropriate batch file directory, and run the test batch file.</p>
 <p>A sample session at the Windows DOS prompt:</p>
-<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Change to the batch file directory.
 &gt; cd  epfmu_install_dir\Scripts\win
 
 # Run the batch file.
@@ -271,7 +261,7 @@ get-address-size.c
 </pre></div>
 </div>
 <p>A sample session in a Linux command shell:</p>
-<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Change to the batch file directory.
 &gt; cd  epfmu_install_dir/Scripts/linux
 
 # Run the batch file.
@@ -289,7 +279,7 @@ get-address-size.c
 </pre></div>
 </div>
 <p>A sample session in a MacOS Terminal window:</p>
-<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Change to the batch file directory.
 &gt; cd  epfmu_install_dir/Scripts/darwin
 
 # Run the batch file.
@@ -314,7 +304,7 @@ Therefore as you fine-tune your configuration, you may want to look to those sec
 </div>
 <div class="section" id="checking-compile-c-bat">
 <h2>3.6. Checking compile-c.bat<a class="headerlink" href="#checking-compile-c-bat" title="Permalink to this headline">¶</a></h2>
-<p>This section describes how to check the current version of batch file <code class="docutils literal"><span class="pre">compile-c.bat</span></code>.
+<p>This section describes how to check the current version of batch file <code class="docutils literal notranslate"><span class="pre">compile-c.bat</span></code>.
 A later section describes <a class="reference internal" href="#checking-link-c-exe-bat">checking link-c-exe.bat</a>.
 Once these batch files work, it should not be difficult to make the other compiler and linker batch files work.</p>
 <p>The check is to build and then run one of the EnergyPlusToFMU supporting applications.
@@ -323,7 +313,7 @@ If the application builds and runs correctly, it reports whether your compiler g
 Next, change to the appropriate batch file directory, and run the compiler batch file.
 The compiler should produce an object file in the same directory.</p>
 <p>A sample session at the Windows DOS prompt:</p>
-<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Change to the batch file directory.
 &gt; cd  epfmu_install_dir\Scripts\win
 
 # Run the batch file.
@@ -335,7 +325,7 @@ get-address-size.obj
 </pre></div>
 </div>
 <p>A sample session in a Linux command shell:</p>
-<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Change to the batch file directory.
 &gt; cd  epfmu_install_dir/Scripts/linux
 
 # Run the batch file.
@@ -348,7 +338,7 @@ get-address-size.o
 </pre></div>
 </div>
 <p>A sample session in MacOS Terminal:</p>
-<div class="highlight-none"><div class="highlight"><pre># Change to the batch file directory.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Change to the batch file directory.
 &gt; cd  epfmu_install_dir/Scripts/darwin
 
 # Run the batch file.
@@ -366,40 +356,40 @@ Reasons for failure fall into a few broad categories:</p>
 <ul class="simple">
 <li>The commands in the batch file are wrong for your system.
 This is the most likely cause of failure.
-The subsections below give hints on providing an appropriate <code class="docutils literal"><span class="pre">compile-c.bat</span></code>
+The subsections below give hints on providing an appropriate <code class="docutils literal notranslate"><span class="pre">compile-c.bat</span></code>
 batch file.</li>
 <li>You do not have permission to run the batch file.
 When you run the batch file, watch for output like
-&#8220;Permission denied&#8221; from the operating system.
+“Permission denied” from the operating system.
 See <a class="reference internal" href="#troubleshooting-permissions">Troubleshooting permissions</a> below.</li>
 <li>The source code file is not on the specified path.
 When you run the batch file, watch for output like
-&#8220;No such file or directory&#8221;, along with the name of the source code file.
+“No such file or directory”, along with the name of the source code file.
 Check the <a class="reference internal" href="#installation-directory">installation directory</a> structure, as specified above.</li>
-<li>The compiler did not accept some statement in source code file <code class="docutils literal"><span class="pre">get-address-size.c</span></code>.
+<li>The compiler did not accept some statement in source code file <code class="docutils literal notranslate"><span class="pre">get-address-size.c</span></code>.
 In this case, please contact the EnergyPlusToFMU team to report the problem.</li>
 </ul>
-<p>Successfully compiling <code class="docutils literal"><span class="pre">get-address-size.c</span></code> does not completely test the compiler batch files.
+<p>Successfully compiling <code class="docutils literal notranslate"><span class="pre">get-address-size.c</span></code> does not completely test the compiler batch files.
 In particular:</p>
 <ul class="simple">
-<li>The batch file <code class="docutils literal"><span class="pre">compile-c.bat</span></code> must specify whether or not your compiler/linker
-environment provides a function called <code class="docutils literal"><span class="pre">memmove</span></code>.
-The simple application being tested here does not use <code class="docutils literal"><span class="pre">memmove</span></code>, so this
+<li>The batch file <code class="docutils literal notranslate"><span class="pre">compile-c.bat</span></code> must specify whether or not your compiler/linker
+environment provides a function called <code class="docutils literal notranslate"><span class="pre">memmove</span></code>.
+The simple application being tested here does not use <code class="docutils literal notranslate"><span class="pre">memmove</span></code>, so this
 aspect of the compiler batch file is not checked.
 See <a class="reference internal" href="#troubleshooting-the-memmove-function">Troubleshooting the memmove function</a> below.</li>
-<li>The batch file <code class="docutils literal"><span class="pre">compile-cpp.bat</span></code> must be configured for the C++ language, rather
+<li>The batch file <code class="docutils literal notranslate"><span class="pre">compile-cpp.bat</span></code> must be configured for the C++ language, rather
 than the C language.
-Often no particular changes are required compared to <code class="docutils literal"><span class="pre">compile-c.bat</span></code>
+Often no particular changes are required compared to <code class="docutils literal notranslate"><span class="pre">compile-c.bat</span></code>
 See the sample batch files in the standard distribution.</li>
 </ul>
 </div>
 <div class="section" id="checking-link-c-exe-bat">
 <h2>3.7. Checking link-c-exe.bat<a class="headerlink" href="#checking-link-c-exe-bat" title="Permalink to this headline">¶</a></h2>
-<p>Once you have successfully compiled the source code file <code class="docutils literal"><span class="pre">get-address-size.c</span></code> into an object file, the next step is to link the object file into an executable.</p>
+<p>Once you have successfully compiled the source code file <code class="docutils literal notranslate"><span class="pre">get-address-size.c</span></code> into an object file, the next step is to link the object file into an executable.</p>
 <p>Working in the same subdirectory where you built the object file, run the linker batch file.
-In response, the linker should produce an executable, called <code class="docutils literal"><span class="pre">test.exe</span></code>, which you should be able to run.</p>
+In response, the linker should produce an executable, called <code class="docutils literal notranslate"><span class="pre">test.exe</span></code>, which you should be able to run.</p>
 <p>A sample session at the Windows DOS prompt:</p>
-<div class="highlight-none"><div class="highlight"><pre># Run the batch file.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Run the batch file.
 &gt; link-c-exe.bat  test.exe  get-address-size.obj
 
 # Check the executable.
@@ -412,7 +402,7 @@ test.exe
 </pre></div>
 </div>
 <p>A sample session for both a Linux command shell and MacOS Terminal:</p>
-<div class="highlight-none"><div class="highlight"><pre># Run the batch file.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Run the batch file.
 # Note the &quot;./&quot; before the batch file name.
 &gt; ./link-c-exe.sh  test.exe  get-address-size.o
 
@@ -428,63 +418,63 @@ test.exe
 <p>Again, the batch file may not work, for a few reasons:</p>
 <ul class="simple">
 <li>The commands in the batch file are wrong for your system.
-The subsections below give hints on providing an appropriate <code class="docutils literal"><span class="pre">link-c-exe.bat</span></code>
+The subsections below give hints on providing an appropriate <code class="docutils literal notranslate"><span class="pre">link-c-exe.bat</span></code>
 batch file.
 In particular, if the linker complains of not being able to find the standard
-library function <code class="docutils literal"><span class="pre">printf</span></code>, see <a class="reference internal" href="#troubleshooting-missing-libraries">Troubleshooting missing libraries</a> below.</li>
+library function <code class="docutils literal notranslate"><span class="pre">printf</span></code>, see <a class="reference internal" href="#troubleshooting-missing-libraries">Troubleshooting missing libraries</a> below.</li>
 <li>You do not have permission to run the batch file.
 When you run the batch file, watch for output like
-&#8220;Permission denied&#8221; from the operating system.
+“Permission denied” from the operating system.
 See <a class="reference internal" href="#troubleshooting-permissions">Troubleshooting permissions</a> below.</li>
 </ul>
-<p>Successfully building <code class="docutils literal"><span class="pre">test.exe</span></code> does not completely test the linker batch files.
+<p>Successfully building <code class="docutils literal notranslate"><span class="pre">test.exe</span></code> does not completely test the linker batch files.
 In particular:</p>
 <ul class="simple">
-<li>The batch file <code class="docutils literal"><span class="pre">link-c-lib.bat</span></code> has an additional complication.
+<li>The batch file <code class="docutils literal notranslate"><span class="pre">link-c-lib.bat</span></code> has an additional complication.
 This batch file must link objects into a shared library.
 Creating a shared library generally requires passing a special switch or flag
-to the linker, such as <code class="docutils literal"><span class="pre">-shared</span></code>, <code class="docutils literal"><span class="pre">-dynamiclib</span></code>, or <code class="docutils literal"><span class="pre">/LD</span></code>.
+to the linker, such as <code class="docutils literal notranslate"><span class="pre">-shared</span></code>, <code class="docutils literal notranslate"><span class="pre">-dynamiclib</span></code>, or <code class="docutils literal notranslate"><span class="pre">/LD</span></code>.
 See the documentation for your development environment.</li>
-<li>The batch file <code class="docutils literal"><span class="pre">link-cpp-exe.bat</span></code> must link objects generated by the C++ compiler.
-This may require changing the linker switches or flags used in <code class="docutils literal"><span class="pre">link-c-exe.bat</span></code>.</li>
-<li>Building <code class="docutils literal"><span class="pre">test.exe</span></code> uses a single object file.
+<li>The batch file <code class="docutils literal notranslate"><span class="pre">link-cpp-exe.bat</span></code> must link objects generated by the C++ compiler.
+This may require changing the linker switches or flags used in <code class="docutils literal notranslate"><span class="pre">link-c-exe.bat</span></code>.</li>
+<li>Building <code class="docutils literal notranslate"><span class="pre">test.exe</span></code> uses a single object file.
 The linker batch file must be able to handle a list of object files.
 The provided batch files all do this correctly.
 Since proper behavior depends on the operating system, rather than on the linker,
 no problems should arise here.</li>
 </ul>
-<p>In all cases, comparing the batch files provided by the <code class="docutils literal"><span class="pre">EnergyPlusToFMU</span></code> installation may help solve some of these problems.</p>
+<p>In all cases, comparing the batch files provided by the <code class="docutils literal notranslate"><span class="pre">EnergyPlusToFMU</span></code> installation may help solve some of these problems.</p>
 </div>
 <div class="section" id="modifying-the-batch-files">
 <h2>3.8. Modifying the batch files<a class="headerlink" href="#modifying-the-batch-files" title="Permalink to this headline">¶</a></h2>
 <p>This section gives general advice for editing your batch files, in case the default versions do not work on your system, or in case you want to modify or replace the default versions (for example, to change the optimization level, or to use a different compiler/linker).</p>
 <p>Unfortunately, it is beyond the scope of this document to give full instructions on installing and using developer tools such as compilers and linkers.</p>
 <p>The EnergyPlusToFMU tools only use the batch files named in the table shown in subsection <a class="reference internal" href="#batch-files">Batch files</a>.
-Thus, editing <code class="docutils literal"><span class="pre">compile-c-gcc.txt</span></code> will have no effect on how the FMU gets created.
-Only <code class="docutils literal"><span class="pre">compile-c.bat</span></code> affects how EnergyPlusToFMU compiles <code class="docutils literal"><span class="pre">C</span></code> source code files.</p>
+Thus, editing <code class="docutils literal notranslate"><span class="pre">compile-c-gcc.txt</span></code> will have no effect on how the FMU gets created.
+Only <code class="docutils literal notranslate"><span class="pre">compile-c.bat</span></code> affects how EnergyPlusToFMU compiles <code class="docutils literal notranslate"><span class="pre">C</span></code> source code files.</p>
 <p>If a batch file does not work, it may simply be a matter of changing the directory path hard-coded in the batch file.
 For example, the batch files for Microsoft Visual Studio list several known locations for finding the Visual Studio program files.
-If your machine has Visual Studio installed in some other location (say, on the &#8220;<code class="docutils literal"><span class="pre">D:\</span></code>&#8221; drive rather than on &#8220;<code class="docutils literal"><span class="pre">C:\</span></code>&#8221;), then editing the batch file to point to the correct path may be all that is needed.</p>
+If your machine has Visual Studio installed in some other location (say, on the “<code class="docutils literal notranslate"><span class="pre">D:\</span></code>” drive rather than on “<code class="docutils literal notranslate"><span class="pre">C:\</span></code>”), then editing the batch file to point to the correct path may be all that is needed.</p>
 <p>On most systems, the compiler also can act as the linker (or call the linker, filling in appropriate options).
-Therefore once you have your system&#8217;s compiler working, try listing the same tool in the linker batch files.</p>
+Therefore once you have your system’s compiler working, try listing the same tool in the linker batch files.</p>
 <p>If your compiler/linker environment comes with an integrated development environment (IDE), you often can use the IDE to determine appropriate flags for controlling the compiler and linker.
-For example, Microsoft Visual Studio is the standard IDE for Microsoft&#8217;s C/C++ compilers, and the configuration panels in Visual Studio show the flags corresponding to each option.
+For example, Microsoft Visual Studio is the standard IDE for Microsoft’s C/C++ compilers, and the configuration panels in Visual Studio show the flags corresponding to each option.
 Therefore if you are having problems compiling a source code file with a provided batch file, try using the IDE to compile that source code file, and check what options the IDE uses.</p>
 </div>
 <div class="section" id="finding-a-compiler-linker-unix">
 <h2>3.9. Finding a compiler/linker (Unix)<a class="headerlink" href="#finding-a-compiler-linker-unix" title="Permalink to this headline">¶</a></h2>
 <p>The following tips for finding the compiler/linker apply to Unix-like environments, including Linux and MacOS.</p>
-<p>Unix-like environments often define <code class="docutils literal"><span class="pre">cc</span></code> as a link to the standard C compiler, and <code class="docutils literal"><span class="pre">c++</span></code> as a link to the standard C++ compiler.</p>
-<p>If you have a standard compiler on your search path, the <code class="docutils literal"><span class="pre">which</span></code> command will locate it.
+<p>Unix-like environments often define <code class="docutils literal notranslate"><span class="pre">cc</span></code> as a link to the standard C compiler, and <code class="docutils literal notranslate"><span class="pre">c++</span></code> as a link to the standard C++ compiler.</p>
+<p>If you have a standard compiler on your search path, the <code class="docutils literal notranslate"><span class="pre">which</span></code> command will locate it.
 For example, entering the command:</p>
-<div class="highlight-none"><div class="highlight"><pre>&gt; which gcc
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; which gcc
 </pre></div>
 </div>
-<p>will return the path to the <code class="docutils literal"><span class="pre">gcc</span></code> compiler, provided your system has it, and provided it is on the search path.
-Otherwise, <code class="docutils literal"><span class="pre">which</span> <span class="pre">gcc</span></code> will return nothing.</p>
-<p>If you believe you have a certain compiler, but cannot find it on your search path, try the <code class="docutils literal"><span class="pre">find</span></code> command.
-For example, to locate the <code class="docutils literal"><span class="pre">icc</span></code> compiler, try:</p>
-<div class="highlight-none"><div class="highlight"><pre>&gt; find /usr -name icc
+<p>will return the path to the <code class="docutils literal notranslate"><span class="pre">gcc</span></code> compiler, provided your system has it, and provided it is on the search path.
+Otherwise, <code class="docutils literal notranslate"><span class="pre">which</span> <span class="pre">gcc</span></code> will return nothing.</p>
+<p>If you believe you have a certain compiler, but cannot find it on your search path, try the <code class="docutils literal notranslate"><span class="pre">find</span></code> command.
+For example, to locate the <code class="docutils literal notranslate"><span class="pre">icc</span></code> compiler, try:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; find /usr -name icc
 &gt; find /bin -name icc
 &gt; find /opt -name icc
 &gt; find / -name icc
@@ -492,15 +482,15 @@ For example, to locate the <code class="docutils literal"><span class="pre">icc<
 </div>
 <p>The first three commands search specific directories that commonly contain developer tools (your system may not have all of these directories).
 The last command searches the entire directory tree (and may take quite a while).</p>
-<p>The <code class="docutils literal"><span class="pre">find</span></code> command accepts wildcards.
+<p>The <code class="docutils literal notranslate"><span class="pre">find</span></code> command accepts wildcards.
 Put them in quote marks, in order to prevent the shell from operating on the wildcard.
 For example:</p>
-<div class="highlight-none"><div class="highlight"><pre>&gt; find /usr -name &quot;*icc*&quot;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; find /usr -name &quot;*icc*&quot;
 </pre></div>
 </div>
-<p>searches the <code class="docutils literal"><span class="pre">/usr</span></code> directory for any file whose name contains the string <code class="docutils literal"><span class="pre">icc</span></code>.</p>
-<p>Finally, the <code class="docutils literal"><span class="pre">apropos</span></code> command may help:</p>
-<div class="highlight-none"><div class="highlight"><pre>&gt; apropos compiler
+<p>searches the <code class="docutils literal notranslate"><span class="pre">/usr</span></code> directory for any file whose name contains the string <code class="docutils literal notranslate"><span class="pre">icc</span></code>.</p>
+<p>Finally, the <code class="docutils literal notranslate"><span class="pre">apropos</span></code> command may help:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; apropos compiler
 </pre></div>
 </div>
 <p>will search your help files for information pertaining to compilers.
@@ -509,9 +499,9 @@ Unfortunately, it may return many entries unrelated to compiling C and C++ sourc
 <div class="section" id="troubleshooting-permissions-unix">
 <span id="troubleshooting-permissions"></span><h2>3.10. Troubleshooting permissions (Unix)<a class="headerlink" href="#troubleshooting-permissions-unix" title="Permalink to this headline">¶</a></h2>
 <p>Permissions problems arise on Unix-like systems.
-The batch files must have &#8220;execute&#8221; permission, meaning you are allowed to run the file as a set of commands.
+The batch files must have “execute” permission, meaning you are allowed to run the file as a set of commands.
 To check the permissions:</p>
-<div class="highlight-none"><div class="highlight"><pre># Linux, MacOS:
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Linux, MacOS:
 &gt; ls -lt  *.sh
 -rwxr--r--  ...  link-c-lib.sh
 -rwxr--r--  ...  link-c-exe.sh
@@ -520,33 +510,33 @@ To check the permissions:</p>
 -rwxr--r--  ...  compile-cpp.sh
 </pre></div>
 </div>
-<p>All five of the default batch files should have &#8220;<code class="docutils literal"><span class="pre">-rwx</span></code>&#8221; at the beginning of the permissions block (indicating you are allowed to read, write, and execute the file).
+<p>All five of the default batch files should have “<code class="docutils literal notranslate"><span class="pre">-rwx</span></code>” at the beginning of the permissions block (indicating you are allowed to read, write, and execute the file).
 If not, then set the permissions:</p>
-<div class="highlight-none"><div class="highlight"><pre># Linux, MacOS:
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Linux, MacOS:
 &gt; chmod  u=rwx,g=r,o=r  *.sh
 </pre></div>
 </div>
 <p>and try running the compiler batch file again.</p>
 </div>
 <div class="section" id="troubleshooting-the-memmove-function">
-<h2>3.11. Troubleshooting the <code class="docutils literal"><span class="pre">memmove</span></code> function<a class="headerlink" href="#troubleshooting-the-memmove-function" title="Permalink to this headline">¶</a></h2>
-<p>The batch file that runs the C compiler, <code class="docutils literal"><span class="pre">compile-c.bat</span></code>, needs to indicate whether or not your C compiler/linker environment provides a non-standard function called <code class="docutils literal"><span class="pre">memmove</span></code>.
-While <code class="docutils literal"><span class="pre">memmove</span></code> is non-standard in C, it is standard for C++.
+<h2>3.11. Troubleshooting the <code class="docutils literal notranslate"><span class="pre">memmove</span></code> function<a class="headerlink" href="#troubleshooting-the-memmove-function" title="Permalink to this headline">¶</a></h2>
+<p>The batch file that runs the C compiler, <code class="docutils literal notranslate"><span class="pre">compile-c.bat</span></code>, needs to indicate whether or not your C compiler/linker environment provides a non-standard function called <code class="docutils literal notranslate"><span class="pre">memmove</span></code>.
+While <code class="docutils literal notranslate"><span class="pre">memmove</span></code> is non-standard in C, it is standard for C++.
 Therefore many C environments provide it as well.</p>
-<p>If your C compiler/linker environment does provide <code class="docutils literal"><span class="pre">memmove</span></code>, then the batch file should pass the macro definition <code class="docutils literal"><span class="pre">HAVE_MEMMOVE</span></code> to the compiler.
+<p>If your C compiler/linker environment does provide <code class="docutils literal notranslate"><span class="pre">memmove</span></code>, then the batch file should pass the macro definition <code class="docutils literal notranslate"><span class="pre">HAVE_MEMMOVE</span></code> to the compiler.
 The included batch files show how to define a macro for various compilers.</p>
-<p>If, on the other hand, your C compiler/linker environment does not provide <code class="docutils literal"><span class="pre">memmove</span></code>, then do not define the macro in the compiler batch file.</p>
+<p>If, on the other hand, your C compiler/linker environment does not provide <code class="docutils literal notranslate"><span class="pre">memmove</span></code>, then do not define the macro in the compiler batch file.</p>
 <p>If you are not sure whether or not your system provides the function, simply watch for any errors while building your first FMU.
-If you fail to define <code class="docutils literal"><span class="pre">HAVE_MEMMOVE</span></code> when your system has it, the linker will complain about duplicate definitions of <code class="docutils literal"><span class="pre">memmove</span></code>.
-Conversely, if you define <code class="docutils literal"><span class="pre">HAVE_MEMMOVE</span></code> when your system does not have it, the linker will complain about not being able to find <code class="docutils literal"><span class="pre">memmove</span></code>.</p>
+If you fail to define <code class="docutils literal notranslate"><span class="pre">HAVE_MEMMOVE</span></code> when your system has it, the linker will complain about duplicate definitions of <code class="docutils literal notranslate"><span class="pre">memmove</span></code>.
+Conversely, if you define <code class="docutils literal notranslate"><span class="pre">HAVE_MEMMOVE</span></code> when your system does not have it, the linker will complain about not being able to find <code class="docutils literal notranslate"><span class="pre">memmove</span></code>.</p>
 </div>
 <div class="section" id="troubleshooting-missing-libraries">
 <h2>3.12. Troubleshooting missing libraries<a class="headerlink" href="#troubleshooting-missing-libraries" title="Permalink to this headline">¶</a></h2>
 <p>Some linkers need explicit instructions to link to library code.
-Libraries are needed to provide standard functions, such as <code class="docutils literal"><span class="pre">printf</span></code>, that are called by the EnergyPlusToFMU source code.
-If the linker emits an error message indicating it cannot find a particular function, then consult your development environment&#8217;s documentation to determine which libraries it may need.</p>
+Libraries are needed to provide standard functions, such as <code class="docutils literal notranslate"><span class="pre">printf</span></code>, that are called by the EnergyPlusToFMU source code.
+If the linker emits an error message indicating it cannot find a particular function, then consult your development environment’s documentation to determine which libraries it may need.</p>
 <p>Note that specifying libraries is often somewhat arcane.
-For example, on Unix-like systems, to link a library <code class="docutils literal"><span class="pre">libm.a</span></code> typically requires the linker flag <code class="docutils literal"><span class="pre">-lm</span></code>.
+For example, on Unix-like systems, to link a library <code class="docutils literal notranslate"><span class="pre">libm.a</span></code> typically requires the linker flag <code class="docutils literal notranslate"><span class="pre">-lm</span></code>.
 Furthermore, the order in which libraries are linked can matter, and you may need to add another flag to indicate the path(s) where the linker should search for libraries.</p>
 </div>
 <div class="section" id="uninstallation">
@@ -583,7 +573,7 @@ Furthermore, the order in which libraries are linked can matter, and you may nee
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2013-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

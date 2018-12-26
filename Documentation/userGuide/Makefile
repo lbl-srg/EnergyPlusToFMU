@@ -92,7 +92,7 @@ doctest:
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
-	      
+
 release-html:
 	#-mkdir release
 	#-mkdir release/userGuide
@@ -101,7 +101,7 @@ release-html:
 	-cp -R $(BUILDDIR)/html/_images www/userGuide
 	-cp -R $(BUILDDIR)/html/legal.html ../../
 
-dist:   clean cleanpdf latex html release-html copypdftodoc copydoctowww  
+dist:   clean cleanpdf latex html release-html copypdftodoc copydoctowww
 
 copypdftodoc:
 	@echo "Copy pdf files to the userGuide folder."
@@ -110,6 +110,6 @@ copypdftodoc:
 copydoctowww:
 	@echo "Sent files to the server excluding .svn."
 	@echo "Set permissions to ensure files can be written on gundog."
-	ssh thierry@gundog.lbl.gov "sudo chmod -R g+w /usr/local/www/simulationresearch/fmu/EnergyPlus/export/"
-	rsync -av --exclude '*.svn' www/* thierry@gundog.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
+	#ssh thierry@gundog.lbl.gov "sudo chmod -R g+w /usr/local/www/simulationresearch/fmu/EnergyPlus/export/"
+	#rsync -av --exclude '*.svn' www/* thierry@gundog.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
 	#scp -r release/* thierry@gundog.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/

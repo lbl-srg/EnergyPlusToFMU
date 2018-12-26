@@ -1,36 +1,24 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>6. Mathematical Description &#8212; FMU Export of EnergyPlus User Guide</title>
-    
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2.0.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="7. Best Practice" href="bestPractice.html" />
     <link rel="prev" title="5. Usage of EnergyPlus as an FMU" href="usage.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
 <div class="headerStyle">
 <img src="_static/lbl-logo.png" alt="LBL logo" />
 </div>
@@ -72,12 +60,14 @@
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -92,51 +82,51 @@
 <span id="mathematics"></span><h1>6. Mathematical Description<a class="headerlink" href="#mathematical-description" title="Permalink to this headline">¶</a></h1>
 <p>This section describes the algorithm for exchanging data between EnergyPlus, packaged as an FMU, and an external program.</p>
 <p>Suppose we have a system with two simulation programs.  Let simulation program 1 be EnergyPlus, the slave simulation program, which is packaged as an FMU for co-simulation; and let simulation program 2 be the master simulation program which supports the import of FMU for co-simulation. Suppose each program solves an initial-value ordinary differential equation that is coupled to the differential equations of the other program.</p>
-<p>Let <span class="math">\(N\)</span> denote the number of time steps and let <span class="math">\(k\)</span> denote the time step. We will use the subscripts 1 and 2 to denote the state variable and the function that computes the next value of the state variable of the simulator 1 and 2, respectively.
+<p>Let <span class="math notranslate nohighlight">\(N\)</span> denote the number of time steps and let <span class="math notranslate nohighlight">\(k\)</span> denote the time step. We will use the subscripts 1 and 2 to denote the state variable and the function that computes the next value of the state variable of the simulator 1 and 2, respectively.
 Then program 1 computes the sequence</p>
 <blockquote>
-<div><span class="math">\(x_{1}(k+1) = f_{1}(x_{1}(k), x_{2}(k))\)</span>,</div></blockquote>
+<div><span class="math notranslate nohighlight">\(x_{1}(k+1) = f_{1}(x_{1}(k), x_{2}(k))\)</span>,</div></blockquote>
 <p>and, similarly, program 2 computes the sequence</p>
 <blockquote>
-<div><span class="math">\(x_{2}(k+1) = f_{2}(x_{2}(k), x_{1}(k))\)</span>,</div></blockquote>
-<p>with initial conditions <span class="math">\(x_{1}(0) = x_{1,0}\)</span> and <span class="math">\(x_{2}(0) = x_{2,0}\)</span>.</p>
-<p>To advance from time <span class="math">\(k\)</span> to <span class="math">\(k+1\)</span>, each program uses its own integration algorithm. At the end of the time step, program 1 sends its new state <span class="math">\(x_{1}(k+1)\)</span> to program 2, and receives the state <span class="math">\(x_{2}(k+1)\)</span> from program 2.
+<div><span class="math notranslate nohighlight">\(x_{2}(k+1) = f_{2}(x_{2}(k), x_{1}(k))\)</span>,</div></blockquote>
+<p>with initial conditions <span class="math notranslate nohighlight">\(x_{1}(0) = x_{1,0}\)</span> and <span class="math notranslate nohighlight">\(x_{2}(0) = x_{2,0}\)</span>.</p>
+<p>To advance from time <span class="math notranslate nohighlight">\(k\)</span> to <span class="math notranslate nohighlight">\(k+1\)</span>, each program uses its own integration algorithm. At the end of the time step, program 1 sends its new state <span class="math notranslate nohighlight">\(x_{1}(k+1)\)</span> to program 2, and receives the state <span class="math notranslate nohighlight">\(x_{2}(k+1)\)</span> from program 2.
 The same procedure is done with the program 2. Program 2, which is the master simulation program, imports the FMU, and manages the data exchange between the two programs.
 In comparison to numerical methods of differential equations, this scheme is equal to an explicit Euler integration, which is an integration algorithm that solves an ordinary differential equation with specified initial values,</p>
 <blockquote>
-<div><p><span class="math">\(dx/dt = h(x)\)</span>,</p>
-<p><span class="math">\(x(0)  = x_{0}\)</span>,</p>
+<div><p><span class="math notranslate nohighlight">\(dx/dt = h(x)\)</span>,</p>
+<p><span class="math notranslate nohighlight">\(x(0)  = x_{0}\)</span>,</p>
 </div></blockquote>
-<p>on the time interval <span class="math">\(t \in [0, 1]\)</span>, using he following steps:</p>
+<p>on the time interval <span class="math notranslate nohighlight">\(t \in [0, 1]\)</span>, using he following steps:</p>
 <p><strong>Step 0:</strong></p>
 <blockquote>
-<div><p>Initialize counter <span class="math">\(k=0\)</span> and number of steps, <span class="math">\(N &gt; 0\)</span>.</p>
-<p>Set initial state <span class="math">\(x(k) = x_{0}\)</span> and set time step  <span class="math">\(\Delta t = 1/N\)</span>.</p>
+<div><p>Initialize counter <span class="math notranslate nohighlight">\(k=0\)</span> and number of steps, <span class="math notranslate nohighlight">\(N &gt; 0\)</span>.</p>
+<p>Set initial state <span class="math notranslate nohighlight">\(x(k) = x_{0}\)</span> and set time step  <span class="math notranslate nohighlight">\(\Delta t = 1/N\)</span>.</p>
 </div></blockquote>
 <p><strong>Step 1:</strong></p>
 <blockquote>
-<div><p>Compute new state  <span class="math">\(x(k+1) = x(k) + h(x(k)) \Delta t\)</span>.</p>
-<p>Replace <span class="math">\(k\)</span> by <span class="math">\(k+1\)</span>.</p>
+<div><p>Compute new state  <span class="math notranslate nohighlight">\(x(k+1) = x(k) + h(x(k)) \Delta t\)</span>.</p>
+<p>Replace <span class="math notranslate nohighlight">\(k\)</span> by <span class="math notranslate nohighlight">\(k+1\)</span>.</p>
 </div></blockquote>
 <p><strong>Step 2:</strong></p>
 <blockquote>
-<div>If <span class="math">\(k=N\)</span> stop, else go to Step 1.</div></blockquote>
+<div>If <span class="math notranslate nohighlight">\(k=N\)</span> stop, else go to Step 1.</div></blockquote>
 <p>However, this scheme does not require each simulation tool to use the explicit Euler method for its internal time integration algorithm; the analogy to explicit Euler applies only to the data exchange between the programs.  In the situation where the differential equation is solved using co-simulation, the above algorithm becomes</p>
 <p><strong>Step 0:</strong></p>
 <blockquote>
-<div><p>Initialize counter <span class="math">\(k=0\)</span> and number of steps, <span class="math">\(N &gt; 0\)</span>.</p>
-<p>Set initial state <span class="math">\(x_{1}(k) = x_{1,0}\)</span> and <span class="math">\(x_{2}(k) = x_{2,0}\)</span>. Set the time step  <span class="math">\(\Delta t = 1/N\)</span>.</p>
+<div><p>Initialize counter <span class="math notranslate nohighlight">\(k=0\)</span> and number of steps, <span class="math notranslate nohighlight">\(N &gt; 0\)</span>.</p>
+<p>Set initial state <span class="math notranslate nohighlight">\(x_{1}(k) = x_{1,0}\)</span> and <span class="math notranslate nohighlight">\(x_{2}(k) = x_{2,0}\)</span>. Set the time step  <span class="math notranslate nohighlight">\(\Delta t = 1/N\)</span>.</p>
 </div></blockquote>
 <p><strong>Step 1:</strong></p>
 <blockquote>
 <div><p>Compute new states</p>
-<p><span class="math">\(x_{1}(k+1) = x_{1}(k) + f_{1}(x_{1}(k), x_{2}(k)) \Delta t\)</span>, and</p>
-<p><span class="math">\(x_{2}(k+1) = x_{2}(k) + f_{2}(x_{2}(k), x_{1}(k)) \Delta t\)</span>.</p>
-<p>Replace <span class="math">\(k\)</span> by <span class="math">\(k+1\)</span>.</p>
+<p><span class="math notranslate nohighlight">\(x_{1}(k+1) = x_{1}(k) + f_{1}(x_{1}(k), x_{2}(k)) \Delta t\)</span>, and</p>
+<p><span class="math notranslate nohighlight">\(x_{2}(k+1) = x_{2}(k) + f_{2}(x_{2}(k), x_{1}(k)) \Delta t\)</span>.</p>
+<p>Replace <span class="math notranslate nohighlight">\(k\)</span> by <span class="math notranslate nohighlight">\(k+1\)</span>.</p>
 </div></blockquote>
 <p><strong>Step 2:</strong></p>
 <blockquote>
-<div>If <span class="math">\(k=N\)</span> stop, else go to Step 1.</div></blockquote>
+<div>If <span class="math notranslate nohighlight">\(k=N\)</span> stop, else go to Step 1.</div></blockquote>
 </div>
 
 
@@ -167,7 +157,7 @@ In comparison to numerical methods of differential equations, this scheme is equ
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2013-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

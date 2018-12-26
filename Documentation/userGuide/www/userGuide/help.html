@@ -1,36 +1,24 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>10. Help &#8212; FMU Export of EnergyPlus User Guide</title>
-    
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2.0.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="11. Glossary" href="glossary.html" />
     <link rel="prev" title="9. Notation" href="notation.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
 <div class="headerStyle">
 <img src="_static/lbl-logo.png" alt="LBL logo" />
 </div>
@@ -72,12 +60,14 @@
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -108,9 +98,9 @@
 <p>To report the bug, send email to <a class="reference external" href="https://groups.google.com/group/energyplus-fmu">https://groups.google.com/group/energyplus-fmu</a>. This is an open group and everyone can join it. No invitation is needed.</p>
 <p><strong>Known Issues</strong></p>
 <p><strong>Release 1.0.0</strong></p>
-<p><a class="reference internal" href="glossary.html#term-dymola"><span class="xref std std-term">Dymola</span></a> 2014 cannot import EnergyPlus as an FMU. The reason is a bug in <a class="reference internal" href="glossary.html#term-dymola"><span class="xref std std-term">Dymola</span></a> 2014 which does not pass the path to the resources location folder to the FMU when invoking the <code class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></code> method.
-This information is needed by the FMU for its correct execution. A workaround will be to manually specify the path to the resources location in the <code class="docutils literal"><span class="pre">fmiInstantiateSlave()</span></code> method in <code class="docutils literal"><span class="pre">main.c</span></code>. <code class="docutils literal"><span class="pre">main.c</span></code> can be found in the
-<code class="docutils literal"><span class="pre">SourceCode</span></code> folder of the EnergyPlusToFMU installation.</p>
+<p><a class="reference internal" href="glossary.html#term-dymola"><span class="xref std std-term">Dymola</span></a> 2014 cannot import EnergyPlus as an FMU. The reason is a bug in <a class="reference internal" href="glossary.html#term-dymola"><span class="xref std std-term">Dymola</span></a> 2014 which does not pass the path to the resources location folder to the FMU when invoking the <code class="docutils literal notranslate"><span class="pre">fmiInstantiateSlave()</span></code> method.
+This information is needed by the FMU for its correct execution. A workaround will be to manually specify the path to the resources location in the <code class="docutils literal notranslate"><span class="pre">fmiInstantiateSlave()</span></code> method in <code class="docutils literal notranslate"><span class="pre">main.c</span></code>. <code class="docutils literal notranslate"><span class="pre">main.c</span></code> can be found in the
+<code class="docutils literal notranslate"><span class="pre">SourceCode</span></code> folder of the EnergyPlusToFMU installation.</p>
 </div>
 
 
@@ -141,7 +131,7 @@ This information is needed by the FMU for its correct execution. A workaround wi
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2013-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>
