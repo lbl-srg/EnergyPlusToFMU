@@ -17,7 +17,7 @@ http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/index.html.
 
 ## Current release
 
-Download [EnergyPlusToFMU v2.0.0 (2016-04-14)](https://github.com/lbl-srg/EnergyplusToFMU/releases/download/v2.0.0/EnergyPlusToFMU-v2.0.0.zip)
+Download [EnergyPlusToFMU v2.0.3 (2018-04-26)](https://github.com/lbl-srg/EnergyplusToFMU/releases/download/v2.0.3/EnergyPlusToFMU-v2.0.3.zip)
 
 ## License
 
