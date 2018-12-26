@@ -67,3 +67,5 @@ Lastly
 In github create a new release which will point to the tag.
 
 Add this as an additional resource when creating the new release.
+
+Update the Readme on GitHub main page so it indicates the current release(including date).
