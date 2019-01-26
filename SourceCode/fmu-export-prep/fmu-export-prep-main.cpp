@@ -150,6 +150,7 @@ static void getIdfData(cmdlnInput_s& cmdlnInput, fmuExportIdfData& fmuIdfData)
   //
   // Check data dictionary.
   string errStr;
+  // Do not check Runperiod at this point since the descriptor depends on the version of E+
   if( ! fmuIdfData.haveValidIDD(idd, errStr) )
     {
     cout << "Incompatible IDD file " << cmdlnInput.iddFileName <<
@@ -189,6 +190,7 @@ static void getInputData(cmdlnInput_s& cmdlnInput, fmuExportIdfData& fmuIdfData)
 	//
 	// Set up data dictionary.
 	fileReaderDictionary frIdd(cmdlnInput.iddFileName);
+	int idfVer;
 	frIdd.attachErrorFcn(reportInputError);
 	frIdd.open();
 	iddMap idd;
@@ -204,13 +206,29 @@ static void getInputData(cmdlnInput_s& cmdlnInput, fmuExportIdfData& fmuIdfData)
 			endl << errStr << endl;
 		exit(EXIT_FAILURE);
 	}
+
+
 	//
+	// Initialize IDF file and get IDFVersion.
+	fileReaderData frIdf0(cmdlnInput.idfFileName, IDF_DELIMITERS_ENTRY, IDF_DELIMITERS_SECTION);
+	frIdf0.attachErrorFcn(reportInputError);
+	frIdf0.open();
+	// Read IDF file for data of interest.
+	int failLine = fmuIdfData.getIDFVersion(frIdf0, idfVer);
+	if (0 < failLine)
+	{
+		cout << "Error detected while reading IDF version of IDF file " << cmdlnInput.idfFileName << ", at line #" << failLine << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	cout << "The IDF version of the input file " << cmdlnInput.idfFileName << " starts with " << idfVer << endl;
+
 	// Initialize weather data file.
 	fileReaderData frIdf1(cmdlnInput.wthFileName, IDF_DELIMITERS_ENTRY, IDF_DELIMITERS_SECTION);
 	frIdf1.attachErrorFcn(reportInputError);
 	frIdf1.open();
 	// Read IDF file for data of interest.
-	int failLine = fmuIdfData.isLeapYear(frIdf1, leapYear);
+	failLine = fmuIdfData.isLeapYear(frIdf1, leapYear);
 	if (0 < failLine)
 	{
 		cout << "Error detected while reading Weather file " << cmdlnInput.wthFileName << ", at line #" << failLine << endl;
@@ -223,7 +241,7 @@ static void getInputData(cmdlnInput_s& cmdlnInput, fmuExportIdfData& fmuIdfData)
 	frIdf2.open();
 	//
 	// Read IDF file for data of interest.
-	failLine = fmuIdfData.writeInputFile(frIdf2, leapYear, timeStep, cmdlnInput.tStartFMU, cmdlnInput.tStopFMU);
+	failLine = fmuIdfData.writeInputFile(frIdf2, leapYear, idfVer, cmdlnInput.tStartFMU, cmdlnInput.tStopFMU);
 	if (0 < failLine)
 	{
 		cout << "Error detected while reading IDF file " << cmdlnInput.idfFileName << ", at line #" << failLine << endl;

@@ -1,36 +1,24 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>5. Usage of EnergyPlus as an FMU &#8212; FMU Export of EnergyPlus User Guide</title>
-    
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '2.0.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="6. Mathematical Description" href="mathematics.html" />
     <link rel="prev" title="4. Creating an FMU" href="build.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
 <div class="headerStyle">
 <img src="_static/lbl-logo.png" alt="LBL logo" />
 </div>
@@ -72,12 +60,14 @@
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -94,27 +84,28 @@
 <ol class="arabic">
 <li><p class="first">A tool that imports the FMU needs to make sure that the version of
 EnergyPlus which has been used to export the FMU
-is (a) installed and (b) added to the system path environment variable. Otherwise,
+is (a) installed and (b) added to the system PATH environment variable. Otherwise,
 the simulation will fail with an error. If EnergyPlus has been properly added to the
-system path environment variable, then it can be started from any DOS prompt on
+system PATH environment variable, then it can be started from any DOS prompt on
 Windows, command shell console on Linux, or Terminal window on Mac OS by
-typing <code class="docutils literal"><span class="pre">RunEPlus.bat</span></code> on Windows and <code class="docutils literal"><span class="pre">runenergyplus</span></code> on Linux or Mac OS. <a class="footnote-reference" href="#f1" id="id1">[1]</a></p>
+typing <code class="docutils literal notranslate"><span class="pre">energyplus</span></code> <a class="footnote-reference" href="#f1" id="id1">[1]</a> .</p>
 </li>
-<li><p class="first">The <code class="docutils literal"><span class="pre">Number</span> <span class="pre">of</span> <span class="pre">Timesteps</span> <span class="pre">per</span> <span class="pre">Hour</span></code> in EnergyPlus must be equal
+<li><p class="first">The <code class="docutils literal notranslate"><span class="pre">Number</span> <span class="pre">of</span> <span class="pre">Timesteps</span> <span class="pre">per</span> <span class="pre">Hour</span></code> in EnergyPlus must be equal
 to the sampling time of the FMU. For example, consider the following
 EnergyPlus IDF snippet:</p>
-<div class="highlight-text"><div class="highlight"><pre>Timestep,
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Timestep,
 6;        !- Number of Timesteps per Hour
 </pre></div>
 </div>
 <p>Then, a tool that imports the FMU must synchronize it every 10 minutes.
-Otherwise, the simulation will stop with an error. <a class="footnote-reference" href="#f2" id="id2">[2]</a></p>
+Otherwise, the simulation will stop with an error <a class="footnote-reference" href="#f2" id="id2">[2]</a> .</p>
 </li>
-<li><p class="first">EnergyPlus contains the object <code class="docutils literal"><span class="pre">RunPeriod</span></code>.
-The start and end day of this object is ignored. <a class="footnote-reference" href="#f3" id="id3">[3]</a> However,
-the entry <code class="docutils literal"><span class="pre">Day</span> <span class="pre">of</span> <span class="pre">Week</span> <span class="pre">for</span> <span class="pre">Start</span> <span class="pre">Day</span></code> will be used. For example,
-consider the following IDF snippet:</p>
-<div class="highlight-text"><div class="highlight"><pre>RunPeriod,         ! Winter Simulation
+<li><p class="first">EnergyPlus contains the object <code class="docutils literal notranslate"><span class="pre">RunPeriod</span></code>.
+The start and end day of this object is ignored and replaced by the
+start and stop time provided by the master algorithm which imports
+the EnergyPlus FMU <a class="footnote-reference" href="#f3" id="id3">[3]</a> . However, the entry <code class="docutils literal notranslate"><span class="pre">Day</span> <span class="pre">of</span> <span class="pre">Week</span> <span class="pre">for</span> <span class="pre">Start</span> <span class="pre">Day</span></code>
+will be used. For example, consider the following IDF snippet:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>RunPeriod,         ! Winter Simulation
 Winter Simulation, !- Name
 1,                 !- Begin Month
 2,                 !- Begin Day of Month
@@ -131,14 +122,17 @@ Yes;               !- Use Weather File Snow Indicators
 <p>This IDF snippet declares January 2 to be a Monday.
 Hence, if an FMU is simulated with
 start time equal to 3 days, then the first day of the simulation
-will be Tuesday. There should only be one instance of RunPeriod in the IDF input file.</p>
+will be Tuesday. There should only be one instance of RunPeriod in the IDF input file.
+If there are two RunPeriod in the IDF, then the first RunPeriod found in the IDF
+will be used. Any other RunPeriod object will be ignored.</p>
 </li>
 <li><p class="first">A tool that imports the FMU must specify the start and stop time in seconds at initialization.
-The start and stop time cannot have the value &#8220;infinity&#8221;.</p>
+The start and stop time will be converted to days and used by the EnergyPlus FMU.
+The start and stop time cannot have the value <code class="docutils literal notranslate"><span class="pre">infinity</span></code>.</p>
 </li>
 <li><p class="first">The weather file which comes along with an FMU is used to determine
-if the year is a <code class="docutils literal"><span class="pre">leap</span> <span class="pre">year</span></code>. If no weather file is included in the FMU, then the
-assumption is that the year is not a <code class="docutils literal"><span class="pre">leap</span> <span class="pre">year</span></code>.</p>
+if the year is a <code class="docutils literal notranslate"><span class="pre">leap</span> <span class="pre">year</span></code>. If no weather file is included in the FMU, then the
+assumption is that the year is not a <code class="docutils literal notranslate"><span class="pre">leap</span> <span class="pre">year</span></code>.</p>
 </li>
 <li><p class="first">During the warm-up period and the autosizing of EnergyPlus,
 no data exchange occurs between the FMU and the master program.
@@ -146,8 +140,8 @@ Thus, inputs of EnergyPlus remain constant during these times and are equal
 to the initial values specified in the IDF input file.</p>
 </li>
 <li><p class="first">The simulation results are saved in a result folder which is created in the current
-working directory. The name of the result folder is <code class="docutils literal"><span class="pre">Output_EPExport_xxx</span></code>, where
-<code class="docutils literal"><span class="pre">xxx</span></code> is the FMU model <code class="docutils literal"><span class="pre">instanceName</span></code> as defined in the FMI specifications.</p>
+working directory. The name of the result folder is <code class="docutils literal notranslate"><span class="pre">Output_EPExport_xxx</span></code>, where
+<code class="docutils literal notranslate"><span class="pre">xxx</span></code> is the FMU model <code class="docutils literal notranslate"><span class="pre">instanceName</span></code> as defined in the FMI specifications.</p>
 </li>
 </ol>
 <p class="rubric">Footnotes</p>
@@ -202,8 +196,8 @@ of start time and stop time.</td></tr>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2013-2018, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+        &#169; Copyright 2013-2019, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

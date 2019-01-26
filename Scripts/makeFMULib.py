@@ -177,7 +177,9 @@ def findFileOrQuit(fileDesc, fileName):
 #
 def deleteFile(fileName):
   #
-  if( os.path.isfile(fileName) ):
+  # Prevent removing util-get file which has restricted permissions on
+  # some systems
+  if( os.path.isfile(fileName) and not(fileName.startswith("util-get"))):
     try:
       os.remove(fileName)
     except:

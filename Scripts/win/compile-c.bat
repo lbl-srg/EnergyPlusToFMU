@@ -14,9 +14,9 @@
 ::   Work through a hierarchy of possible directory locations.
 ::
 IF "%DevEnvDir%"=="" (
-  CALL "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\amd64\vcvars64.bat"  >nul 2>&1
+  CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\vcvarsx86_amd64.bat"  >nul 2>&1
   IF ERRORLEVEL 1 (
-    CALL "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\amd64\vcvars64.bat"  >nul 2>&1
+    CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\vcvarsx86_amd64.bat"  >nul 2>&1
     IF ERRORLEVEL 1 (
       ECHO Problem configuring the Visual Studio tools for command-line use
       GOTO done
