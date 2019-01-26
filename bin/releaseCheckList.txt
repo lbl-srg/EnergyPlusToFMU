@@ -7,6 +7,9 @@ Documentation/userGuide/source/legal.rst
 Update the version number 1.0.xxx. in
 Documentation/userGuide/source/conf.py
 
+Update the copyright year. in
+Documentation/userGuide/source/conf.py
+
 Update the release notes. in
 Documentation/userGuide/source/download.rst
 
