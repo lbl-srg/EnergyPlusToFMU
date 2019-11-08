@@ -44,7 +44,10 @@
 #include <limits.h>
 #include <math.h>
 #include <errno.h>
-#include "defines.h"
+
+/** \val The main version of the socket interface.
+*/
+#define MAINVERSION 2
 
 ////////////////////////////////////////////////////////////////
 /// Assembles the buffer that will be exchanged through the IPC.

@@ -17,9 +17,9 @@ using std::endl;
 
 #include "fmu-export-write-model-desc.h"
 
-#include "../utility/digest-md5.h"
-#include "../utility/file-help.h"
-#include "../utility/xml-output-help.h"
+#include "../../utility/digest-md5.h"
+#include "../../utility/file-help.h"
+#include "../../utility/xml-output-help.h"
 
 
 //--- Microsoft doesn't implement the modern standard.
