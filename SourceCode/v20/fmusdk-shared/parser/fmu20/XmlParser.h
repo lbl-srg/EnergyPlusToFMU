@@ -14,10 +14,10 @@
 #ifndef FMU20_XML_PARSER_H
 #define FMU20_XML_PARSER_H
 
-#include <libxml/xmlreader.h>
+#include "../libxml/xmlreader.h"
 
 #ifdef _MSC_VER
-#pragma comment(lib, "libxml2.lib")
+//#pragma comment(lib, "libxml2.lib")
 #pragma comment(lib, "wsock32.lib")
 #endif
 

@@ -60,7 +60,7 @@ int save_appendFMU(char* *buffer, const char *toAdd, int *bufLen){
 	// reallocate memory if needed
 	if ( *bufLen < nNewCha + nBufCha + 1){
 		*bufLen = *bufLen + size * (((nNewCha + nBufCha) / size)+1);
-		*buffer = realloc(*buffer, *bufLen);
+		*buffer = (char*)realloc(*buffer, *bufLen);
 		if (*buffer == NULL) {
 			perror("Realloc failed in save_appendFMU.");
 #ifdef NDEBUG
@@ -393,7 +393,7 @@ int writetosocketFMU(const int *sockfd,
 	fprintf(f1, "Assembling buffer.\n", *sockfd);
 #endif
 
-	buffer = malloc(bufLen);
+	buffer = (char *)malloc(bufLen);
 	if (buffer == NULL) {
 		perror("malloc failed in writetosocketFMU.");
 #ifdef NDEBUG

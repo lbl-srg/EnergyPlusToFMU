@@ -8,6 +8,8 @@
  * Author: Adrian Tirea
  * ---------------------------------------------------------------------------*/
 
+// Added by TSN to define the STANDALONE_XML_PARSER flag
+#define STANDALONE_XML_PARSER 
 #ifdef STANDALONE_XML_PARSER
 #include <string.h>
 #define logThis(n, ...) printf(__VA_ARGS__); printf("\n")
@@ -21,7 +23,7 @@
 #include "minutil.h"  // checkStrdup
 #endif  // STANDALONE_XML_PARSER
 
-#include <libxml/xmlreader.h>
+#include "parser/libxml/xmlreader.h"
 #include "xmlVersionParser.h"
 
 // Element and attribute that identify the fmiVersion.
@@ -42,7 +44,9 @@ static BOOL readNextInXml(xmlTextReaderPtr xmlReader) {
 
 // The receiver must free the return.
 static char *extractFmiVersionAttribute(xmlTextReaderPtr xmlReader) {
-    char *value = (char *)xmlTextReaderGetAttribute(xmlReader, ATT_fmiVersion_NAME);
+	//const unsigned char * versionName = "fmiVersion";
+    char *value = (char *)xmlTextReaderGetAttribute(xmlReader, (const xmlChar*)ATT_fmiVersion_NAME);
+	//char *value = (char *)xmlTextReaderGetAttribute(xmlReader, versionName);
     char *result = value ? (char *)checkStrdup(value) : NULL;
     xmlFree(value);
     return result;

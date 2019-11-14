@@ -51,9 +51,9 @@
 #define RESOURCES "resources"
 #define XML_FILE "modelDescription.xml"
 
-#include "fmi2TypesPlatform.h"
-#include "fmi2Functions.h"
-#include "XmlParserCApi.h"
+#include "../fmusdk-shared/include/fmi2TypesPlatform.h"
+#include "../fmusdk-shared/include/fmi2Functions.h"
+#include "../fmusdk-shared/parser/XmlParserCApi.h"
 
 
 /* Export fmi functions on Windows */
@@ -62,11 +62,10 @@
 #else
 #define DllExport
 #endif
-//#include "xml_parser_cosim.h"
 
 typedef struct ModelInstance {
 	int index;
-	fmi2CallbackFunctions* functions;
+	const fmi2CallbackFunctions* functions;
 	char instanceName[MAX_VARNAME_LEN];
 	char cwd[256];
 	char in_file_name[100];

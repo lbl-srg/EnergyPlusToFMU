@@ -12,6 +12,7 @@
 #include "fmu20/XmlParser.h"
 #include "fmu20/XmlElement.h"
 
+#define STANDALONE_XML_PARSER 
 #ifdef STANDALONE_XML_PARSER
 #define logThis(n, ...) printf(__VA_ARGS__); printf("\n")
 #define checkStrdup(str) strdup(str)

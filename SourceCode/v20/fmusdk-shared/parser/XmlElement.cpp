@@ -19,6 +19,7 @@
 #include <string.h> // strcmp
 #include "fmu20/XmlParserException.h"
 
+#define STANDALONE_XML_PARSER
 #ifdef STANDALONE_XML_PARSER
 #define logThis(n, ...) printf(__VA_ARGS__); printf("\n")
 #else

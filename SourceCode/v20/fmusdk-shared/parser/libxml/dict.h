@@ -12,8 +12,8 @@
 #define __XML_DICT_H__
 
 #include <limits.h>
-#include <libxml/xmlversion.h>
-#include <libxml/tree.h>
+#include "xmlversion.h"
+#include "tree.h"
 
 #ifdef __cplusplus
 extern "C" {

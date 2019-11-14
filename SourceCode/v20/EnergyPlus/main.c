@@ -23,21 +23,22 @@
 #define MAXHOSTNAME  10000
 #define MAX_MSG_SIZE 1000
 #define MAXBUFFSIZE 1000
+//#define LIBXML_STATIC 1
+
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "util.h"
-#include "utilSocket.h" 
+#include "../../utility/util.h"
+#include "../../socket/utilSocket.h" 
 #include "defines.h"
-//#include "reader.h" 
 #include <errno.h>
 #include <sys/stat.h>
 
 // Addition for FMI 2.0 support
-#include "fmi2.h"
-#include "sim_support.h"
-#include "xmlVersionParser.h"
+#include "../fmusdk-shared/fmi2.h"
+#include "../fmusdk-shared/sim_support.h"
+#include "../fmusdk-shared/xmlVersionParser.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "legacy_stdio_definitions.lib")
@@ -68,7 +69,6 @@ int arrsize=0;
 ModelInstance **fmuInstances;
 int fmuLocCoun=0;
 #define DELTA 10
-
 
 ///////////////////////////////////////////////////////////////
 ///  This method is used to get the number of outputs in the FMU
@@ -501,14 +501,14 @@ void fmuLogger(fmi2Component c, fmi2String instanceName, fmi2Status status,
 		printf("%s %s (%s): %s\n", fmi2StatusToString(status), instanceName, category, msg);
 }
 
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 ///  This method is used to get the fmi types of platform
-///\return fmiPlatform.
-////////////////////////////////////////////////////////////////
-//DllExport char* fmi2GetTypesPlatform()
-//{
-//	return "default";
-//}
+/// \return fmiPlatform.
+//////////////////////////////////////////////////////////////
+DllExport const char* fmi2GetTypesPlatform()
+{
+	return "default";
+}
 
 ////////////////////////////////////////////////////////////////
 ///  This method is used to get the fmi version
@@ -698,8 +698,8 @@ int getResourceLocation(ModelInstance *_c, fmi2String fmuLocation)
 
 	// allocate memory for fmuResourceLocation
 	_c->fmuResourceLocation=(char *)_c->functions->allocateMemory(strlen (_c->fmuUnzipLocation) 
-		+ strlen (RESOURCES) + strlen(PATH_SEP) + 1, sizeof(char));
-	sprintf(_c->fmuResourceLocation, "%s%s%s", _c->fmuUnzipLocation, RESOURCES, PATH_SEP);
+		+ strlen(PATH_SEP) + 1, sizeof(char));
+	sprintf(_c->fmuResourceLocation, "%s%s", _c->fmuUnzipLocation, PATH_SEP);
 	return 0;
 }
 
@@ -759,6 +759,13 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 	// write instanceName to the struct
 	strcpy(_c->instanceName, instanceName);
 
+	// check fmu location
+	functions->logger(NULL, instanceName, fmi2OK, "ok",
+		"fmi2Instantiate: The Resource location of FMU with instance name %s is %s.\n", 
+		instanceName, fmuLocation);
+
+
+
 	// assign FMU parameters
 	//fixme
 	_c->functions=functions;
@@ -767,7 +774,7 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 	if (visible == fmi2True) {
 		_c->functions->logger(NULL, instanceName, fmi2Warning, "warning",
 			"fmi2Instantiate: Argument visible is set to %d\n."
-			" This is not supported. visible will default to fmi2False\n", visible);
+			" This is not supported. visible will default to '0'.\n", visible);
 	}
 
 	_c->visible=fmi2False;
@@ -775,7 +782,7 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 	if (loggingOn == fmi2True) {
 		_c->functions->logger(NULL, instanceName, fmi2Warning, "warning",
 			"fmi2Instantiate: Argument loggingOn is set to %d\n."
-			" This is not supported. loggingOn will default to fmi2False\n", loggingOn);
+			" This is not supported. loggingOn will default to '0'.\n", loggingOn);
 	}
 
 	_c->visible = fmi2False;
@@ -866,6 +873,7 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 		_c->functions->logger(NULL, _c->instanceName, fmi2Error, "error", "fmi2Instantiate: Could not copy"
 			" variables.cfg to the output directory folder %s. Instantiation of %s failed.\n", _c->cwd, _c->instanceName);
 		// Free resources allocated to instance.
+		//return NULL;
 		freeInstanceResources (_c);
 		return NULL;
 	}
@@ -1957,6 +1965,20 @@ DllExport fmi2Status fmi2CancelStep(fmi2Component c)
 }
 
 ////////////////////////////////////////////////////////////////
+///  This method is used to reset the FMU
+///
+///\param c The FMU instance.
+///\return fmi2Warning if no error occurred.
+////////////////////////////////////////////////////////////////
+DllExport fmi2Status fmi2Reset(fmi2Component c)
+{
+	ModelInstance* _c = (ModelInstance *)c;
+	_c->functions->logger(NULL, _c->instanceName, fmi2Warning,
+		"Warning", "fmi2Reset: The function fmi2Reset: is not provided.\n");
+	return fmi2Warning;
+}
+
+////////////////////////////////////////////////////////////////
 ///  This method is used to get FMU status
 ///
 ///\param c The FMU instance.
@@ -2035,109 +2057,109 @@ DllExport fmi2Status fmi2GetStringStatus (fmi2Component c, const fmi2StatusKind 
 	return fmi2Warning;
 }
 
-int main(){
-	double time;
-	double tStart=0;               // start time
-	double tStop=86400;               // start time
-	const char* guid="{19751346-37ce-4422-86bf-bd1609f0d579}";                // global unique id of the fmu
-	fmi2Component c;                  // instance of the fmu 
-	//fmi2Status fmiFlag;               // return code of the fmu functions
-	const char* fmuResourceLocation ="file:///D:\\proj\\lbnl\\eplustofmu\\_fmu_export_schedule"; // path to the unzipped fmu location as URL
-	const char* modelDescriptionPath = "file:///D:\\proj\\lbnl\\eplustofmu\\_fmu_export_schedule\\modelDescription.xml"; // path to the unzipped fmu location as URL
-	const char* mimeType="application/x-fmu-sharedlibrary"; // denotes tool in case of tool coupling
-	fmi2Real timeout=1000;          // wait period in milli seconds, 0 for unlimited wait period"
-	fmi2Boolean visible=fmi2False;   // no simulator user interface
-	fmi2Boolean interactive=fmi2False; // simulation run without user interaction
-	fmi2CallbackFunctions callbacks= {fmuLogger, calloc, free, NULL, NULL};  // called by the model during simulation
-	ModelDescription* md;            // handle to the parsed XML file
-	fmi2String instanceName;          // instance name of the FMU
-	int nSteps=0;
-	int loggingOn=0;
-	int retVal;
-	//FILE* file;
-	const fmi2ValueReference valRefIn[]={1};
-	const fmi2ValueReference valRefOut[]={100001};
-	fmi2Real valIn[1]={50000};
-	fmi2Real valOut[1];
-	char* fmiVersionStr;
-	Element *defaultExp;
-	fmi2Status fmi2Flag;                    // return code of the fmu functions
-	fmi2Boolean toleranceDefined = fmi2False;  // true if model description define tolerance
-	//int nCategories;
-	//char **categories;
-	fmi2Real tolerance = 0;                    // used in setting up the experiment
-	ValueStatus vs = valueMissing;
-	double tEnd=86400;
-
-	// allocate memory for md
-	//md = (ModelDescription*)malloc(sizeof(ModelDescription*));
-	
-	//md = parse(modelDescriptionPath);
-
-	// get the GUID
-	//guid = getAttributeValue((Element *)md, att_guid);
-
-	// get the instance name
-	//instanceName = getAttributeValue((Element *)getCoSimulation(md), att_modelIdentifier);
-
-	// instantiate the fmu
-	c=fmi2Instantiate("_fmu_export_schedule", fmi2CoSimulation, 
-		guid, fmuResourceLocation, &callbacks, visible, loggingOn);
-
-	//if (nCategories > 0) {
-	//	fmi2Flag = fmu->setDebugLogging(c, fmi2True, nCategories, categories);
-	//	if (fmi2Flag > fmi2Warning) {
-	//		return error("could not initialize model; failed FMI set debug logging");
-	//	}
-	//}
-
-	//defaultExp = getDefaultExperiment(md);
-	//if (defaultExp) tolerance = getAttributeDouble(defaultExp, att_tolerance, &vs);
-	//if (vs == valueDefined) {
-	//	toleranceDefined = fmi2True;
-	//}
-
-	// setup experiment parameters in the FMU 
-	fmi2Flag = fmi2SetupExperiment(c, toleranceDefined, tolerance, tStart, fmi2True, tEnd);
-	if (fmi2Flag > fmi2Warning) {
-		 printf("could not initialize model; failed FMI setup experiment");
-		 return;
-	}
-
-	// enter initialization in the FMU
-	fmi2Flag = fmi2EnterInitializationMode(c);
-	if (fmi2Flag > fmi2Warning) {
-		printf("could not initialize model; failed FMI enter initialization mode");
-		return;
-	}
-
-	// exit initialization in the FMU
-	fmi2Flag = fmi2ExitInitializationMode(c);
-	if (fmi2Flag > fmi2Warning) {
-		 printf("could not initialize model; failed FMI exit initialization mode");
-		 return;
-	}
-
-	time=0;
-
-	fmiVersionStr = extractVersion(modelDescriptionPath);
-	printf("This is the fmi version %s\n", fmiVersionStr);
-	while (time < tStop) {
-		// set the inputs
-		retVal = fmi2SetReal(c, valRefIn, 1, valIn);
-		// do step
-		retVal= fmi2DoStep(c, time, 900, 1);
-		// get the outputs
-		retVal = fmi2GetReal(c, valRefOut, 1, valOut);
-		printf ("This is the value of output %f\n", valOut);
-		time=time+900;
-	}
-	// terminate the FMU
-	retVal=fmi2Terminate(c);
-	// free te FMU
-	fmi2FreeInstance(c);
-	printf ("Simulation successfully terminated\n");
-}
+//void main(){
+//	double time;
+//	double tStart=0;               // start time
+//	double tStop=86400;               // start time
+//	const char* guid="{19751346-37ce-4422-86bf-bd1609f0d579}";                // global unique id of the fmu
+//	fmi2Component c;                  // instance of the fmu 
+//	//fmi2Status fmiFlag;               // return code of the fmu functions
+//	const char* fmuResourceLocation ="file:///D:\\proj\\lbnl\\eplustofmu\\_fmu_export_schedule"; // path to the unzipped fmu location as URL
+//	const char* modelDescriptionPath = "file:///D:\\proj\\lbnl\\eplustofmu\\_fmu_export_schedule\\modelDescription.xml"; // path to the unzipped fmu location as URL
+//	const char* mimeType="application/x-fmu-sharedlibrary"; // denotes tool in case of tool coupling
+//	fmi2Real timeout=1000;          // wait period in milli seconds, 0 for unlimited wait period"
+//	fmi2Boolean visible=fmi2False;   // no simulator user interface
+//	fmi2Boolean interactive=fmi2False; // simulation run without user interaction
+//	fmi2CallbackFunctions callbacks= {fmuLogger, calloc, free, NULL, NULL};  // called by the model during simulation
+//	ModelDescription* md;            // handle to the parsed XML file
+//	fmi2String instanceName;          // instance name of the FMU
+//	int nSteps=0;
+//	int loggingOn=0;
+//	int retVal;
+//	//FILE* file;
+//	const fmi2ValueReference valRefIn[]={1};
+//	const fmi2ValueReference valRefOut[]={100001};
+//	fmi2Real valIn[1]={50000};
+//	fmi2Real valOut[1];
+//	char* fmiVersionStr;
+//	Element *defaultExp;
+//	fmi2Status fmi2Flag;                    // return code of the fmu functions
+//	fmi2Boolean toleranceDefined = fmi2False;  // true if model description define tolerance
+//	//int nCategories;
+//	//char **categories;
+//	fmi2Real tolerance = 0;                    // used in setting up the experiment
+//	ValueStatus vs = valueMissing;
+//	double tEnd=86400;
+//
+//	// allocate memory for md
+//	//md = (ModelDescription*)malloc(sizeof(ModelDescription*));
+//	
+//	//md = parse(modelDescriptionPath);
+//
+//	// get the GUID
+//	//guid = getAttributeValue((Element *)md, att_guid);
+//
+//	// get the instance name
+//	//instanceName = getAttributeValue((Element *)getCoSimulation(md), att_modelIdentifier);
+//
+//	// instantiate the fmu
+//	c=fmi2Instantiate("_fmu_export_schedule", fmi2CoSimulation, 
+//		guid, fmuResourceLocation, &callbacks, visible, loggingOn);
+//
+//	//if (nCategories > 0) {
+//	//	fmi2Flag = fmu->setDebugLogging(c, fmi2True, nCategories, categories);
+//	//	if (fmi2Flag > fmi2Warning) {
+//	//		return error("could not initialize model; failed FMI set debug logging");
+//	//	}
+//	//}
+//
+//	//defaultExp = getDefaultExperiment(md);
+//	//if (defaultExp) tolerance = getAttributeDouble(defaultExp, att_tolerance, &vs);
+//	//if (vs == valueDefined) {
+//	//	toleranceDefined = fmi2True;
+//	//}
+//
+//	// setup experiment parameters in the FMU 
+//	fmi2Flag = fmi2SetupExperiment(c, toleranceDefined, tolerance, tStart, fmi2True, tEnd);
+//	if (fmi2Flag > fmi2Warning) {
+//		 printf("could not initialize model; failed FMI setup experiment");
+//		 return;
+//	}
+//
+//	// enter initialization in the FMU
+//	fmi2Flag = fmi2EnterInitializationMode(c);
+//	if (fmi2Flag > fmi2Warning) {
+//		printf("could not initialize model; failed FMI enter initialization mode");
+//		return;
+//	}
+//
+//	// exit initialization in the FMU
+//	fmi2Flag = fmi2ExitInitializationMode(c);
+//	if (fmi2Flag > fmi2Warning) {
+//		 printf("could not initialize model; failed FMI exit initialization mode");
+//		 return;
+//	}
+//
+//	time=0;
+//
+//	fmiVersionStr = extractVersion(modelDescriptionPath);
+//	printf("This is the fmi version %s\n", fmiVersionStr);
+//	while (time < tStop) {
+//		// set the inputs
+//		retVal = fmi2SetReal(c, valRefIn, 1, valIn);
+//		// do step
+//		retVal= fmi2DoStep(c, time, 900, 1);
+//		// get the outputs
+//		retVal = fmi2GetReal(c, valRefOut, 1, valOut);
+//		printf ("This is the value of output %f\n", valOut);
+//		time=time+900;
+//	}
+//	// terminate the FMU
+//	retVal=fmi2Terminate(c);
+//	// free te FMU
+//	fmi2FreeInstance(c);
+//	printf ("Simulation successfully terminated\n");
+//}
 
 /*
 

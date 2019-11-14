@@ -18,6 +18,7 @@
 #include "fmu20/XmlElement.h"
 #include "fmu20/XmlParserException.h"
 
+#define STANDALONE_XML_PARSER 1
 #ifdef STANDALONE_XML_PARSER
 #define logThis(n, ...) printf(__VA_ARGS__); printf("\n")
 #define checkStrdup(str) strdup(str)

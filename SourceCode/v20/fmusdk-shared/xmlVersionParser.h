@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 #ifdef _MSC_VER
-#pragma comment(lib, "libxml2.lib")
+//#pragma comment(lib, "libxml2.lib")
 #pragma comment(lib, "wsock32.lib")
 #endif /* _MSC_VER */
 

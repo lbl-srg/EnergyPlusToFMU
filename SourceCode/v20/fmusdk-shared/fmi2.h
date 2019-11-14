@@ -24,9 +24,9 @@
 #include <dlfcn.h>
 #endif /* _MSC_VER */
 
-#include "fmi2Functions.h"
+#include "include/fmi2Functions.h"
 
-#include "XmlParserCApi.h"
+#include "parser/XmlParserCApi.h"
 
 typedef struct {
     ModelDescription* modelDescription;

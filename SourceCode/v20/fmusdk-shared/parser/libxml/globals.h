@@ -14,12 +14,12 @@
 #ifndef __XML_GLOBALS_H
 #define __XML_GLOBALS_H
 
-#include <libxml/xmlversion.h>
-#include <libxml/parser.h>
-#include <libxml/xmlerror.h>
-#include <libxml/SAX.h>
-#include <libxml/SAX2.h>
-#include <libxml/xmlmemory.h>
+#include "xmlversion.h"
+#include "parser.h"
+#include "xmlerror.h"
+#include "SAX.h"
+#include "SAX2.h"
+#include "xmlmemory.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -166,7 +166,7 @@ struct _xmlGlobalState
 #ifdef __cplusplus
 }
 #endif
-#include <libxml/threads.h>
+#include "threads.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

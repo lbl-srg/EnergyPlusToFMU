@@ -17,9 +17,9 @@ using std::endl;
 
 #include "fmu-export-write-model-desc.h"
 
-#include "../utility/digest-md5.h"
-#include "../utility/file-help.h"
-#include "../utility/xml-output-help.h"
+#include "../../utility/digest-md5.h"
+#include "../../utility/file-help.h"
+#include "../../utility/xml-output-help.h"
 
 
 //--- Microsoft doesn't implement the modern standard.
@@ -119,7 +119,7 @@ void modelDescXml_write(std::ostream& outStream,
   // Make the {modelIdentifier} acceptable according to FMU rules.
   composedStr = sanitizeIdfFileName(idfFileBaseName);
   xmlOutput_attribute(outStream, 2, "modelIdentifier", composedStr.c_str());
-  xmlOutput_attribute(outStream, 2, "needsExecutionTool", "true");
+  xmlOutput_attribute(outStream, 2, "needsExecutionTool", "false");
   xmlOutput_attribute(outStream, 2, "canHandleVariableCommunicationStepSize", "false");
   xmlOutput_attribute(outStream, 2, "canInterpolateInputs", "false");
   xmlOutput_attribute(outStream, 2, "maxOutputDerivativeOrder", "0");
