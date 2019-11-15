@@ -48,8 +48,9 @@ else:
 #   This script uses separate, system-dependent, batch files to compile and
 # link source code.  For more information, see fcns printCompileCBatchInfo(),
 # printLinkCLibBatchInfo(), and printLinkCExeBatchInfo().
-#
-COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
+#fixme
+# adapt the compiler based on the flag if 1 or 2.
+COMPILE_C_BATCH_FILE_NAME = 'compile-cpp' + BATCH_EXTENSION
 LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
 LINK_C_EXE_BATCH_FILE_NAME = 'link-c-exe' + BATCH_EXTENSION
 
@@ -309,30 +310,65 @@ def makeFmuSharedLib(showDiagnostics, litter,
   findFileOrQuit('linker batch', linkCExeBatchFileName)
   #
   # Insert model identifier into source code files.
-  origMainName = os.path.join(scriptDirName, '../SourceCode/EnergyPlus/main.c')
-  modMainName  = os.path.join(scriptDirName, '../SourceCode/EnergyPlus', 'temp-'+modelIdSanitizedName+'.c')
+  # fixme
+  fmi_vers = 2
+  # Define the version number
+  if (fmi_vers == 1):
+      vers='v10'
+  # Define the version number
+  if (fmi_vers == 2):
+      vers = 'v20'
+
+  origMainName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus/main.c')
+  modMainName  = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus', 'temp-'+modelIdSanitizedName+'.c')
   poundDefineModelId(showDiagnostics, origMainName, modelIdSanitizedName, modMainName)
   #
   # Assemble names of source files.
   srcFileNameList = list()
   #
   srcFileNameList.append(modMainName)
+
   #
-  srcDirName = os.path.join(scriptDirName, '../SourceCode/EnergyPlus')
+  srcDirName = os.path.join(scriptDirName, '../SourceCode/socket')
+  for theRootName in [
+    'utilSocket'
+    ]:
+    srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
+  #
+  #
+  srcDirName = os.path.join(scriptDirName, '../SourceCode/utility')
   for theRootName in ['stack',
-    'util',
-    'utilSocket',
-    'xml_parser_cosim'
+    'util'
     ]:
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
-  #
-  srcDirName = os.path.join(scriptDirName, '../SourceCode/Expat/lib')
-  for theRootName in ['xmlparse',
-    'xmlrole',
-    'xmltok'  # Note {xmltok.c} directly #includes {xmltok_impl.c} and {xmltok_ns.c}, so they don't need to be in this list.
-    ]:
-    srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
-  #
+
+  srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus')
+  if(fmi_vers==1):
+      for theRootName in [
+        'xml_parser_cosim'
+        ]:
+        srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
+      #
+      srcDirName = os.path.join(scriptDirName, '../SourceCode/Expat/lib')
+      for theRootName in ['xmlparse',
+        'xmlrole',
+        'xmltok'  # Note {xmltok.c} directly #includes {xmltok_impl.c} and {xmltok_ns.c}, so they don't need to be in this list.
+        ]:
+        srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
+
+  if(fmi_vers==2):
+      srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/fmusdk-shared')
+      for theRootName in [
+        'xmlVersionParser'
+        ]:
+        srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
+      srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/fmusdk-shared/parser')
+      for theRootName in [
+        'XmlParser',
+        'XmlElement',
+        'XmlParserCApi'
+        ]:
+        srcFileNameList.append(os.path.join(srcDirName, theRootName +'.cpp'))
   # Load modules expect to find in same directory as this script file.
   if( scriptDirName not in sys.path ):
     sys.path.append(scriptDirName)
