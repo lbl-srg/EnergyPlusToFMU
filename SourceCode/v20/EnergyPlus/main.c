@@ -771,7 +771,6 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 
 
 	// assign FMU parameters
-	//fixme
 	_c->functions=functions;
 	_c->loggingOn=loggingOn;
 	_c->setupExperiment = 0;
