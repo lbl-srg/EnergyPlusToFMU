@@ -614,7 +614,7 @@ int getResourceLocation(ModelInstance *_c, fmi2String fmuLocation)
 		// The specification for defining whether the file should start with file:/, file://, or file:///
 		// is not clear (e.g. see FMI 1.0, and FMI 2.0). We will thus check all cases to see what we have
 		// case file: (If Ptolemy unzips an FMU in /tmp then the fmuLocation is file:/temp)
-		strncpy(_c->fmuUnzipLocation, fmuLocation + 5, strlen(fmuLocation + 5));
+		strncpy(_c->fmuUnzipLocation, fmuLocation + 5, strlen(fmuLocation + 5)-10);
 		// check whether fmuUnzipLocation exists
 		errDir=stat(_c->fmuUnzipLocation, &st);
 		if (errDir<0)
@@ -626,7 +626,7 @@ int getResourceLocation(ModelInstance *_c, fmi2String fmuLocation)
 			// allocate memory for fmuUnzipLocation
 			_c->fmuUnzipLocation=(char *)_c->functions->allocateMemory(strlen (fmuLocation) + 1, sizeof(char));
 			// case file:/
-			strncpy(_c->fmuUnzipLocation, fmuLocation + 6, strlen(fmuLocation + 6));
+			strncpy(_c->fmuUnzipLocation, fmuLocation + 6, strlen(fmuLocation + 6)-10);
 			// check whether fmuUnzipLocation exists
 			errDir=stat(_c->fmuUnzipLocation, &st);
 			if(errDir<0) 
@@ -638,7 +638,7 @@ int getResourceLocation(ModelInstance *_c, fmi2String fmuLocation)
 				// allocate memory for fmuUnzipLocation 
 				_c->fmuUnzipLocation=(char *)_c->functions->allocateMemory(strlen (fmuLocation) + 1, sizeof(char));
 				// case file://
-				strncpy(_c->fmuUnzipLocation, fmuLocation + 7, strlen(fmuLocation + 7));
+				strncpy(_c->fmuUnzipLocation, fmuLocation + 7, strlen(fmuLocation + 7)-10);
 
 				// check whether fmuUnzipLocation exists
 				errDir=stat(_c->fmuUnzipLocation, &st);
@@ -651,7 +651,7 @@ int getResourceLocation(ModelInstance *_c, fmi2String fmuLocation)
 					// allocate memory for fmuUnzipLocation 
 					_c->fmuUnzipLocation=(char *)_c->functions->allocateMemory(strlen (fmuLocation) + 1, sizeof(char));
 					// case file:///
-					strncpy(_c->fmuUnzipLocation, fmuLocation + 8, strlen(fmuLocation + 8));
+					strncpy(_c->fmuUnzipLocation, fmuLocation + 8, strlen(fmuLocation + 8)-10);
 					// check whether fmuUnzipLocation exists
 					errDir=stat(_c->fmuUnzipLocation, &st);
 					if(errDir<0) 
@@ -672,7 +672,7 @@ int getResourceLocation(ModelInstance *_c, fmi2String fmuLocation)
 	else if ((strncasecmp (tmpResLoc, "ftp", 3)==0) || (strncasecmp (tmpResLoc, "fmi", 3)==0))
 #endif
 	{
-		strncpy(_c->fmuUnzipLocation, fmuLocation + 6, strlen(fmuLocation + 6));		
+		strncpy(_c->fmuUnzipLocation, fmuLocation + 6, strlen(fmuLocation + 6)-10);		
 		_c->functions->logger(NULL, _c->instanceName, fmi2OK, "ok", 
 			"fmi2Instantiate: Path to fmuUnzipLocation without ftp:// or fmi:// %s\n", _c->fmuUnzipLocation);
 	}
@@ -683,7 +683,7 @@ int getResourceLocation(ModelInstance *_c, fmi2String fmuLocation)
 	else if ((strncasecmp (tmpResLoc, "https", 5)==0))
 #endif
 	{
-		strncpy(_c->fmuUnzipLocation, fmuLocation + 8, strlen(fmuLocation + 8));
+		strncpy(_c->fmuUnzipLocation, fmuLocation + 8, strlen(fmuLocation + 8)-10);
 		_c->functions->logger(NULL, _c->instanceName, fmi2OK, "ok", 
 			"fmi2Instantiate: Path to fmuUnzipLocation without https:// %s\n", _c->fmuUnzipLocation);
 	}
@@ -693,13 +693,17 @@ int getResourceLocation(ModelInstance *_c, fmi2String fmuLocation)
 		_c->functions->logger(NULL, _c->instanceName, fmi2OK, "ok", 
 			"fmi2Instantiate: Path to fmuUnzipLocation %s\n", _c->fmuUnzipLocation);
 	}
+
+
 	// Add back slash so we can copy files to the fmuUnzipLocation folder afterwards
 	sprintf(_c->fmuUnzipLocation, "%s%s", _c->fmuUnzipLocation, PATH_SEP);
+	printf("This is the fmuunzip location %s\n", _c->fmuUnzipLocation);
 
 	// allocate memory for fmuResourceLocation
-	_c->fmuResourceLocation=(char *)_c->functions->allocateMemory(strlen (_c->fmuUnzipLocation) 
-		+ strlen(PATH_SEP) + 1, sizeof(char));
-	sprintf(_c->fmuResourceLocation, "%s%s", _c->fmuUnzipLocation, PATH_SEP);
+	_c->fmuResourceLocation = (char *)_c->functions->allocateMemory(strlen(_c->fmuUnzipLocation)
+		+ strlen(RESOURCES) + strlen(PATH_SEP) + 1, sizeof(char));
+	sprintf(_c->fmuResourceLocation, "%s%s%s", _c->fmuUnzipLocation, RESOURCES, PATH_SEP);
+
 	return 0;
 }
 

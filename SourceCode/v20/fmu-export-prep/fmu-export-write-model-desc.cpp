@@ -103,8 +103,6 @@ void modelDescXml_write(std::ostream& outStream,
   // output variables.
   //   Just set to 0, and if an FMU master ever complains, figure it out from
   // there.
-  xmlOutput_attribute(outStream, 0, "numberOfContinuousStates", "0");
-  //
   xmlOutput_attribute(outStream, 0, "numberOfEventIndicators", "0");
   //
   xmlOutput_startTag_finish(outStream);
@@ -123,8 +121,8 @@ void modelDescXml_write(std::ostream& outStream,
   xmlOutput_attribute(outStream, 2, "canHandleVariableCommunicationStepSize", "false");
   xmlOutput_attribute(outStream, 2, "canInterpolateInputs", "false");
   xmlOutput_attribute(outStream, 2, "maxOutputDerivativeOrder", "0");
-  xmlOutput_attribute(outStream, 2, "canGetAndSetFMUState", "false");
-  xmlOutput_attribute(outStream, 2, "canSerializeFMUState", "false");
+  xmlOutput_attribute(outStream, 2, "canGetAndSetFMUstate", "false");
+  xmlOutput_attribute(outStream, 2, "canSerializeFMUstate", "false");
   // Note the FMI specification spells "asynchronously" wrong.
   xmlOutput_attribute(outStream, 2, "canRunAsynchronuously", "false");
   xmlOutput_attribute(outStream, 2, "canBeInstantiatedOnlyOncePerProcess", "false");
