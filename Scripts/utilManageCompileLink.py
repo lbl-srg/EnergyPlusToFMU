@@ -221,7 +221,8 @@ def runCompiler(showDiagnostics, compileBatchFileName, srcFileName):
 # file names.  The caller must take care of these issues.
 #
 def manageCompileLink(showDiagnostics, litter, forceRebuild,
-  compileBatchFileName, linkBatchFileName, srcFileNameList, outputFileName):
+  compileBatchFileName, linkBatchFileName, srcFileNameList, outputFileName,
+  fmiVersion, incluleLinkerLibs):
   #
   if( showDiagnostics ):
     printDiagnostic('Begin compile-link build of {' +outputFileName +'}')
@@ -274,7 +275,10 @@ def manageCompileLink(showDiagnostics, litter, forceRebuild,
   for srcFileName in srcFileAbsNameList:
     objFileName = runCompiler(showDiagnostics, compileBatchFileName, srcFileName)
     objFileNameList.append(os.path.join(bldDirName, objFileName))
-  #
+  # fixme: Add the path to libxml2 as argument of the linker so it can be compiled using visual studio
+  if (fmiVersion == 2):
+      objFileNameList.append(incluleLinkerLibs)
+
   # Link objects into {outputFileName}.
   #   But keep it in the build directory.
   outputFileBaseName = os.path.basename(outputFileName)
