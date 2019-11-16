@@ -380,8 +380,19 @@ def makeFmuSharedLib(showDiagnostics, litter,
     quitWithError('Unable to import {utilManageCompileLink.py}', False)
   #
   # Build {fmuSharedLibName}.
+  # fixme
+  if (fmi_vers == 2):
+      dirname, filename = os.path.split(os.path.abspath(__file__))
+      import platform, struct
+      nbits=8 * struct.calcsize("P")
+      if((platform.system().lower() == 'windows')):
+          ops="win"+str(nbits)
+      include_linker_libs = os.path.join("..", dirname, "SourceCode", "v20",
+      "fmusdk-shared", "parser", ops, "libxml2.lib")
+      printDiagnostic('Link with the libxml2.lib located in {' +include_linker_libs +'}')
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
-    compileCBatchFileName, linkCLibBatchFileName, srcFileNameList, fmuSharedLibName)
+    compileCBatchFileName, linkCLibBatchFileName, srcFileNameList,
+    fmuSharedLibName, fmi_vers, include_linker_libs)
   #
   # Delete {modMainName}.
   #   Note always do this, regardless of {litter}, since the file is in the

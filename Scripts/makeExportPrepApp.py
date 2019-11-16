@@ -253,7 +253,7 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   #
   # Build executable.
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, forceRebuild,
-    compileCppBatchFileName, linkCppExeBatchFileName, srcFileNameList, exportPrepExeName)
+    compileCppBatchFileName, linkCppExeBatchFileName, srcFileNameList, exportPrepExeName, None, None)
   #
   # Clean up intermediates.
   #   Nothing to do-- no intermediates generated at this level of work.
