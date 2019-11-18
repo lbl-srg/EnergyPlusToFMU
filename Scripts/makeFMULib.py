@@ -315,7 +315,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
   #
   # Insert model identifier into source code files.
   # fixme
-  fmiVers = 1
+  fmiVers = 2
   # Define the version number
   if (fmiVers == 1):
       vers='v10'
@@ -388,10 +388,10 @@ def makeFmuSharedLib(showDiagnostics, litter,
   incLinkerLibs = None
   if (fmiVers == 2):
       dirname, filename = os.path.split(os.path.abspath(__file__))
-      import platform, struct
+      import struct
       nbits=8 * struct.calcsize("P")
-      if((platform.system().lower() == 'windows')):
-          ops="win"+str(nbits)
+      # needs to make sure that we have libraries for Linux and darwin as well
+      ops=PLATFORM_SHORT_NAME+str(nbits)
       incLinkerLibs = os.path.join("..", dirname, "SourceCode", "v20",
       "fmusdk-shared", "parser", ops, "libxml2.lib")
       printDiagnostic('Link with the libxml2.lib located in {' +incLinkerLibs +'}')

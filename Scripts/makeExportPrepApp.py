@@ -206,7 +206,7 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   srcFileNameList = list()
   #
   # fixme
-  fmiVers = 1
+  fmiVers = 2
   # Define the version number
   if (fmiVers == 1):
       vers='v10'
