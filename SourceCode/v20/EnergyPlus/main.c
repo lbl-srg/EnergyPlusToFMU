@@ -79,8 +79,6 @@ void getNumInputOutputVariablesInFMU(ModelDescription *md, int* inp, int* out) {
 	int k;
 
 	int n = getScalarVariableSize(md);
-
-	//fixme
 	for (k = 0; k < n; k++) {
 		ScalarVariable *svTemp = getScalarVariable(md, k);
 		//if (getAlias(svTemp)!=enu_noAlias) continue;

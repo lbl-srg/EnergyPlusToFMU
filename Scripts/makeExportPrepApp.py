@@ -206,12 +206,12 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   srcFileNameList = list()
   #
   # fixme
-  fmi_vers = 2
+  fmiVers = 1
   # Define the version number
-  if (fmi_vers == 1):
+  if (fmiVers == 1):
       vers='v10'
   # Define the version number
-  if (fmi_vers == 2):
+  if (fmiVers == 2):
       vers = 'v20'
   srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/fmu-export-prep')
   for theRootName in ['app-cmdln-input',

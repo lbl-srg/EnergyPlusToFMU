@@ -50,7 +50,11 @@ else:
 # printLinkCLibBatchInfo(), and printLinkCExeBatchInfo().
 #fixme
 # adapt the compiler based on the flag if 1 or 2.
-COMPILE_C_BATCH_FILE_NAME = 'compile-cpp' + BATCH_EXTENSION
+fmiVers = 1
+if fmiVers==1:
+    COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
+if fmiVers==2:
+    COMPILE_C_BATCH_FILE_NAME = 'compile-cpp' + BATCH_EXTENSION
 LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
 LINK_C_EXE_BATCH_FILE_NAME = 'link-c-exe' + BATCH_EXTENSION
 
@@ -311,12 +315,12 @@ def makeFmuSharedLib(showDiagnostics, litter,
   #
   # Insert model identifier into source code files.
   # fixme
-  fmi_vers = 2
+  fmiVers = 1
   # Define the version number
-  if (fmi_vers == 1):
+  if (fmiVers == 1):
       vers='v10'
   # Define the version number
-  if (fmi_vers == 2):
+  if (fmiVers == 2):
       vers = 'v20'
 
   origMainName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus/main.c')
@@ -343,20 +347,20 @@ def makeFmuSharedLib(showDiagnostics, litter,
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
 
   srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus')
-  if(fmi_vers==1):
+  if(fmiVers==1):
       for theRootName in [
         'xml_parser_cosim'
         ]:
         srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
       #
-      srcDirName = os.path.join(scriptDirName, '../SourceCode/Expat/lib')
+      srcDirName = os.path.join(scriptDirName, '../SourceCode/v10/Expat/lib')
       for theRootName in ['xmlparse',
         'xmlrole',
         'xmltok'  # Note {xmltok.c} directly #includes {xmltok_impl.c} and {xmltok_ns.c}, so they don't need to be in this list.
         ]:
         srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
 
-  if(fmi_vers==2):
+  if(fmiVers==2):
       srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/fmusdk-shared')
       for theRootName in [
         'xmlVersionParser'
@@ -381,18 +385,19 @@ def makeFmuSharedLib(showDiagnostics, litter,
   #
   # Build {fmuSharedLibName}.
   # fixme
-  if (fmi_vers == 2):
+  incLinkerLibs = None
+  if (fmiVers == 2):
       dirname, filename = os.path.split(os.path.abspath(__file__))
       import platform, struct
       nbits=8 * struct.calcsize("P")
       if((platform.system().lower() == 'windows')):
           ops="win"+str(nbits)
-      include_linker_libs = os.path.join("..", dirname, "SourceCode", "v20",
+      incLinkerLibs = os.path.join("..", dirname, "SourceCode", "v20",
       "fmusdk-shared", "parser", ops, "libxml2.lib")
-      printDiagnostic('Link with the libxml2.lib located in {' +include_linker_libs +'}')
+      printDiagnostic('Link with the libxml2.lib located in {' +incLinkerLibs +'}')
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
     compileCBatchFileName, linkCLibBatchFileName, srcFileNameList,
-    fmuSharedLibName, fmi_vers, include_linker_libs)
+    fmuSharedLibName, fmiVers, incLinkerLibs)
   #
   # Delete {modMainName}.
   #   Note always do this, regardless of {litter}, since the file is in the
@@ -409,7 +414,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
     os.path.join(scriptDirName, '../SourceCode/utility/get-address-size.c')
     ]
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
-    compileCBatchFileName, linkCExeBatchFileName, srcFileNameList, getAddressSizeExeName)
+    compileCBatchFileName, linkCExeBatchFileName, srcFileNameList, getAddressSizeExeName, None, None)
   #
   # Find size of memory address used in {fmuSharedLibName}.
   #   Note both the library and {getAddressSizeExeName} were compiled using the
