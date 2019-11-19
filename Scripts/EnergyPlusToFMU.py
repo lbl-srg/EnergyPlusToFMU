@@ -142,7 +142,7 @@ def addToZipFile(theZipFile, addFileName, toDir, addAsName):
 
 #--- Fcn to export an EnergyPlus IDF file as an FMU.
 #
-def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idfFileName):
+def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, fmiVersion, idfFileName):
   #
   if( showDiagnostics ):
     printDiagnostic('Begin exporting IDF file {' +idfFileName +'} as an FMU')
@@ -203,7 +203,7 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
   #   Do not force a rebuild.
   if( showDiagnostics ):
     printDiagnostic('Checking for export-prep application')
-  exportPrepExeName = makeExportPrepApp.makeExportPrepApp(showDiagnostics, litter, False)
+  exportPrepExeName = makeExportPrepApp.makeExportPrepApp(showDiagnostics, litter, True, fmiVersion)
   #
   # Run the export-prep application.
   if( showDiagnostics ):
@@ -217,7 +217,7 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
     quitWithError('Failed to extract FMU information from IDF file {' +idfFileName +'}', False)
   #
   # Create the shared library.
-  (OUT_fmuSharedLibName, fmuBinDirName) = makeFMULib.makeFmuSharedLib(showDiagnostics, litter, modelIdName)
+  (OUT_fmuSharedLibName, fmuBinDirName) = makeFMULib.makeFmuSharedLib(showDiagnostics, litter, modelIdName, fmiVersion)
   findFileOrQuit('shared library', OUT_fmuSharedLibName)
   #
   # Create zip file that will become the FMU.
@@ -276,6 +276,7 @@ if __name__ == '__main__':
   # Set defaults for command-line options.
   iddFileName = None
   wthFileName = None
+  fmiApiVersion = None
   showDiagnostics = False
   litter = False
   #
@@ -294,6 +295,11 @@ if __name__ == '__main__':
       wthFileName = sys.argv[currIdx]
       if( showDiagnostics ):
         printDiagnostic('Setting WTH file to {' +wthFileName +'}')
+    elif( currArg.startswith('-a') ):
+      currIdx += 1
+      fmiVersion = sys.argv[currIdx]
+      if( showDiagnostics ):
+        printDiagnostic('Setting FMI API version (1 or 2) to {' +fmiApiVersion +'}')
     elif( currArg.startswith('-d') ):
       showDiagnostics = True
     elif( currArg.startswith('-L') ):
@@ -317,9 +323,15 @@ if __name__ == '__main__':
   # Get {iddFileName}.
   if( iddFileName is None ):
     quitWithError('Missing required input, <path-to-idd-file>', True)
-  #
+  # Get {FMI version}.
+  if( fmiVersion is None ):
+      fmiVersion = "1"
+      printDiagnostic('FMI version is unspecified. It will be set to {' +fmiVersion +'}')
+  if not (fmiVersion in ["1", "2"]):
+      quitWithError('FMI version "1" and "2" are supported, got FMI version {' +fmiVersion +'}', True)
+
   # Run.
-  exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idfFileName)
+  exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, int(fmiVersion), idfFileName)
 
 
 #--- Copyright notice.

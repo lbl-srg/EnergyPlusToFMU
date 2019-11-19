@@ -50,11 +50,8 @@ else:
 # printLinkCLibBatchInfo(), and printLinkCExeBatchInfo().
 #fixme
 # adapt the compiler based on the flag if 1 or 2.
-fmiVers = 1
-if fmiVers==1:
-    COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
-if fmiVers==2:
-    COMPILE_C_BATCH_FILE_NAME = 'compile-cpp' + BATCH_EXTENSION
+
+#COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
 LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
 LINK_C_EXE_BATCH_FILE_NAME = 'link-c-exe' + BATCH_EXTENSION
 
@@ -283,7 +280,7 @@ def poundDefineModelId(showDiagnostics, origFileName, modelIdName, modFileName):
 # "sanitized" since it also has to be a valid function name in the C language.
 #
 def makeFmuSharedLib(showDiagnostics, litter,
-  modelIdName):
+  modelIdName, fmiVersion):
   #
   if( showDiagnostics ):
     printDiagnostic('Begin creating shared FMU library for model {' +modelIdName +'}')
@@ -304,6 +301,11 @@ def makeFmuSharedLib(showDiagnostics, litter,
     quitWithError('Missing system-specific batch directory {' +batchDirAbsName +'}', False)
   #
   # Form names of system-specific scripts.
+  if fmiVersion==1:
+    COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
+  if fmiVersion==2:
+    COMPILE_C_BATCH_FILE_NAME = 'compile-cpp' + BATCH_EXTENSION
+
   compileCBatchFileName = os.path.join(batchDirAbsName, COMPILE_C_BATCH_FILE_NAME)
   findFileOrQuit('compiler batch', compileCBatchFileName)
   #
@@ -313,16 +315,13 @@ def makeFmuSharedLib(showDiagnostics, litter,
   linkCExeBatchFileName = os.path.join(batchDirAbsName, LINK_C_EXE_BATCH_FILE_NAME)
   findFileOrQuit('linker batch', linkCExeBatchFileName)
   #
-  # Insert model identifier into source code files.
-  # fixme
-  fmiVers = 2
   # Define the version number
-  if (fmiVers == 1):
+  if (fmiVersion == 1):
       vers='v10'
   # Define the version number
-  if (fmiVers == 2):
+  if (fmiVersion == 2):
       vers = 'v20'
-
+  # Insert model identifier into source code files (not really needed here).
   origMainName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus/main.c')
   modMainName  = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus', 'temp-'+modelIdSanitizedName+'.c')
   poundDefineModelId(showDiagnostics, origMainName, modelIdSanitizedName, modMainName)
@@ -347,7 +346,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
 
   srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus')
-  if(fmiVers==1):
+  if(fmiVersion==1):
       for theRootName in [
         'xml_parser_cosim'
         ]:
@@ -360,7 +359,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
         ]:
         srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
 
-  if(fmiVers==2):
+  if(fmiVersion==2):
       srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/fmusdk-shared')
       for theRootName in [
         'xmlVersionParser'
@@ -386,18 +385,18 @@ def makeFmuSharedLib(showDiagnostics, litter,
   # Build {fmuSharedLibName}.
   # fixme
   incLinkerLibs = None
-  if (fmiVers == 2):
+  if (fmiVersion == 2):
       dirname, filename = os.path.split(os.path.abspath(__file__))
       import struct
       nbits=8 * struct.calcsize("P")
       # needs to make sure that we have libraries for Linux and darwin as well
       ops=PLATFORM_SHORT_NAME+str(nbits)
-      incLinkerLibs = os.path.join("..", dirname, "SourceCode", "v20",
+      incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
       "fmusdk-shared", "parser", ops, "libxml2.lib")
       printDiagnostic('Link with the libxml2.lib located in {' +incLinkerLibs +'}')
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
     compileCBatchFileName, linkCLibBatchFileName, srcFileNameList,
-    fmuSharedLibName, fmiVers, incLinkerLibs)
+    fmuSharedLibName, fmiVersion, incLinkerLibs)
   #
   # Delete {modMainName}.
   #   Note always do this, regardless of {litter}, since the file is in the
@@ -414,7 +413,8 @@ def makeFmuSharedLib(showDiagnostics, litter,
     os.path.join(scriptDirName, '../SourceCode/utility/get-address-size.c')
     ]
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
-    compileCBatchFileName, linkCExeBatchFileName, srcFileNameList, getAddressSizeExeName, None, None)
+    compileCBatchFileName, linkCExeBatchFileName, srcFileNameList,
+    getAddressSizeExeName, None, None)
   #
   # Find size of memory address used in {fmuSharedLibName}.
   #   Note both the library and {getAddressSizeExeName} were compiled using the
@@ -447,7 +447,6 @@ def makeFmuSharedLib(showDiagnostics, litter,
   return( (fmuSharedLibName, fmuBinDirName) )
   #
   # End fcn makeFmuSharedLib().
-
 
 #--- Run if called from command line.
 #
@@ -489,7 +488,6 @@ if __name__ == '__main__':
   (fmuSharedLibName, fmuBinDirName) = makeFmuSharedLib(showDiagnostics, litter, modelIdName)
   if( showDiagnostics ):
     printDiagnostic('Created shared library {' +fmuSharedLibName +'} for FMU binary subdirectory {' +fmuBinDirName +'}')
-
 
 #--- Copyright notice.
 #

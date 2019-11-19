@@ -175,7 +175,7 @@ def deleteFile(fileName):
 # file names.  It uses paths relative to the directory where this file resides,
 # and relies on there being no problematic characters in the path names.
 #
-def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
+def makeExportPrepApp(showDiagnostics, litter, forceRebuild, fmiVersion):
   #
   # Form executable name.
   #   Make name distinct on each platform, in order to allow two executables to
@@ -204,14 +204,12 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   #
   # Assemble names of source files.
   srcFileNameList = list()
-  #
-  # fixme
-  fmiVers = 2
-  # Define the version number
-  if (fmiVers == 1):
+
+  # Set the version number
+  if (fmiVersion == 1):
       vers='v10'
   # Define the version number
-  if (fmiVers == 2):
+  if (fmiVersion == 2):
       vers = 'v20'
   srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/fmu-export-prep')
   for theRootName in ['app-cmdln-input',
@@ -253,7 +251,8 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild):
   #
   # Build executable.
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, forceRebuild,
-    compileCppBatchFileName, linkCppExeBatchFileName, srcFileNameList, exportPrepExeName, None, None)
+    compileCppBatchFileName, linkCppExeBatchFileName, srcFileNameList,
+    exportPrepExeName, None, None)
   #
   # Clean up intermediates.
   #   Nothing to do-- no intermediates generated at this level of work.
