@@ -325,13 +325,13 @@ if __name__ == '__main__':
     quitWithError('Missing required input, <path-to-idd-file>', True)
   # Get {FMI version}.
   if( fmiVersion is None ):
-      fmiVersion = "1"
+      fmiVersion = "1.0"
       printDiagnostic('FMI version is unspecified. It will be set to {' +fmiVersion +'}')
-  if not (fmiVersion in ["1", "2"]):
+  if not (fmiVersion in [1, 2, "1", "2", "1.0", "2.0"]):
       quitWithError('FMI version "1" and "2" are supported, got FMI version {' +fmiVersion +'}', True)
 
   # Run.
-  exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, int(fmiVersion), idfFileName)
+  exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, int(float(fmiVersion)), idfFileName)
 
 
 #--- Copyright notice.

@@ -56,15 +56,17 @@ The installation directory should contain the following subdirectories:
 - ``SourceCode/``
   (C and C++ source code for creating an EnergyPlus FMU)
 
-  - ``EnergyPlus/``
-
-  - ``Expat/``
-
   - ``fmu-export-prep/``
 
   - ``read-ep-file/``
 
+  - ``socket/``
+
   - ``utility/``
+
+  - ``v10/EnergyPlus/``
+
+  - ``v20/EnergyPlus/``
 
 
 Configuration
@@ -436,7 +438,7 @@ For example, entering the command:
 .. code-block:: none
 
   > which gcc
-  
+
 will return the path to the ``gcc`` compiler, provided your system has it, and provided it is on the search path.
 Otherwise, ``which gcc`` will return nothing.
 

@@ -824,10 +824,6 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 	}
 
 	// check whether the path to the resource folder has been provided
-	// note that in FMI 1.0 the resource location (fmuLocation) is actaully the folder where
-	// the FMU has been unzipped whereas in 2.0, the resource location is the folder 
-	// where the resource files are. So it is important to know this to avoid
-	// looking for files in the wrong location.
 	if((fmuLocation==NULL) || (strlen(fmuLocation)==0)) {
 		_c->functions->logger(NULL, instanceName, fmi2Error, "error", "fmi2Instantiate: The path"
 			" to the folder where the FMU is unzipped is not specified. This is not valid."
