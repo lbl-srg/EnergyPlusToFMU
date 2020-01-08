@@ -10,6 +10,16 @@ EnergyPlus version 8.0 or higher as an FMU for co-simulation for Windows 32/64 b
 
 To install EnergyPlusToFMU, follow the section :doc:`installation`.
 
+Release 3.0.0 (January 07, 2020)
+---------------------------------
+
+Download `EnergyPlusToFMU-v3.0.0.zip <https://github.com/lbl-srg/EnergyplusToFMU/releases/download/v3.0.0/EnergyPlusToFMU-v3.0.0.zip>`_.
+
+**Release notes**
+
+This version is a major release which adds supports for the FMI for Co-Simulation version 2.0.
+This release addresses `issue#xxx <https://github.com/lbl-srg/EnergyPlusToFMU/issues/xxx/>`_ on github.
+
 Release 2.1.0 (January 26, 2019)
 ---------------------------------
 

@@ -44,7 +44,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'FMU Export of EnergyPlus'
-copyright = u'2013-2019, The Regents of the University of California (through Lawrence Berkeley National Laboratory)'
+copyright = u'2013-2020, The Regents of the University of California (through Lawrence Berkeley National Laboratory)'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

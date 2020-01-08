@@ -56,6 +56,7 @@
 #include <signal.h>
 #include <spawn.h>
 #include <sys/types.h> /* pid_t */
+#include <sys/wait.h>
 #include <sys/ioctl.h>
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR   -1
