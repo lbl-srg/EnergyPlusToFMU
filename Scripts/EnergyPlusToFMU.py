@@ -31,11 +31,12 @@
 def printCmdLineUsage():
   #
   print 'USAGE:', os.path.basename(__file__),  \
-    '-i <path-to-idd-file>  [-w <path-to-weather-file>]  [-d]  [-L]  <path-to-idf-file>'
+    '-i <path-to-idd-file>  [-w <path-to-weather-file>]  [-a <fmi-version>] [-d]  [-L]  <path-to-idf-file>'
   #
   print '-- Export an EnergyPlus model as a Functional Mockup Unit (FMU) for co-simulation'
   print '-- Input -i, use the named Input Data Dictionary (required)'
   print '-- Option -w, use the named weather file'
+  print '-- Option -a, specify the FMI version'
   print '-- Option -d, print diagnostics'
   print '-- Option -L, litter, that is, do not clean up intermediate files'
   # TODO: Add -V to set version number of FMI standard.  Currently 1.0 is only one supported.

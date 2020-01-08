@@ -391,9 +391,14 @@ def makeFmuSharedLib(showDiagnostics, litter,
       nbits=8 * struct.calcsize("P")
       # needs to make sure that we have libraries for Linux and darwin as well
       ops=PLATFORM_SHORT_NAME+str(nbits)
-      incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
-      "fmusdk-shared", "parser", ops, "libxml2.lib")
-      printDiagnostic('Link with the libxml2.lib located in {' +incLinkerLibs +'}')
+      if( PLATFORM_NAME.startswith('win') ):
+          incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
+          "fmusdk-shared", "parser", ops, "libxml2.lib")
+          printDiagnostic('Link with the libxml2.lib located in {' +incLinkerLibs +'}')
+      if( PLATFORM_NAME.startswith('lin') ):
+          incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
+          "fmusdk-shared", "parser", ops, "libxml2.so.2")
+          printDiagnostic('Link with the libxml2.so.2 located in {' +incLinkerLibs +'}')
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
     compileCBatchFileName, linkCLibBatchFileName, srcFileNameList,
     fmuSharedLibName, fmiVersion, incLinkerLibs)
