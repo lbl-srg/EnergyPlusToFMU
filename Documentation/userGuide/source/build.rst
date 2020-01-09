@@ -50,7 +50,7 @@ Script ``EnergyPlusToFMU.py`` supports the following command-line switches:
 | -w <path-to-weather-file> | Add the named weather file to the FMU [optional].     |
 +---------------------------+-------------------------------------------------------+
 | -a <fmi-version>          | Use the FMI version specified. Version 1 and          |
-|                           | version 2 are supported. Default is FMI version 2     |
+|                           | version 2 are supported. Default is FMI version 2.    |
 +---------------------------+-------------------------------------------------------+
 | -d                        | Print diagnostics [optional].                         |
 |                           | Produces a status line for every major action taken   |
