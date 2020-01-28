@@ -52,7 +52,7 @@ else:
 # adapt the compiler based on the flag if 1 or 2.
 
 #COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
-LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
+#LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
 LINK_C_EXE_BATCH_FILE_NAME = 'link-c-exe' + BATCH_EXTENSION
 
 
@@ -309,6 +309,15 @@ def makeFmuSharedLib(showDiagnostics, litter,
   compileCBatchFileName = os.path.join(batchDirAbsName, COMPILE_C_BATCH_FILE_NAME)
   findFileOrQuit('compiler batch', compileCBatchFileName)
   #
+
+  # Form names of system-specific scripts.
+  if fmiVersion==1:
+    LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
+  if fmiVersion==2:
+      if(PLATFORM_NAME.startswith('win')):
+          LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
+      else:
+          LINK_C_LIB_BATCH_FILE_NAME = 'link-cpp-lib' + BATCH_EXTENSION
   linkCLibBatchFileName = os.path.join(batchDirAbsName, LINK_C_LIB_BATCH_FILE_NAME)
   findFileOrQuit('linker batch', linkCLibBatchFileName)
   #
@@ -383,7 +392,6 @@ def makeFmuSharedLib(showDiagnostics, litter,
     quitWithError('Unable to import {utilManageCompileLink.py}', False)
   #
   # Build {fmuSharedLibName}.
-  # fixme
   incLinkerLibs = None
   if (fmiVersion == 2):
       dirname, filename = os.path.split(os.path.abspath(__file__))
@@ -395,10 +403,17 @@ def makeFmuSharedLib(showDiagnostics, litter,
           incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
           "fmusdk-shared", "parser", ops, "libxml2.lib")
           printDiagnostic('Link with the libxml2.lib located in {' +incLinkerLibs +'}')
-      if( PLATFORM_NAME.startswith('lin') ):
+      if( PLATFORM_NAME.startswith('lin') and str(nbits)=='64'):
           incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
           "fmusdk-shared", "parser", ops, "libxml2.so.2")
           printDiagnostic('Link with the libxml2.so.2 located in {' +incLinkerLibs +'}')
+      # if( PLATFORM_NAME.startswith('lin') and str(nbits)=='32'):
+      #     quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
+      # if( PLATFORM_NAME.startswith('darwin')):
+      #     #incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
+      #     #"fmusdk-shared", "parser", ops, "libxml2.dylib")
+      #     #printDiagnostic('Link with the libxml2.dylib located in {' +incLinkerLibs +'}')
+      #     quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
     compileCBatchFileName, linkCLibBatchFileName, srcFileNameList,
     fmuSharedLibName, fmiVersion, incLinkerLibs)

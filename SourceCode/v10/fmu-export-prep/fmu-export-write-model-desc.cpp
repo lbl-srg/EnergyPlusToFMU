@@ -182,7 +182,7 @@ void modelDescXml_write(std::ostream& outStream,
   xmlOutput_attribute(outStream, 3, "maxOutputDerivativeOrder", "0");
   // Note the FMI specification spells "asynchronously" wrong.
   xmlOutput_attribute(outStream, 3, "canRunAsynchronuously", "false");
-  xmlOutput_attribute(outStream, 3, "canSignalEvents", "false");
+  //xmlOutput_attribute(outStream, 3, "canSignalEvents", "false");
   xmlOutput_attribute(outStream, 3, "canBeInstantiatedOnlyOncePerProcess", "false");
   xmlOutput_attribute(outStream, 3, "canNotUseMemoryManagementFunctions", "true");
   xmlOutput_endTag(outStream, -1, NULL);

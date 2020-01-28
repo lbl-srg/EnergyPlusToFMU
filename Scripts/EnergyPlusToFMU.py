@@ -51,6 +51,18 @@ import subprocess
 import sys
 import zipfile
 
+PLATFORM_NAME = sys.platform
+
+#
+if( PLATFORM_NAME.startswith('win') ):
+    PLATFORM_SHORT_NAME = 'win'
+elif( PLATFORM_NAME.startswith('linux')
+    or PLATFORM_NAME.startswith('cygwin') ):
+    PLATFORM_SHORT_NAME = 'linux'
+elif( PLATFORM_NAME.startswith('darwin') ):
+    PLATFORM_SHORT_NAME = 'darwin'
+else:
+    raise Exception('Unknown platform {' +PLATFORM_NAME +'}')
 
 #--- Fcn to print diagnostics.
 #
@@ -330,6 +342,25 @@ if __name__ == '__main__':
       printDiagnostic('FMI version is unspecified. It will be set to {' +fmiVersion +'}')
   if not (fmiVersion in [1, 2, "1", "2", "1.0", "2.0"]):
       quitWithError('FMI version "1" and "2" are supported, got FMI version {' +fmiVersion +'}', True)
+  if (int(float(fmiVersion))==2):
+      import struct
+      nbits=8 * struct.calcsize("P")
+      ops=PLATFORM_SHORT_NAME+str(nbits)
+      if( PLATFORM_NAME.startswith('lin') and str(nbits)=='64'):
+          dirname, filename = os.path.split(os.path.abspath(__file__))
+          incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
+            "fmusdk-shared", "parser", ops, "libxml2.so.2")
+          printDiagnostic('\nIMPORTANT NOTE: The FMU generated will run in the fmuChecker 2.0.4 only '
+          'if libxml2.so.2 is symbollicaly link to  {' +incLinkerLibs +'}.\n'
+          ' This version of libxml2.so.2 has been compiled excluding zlib.'
+          ' The official released version of libxml2.so.2 (version 2.9) '
+          ' which includes zlib causes the FMU to fail in the fmuChecker.\n'
+          ' However, the FMU will work fine with master algorithms'
+          ' such as PyFMI even if the FMU links to the official version of libxml2.\n')
+      if( PLATFORM_NAME.startswith('lin') and str(nbits)=='32'):
+          quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
+      if( PLATFORM_NAME.startswith('darwin')):
+          quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
 
   # Run.
   exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, int(float(fmiVersion)), idfFileName)
