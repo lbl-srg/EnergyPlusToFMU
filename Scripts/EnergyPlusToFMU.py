@@ -359,8 +359,8 @@ if __name__ == '__main__':
           ' such as PyFMI even if the FMU links to the official version of libxml2.\n')
       if( PLATFORM_NAME.startswith('lin') and str(nbits)=='32'):
           quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
-      if( PLATFORM_NAME.startswith('darwin')):
-          quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
+      #if( PLATFORM_NAME.startswith('darwin')):
+    #      quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
 
   # Run.
   exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, int(float(fmiVersion)), idfFileName)

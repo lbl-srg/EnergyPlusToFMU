@@ -409,11 +409,11 @@ def makeFmuSharedLib(showDiagnostics, litter,
           printDiagnostic('Link with the libxml2.so.2 located in {' +incLinkerLibs +'}')
       # if( PLATFORM_NAME.startswith('lin') and str(nbits)=='32'):
       #     quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
-      # if( PLATFORM_NAME.startswith('darwin')):
-      #     #incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
-      #     #"fmusdk-shared", "parser", ops, "libxml2.dylib")
-      #     #printDiagnostic('Link with the libxml2.dylib located in {' +incLinkerLibs +'}')
-      #     quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
+      if( PLATFORM_NAME.startswith('darwin')):
+          incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
+          "fmusdk-shared", "parser", ops, "libxml2.dylib")
+          printDiagnostic('Link with the libxml2.dylib located in {' +incLinkerLibs +'}')
+          #quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
     compileCBatchFileName, linkCLibBatchFileName, srcFileNameList,
     fmuSharedLibName, fmiVersion, incLinkerLibs)
