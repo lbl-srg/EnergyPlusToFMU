@@ -303,8 +303,10 @@ def makeFmuSharedLib(showDiagnostics, litter,
   # Form names of system-specific scripts.
   if fmiVersion==1:
     COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
-  if fmiVersion==2:
+  if (fmiVersion==2) and (PLATFORM_NAME.startswith('win')):
     COMPILE_C_BATCH_FILE_NAME = 'compile-cpp' + BATCH_EXTENSION
+  if (fmiVersion==2) and (not(PLATFORM_NAME.startswith('win'))):
+    COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
 
   compileCBatchFileName = os.path.join(batchDirAbsName, COMPILE_C_BATCH_FILE_NAME)
   findFileOrQuit('compiler batch', compileCBatchFileName)
