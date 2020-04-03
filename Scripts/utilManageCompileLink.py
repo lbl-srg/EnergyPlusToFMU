@@ -29,11 +29,6 @@
 # >>> import <this-file-base-name>
 # >>> <this-file-base-name>.manageCompileLink(arguments)
 
-#--- Identify system.
-#
-import sys
-PLATFORM_NAME = sys.platform
-#
 
 #--- Runtime help.
 #
@@ -63,6 +58,8 @@ def printLinkBatchInfo(linkBatchFileName, compileBatchFileName):
 #
 import os
 import subprocess
+import sys
+
 
 #--- Fcn to print diagnostics.
 #
@@ -197,10 +194,7 @@ def runCompiler(showDiagnostics, compileBatchFileName, srcFileName):
     printDiagnostic('Compiling {' +os.path.basename(srcFileName) +'}')
   #
   try:
-      if( PLATFORM_NAME.startswith('darwin') ):
-          subprocess.call(["python", compileBatchFileName, srcFileName])
-      else:
-          subprocess.call([compileBatchFileName, srcFileName])
+    subprocess.call([compileBatchFileName, srcFileName])
   except:
     # Check failure due to missing files, before complain about unknown problem.
     srcFileName = findFileOrQuit('source', srcFileName)
@@ -291,10 +285,7 @@ def manageCompileLink(showDiagnostics, litter, forceRebuild,
   if( showDiagnostics ):
     printDiagnostic('Linking object files using {' +linkBatchFileName +'}')
     printDiagnostic('Linking to create {' +outputFileBaseName +'}')
-  if( PLATFORM_NAME.startswith('darwin') ):
-      subprocess.call(["python", linkBatchFileName, outputFileBaseName] +objFileNameList)
-  else:
-      subprocess.call([linkBatchFileName, outputFileBaseName] +objFileNameList)
+  subprocess.call([linkBatchFileName, outputFileBaseName] +objFileNameList)
   if( not os.path.isfile(outputFileBaseName) ):
     quitWithError('Failed to link object files into {' +outputFileBaseName +'}')
   #
