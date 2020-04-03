@@ -31,6 +31,7 @@
 
 #--- Identify system.
 #
+import sys
 PLATFORM_NAME = sys.platform
 #
 
@@ -62,8 +63,6 @@ def printLinkBatchInfo(linkBatchFileName, compileBatchFileName):
 #
 import os
 import subprocess
-import sys
-
 
 #--- Fcn to print diagnostics.
 #
