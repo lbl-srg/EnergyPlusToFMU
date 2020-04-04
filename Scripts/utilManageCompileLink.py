@@ -29,6 +29,12 @@
 # >>> import <this-file-base-name>
 # >>> <this-file-base-name>.manageCompileLink(arguments)
 
+#--- Identify system.
+import sys
+
+#
+PLATFORM_NAME = sys.platform
+#
 
 #--- Runtime help.
 #
@@ -58,7 +64,6 @@ def printLinkBatchInfo(linkBatchFileName, compileBatchFileName):
 #
 import os
 import subprocess
-import sys
 
 
 #--- Fcn to print diagnostics.
@@ -276,7 +281,7 @@ def manageCompileLink(showDiagnostics, litter, forceRebuild,
     objFileName = runCompiler(showDiagnostics, compileBatchFileName, srcFileName)
     objFileNameList.append(os.path.join(bldDirName, objFileName))
   # fixme: Add the path to libxml2 as argument of the linker so it can be compiled using visual studio
-  if (fmiVersion == 2):
+  if (fmiVersion == 2) and not(PLATFORM_NAME.startswith('darwin')):
       objFileNameList.append(incluleLinkerLibs)
 
   # Link objects into {outputFileName}.

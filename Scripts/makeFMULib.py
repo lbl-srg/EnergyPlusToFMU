@@ -318,8 +318,11 @@ def makeFmuSharedLib(showDiagnostics, litter,
   if fmiVersion==2:
       if(PLATFORM_NAME.startswith('win')):
           LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
-      else:
+      if(PLATFORM_NAME.startswith('linux')):
           LINK_C_LIB_BATCH_FILE_NAME = 'link-cpp-lib' + BATCH_EXTENSION
+      if(PLATFORM_NAME.startswith('darwin')):
+          LINK_C_LIB_BATCH_FILE_NAME = 'link-cpp-lib_20' + BATCH_EXTENSION
+
   linkCLibBatchFileName = os.path.join(batchDirAbsName, LINK_C_LIB_BATCH_FILE_NAME)
   findFileOrQuit('linker batch', linkCLibBatchFileName)
   #
