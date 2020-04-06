@@ -318,10 +318,8 @@ def makeFmuSharedLib(showDiagnostics, litter,
   if fmiVersion==2:
       if(PLATFORM_NAME.startswith('win')):
           LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
-      if(PLATFORM_NAME.startswith('linux')):
+      else:
           LINK_C_LIB_BATCH_FILE_NAME = 'link-cpp-lib' + BATCH_EXTENSION
-      if(PLATFORM_NAME.startswith('darwin')):
-          LINK_C_LIB_BATCH_FILE_NAME = 'link-cpp-lib_20' + BATCH_EXTENSION
 
   linkCLibBatchFileName = os.path.join(batchDirAbsName, LINK_C_LIB_BATCH_FILE_NAME)
   findFileOrQuit('linker batch', linkCLibBatchFileName)
@@ -414,7 +412,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
           printDiagnostic('Link with the libxml2.so.2 located in {' +incLinkerLibs +'}')
       # if( PLATFORM_NAME.startswith('lin') and str(nbits)=='32'):
       #     quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
-      if( PLATFORM_NAME.startswith('darwin')):
+      if( PLATFORM_NAME.startswith('dar')):
           incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
           "fmusdk-shared", "parser", ops, "libxml2.dylib")
           printDiagnostic('Link with the libxml2.dylib located in {' +incLinkerLibs +'}')

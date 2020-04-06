@@ -281,7 +281,8 @@ def manageCompileLink(showDiagnostics, litter, forceRebuild,
     objFileName = runCompiler(showDiagnostics, compileBatchFileName, srcFileName)
     objFileNameList.append(os.path.join(bldDirName, objFileName))
   # fixme: Add the path to libxml2 as argument of the linker so it can be compiled using visual studio
-  if (fmiVersion == 2) and not(PLATFORM_NAME.startswith('darwin')):
+  #if (fmiVersion == 2) and not(PLATFORM_NAME.startswith('dar')):
+  if (fmiVersion == 2):
       objFileNameList.append(incluleLinkerLibs)
 
   # Link objects into {outputFileName}.
