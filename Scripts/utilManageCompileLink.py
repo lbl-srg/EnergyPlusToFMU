@@ -291,19 +291,19 @@ def manageCompileLink(showDiagnostics, litter, forceRebuild,
   if( showDiagnostics ):
     printDiagnostic('Linking object files using {' +linkBatchFileName +'}')
     printDiagnostic('Linking to create {' +outputFileBaseName +'}')
-  if (fmiVersion == 2) and (PLATFORM_NAME.startswith('dar')):
-      # Convert the list into a list of strings.
-      objFileNameListToStr = ' '.join(str(e) for e in objFileNameList)
-      # Create the command that will be used to link the files.
-      # Use os.system as opposed to using subprocess.call when run on Mac OS.
-      # There were some permission issues on some of the Mac computers which led
-      # to the above decisions.
-      cmd = linkBatchFileName + " " + outputFileBaseName + " " + objFileNameListToStr
-      printDiagnostic('Linking with following os.system command {' +cmd +'}')
-      ret = os.system(cmd)
-      printDiagnostic('Retun argument of the executed os.system command is {' + str(ret) +'}')
-  else:
-      subprocess.call([linkBatchFileName, outputFileBaseName] +objFileNameList)
+  # if (fmiVersion == 2) and (PLATFORM_NAME.startswith('dar')):
+  #     # Convert the list into a list of strings.
+  #     objFileNameListToStr = ' '.join(str(e) for e in objFileNameList)
+  #     # Create the command that will be used to link the files.
+  #     # Use os.system as opposed to using subprocess.call when run on Mac OS.
+  #     # There were some permission issues on some of the Mac computers which led
+  #     # to the above decisions.
+  #     cmd = linkBatchFileName + " " + outputFileBaseName + " " + objFileNameListToStr
+  #     printDiagnostic('Linking with following os.system command {' +cmd +'}')
+  #     ret = os.system(cmd)
+  #     printDiagnostic('Retun argument of the executed os.system command is {' + str(ret) +'}')
+  # else:
+  subprocess.call([linkBatchFileName, outputFileBaseName] +objFileNameList)
   if( not os.path.isfile(outputFileBaseName) ):
     quitWithError('Failed to link object files into {' +outputFileBaseName +'}')
   #
