@@ -21,13 +21,13 @@ To export an EnergyPlus simulation as an FMU, EnergyPlusToFMU needs:
 
 EnergyPlusToFMU has been tested on:
 
-- Linux Ubuntu 12.04 (both 32- and 64-bit).
+- Linux Ubuntu 18.04.
 
 - Windows 10.
 
-- Mac OS X 10.5 and 10.6 (both 32- and 64-bit).
+- Mac OS X.
 
-.. note:: FMI for Co-Simulation version 2.0 is not supported on Mac OS and Linux 32 bit.
+.. note:: FMI for Co-Simulation version 2.0 is not supported on Linux 32 bit.
 
 .. _installation directory:
 
@@ -499,6 +499,7 @@ To check the permissions:
   # Linux, MacOS:
   > ls -lt  *.sh
   -rwxr--r--  ...  link-c-lib.sh
+  -rwxr--r--  ...  link-cpp-lib.sh
   -rwxr--r--  ...  link-c-exe.sh
   -rwxr--r--  ...  compile-c.sh
   -rwxr--r--  ...  link-cpp-exe.sh

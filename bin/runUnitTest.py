@@ -42,12 +42,12 @@ def sanitizeIdentifier(identifier):
 #  level PyFMI function do_step(). In the second run, the
 #  high level python function simulate() will be used.
 #
-def run_fmu(fmu_path, api):
+def run_fmu(fmu_path, api, exa):
     model="model_1_"+api
     model = load_fmu(fmu=fmu_path)
     start_time=0
     final_time=60*60*72
-    time_step=900
+    #time_step=900
     if (api=="1"):
         print ('Running FMU file={!s}, API={!s}.'.format(fmu_path, api))
         #model.setup_experiment(False, 0, 0, True, final_time)
@@ -61,10 +61,23 @@ def run_fmu(fmu_path, api):
         exit(1);
     tim = 0
     while tim < final_time:
-        model.set ('Q', tim/100 + 0.1)
-        model.do_step(tim, 900, True)
-        print(model.get ('TRooMea'));
-        tim=tim+900
+        if(exa=='Schedule'):
+            model.set ('Q', tim/100 + 0.1)
+            model.do_step(tim, 900, True)
+            print(model.get ('TRooMea'));
+            tim=tim+900
+        elif(exa=='Actuator'):
+            # change input variable (default in .idf is given to be 6)
+            model.set('yShade', 1)
+            model.do_step(tim, 600, True)
+            print(model.get ('TRoo'));
+            tim=tim+600
+        else:
+            # change input variable (default in .idf is given to be 6)
+            model.set('yShadeFMU', 1)
+            model.do_step(tim, 600, True)
+            print(model.get ('TRoo'));
+            tim=tim+600
     model.terminate()
     # model.free_instance(). This causes the simulation
     # to crash on Linux. Hence it is disabled here.
@@ -74,35 +87,24 @@ def run_fmu(fmu_path, api):
     model="model_2_"+api
     model = load_fmu(fmu=fmu_path)
 
-    # change input variable (default in .idf is given to be 6)
-    model.set('Q', 10)
-
     # get options object
     opts = model.simulate_options()
 
     # set number of communication points dependent on final_time and .idf steps per hour
     final_time = 60*60*72. # 72 hour simulation
-    idf_steps_per_hour = 4
+    if(exa=='Schedule'):
+        idf_steps_per_hour = 4
+    else:
+        idf_steps_per_hour = 6
     ncp = final_time/(3600./idf_steps_per_hour)
     opts['ncp'] = ncp
 
     # run simulation and return results
     res = model.simulate(start_time=0., final_time=final_time, options=opts)
-    print('The computed room temperature={!s}'.format(res['TRooMea'])) # show result variables names
-
-    # # plot results
-    # fig, ax1 = plt.subplots()
-    # ax1.plot(res['time'], res['TRooMea'], 'b-')
-    # ax1.set_xlabel('time (s)')
-    # ax1.set_ylabel('Room Temperature', color='b')
-    # ax1.tick_params('y', colors='b')
-    #
-    # ax2 = ax1.twinx()
-    # ax2.plot(res['time'], res['Q'], 'r.')
-    # ax2.set_ylabel('Controller', color='r')
-    # ax2.tick_params('y', colors='r')
-    # fig.tight_layout()
-    # plt.show()
+    if(exa=='Schedule'):
+        print('The computed room temperature={!s}'.format(res['TRooMea'])) # show result variables names
+    else:
+        print('The computed room temperature={!s}'.format(res['TRoo'])) # show result variables names
   #
   # End fcn run_fmu().
 unittest_path = os.path.dirname(os.path.realpath(__file__))
@@ -113,14 +115,6 @@ if (os.path.exists(SCRIPT_PATH)):
     print ('The Path to the script file={!s}.'.format(SCRIPT_PATH))
 else:
     print ('The script file={!s} does not exist.'.format(SCRIPT_PATH))
-    exit(1)
-
-# Check if the example file exists
-EXAMPLE_PATH=os.path.join(root_path, "Examples", "Schedule", "_fmu-export-schedule.idf")
-if (os.path.exists(EXAMPLE_PATH)):
-    print ('The Path to the example file={!s}.'.format(EXAMPLE_PATH))
-else:
-    print ('The example file={!s} does not exist.'.format(EXAMPLE_PATH))
     exit(1)
 
 # Get the environment variables
@@ -175,25 +169,40 @@ else:
     print ('The Weather file={!s} does not exist.'.format(WEA_PATH))
     exit(1)
 
-# Loop to export the idfs and the idds files for FMI version 1 and 2.
-if (sys.version_info.major==2):
-    for i in ["2", "1"]:
-        tmp=os.path.join(unittest_path,'v_'+i)
-        if not os.path.exists(tmp):
-            print ('Create directory={!s} to run the unit test.'.format(tmp))
-            os.makedirs(tmp)
-        elif (os.path.exists(tmp)):
-            print ('Directory={!s} exists and will be deleted and recreated.'.format(tmp))
-            import shutil
-            shutil.rmtree(tmp)
-            os.makedirs(tmp)
-        # Change directory to run the unit test
-        os.chdir(tmp)
-        # export the FMUs
-        sp.call(["python", SCRIPT_PATH, "-i", IDD_PATH, "-w", WEA_PATH, "-a", i, EXAMPLE_PATH])
-        base=os.path.basename(EXAMPLE_PATH)
-        filename=os.path.splitext(base)[0]
-        FMU_PATH=os.path.join(os.getcwd(), sanitizeIdentifier(filename))+".fmu"
-        print ('The generated FMU file={!s}.'.format(FMU_PATH))
-        # Running the FMUs
-        run_fmu(FMU_PATH, i)
+# Check if the example file exists
+for exa in ['Schedule', 'Actuator', 'Variable']:
+    if(exa=='Schedule'):
+        EXAMPLE_PATH=os.path.join(root_path, "Examples", "Schedule", "_fmu-export-schedule.idf")
+    elif(exa=='Actuator'):
+        EXAMPLE_PATH=os.path.join(root_path, "Examples", "Actuator", "_fmu-export-actuator.idf")
+    else:
+        EXAMPLE_PATH=os.path.join(root_path, "Examples", "Variable", "_fmu-export-variable.idf")
+    #EXAMPLE_PATH=os.path.join(root_path, "Examples", "Schedule", "_fmu-export-schedule.idf")
+    if (os.path.exists(EXAMPLE_PATH)):
+        print ('The Path to the example file={!s}.'.format(EXAMPLE_PATH))
+    else:
+        print ('The example file={!s} does not exist.'.format(EXAMPLE_PATH))
+        exit(1)
+
+    # Loop to export the idfs and the idds files for FMI version 1 and 2.
+    if (sys.version_info.major==2):
+        for i in ["2", "1"]:
+            tmp=os.path.join(unittest_path,'v_'+i)
+            if not os.path.exists(tmp):
+                print ('Create directory={!s} to run the unit test.'.format(tmp))
+                os.makedirs(tmp)
+            elif (os.path.exists(tmp)):
+                print ('Directory={!s} exists and will be deleted and recreated.'.format(tmp))
+                import shutil
+                shutil.rmtree(tmp)
+                os.makedirs(tmp)
+            # Change directory to run the unit test
+            os.chdir(tmp)
+            # export the FMUs
+            sp.call(["python", SCRIPT_PATH, "-i", IDD_PATH, "-w", WEA_PATH, "-a", i, EXAMPLE_PATH])
+            base=os.path.basename(EXAMPLE_PATH)
+            filename=os.path.splitext(base)[0]
+            FMU_PATH=os.path.join(os.getcwd(), sanitizeIdentifier(filename))+".fmu"
+            print ('The generated FMU file={!s}.'.format(FMU_PATH))
+            # Running the FMUs
+            run_fmu(FMU_PATH, i, exa)
