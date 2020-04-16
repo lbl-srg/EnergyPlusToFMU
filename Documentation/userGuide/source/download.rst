@@ -18,8 +18,9 @@ Download `EnergyPlusToFMU-v3.0.0.zip <https://github.com/lbl-srg/EnergyplusToFMU
 
 **Release notes**
 
-This version is a major release which adds supports for the FMI for Co-Simulation version 2.0.
-This release addresses `issue#35 <https://github.com/lbl-srg/EnergyPlusToFMU/issues/35/>`_ on github.
+* This version is a major release which adds supports for the FMI for Co-Simulation version 2.0. This release addresses `issue#35 <https://github.com/lbl-srg/EnergyPlusToFMU/issues/35/>`_ on github.
+
+* The Example files have been transitioned for EnergyPlus 9.3.0.
 
 .. note:: FMI for Co-Simulation version 2.0 is not supported on Linux 32 bit.
 

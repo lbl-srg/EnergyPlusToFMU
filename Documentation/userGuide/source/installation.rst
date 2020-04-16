@@ -25,7 +25,7 @@ EnergyPlusToFMU has been tested on:
 
 - Windows 10.
 
-- Mac OS X.
+- Mac OS X 10.15.
 
 .. note:: FMI for Co-Simulation version 2.0 is not supported on Linux 32 bit.
 
