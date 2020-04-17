@@ -110,6 +110,6 @@ copypdftodoc:
 copydoctowww:
 	@echo "Sent files to the server excluding .svn."
 	@echo "Set permissions to ensure files can be written on gundog."
-	ssh thierry@gundog.lbl.gov 
+	#ssh thierry@gundog.lbl.gov 
 	rsync -av --exclude '*.svn' www/* thierry@gundog.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
 	#scp -r release/* thierry@gundog.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/
