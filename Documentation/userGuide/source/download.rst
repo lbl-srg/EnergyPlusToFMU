@@ -11,7 +11,7 @@ See the release notes for additional information on the FMI for Co-Simulation ve
 
 To install EnergyPlusToFMU, follow the section :doc:`installation`.
 
-Release 3.0.0 (April 10, 2020)
+Release 3.0.0 (April 17, 2020)
 ---------------------------------
 
 Download `EnergyPlusToFMU-v3.0.0.zip <https://github.com/lbl-srg/EnergyplusToFMU/releases/download/v3.0.0/EnergyPlusToFMU-v3.0.0.zip>`_.
