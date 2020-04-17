@@ -19,13 +19,13 @@ using std::endl;
 #include "fmu-export-write-model-desc.h"
 #include "fmu-export-write-vars-cfg.h"
 
-#include "../read-ep-file/ep-idd-map.h"
-#include "../read-ep-file/fileReaderData.h"
-#include "../read-ep-file/fileReaderDictionary.h"
+#include "../../read-ep-file/ep-idd-map.h"
+#include "../../read-ep-file/fileReaderData.h"
+#include "../../read-ep-file/fileReaderDictionary.h"
 
-#include "../utility/file-help.h"
-#include "../utility/time-help.h"
-#include "../utility/utilReport.h"
+#include "../../utility/file-help.h"
+#include "../../utility/time-help.h"
+#include "../../utility/utilReport.h"
 
 
 //--- File-scope constants.

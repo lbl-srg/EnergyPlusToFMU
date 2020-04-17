@@ -22,7 +22,7 @@ using std::endl;
 
 #include "fmu-export-idf-data.h"
 
-#include "../utility/string-help.h"
+#include "../../utility/string-help.h"
 
 //--- Microsoft doesn't implement the modern standard.
 //

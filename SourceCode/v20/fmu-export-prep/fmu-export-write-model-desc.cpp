@@ -17,9 +17,9 @@ using std::endl;
 
 #include "fmu-export-write-model-desc.h"
 
-#include "../utility/digest-md5.h"
-#include "../utility/file-help.h"
-#include "../utility/xml-output-help.h"
+#include "../../utility/digest-md5.h"
+#include "../../utility/file-help.h"
+#include "../../utility/xml-output-help.h"
 
 
 //--- Microsoft doesn't implement the modern standard.
@@ -38,6 +38,10 @@ static void writeTag_scalarVariable(std::ostream& outStream, const int indentLev
   const char *const fmuVarName, const int valueReference,
   const bool toEP, const int idfLineNo, const double initValue);
 
+//
+static void writeTag_outputVariable(std::ostream& outStream, const int indentLevel,
+	int index);
+
 static string sanitizeIdfFileName(const char *const idfFileBaseName);
 
 
@@ -52,13 +56,18 @@ void modelDescXml_write(std::ostream& outStream,
   const char *const topTagName = "fmiModelDescription";
   const char *const modelVarsTagName = "ModelVariables";
   const char *const implementationTagName = "Implementation";
-  const char *const cosimToolTagName = "CoSimulation_Tool";
+  const char *const cosimToolTagName = "CoSimulation";
   const char *const modelTagName = "Model";
+  const char *const modelStructureTagName = "ModelStructure";
+  const char *const outputsTagName = "Outputs";
   //
   const char *const idfFileBaseName = idfFileName + findFileBaseNameIdx(idfFileName);
+#define HS_MAX 64
+  char helpStr[HS_MAX];
   //
   // Convenience variables.
   string composedStr;
+  int numInps;
   //
   //-- Write header.
   outStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -69,12 +78,8 @@ void modelDescXml_write(std::ostream& outStream,
   //-- Open top-level tag.
   xmlOutput_startTag(outStream, 0, topTagName);
   //
-  xmlOutput_attribute(outStream, -1, "fmiVersion", "1.0");
+  xmlOutput_attribute(outStream, -1, "fmiVersion", "2.0");
   xmlOutput_attribute(outStream, 0, "modelName", idfFileBaseName);
-  //
-  // Make the {modelIdentifier} acceptable according to FMU rules.
-  composedStr = sanitizeIdfFileName(idfFileBaseName);
-  xmlOutput_attribute(outStream, 0, "modelIdentifier", composedStr.c_str());
   //
   // Find GUID as MD5 checksum of IDF file.
   char hexDigestStr[33];
@@ -98,13 +103,32 @@ void modelDescXml_write(std::ostream& outStream,
   // output variables.
   //   Just set to 0, and if an FMU master ever complains, figure it out from
   // there.
-  xmlOutput_attribute(outStream, 0, "numberOfContinuousStates", "0");
-  //
   xmlOutput_attribute(outStream, 0, "numberOfEventIndicators", "0");
   //
   xmlOutput_startTag_finish(outStream);
   //
   xmlOutput_comment(outStream, 1, "Note guid is an md5 checksum of the IDF file.");
+
+  //-- Open tag for cosimulation EnergyPlus.
+  xmlOutput_comment(outStream, 1, "EnergyPlus provided as tool (as opposed to source code or DLL).");
+  xmlOutput_startTag(outStream, 1, cosimToolTagName);
+  //
+  //--- Write whole tag for capabilities.
+  // Make the {modelIdentifier} acceptable according to FMU rules.
+  composedStr = sanitizeIdfFileName(idfFileBaseName);
+  xmlOutput_attribute(outStream, 2, "modelIdentifier", composedStr.c_str());
+  xmlOutput_attribute(outStream, 2, "needsExecutionTool", "false");
+  xmlOutput_attribute(outStream, 2, "canHandleVariableCommunicationStepSize", "false");
+  xmlOutput_attribute(outStream, 2, "canInterpolateInputs", "false");
+  xmlOutput_attribute(outStream, 2, "maxOutputDerivativeOrder", "0");
+  xmlOutput_attribute(outStream, 2, "canGetAndSetFMUstate", "false");
+  xmlOutput_attribute(outStream, 2, "canSerializeFMUstate", "false");
+  // Note the FMI specification spells "asynchronously" wrong.
+  xmlOutput_attribute(outStream, 2, "canRunAsynchronuously", "false");
+  xmlOutput_attribute(outStream, 2, "canBeInstantiatedOnlyOncePerProcess", "false");
+  xmlOutput_attribute(outStream, 2, "canNotUseMemoryManagementFunctions", "true");
+  xmlOutput_attribute(outStream, 2, "providesDirectionalDerivative", "false");
+  xmlOutput_endTag(outStream, -1, NULL);
   //
   //-- Open tag for exposed model variables.
   xmlOutput_comment(outStream, 1, "Exposed model variables.");
@@ -123,6 +147,10 @@ void modelDescXml_write(std::ostream& outStream,
   datCt = (int)fmuIdfData._toActuator_idfLineNo.size();
   for( idx=0; idx<datCt; ++idx, ++valRef )
     {
+	composedStr = "Index for next variable is '";
+	snprintf(helpStr, HS_MAX, "%i", idx + 1);
+	composedStr.append(helpStr).append("'.");
+	xmlOutput_comment(outStream, 2, composedStr.c_str());
     writeTag_scalarVariable(outStream, 2,
       fmuIdfData._toActuator_fmuVarName[idx].c_str(), valRef,
       toEP, fmuIdfData._toActuator_idfLineNo[idx], fmuIdfData._toActuator_initValue[idx]);
@@ -132,6 +160,10 @@ void modelDescXml_write(std::ostream& outStream,
   datCt = (int)fmuIdfData._toSched_idfLineNo.size();
   for( idx=0; idx<datCt; ++idx, ++valRef )
     {
+	composedStr = "Index for next variable is '";
+	snprintf(helpStr, HS_MAX, "%i", (int)fmuIdfData._toActuator_idfLineNo.size() + idx + 1);
+	composedStr.append(helpStr).append("'.");
+	xmlOutput_comment(outStream, 2, composedStr.c_str());
     writeTag_scalarVariable(outStream, 2,
       fmuIdfData._toSched_fmuVarName[idx].c_str(), valRef,
       toEP, fmuIdfData._toSched_idfLineNo[idx], fmuIdfData._toSched_initValue[idx]);
@@ -141,11 +173,20 @@ void modelDescXml_write(std::ostream& outStream,
   datCt = (int)fmuIdfData._toVar_idfLineNo.size();
   for( idx=0; idx<datCt; ++idx, ++valRef )
     {
-    writeTag_scalarVariable(outStream, 2,
+	  composedStr = "Index for next variable is '";
+	  snprintf(helpStr, HS_MAX, "%i", (int)fmuIdfData._toActuator_idfLineNo.size() + 
+		  (int)fmuIdfData._toSched_idfLineNo.size() + idx + 1);
+	  composedStr.append(helpStr).append("'.");
+	  xmlOutput_comment(outStream, 2, composedStr.c_str());
+	  writeTag_scalarVariable(outStream, 2,
       fmuIdfData._toVar_fmuVarName[idx].c_str(), valRef,
       toEP, fmuIdfData._toVar_idfLineNo[idx], fmuIdfData._toVar_initValue[idx]);
     }
   //
+  // -- compute the number of inputs 
+  numInps = (int)fmuIdfData._toActuator_idfLineNo.size() +
+	  (int)fmuIdfData._toSched_idfLineNo.size() +
+	  (int)fmuIdfData._toVar_idfLineNo.size();
   //-- Prepare to write tags corresponding to data passed out of EnergyPlus.
   toEP = false;
   valRef = 100001;  // hoho  Should test against unlikely case that have 100001 {toEP} variables.
@@ -155,6 +196,10 @@ void modelDescXml_write(std::ostream& outStream,
   datCt = (int)fmuIdfData._fromVar_idfLineNo.size();
   for( idx=0; idx<datCt; ++idx, ++valRef )
     {
+	  composedStr = "Index for next variable is '";
+	  snprintf(helpStr, HS_MAX, "%i", (numInps + idx + 1));
+	  composedStr.append(helpStr).append("'.");
+	  xmlOutput_comment(outStream, 2, composedStr.c_str());
     writeTag_scalarVariable(outStream, 2,
       fmuIdfData._fromVar_fmuVarName[idx].c_str(), valRef,
       toEP, fmuIdfData._fromVar_idfLineNo[idx], dummyInitValue);
@@ -163,73 +208,36 @@ void modelDescXml_write(std::ostream& outStream,
   //-- Close tag for exposed model variables.
   xmlOutput_endTag(outStream, 1, modelVarsTagName);
   //
-  //-- Open tag for implementation details.
-  xmlOutput_comment(outStream, 1, "Implementation details for co-simulation.");
-  xmlOutput_startTag(outStream, 1, implementationTagName);
+  //-- Open tag for model structure details.
+  xmlOutput_comment(outStream, 1, "ModelStructure details for co-simulation.");
+  xmlOutput_startTag(outStream, 1, modelStructureTagName);
   xmlOutput_startTag_finish(outStream);
   //
-  //-- Open tag for cosim-tool EnergyPlus.
-  xmlOutput_comment(outStream, 2, "EnergyPlus provided as tool (as opposed to source code or DLL).");
-  xmlOutput_startTag(outStream, 2, cosimToolTagName);
+  //-- Open tag for model outputs details.
+  xmlOutput_comment(outStream, 2, "Outputs variables of the FMU.");
+  xmlOutput_startTag(outStream, 2, outputsTagName);
   xmlOutput_startTag_finish(outStream);
+
+  //-- Write tags corresponding to {fromVar} data exchange.
+  datCt = (int)fmuIdfData._fromVar_idfLineNo.size();
+  //-- Write the output variable index based on the last input
+  for (idx = 0; idx<datCt; ++idx, ++valRef)
+  {
+	  writeTag_outputVariable(outStream, 3, numInps + idx + 1);
+  }
   //
-  //--- Write whole tag for capabilities.
-  xmlOutput_startTag(outStream, 3, "Capabilities");
-  xmlOutput_attribute(outStream, 3, "canHandleVariableCommunicationStepSize", "false");
-  xmlOutput_attribute(outStream, 3, "canHandleEvents", "false");
-  xmlOutput_attribute(outStream, 3, "canRejectSteps", "false");
-  xmlOutput_attribute(outStream, 3, "canInterpolateInputs", "false");
-  xmlOutput_attribute(outStream, 3, "maxOutputDerivativeOrder", "0");
-  // Note the FMI specification spells "asynchronously" wrong.
-  xmlOutput_attribute(outStream, 3, "canRunAsynchronuously", "false");
-  xmlOutput_attribute(outStream, 3, "canSignalEvents", "false");
-  xmlOutput_attribute(outStream, 3, "canBeInstantiatedOnlyOncePerProcess", "false");
-  xmlOutput_attribute(outStream, 3, "canNotUseMemoryManagementFunctions", "true");
-  xmlOutput_endTag(outStream, -1, NULL);
+  //-- Close outputs tag.
+  xmlOutput_endTag(outStream, 2, outputsTagName);
   //
-  //-- Open tag for model.
-  xmlOutput_startTag(outStream, 3, modelTagName);
-  //
-  composedStr = "fmu://resources/";
-  composedStr.append(idfFileBaseName);
-  xmlOutput_attribute(outStream, 3, "entryPoint", composedStr.c_str());
-  //
-  xmlOutput_attribute(outStream, 3, "manualStart", "false");
-  xmlOutput_attribute(outStream, 3, "type", "text/plain");
-  xmlOutput_startTag_finish(outStream);
-  //
-  //-- Write whole tag for file variables.cfg.
-  xmlOutput_startTag(outStream, 4, "File");
-  xmlOutput_attribute(outStream, -1, "file", "fmu://resources/variables.cfg");
-  xmlOutput_endTag(outStream, -1, NULL);
-  //
-  //-- Write whole tag for weather file, if necessary.
-  if( NULL != wthFileName )
-    {
-    xmlOutput_startTag(outStream, 4, "File");
-    composedStr = "fmu://resources/";
-    composedStr.append(wthFileName+findFileBaseNameIdx(wthFileName));
-    xmlOutput_attribute(outStream, -1, "file", composedStr.c_str());
-    xmlOutput_endTag(outStream, -1, NULL);
-    }
-  else
-    {
-    xmlOutput_comment(outStream, 4, "No weather file specified.");
-    }
-  //
-  //-- Close tag for model.
-  xmlOutput_endTag(outStream, 3, modelTagName);
-  //
-  //-- Close tag for cosim-tool EnergyPlus.
-  xmlOutput_endTag(outStream, 2, cosimToolTagName);
-  //
-  //-- Close tag for implementation details.
-  xmlOutput_endTag(outStream, 1, implementationTagName);
-  //
+  //-- Close model structure tag.
+  xmlOutput_endTag(outStream, 1, modelStructureTagName);
+  
   //-- Close top-level tag.
   xmlOutput_endTag(outStream, 0, topTagName);
+ 
   outStream << endl;
   //
+#undef HS_MAX
   }  // End fcn modelDescXml_write().
 
 
@@ -270,6 +278,26 @@ static void writeTag_scalarVariable(std::ostream& outStream, const int indentLev
   #undef HS_MAX
   //
   }  // End fcn writeTag_scalarVariable().
+
+
+//--- Write an <OutputVariable> tag.
+//
+static void writeTag_outputVariable(std::ostream& outStream, const int indentLevel,
+	int index)
+{
+	const char *const outputVarTagName = "Unknown";
+	//
+#define HS_MAX 64
+	char helpStr[HS_MAX];
+	//
+	xmlOutput_startTag(outStream, indentLevel, outputVarTagName);
+	snprintf(helpStr, HS_MAX, "%i", index);
+	xmlOutput_attribute(outStream, -1, "index", helpStr);
+	xmlOutput_endTag(outStream, -1, NULL);
+	//
+#undef HS_MAX
+	//
+}  // End fcn writeTag_outputVariable().
 
 
 //--- Sanitize the name of an IDF file.

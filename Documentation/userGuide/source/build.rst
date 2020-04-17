@@ -19,17 +19,17 @@ The standard invocation of the EnergyPlusToFMU tool is:
 .. code-block:: none
 
   > python  <path-to-scripts-subdir>EnergyPlusToFMU.py  -i <path-to-idd-file>  \
-    -w <path-to-weather-file>  <path-to-idf-file>
+    -w <path-to-weather-file> -a <fmi-version> <path-to-idf-file>
 
 For example:
 
 .. code-block:: none
 
   # Windows:
-  > python  scriptDir\EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  -w test.epw  test.idf
+  > python  scriptDir\EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  -w test.epw  -a 2 test.idf
 
   # Linux, MacOS:
-  > python  scriptDir/EnergyPlusToFMU.py  -i ~/eplus/Energy+.idd  -w test.epw  test.idf
+  > python  scriptDir/EnergyPlusToFMU.py  -i ~/eplus/Energy+.idd  -w test.epw  -a 2 test.idf
 
 where ``scriptDir`` is the path to the scripts directory of EnergyPlusToFMU.
 Typically this is the ``Scripts/`` subdirectory of the installation directory.
@@ -48,6 +48,9 @@ Script ``EnergyPlusToFMU.py`` supports the following command-line switches:
 | -i <path-to-idd-file>     | Use the named Input Data Dictionary (required).       |
 +---------------------------+-------------------------------------------------------+
 | -w <path-to-weather-file> | Add the named weather file to the FMU [optional].     |
++---------------------------+-------------------------------------------------------+
+| -a <fmi-version>          | Use the FMI version specified. Version 1 and          |
+|                           | version 2 are supported. Default is FMI version 2.    |
 +---------------------------+-------------------------------------------------------+
 | -d                        | Print diagnostics [optional].                         |
 |                           | Produces a status line for every major action taken   |
@@ -71,7 +74,7 @@ For example:
 .. code-block:: none
 
   # Windows:
-  > python  EnergyPlusToFMU.py  -d  -i C:\eplus\Energy+.idd  test.idf
+  > python  EnergyPlusToFMU.py  -d  -i C:\eplus\Energy+.idd  -a 2 test.idf
 
 
 Output

@@ -29,6 +29,12 @@
 # >>> import <this-file-base-name>
 # >>> <this-file-base-name>.manageCompileLink(arguments)
 
+#--- Identify system.
+import sys
+
+#
+PLATFORM_NAME = sys.platform
+#
 
 #--- Runtime help.
 #
@@ -58,7 +64,6 @@ def printLinkBatchInfo(linkBatchFileName, compileBatchFileName):
 #
 import os
 import subprocess
-import sys
 
 
 #--- Fcn to print diagnostics.
@@ -221,7 +226,8 @@ def runCompiler(showDiagnostics, compileBatchFileName, srcFileName):
 # file names.  The caller must take care of these issues.
 #
 def manageCompileLink(showDiagnostics, litter, forceRebuild,
-  compileBatchFileName, linkBatchFileName, srcFileNameList, outputFileName):
+  compileBatchFileName, linkBatchFileName, srcFileNameList, outputFileName,
+  fmiVersion, incluleLinkerLibs):
   #
   if( showDiagnostics ):
     printDiagnostic('Begin compile-link build of {' +outputFileName +'}')
@@ -274,13 +280,29 @@ def manageCompileLink(showDiagnostics, litter, forceRebuild,
   for srcFileName in srcFileAbsNameList:
     objFileName = runCompiler(showDiagnostics, compileBatchFileName, srcFileName)
     objFileNameList.append(os.path.join(bldDirName, objFileName))
-  #
+  # fixme: Add the path to libxml2 as argument of the linker so it can be compiled using visual studio
+  #if (fmiVersion == 2) and not(PLATFORM_NAME.startswith('dar')):
+  if (fmiVersion == 2):
+      objFileNameList.append(incluleLinkerLibs)
+
   # Link objects into {outputFileName}.
   #   But keep it in the build directory.
   outputFileBaseName = os.path.basename(outputFileName)
   if( showDiagnostics ):
     printDiagnostic('Linking object files using {' +linkBatchFileName +'}')
     printDiagnostic('Linking to create {' +outputFileBaseName +'}')
+  # if (fmiVersion == 2) and (PLATFORM_NAME.startswith('dar')):
+  #     # Convert the list into a list of strings.
+  #     objFileNameListToStr = ' '.join(str(e) for e in objFileNameList)
+  #     # Create the command that will be used to link the files.
+  #     # Use os.system as opposed to using subprocess.call when run on Mac OS.
+  #     # There were some permission issues on some of the Mac computers which led
+  #     # to the above decisions.
+  #     cmd = linkBatchFileName + " " + outputFileBaseName + " " + objFileNameListToStr
+  #     printDiagnostic('Linking with following os.system command {' +cmd +'}')
+  #     ret = os.system(cmd)
+  #     printDiagnostic('Retun argument of the executed os.system command is {' + str(ret) +'}')
+  # else:
   subprocess.call([linkBatchFileName, outputFileBaseName] +objFileNameList)
   if( not os.path.isfile(outputFileBaseName) ):
     quitWithError('Failed to link object files into {' +outputFileBaseName +'}')

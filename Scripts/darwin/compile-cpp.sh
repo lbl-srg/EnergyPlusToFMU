@@ -26,4 +26,4 @@ fi
 
 #--- Compile.
 #
-g++ -c  "$@"
+g++ -c -fPIC "$@"

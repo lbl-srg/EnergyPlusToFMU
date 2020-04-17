@@ -56,7 +56,7 @@
 // define XML_STATIC before including expat.h
 // to prevent error when linking with libexpatMT.lib
 #define XML_STATIC
-#include "../Expat/lib/expat.h"
+#include "../../v10/Expat/lib/expat.h"
 
 
 const char *elmNames[SIZEOF_ELM] = {

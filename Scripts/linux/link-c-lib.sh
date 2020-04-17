@@ -32,4 +32,4 @@ shift 1
 
 #--- Link.
 #
-gcc -shared -lm  -o "${outputName}"  "$@"
+gcc -shared -lm -o "${outputName}"  "$@"

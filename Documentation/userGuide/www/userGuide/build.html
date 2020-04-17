@@ -98,15 +98,15 @@ It assumes you have followed the <a class="reference internal" href="installatio
 open a command-line window (see <a class="reference internal" href="notation.html"><span class="doc">Notation</span></a>).
 The standard invocation of the EnergyPlusToFMU tool is:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; python  &lt;path-to-scripts-subdir&gt;EnergyPlusToFMU.py  -i &lt;path-to-idd-file&gt;  \
-  -w &lt;path-to-weather-file&gt;  &lt;path-to-idf-file&gt;
+  -w &lt;path-to-weather-file&gt; -a &lt;fmi-version&gt; &lt;path-to-idf-file&gt;
 </pre></div>
 </div>
 <p>For example:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Windows:
-&gt; python  scriptDir\EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  -w test.epw  test.idf
+&gt; python  scriptDir\EnergyPlusToFMU.py  -i C:\eplus\Energy+.idd  -w test.epw  -a 2 test.idf
 
 # Linux, MacOS:
-&gt; python  scriptDir/EnergyPlusToFMU.py  -i ~/eplus/Energy+.idd  -w test.epw  test.idf
+&gt; python  scriptDir/EnergyPlusToFMU.py  -i ~/eplus/Energy+.idd  -w test.epw  -a 2 test.idf
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">scriptDir</span></code> is the path to the scripts directory of EnergyPlusToFMU.
@@ -136,13 +136,17 @@ For readability, the rest of these instructions omit the paths to the script and
 <tr class="row-odd"><td>-w &lt;path-to-weather-file&gt;</td>
 <td>Add the named weather file to the FMU [optional].</td>
 </tr>
-<tr class="row-even"><td>-d</td>
+<tr class="row-even"><td>-a &lt;fmi-version&gt;</td>
+<td>Use the FMI version specified. Version 1 and
+version 2 are supported. Default is FMI version 2.</td>
+</tr>
+<tr class="row-odd"><td>-d</td>
 <td>Print diagnostics [optional].
 Produces a status line for every major action taken
 by the EnergyPlusToFMU tools.
 This option may be helpful for debugging.</td>
 </tr>
-<tr class="row-odd"><td>-L</td>
+<tr class="row-even"><td>-L</td>
 <td>Litter, that is, do not clean up intermediate
 files [optional].
 Typically the EnergyPlusToFMU tools delete most of
@@ -157,7 +161,7 @@ However, all must appear before the name of the IDF file.
 For repeated switches such as <code class="docutils literal notranslate"><span class="pre">-i</span></code> or <code class="docutils literal notranslate"><span class="pre">-w</span></code>, the last one specified will be used.</p>
 <p>For example:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Windows:
-&gt; python  EnergyPlusToFMU.py  -d  -i C:\eplus\Energy+.idd  test.idf
+&gt; python  EnergyPlusToFMU.py  -d  -i C:\eplus\Energy+.idd  -a 2 test.idf
 </pre></div>
 </div>
 </div>
@@ -266,8 +270,8 @@ By announcing each major step before it is taken, this option helps to localize 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2013-2019, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+        &#169; Copyright 2013-2020, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

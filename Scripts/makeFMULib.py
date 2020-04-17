@@ -48,9 +48,11 @@ else:
 #   This script uses separate, system-dependent, batch files to compile and
 # link source code.  For more information, see fcns printCompileCBatchInfo(),
 # printLinkCLibBatchInfo(), and printLinkCExeBatchInfo().
-#
-COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
-LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
+#fixme
+# adapt the compiler based on the flag if 1 or 2.
+
+#COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
+#LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
 LINK_C_EXE_BATCH_FILE_NAME = 'link-c-exe' + BATCH_EXTENSION
 
 
@@ -278,7 +280,7 @@ def poundDefineModelId(showDiagnostics, origFileName, modelIdName, modFileName):
 # "sanitized" since it also has to be a valid function name in the C language.
 #
 def makeFmuSharedLib(showDiagnostics, litter,
-  modelIdName):
+  modelIdName, fmiVersion):
   #
   if( showDiagnostics ):
     printDiagnostic('Begin creating shared FMU library for model {' +modelIdName +'}')
@@ -299,40 +301,89 @@ def makeFmuSharedLib(showDiagnostics, litter,
     quitWithError('Missing system-specific batch directory {' +batchDirAbsName +'}', False)
   #
   # Form names of system-specific scripts.
+  if fmiVersion==1:
+    COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
+  if (fmiVersion==2) and (PLATFORM_NAME.startswith('win')):
+    COMPILE_C_BATCH_FILE_NAME = 'compile-cpp' + BATCH_EXTENSION
+  if (fmiVersion==2) and (not(PLATFORM_NAME.startswith('win'))):
+    COMPILE_C_BATCH_FILE_NAME = 'compile-c' + BATCH_EXTENSION
+
   compileCBatchFileName = os.path.join(batchDirAbsName, COMPILE_C_BATCH_FILE_NAME)
   findFileOrQuit('compiler batch', compileCBatchFileName)
   #
+
+  # Form names of system-specific scripts.
+  if fmiVersion==1:
+    LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
+  if fmiVersion==2:
+      if(PLATFORM_NAME.startswith('win')):
+          LINK_C_LIB_BATCH_FILE_NAME = 'link-c-lib' + BATCH_EXTENSION
+      else:
+          LINK_C_LIB_BATCH_FILE_NAME = 'link-cpp-lib' + BATCH_EXTENSION
+
   linkCLibBatchFileName = os.path.join(batchDirAbsName, LINK_C_LIB_BATCH_FILE_NAME)
   findFileOrQuit('linker batch', linkCLibBatchFileName)
   #
   linkCExeBatchFileName = os.path.join(batchDirAbsName, LINK_C_EXE_BATCH_FILE_NAME)
   findFileOrQuit('linker batch', linkCExeBatchFileName)
   #
-  # Insert model identifier into source code files.
-  origMainName = os.path.join(scriptDirName, '../SourceCode/EnergyPlus/main.c')
-  modMainName  = os.path.join(scriptDirName, '../SourceCode/EnergyPlus', 'temp-'+modelIdSanitizedName+'.c')
+  # Define the version number
+  if (fmiVersion == 1):
+      vers='v10'
+  # Define the version number
+  if (fmiVersion == 2):
+      vers = 'v20'
+  # Insert model identifier into source code files (not really needed here).
+  origMainName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus/main.c')
+  modMainName  = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus', 'temp-'+modelIdSanitizedName+'.c')
   poundDefineModelId(showDiagnostics, origMainName, modelIdSanitizedName, modMainName)
   #
   # Assemble names of source files.
   srcFileNameList = list()
   #
   srcFileNameList.append(modMainName)
+
   #
-  srcDirName = os.path.join(scriptDirName, '../SourceCode/EnergyPlus')
+  srcDirName = os.path.join(scriptDirName, '../SourceCode/socket')
+  for theRootName in [
+    'utilSocket'
+    ]:
+    srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
+  #
+  #
+  srcDirName = os.path.join(scriptDirName, '../SourceCode/utility')
   for theRootName in ['stack',
-    'util',
-    'utilSocket',
-    'xml_parser_cosim'
+    'util'
     ]:
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
-  #
-  srcDirName = os.path.join(scriptDirName, '../SourceCode/Expat/lib')
-  for theRootName in ['xmlparse',
-    'xmlrole',
-    'xmltok'  # Note {xmltok.c} directly #includes {xmltok_impl.c} and {xmltok_ns.c}, so they don't need to be in this list.
-    ]:
-    srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
-  #
+
+  srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus')
+  if(fmiVersion==1):
+      for theRootName in [
+        'xml_parser_cosim'
+        ]:
+        srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
+      #
+      srcDirName = os.path.join(scriptDirName, '../SourceCode/v10/Expat/lib')
+      for theRootName in ['xmlparse',
+        'xmlrole',
+        'xmltok'  # Note {xmltok.c} directly #includes {xmltok_impl.c} and {xmltok_ns.c}, so they don't need to be in this list.
+        ]:
+        srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
+
+  if(fmiVersion==2):
+      srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/fmusdk-shared')
+      for theRootName in [
+        'xmlVersionParser'
+        ]:
+        srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
+      srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/fmusdk-shared/parser')
+      for theRootName in [
+        'XmlParser',
+        'XmlElement',
+        'XmlParserCApi'
+        ]:
+        srcFileNameList.append(os.path.join(srcDirName, theRootName +'.cpp'))
   # Load modules expect to find in same directory as this script file.
   if( scriptDirName not in sys.path ):
     sys.path.append(scriptDirName)
@@ -344,8 +395,31 @@ def makeFmuSharedLib(showDiagnostics, litter,
     quitWithError('Unable to import {utilManageCompileLink.py}', False)
   #
   # Build {fmuSharedLibName}.
+  incLinkerLibs = None
+  if (fmiVersion == 2):
+      dirname, filename = os.path.split(os.path.abspath(__file__))
+      import struct
+      nbits=8 * struct.calcsize("P")
+      # needs to make sure that we have libraries for Linux and darwin as well
+      ops=PLATFORM_SHORT_NAME+str(nbits)
+      if( PLATFORM_NAME.startswith('win') ):
+          incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
+          "fmusdk-shared", "parser", ops, "libxml2.lib")
+          printDiagnostic('Link with the libxml2.lib located in {' +incLinkerLibs +'}')
+      if( PLATFORM_NAME.startswith('lin') and str(nbits)=='64'):
+          incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
+          "fmusdk-shared", "parser", ops, "libxml2.so.2")
+          printDiagnostic('Link with the libxml2.so.2 located in {' +incLinkerLibs +'}')
+      # if( PLATFORM_NAME.startswith('lin') and str(nbits)=='32'):
+      #     quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
+      if( PLATFORM_NAME.startswith('dar')):
+          incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
+          "fmusdk-shared", "parser", ops, "libxml2.dylib")
+          printDiagnostic('Link with the libxml2.dylib located in {' +incLinkerLibs +'}')
+          #quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
-    compileCBatchFileName, linkCLibBatchFileName, srcFileNameList, fmuSharedLibName)
+    compileCBatchFileName, linkCLibBatchFileName, srcFileNameList,
+    fmuSharedLibName, fmiVersion, incLinkerLibs)
   #
   # Delete {modMainName}.
   #   Note always do this, regardless of {litter}, since the file is in the
@@ -362,7 +436,8 @@ def makeFmuSharedLib(showDiagnostics, litter,
     os.path.join(scriptDirName, '../SourceCode/utility/get-address-size.c')
     ]
   utilManageCompileLink.manageCompileLink(showDiagnostics, litter, True,
-    compileCBatchFileName, linkCExeBatchFileName, srcFileNameList, getAddressSizeExeName)
+    compileCBatchFileName, linkCExeBatchFileName, srcFileNameList,
+    getAddressSizeExeName, None, None)
   #
   # Find size of memory address used in {fmuSharedLibName}.
   #   Note both the library and {getAddressSizeExeName} were compiled using the
@@ -395,7 +470,6 @@ def makeFmuSharedLib(showDiagnostics, litter,
   return( (fmuSharedLibName, fmuBinDirName) )
   #
   # End fcn makeFmuSharedLib().
-
 
 #--- Run if called from command line.
 #
@@ -437,7 +511,6 @@ if __name__ == '__main__':
   (fmuSharedLibName, fmuBinDirName) = makeFmuSharedLib(showDiagnostics, litter, modelIdName)
   if( showDiagnostics ):
     printDiagnostic('Created shared library {' +fmuSharedLibName +'} for FMU binary subdirectory {' +fmuBinDirName +'}')
-
 
 #--- Copyright notice.
 #

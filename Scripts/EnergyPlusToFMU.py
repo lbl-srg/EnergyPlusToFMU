@@ -31,11 +31,12 @@
 def printCmdLineUsage():
   #
   print 'USAGE:', os.path.basename(__file__),  \
-    '-i <path-to-idd-file>  [-w <path-to-weather-file>]  [-d]  [-L]  <path-to-idf-file>'
+    '-i <path-to-idd-file>  [-w <path-to-weather-file>]  [-a <fmi-version>] [-d]  [-L]  <path-to-idf-file>'
   #
   print '-- Export an EnergyPlus model as a Functional Mockup Unit (FMU) for co-simulation'
   print '-- Input -i, use the named Input Data Dictionary (required)'
   print '-- Option -w, use the named weather file'
+  print '-- Option -a, specify the FMI version'
   print '-- Option -d, print diagnostics'
   print '-- Option -L, litter, that is, do not clean up intermediate files'
   # TODO: Add -V to set version number of FMI standard.  Currently 1.0 is only one supported.
@@ -50,6 +51,18 @@ import subprocess
 import sys
 import zipfile
 
+PLATFORM_NAME = sys.platform
+
+#
+if( PLATFORM_NAME.startswith('win') ):
+    PLATFORM_SHORT_NAME = 'win'
+elif( PLATFORM_NAME.startswith('linux')
+    or PLATFORM_NAME.startswith('cygwin') ):
+    PLATFORM_SHORT_NAME = 'linux'
+elif( PLATFORM_NAME.startswith('darwin') ):
+    PLATFORM_SHORT_NAME = 'darwin'
+else:
+    raise Exception('Unknown platform {' +PLATFORM_NAME +'}')
 
 #--- Fcn to print diagnostics.
 #
@@ -142,7 +155,7 @@ def addToZipFile(theZipFile, addFileName, toDir, addAsName):
 
 #--- Fcn to export an EnergyPlus IDF file as an FMU.
 #
-def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idfFileName):
+def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, fmiVersion, idfFileName):
   #
   if( showDiagnostics ):
     printDiagnostic('Begin exporting IDF file {' +idfFileName +'} as an FMU')
@@ -203,7 +216,7 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
   #   Do not force a rebuild.
   if( showDiagnostics ):
     printDiagnostic('Checking for export-prep application')
-  exportPrepExeName = makeExportPrepApp.makeExportPrepApp(showDiagnostics, litter, False)
+  exportPrepExeName = makeExportPrepApp.makeExportPrepApp(showDiagnostics, litter, True, fmiVersion)
   #
   # Run the export-prep application.
   if( showDiagnostics ):
@@ -217,7 +230,7 @@ def exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idf
     quitWithError('Failed to extract FMU information from IDF file {' +idfFileName +'}', False)
   #
   # Create the shared library.
-  (OUT_fmuSharedLibName, fmuBinDirName) = makeFMULib.makeFmuSharedLib(showDiagnostics, litter, modelIdName)
+  (OUT_fmuSharedLibName, fmuBinDirName) = makeFMULib.makeFmuSharedLib(showDiagnostics, litter, modelIdName, fmiVersion)
   findFileOrQuit('shared library', OUT_fmuSharedLibName)
   #
   # Create zip file that will become the FMU.
@@ -276,6 +289,7 @@ if __name__ == '__main__':
   # Set defaults for command-line options.
   iddFileName = None
   wthFileName = None
+  fmiApiVersion = None
   showDiagnostics = False
   litter = False
   #
@@ -294,6 +308,11 @@ if __name__ == '__main__':
       wthFileName = sys.argv[currIdx]
       if( showDiagnostics ):
         printDiagnostic('Setting WTH file to {' +wthFileName +'}')
+    elif( currArg.startswith('-a') ):
+      currIdx += 1
+      fmiVersion = sys.argv[currIdx]
+      if( showDiagnostics ):
+        printDiagnostic('Setting FMI API version (1 or 2) to {' +fmiApiVersion +'}')
     elif( currArg.startswith('-d') ):
       showDiagnostics = True
     elif( currArg.startswith('-L') ):
@@ -317,9 +336,34 @@ if __name__ == '__main__':
   # Get {iddFileName}.
   if( iddFileName is None ):
     quitWithError('Missing required input, <path-to-idd-file>', True)
-  #
+  # Get {FMI version}.
+  if( fmiVersion is None ):
+      fmiVersion = "1.0"
+      printDiagnostic('FMI version is unspecified. It will be set to {' +fmiVersion +'}')
+  if not (fmiVersion in [1, 2, "1", "2", "1.0", "2.0"]):
+      quitWithError('FMI version "1" and "2" are supported, got FMI version {' +fmiVersion +'}', True)
+  if (int(float(fmiVersion))==2):
+      import struct
+      nbits=8 * struct.calcsize("P")
+      ops=PLATFORM_SHORT_NAME+str(nbits)
+      if( PLATFORM_NAME.startswith('lin') and str(nbits)=='64'):
+          dirname, filename = os.path.split(os.path.abspath(__file__))
+          incLinkerLibs = os.path.join(dirname, "..", "SourceCode", "v20",
+            "fmusdk-shared", "parser", ops, "libxml2.so.2")
+          printDiagnostic('\nIMPORTANT NOTE: The FMU generated will run in the fmuChecker 2.0.4 only '
+          'if libxml2.so.2 is symbollicaly link to  {' +incLinkerLibs +'}.\n'
+          ' This version of libxml2.so.2 has been compiled excluding zlib.'
+          ' The official released version of libxml2.so.2 (version 2.9) '
+          ' which includes zlib causes the FMU to fail in the fmuChecker.\n'
+          ' However, the FMU will work fine with master algorithms'
+          ' such as PyFMI even if the FMU links to the official version of libxml2.\n')
+      if( PLATFORM_NAME.startswith('lin') and str(nbits)=='32'):
+          quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
+      #if( PLATFORM_NAME.startswith('darwin')):
+    #      quitWithError('FMI version 2.0 for Co-Simulation is not supported on {' +ops +'}', False)
+
   # Run.
-  exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, idfFileName)
+  exportEnergyPlusAsFMU(showDiagnostics, litter, iddFileName, wthFileName, int(float(fmiVersion)), idfFileName)
 
 
 #--- Copyright notice.
