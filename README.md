@@ -7,7 +7,7 @@ at http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/index.html.
 
 ## EnergyPlusToFMU description
 
-EnergyPlusToFMU is a software package written in Python which allows users to export the building simulation program EnergyPlus version 8.0 as a Functional Mock-up Unit (FMU) for co-simulation using the [Functional Mock-up Interface (FMI) standard version 1.0](https://www.fmi-standard.org)
+EnergyPlusToFMU is a software package written in Python which allows users to export the building simulation program EnergyPlus version 8.0 as a Functional Mock-up Unit (FMU) for co-simulation using the [Functional Mock-up Interface (FMI) standard version 1.0 and 2.0](https://www.fmi-standard.org)
 
 The main project site is
 
@@ -15,7 +15,7 @@ http://simulationresearch.lbl.gov/fmu/EnergyPlus/export/index.html.
 
 ## Current release
 
-Download [EnergyPlusToFMU v2.1.0 (2019-01-26)](https://github.com/lbl-srg/EnergyplusToFMU/releases/download/v2.1.0/EnergyPlusToFMU-v2.1.0.zip)
+Download [EnergyPlusToFMU v3.0.0 (2020-04-17)](https://github.com/lbl-srg/EnergyplusToFMU/releases/download/v3.0.0/EnergyPlusToFMU-v3.0.0.zip)
 
 ## License
 
