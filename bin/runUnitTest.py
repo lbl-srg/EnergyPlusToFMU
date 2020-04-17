@@ -1,6 +1,9 @@
 import os, sys
 import subprocess as sp
-from pyfmi import load_fmu
+try:
+    from pyfmi import load_fmu
+except BaseException:
+    print ('PyFMI not installed. Test will not be be run.')
 import re
 # Check if the requirements are met to run the tests
 # Python
