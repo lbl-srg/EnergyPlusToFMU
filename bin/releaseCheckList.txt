@@ -42,6 +42,8 @@ make dist (if it doesn't work you might have to use sudo)
 
 to post the documentation on /usr/local/simulationresearch/www/fmu/EnergyPlus/
 
+You will log into gundog, after exiting the documentation will be posted.
+
 Run
 
 make clean (if it doesn't work you might have to use sudo)
@@ -51,11 +53,11 @@ to delete the build folder created
 
 Run
 
-git tag + version number (git tag -a v2.0.0 -m"Version 2.0.0")
+git tag + version number (git tag -a v3.0.0 -m"Version 3.0.0")
 
 to create a tag for the current release version and
 
-git push origin v2.0.0 to push to the origin
+git push origin v3.0.0 to push to the origin
 
 cd to the root before the folder which contains the repository (folderxx)
 
@@ -72,3 +74,4 @@ In github create a new release which will point to the tag.
 Add this as an additional resource when creating the new release.
 
 Update the Readme on GitHub main page so it indicates the current release(including date).
+
