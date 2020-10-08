@@ -866,7 +866,7 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 	// add the end slash to the fmuOutput
 	sprintf(_c->fmuOutput, "%s%s", _c->fmuOutput, PATH_SEP);
 	
-	// copy the vriables cfg into the output directory
+	// copy the variables cfg into the output directory
 	retVal=copy_var_cfg(_c);
 	if (retVal!=0){
 		_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Error, "error", "fmi2Instantiate: Could not copy"
