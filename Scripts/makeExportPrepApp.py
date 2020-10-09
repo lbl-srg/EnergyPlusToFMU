@@ -212,15 +212,22 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild, fmiVersion):
   if (fmiVersion == 2):
       vers = 'v20'
   srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/fmu-export-prep')
+  for theRootName in [
+    'fmu-export-write-model-desc'
+    ]:
+    srcFileNameList.append(os.path.join(srcDirName, theRootName +'.cpp'))
+  #
+  
+  srcDirName = os.path.join(scriptDirName, '../SourceCode/fmu-export-prep-shared')
   for theRootName in ['app-cmdln-input',
     'app-cmdln-version',
     'fmu-export-idf-data',
-    'fmu-export-write-model-desc',
     'fmu-export-write-vars-cfg',
     'fmu-export-prep-main'
     ]:
     srcFileNameList.append(os.path.join(srcDirName, theRootName +'.cpp'))
   #
+
   srcDirName = os.path.join(scriptDirName, '../SourceCode/read-ep-file')
   for theRootName in ['ep-idd-map',
     'fileReader',

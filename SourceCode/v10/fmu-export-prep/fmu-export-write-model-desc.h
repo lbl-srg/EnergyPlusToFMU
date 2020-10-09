@@ -15,7 +15,7 @@
 //
 #include <iostream>
 
-#include "fmu-export-idf-data.h"
+#include "../../fmu-export-prep-shared/fmu-export-idf-data.h"
 
 
 //-- Write file {modelDescription.xml}.

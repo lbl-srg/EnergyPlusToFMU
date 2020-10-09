@@ -66,7 +66,7 @@ The installation directory should contain the following main subdirectories:
 - ``SourceCode/``
     (C and C++ source code for creating an EnergyPlus FMU)
 
-  - ``fmu-export-prep/``
+  - ``fmu-export-prep-shared/``
 
   - ``read-ep-file/``
 

@@ -22,7 +22,7 @@ using std::endl;
 
 #include "fmu-export-idf-data.h"
 
-#include "../../utility/string-help.h"
+#include "../utility/string-help.h"
 
 //--- Microsoft doesn't implement the modern standard.
 //
@@ -734,7 +734,6 @@ int fmuExportIdfData::writeInputFile(fileReaderData& frIdf, int leapYear, int id
 	while (_goodRead)
 	{
 		frIdf.skipComment(IDF_COMMENT_CHARS, lineNo);
-		//frIdf.getToken(IDF_DELIMITERS_ALL, IDF_COMMENT_CHARS, inputKey, inputKeyExt);
 		frIdf.getToken(IDF_DELIMITERS_ALL, IDF_COMMENT_CHARS, inputKey, inputKeyExt);
 		// Consume the delimiter that caused getToken() to return.
 		char delimChar = frIdf.getChar();		
@@ -1081,7 +1080,7 @@ int fmuExportIdfData::getTimeStep(fileReaderData& frIdf)
 	int nTStep;
 	//int leapYear;
 	string inputKey, iddDesc;
-	string line, inputKeyExt;
+	string line;
 	ofstream tStepfile;
 	tStepfile.open("tstep.txt");
 	//
@@ -1097,15 +1096,29 @@ int fmuExportIdfData::getTimeStep(fileReaderData& frIdf)
 	// Run through the IDF file.
 	while (_goodRead)
 	{
+		// Here, assume looking for next keyword.
 		frIdf.skipComment(IDF_COMMENT_CHARS, lineNo);
-		frIdf.getToken(",", IDF_COMMENT_CHARS, inputKey, inputKeyExt);
+		frIdf.getToken(IDF_DELIMITERS_ALL, IDF_COMMENT_CHARS, inputKey);
 		// Consume the delimiter that caused getToken() to return.
 		const char delimChar = frIdf.getChar();
+		if (frIdf.isEOF())
+		{
+			// Here, hit EOF.
+			//   OK to hit EOF, provided don't actually have a keyword.
+			if (0 != inputKey.length())
+			{
+				_goodRead = false;
+				std::ostringstream os;
+				os << "Error: IDF file ends after keyword '" << inputKey << "' on line " << lineNo;
+				reportError(os);
+			}
+			break;
+		}
 		capitalize(inputKey);
 		if (inputKey.find(g_key_timeStep) != string::npos){
 			nTStep++;
 			frIdf.skipComment(IDF_COMMENT_CHARS, lineNo);
-			frIdf.getToken(";", IDF_COMMENT_CHARS, inputKey, inputKeyExt);
+			frIdf.getToken(";", IDF_COMMENT_CHARS, inputKey);
 			capitalize(inputKey);
 			if ((inputKey.find(",") != string::npos)){
 				//this is not the correct timestep
@@ -1151,8 +1164,7 @@ int fmuExportIdfData::getIDFVersion(fileReaderData& frIdf, int &idfVersion)
 	//
 	int lineNo;
 	string inputKey, iddDesc;
-	string line, inputKeyExt;
-	//string idfVer
+	string line;
 
 	//
 #ifdef _DEBUG
@@ -1166,16 +1178,41 @@ int fmuExportIdfData::getIDFVersion(fileReaderData& frIdf, int &idfVersion)
 	// Run through the IDF file.
 	while (_goodRead)
 	{
-		frIdf.getToken(",", IDF_COMMENT_CHARS, inputKey, inputKeyExt);
+		// Here, assume looking for next keyword.
+		frIdf.skipComment(IDF_COMMENT_CHARS, lineNo);
+		frIdf.getToken(IDF_DELIMITERS_ALL, IDF_COMMENT_CHARS, inputKey);
 		// Consume the delimiter that caused getToken() to return.
 		const char delimChar = frIdf.getChar();
+		if (frIdf.isEOF())
+		{
+			// Here, hit EOF.
+			//   OK to hit EOF, provided don't actually have a keyword.
+			if (0 != inputKey.length())
+			{
+				_goodRead = false;
+				std::ostringstream os;
+				os << "Error: IDF file ends after keyword '" << inputKey << "' on line " << lineNo;
+				reportError(os);
+			}
+			break;
+		}
+
 		capitalize(inputKey);
 		if (inputKey.find(g_key_idfVer) != string::npos) {
-			frIdf.getToken(",", IDF_COMMENT_CHARS, inputKey, inputKeyExt);
+			frIdf.skipComment(IDF_COMMENT_CHARS, lineNo);
+			frIdf.getToken(";", IDF_COMMENT_CHARS, inputKey);
 			capitalize(inputKey);
-			//idfVer.assign(inputKeyExt);
-			idfVersion = inputKeyExt[0] - '0';
+
+			if ((inputKey.find(",") != string::npos)) {
+				//this is not the correct IDF version
+				continue;
+			}
+			else {
+				idfVersion = std::stoi(inputKey, nullptr, 10);
+				break;
+			}
 			cout << "The IDF version found is :" << idfVersion << endl;
+			//_goodRead = false;
 		}
 		if (frIdf.isEOF())
 		{
