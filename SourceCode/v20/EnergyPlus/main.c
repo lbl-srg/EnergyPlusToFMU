@@ -2058,6 +2058,108 @@ DllExport fmi2Status fmi2GetStringStatus (fmi2Component c, const fmi2StatusKind 
 	return fmi2Warning;
 }
 
+////////////////////////////////////////////////////////////////
+///  This method is used to get the FMU states
+///
+///\param c The FMU instance.
+///\param fmi2FMUstate* FMUstate.
+///\return fmi2Warning if no error occured.
+////////////////////////////////////////////////////////////////
+DllExport fmi2Status fmi2GetFMUstate(fmi2Component c, fmi2FMUstate* FMUstate)
+{
+	ModelInstance* _c = (ModelInstance *)c;
+	_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Warning, "Warning",
+		"fmi2GetFMUstate: fmi2GetFMUstate: is not provided.\n");
+	return fmi2Warning;
+}
+
+////////////////////////////////////////////////////////////////
+///  This method is used to set the FMU states
+///
+///\param c The FMU instance.
+///\param fmi2FMUstate FMUstate.
+///\return fmi2Warning if no error occured.
+////////////////////////////////////////////////////////////////
+DllExport fmi2Status fmi2SetFMUstate(fmi2Component c, fmi2FMUstate FMUstate)
+{
+	ModelInstance* _c = (ModelInstance *)c;
+	_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Warning, "Warning",
+		"fmi2SetFMUstate: fmi2SetFMUstate: is not provided.\n");
+	return fmi2Warning;
+}
+
+////////////////////////////////////////////////////////////////
+///  This method is used to free the FMU states
+///
+///\param c The FMU instance.
+///\param fmi2FMUstate* FMUstate.
+///\return fmi2Warning if no error occured.
+////////////////////////////////////////////////////////////////
+DllExport fmi2Status fmi2FreeFMUstate(fmi2Component c, fmi2FMUstate* FMUstate)
+{
+	ModelInstance* _c = (ModelInstance *)c;
+	_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Warning, "Warning",
+		"fmi2FreeFMUstate: fmi2FreeFMUstate: is not provided.\n");
+	return fmi2Warning;
+}
+
+
+////////////////////////////////////////////////////////////////
+///  This method is used to get the size of the byte vector
+///  needed to store the FMU states
+///
+///\param c The FMU instance.
+///\param fmi2FMUstate FMUstate.
+///\param size_t *size.
+///\return fmi2Warning if no error occured.
+////////////////////////////////////////////////////////////////
+DllExport fmi2Status fmi2SerializedFMUstateSize(fmi2Component c, 
+	fmi2FMUstate FMUstate, size_t *size)
+{
+	ModelInstance* _c = (ModelInstance *)c;
+	_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Warning, "Warning",
+		"fmi2SerializedFMUstateSize: fmi2SerializedFMUstateSize: is not provided.\n");
+	return fmi2Warning;
+}
+
+////////////////////////////////////////////////////////////////
+///  This method is used to serialize the FMU states
+///
+///\param c The FMU instance.
+///\param fmi2FMUstate FMUstate.
+///\param fmi2Byte serializedState[].
+///\param size_t size.
+///\return fmi2Warning if no error occured.
+////////////////////////////////////////////////////////////////
+DllExport fmi2Status fmi2SerializeFMUstate(fmi2Component c, fmi2FMUstate FMUstate,
+	fmi2Byte serializedState[], size_t size)
+{
+	ModelInstance* _c = (ModelInstance *)c;
+	_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Warning, "Warning",
+		"fmi2SerializeFMUstate: fmi2SerializeFMUstate: is not provided.\n");
+	return fmi2Warning;
+}
+
+////////////////////////////////////////////////////////////////
+///  This method is used to deserialize the FMU states
+///
+///\param c The FMU instance.
+///\param const fmi2Byte serializedState[].
+///\param size_t size.
+///\param fmi2FMUstate* FMUstate.
+///\return fmi2Warning if no error occured.
+////////////////////////////////////////////////////////////////
+DllExport fmi2Status fmi2DeSerializeFMUstate(fmi2Component c,
+	const fmi2Byte serializedState[], size_t size, fmi2FMUstate* FMUstate)
+{
+	ModelInstance* _c = (ModelInstance *)c;
+	_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Warning, "Warning",
+		"fmi2DeSerializeFMUstate: fmi2DeSerializeFMUstate: is not provided.\n");
+	return fmi2Warning;
+}
+
+
+
 //void main(){
 //	double time;
 //	double tStart=0;               // start time
