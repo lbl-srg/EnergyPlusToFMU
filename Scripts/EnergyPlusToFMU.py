@@ -289,7 +289,7 @@ if __name__ == '__main__':
   # Set defaults for command-line options.
   iddFileName = None
   wthFileName = None
-  fmiApiVersion = None
+  fmiVersion = None
   showDiagnostics = False
   litter = False
   #
@@ -312,7 +312,7 @@ if __name__ == '__main__':
       currIdx += 1
       fmiVersion = sys.argv[currIdx]
       if( showDiagnostics ):
-        printDiagnostic('Setting FMI API version (1 or 2) to {' +fmiApiVersion +'}')
+        printDiagnostic('Setting FMI API version (1 or 2) to {' +fmiVersion +'}')
     elif( currArg.startswith('-d') ):
       showDiagnostics = True
     elif( currArg.startswith('-L') ):

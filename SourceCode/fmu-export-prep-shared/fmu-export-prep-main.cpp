@@ -16,16 +16,18 @@ using std::endl;
 
 #include "app-cmdln-input.h"
 #include "fmu-export-idf-data.h"
-#include "fmu-export-write-model-desc.h"
+// Reference to version 1.0 for the next include since it
+// is not different from v20.
+#include "../v10/fmu-export-prep/fmu-export-write-model-desc.h"
 #include "fmu-export-write-vars-cfg.h"
 
-#include "../../read-ep-file/ep-idd-map.h"
-#include "../../read-ep-file/fileReaderData.h"
-#include "../../read-ep-file/fileReaderDictionary.h"
+#include "../read-ep-file/ep-idd-map.h"
+#include "../read-ep-file/fileReaderData.h"
+#include "../read-ep-file/fileReaderDictionary.h"
 
-#include "../../utility/file-help.h"
-#include "../../utility/time-help.h"
-#include "../../utility/utilReport.h"
+#include "../utility/file-help.h"
+#include "../utility/time-help.h"
+#include "../utility/utilReport.h"
 
 
 //--- File-scope constants.
