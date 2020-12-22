@@ -65,19 +65,19 @@ def run_fmu(fmu_path, api, exa):
     tim = 0
     while tim < final_time:
         if(exa=='Schedule'):
-            model.set ('Q', tim/100 + 0.1)
+            model.set ('Q', tim/50)
             model.do_step(tim, 900, True)
             print(model.get ('TRooMea'));
             tim=tim+900
         elif(exa=='Actuator'):
             # change input variable (default in .idf is given to be 6)
-            model.set('yShade', 1)
+            model.set('yShade', 6.0)
             model.do_step(tim, 600, True)
             print(model.get ('TRoo'));
             tim=tim+600
         else:
             # change input variable (default in .idf is given to be 6)
-            model.set('yShadeFMU', 1)
+            model.set('yShadeFMU', 6.0)
             model.do_step(tim, 600, True)
             print(model.get ('TRoo'));
             tim=tim+600

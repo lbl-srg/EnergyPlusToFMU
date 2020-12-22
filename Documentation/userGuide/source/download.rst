@@ -18,8 +18,12 @@ Download `EnergyPlusToFMU-v3.0.1.zip <https://github.com/lbl-srg/EnergyplusToFMU
 
 **Release notes**
 
-This version fixes a bug which was causing an incorrect parsing of the Runperiod.
-This addresses `issue#30 <https://github.com/lbl-srg/EnergyPlusToFMU/issues/30/>`_ on github.
+* This version fixes a bug which was causing an incorrect parsing of the Runperiod.
+  This addresses `issue#30 <https://github.com/lbl-srg/EnergyPlusToFMU/issues/30/>`_ on github.
+
+* This release addresses `issue#45 <https://github.com/lbl-srg/EnergyPlusToFMU/issues/45/>`_ on github.
+
+* The Example files have been transitioned for EnergyPlus 9.4.0.
 
 
 Release 3.0.0 (April 17, 2020)
