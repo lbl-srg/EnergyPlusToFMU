@@ -40,22 +40,22 @@ PLATFORM_NAME = sys.platform
 #
 def printCompileBatchInfo(compileBatchFileName):
   #
-  print 'Require a batch file {' +compileBatchFileName +'}'
-  print '-- The batch file should compile the source code files of interest'
-  print '-- The batch file should accept one argument, the name (including path) of the source code file to compile'
-  print '-- The batch file should leave the resulting object file in the working directory'
+  print('Require a batch file {' +compileBatchFileName +'}')
+  print('-- The batch file should compile the source code files of interest')
+  print('-- The batch file should accept one argument, the name (including path) of the source code file to compile')
+  print('-- The batch file should leave the resulting object file in the working directory')
   #
   # End fcn printCompileBatchInfo().
 
 
 def printLinkBatchInfo(linkBatchFileName, compileBatchFileName):
   #
-  print 'Require a batch file {' +linkBatchFileName +'}'
-  print '-- The batch file should link object files compiled via ' +compileBatchFileName
-  print '-- The batch file should produce a command-line executable or a library'
-  print '-- The batch file should accept at least two arguments, in this order:'
-  print '  ** the name of the output executable or library'
-  print '  ** the name(s) of the object files to link'
+  print('Require a batch file {' +linkBatchFileName +'}')
+  print('-- The batch file should link object files compiled via ' +compileBatchFileName)
+  print('-- The batch file should produce a command-line executable or a library')
+  print('-- The batch file should accept at least two arguments, in this order:')
+  print('  ** the name of the output executable or library')
+  print('  ** the name(s) of the object files to link')
   #
   # End fcn printLinkBatchInfo().
 
@@ -70,7 +70,7 @@ import subprocess
 #
 def printDiagnostic(messageStr):
   #
-  print '!', os.path.basename(__file__), '--', messageStr
+  print('!', os.path.basename(__file__), '--', messageStr)
   #
   # End fcn printDiagnostic().
 
@@ -79,10 +79,10 @@ def printDiagnostic(messageStr):
 #
 def quitWithError(messageStr):
   #
-  print 'ERROR from script file {' +os.path.basename(__file__) +'}'
+  print('ERROR from script file {' +os.path.basename(__file__) +'}')
   #
   if( messageStr is not None ):
-    print messageStr
+    print(messageStr)
   #
   sys.exit(1)
   #

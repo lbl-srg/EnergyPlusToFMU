@@ -73,20 +73,20 @@ LINK_C_EXE_BATCH_FILE_NAME = 'link-c-exe' + BATCH_EXTENSION
 #
 def printCmdLineUsage():
   #
-  print 'USAGE:', os.path.basename(__file__),  \
-    '[-d]  [-L]  <path-to-idf-file>'
+  print('USAGE:', os.path.basename(__file__),  \
+    '[-d]  [-L]  <path-to-idf-file>')
   #
-  print '-- Create a shared library that runs an EnergyPlus IDF file as an FMU'
-  print '-- Option -d, print diagnostics'
-  print '-- Option -L, litter, that is, do not clean up intermediate files'
+  print('-- Create a shared library that runs an EnergyPlus IDF file as an FMU')
+  print('-- Option -d, print diagnostics')
+  print('-- Option -L, litter, that is, do not clean up intermediate files')
   #
-  print
+  print()
   printCompileCBatchInfo()
   #
-  print
+  print()
   printLinkCLibBatchInfo()
   #
-  print
+  print()
   printLinkCExeBatchInfo()
   #
   # End fcn printCmdLineUsage().
@@ -94,37 +94,37 @@ def printCmdLineUsage():
 
 def printCompileCBatchInfo():
   #
-  print 'Require a batch file {' +COMPILE_C_BATCH_FILE_NAME +'}'
-  print '-- The batch file should compile C source code files'
-  print '-- The batch file should accept one argument, the name (including path) of the source code file to compile'
-  print '-- The batch file should leave the resulting object file in the working directory'
-  print '-- Place the batch file in the system-specific batch directory'
+  print('Require a batch file {' +COMPILE_C_BATCH_FILE_NAME +'}')
+  print('-- The batch file should compile C source code files')
+  print('-- The batch file should accept one argument, the name (including path) of the source code file to compile')
+  print('-- The batch file should leave the resulting object file in the working directory')
+  print('-- Place the batch file in the system-specific batch directory')
   #
   # End fcn printCompileCBatchInfo().
 
 
 def printLinkCLibBatchInfo():
   #
-  print 'Require a batch file {' +LINK_C_LIB_BATCH_FILE_NAME +'}'
-  print '-- The batch file should link object files compiled via ' +COMPILE_C_BATCH_FILE_NAME
-  print '-- The batch file should produce a shared library'
-  print '-- The batch file should accept at least two arguments, in this order:'
-  print '  ** the name of the output shared library'
-  print '  ** the name(s) of the object files to link'
-  print '-- Place the batch file in the system-specific batch directory'
+  print('Require a batch file {' +LINK_C_LIB_BATCH_FILE_NAME +'}')
+  print('-- The batch file should link object files compiled via ' +COMPILE_C_BATCH_FILE_NAME)
+  print('-- The batch file should produce a shared library')
+  print('-- The batch file should accept at least two arguments, in this order:')
+  print('  ** the name of the output shared library')
+  print('  ** the name(s) of the object files to link')
+  print('-- Place the batch file in the system-specific batch directory')
   #
   # End fcn printLinkCLibBatchInfo().
 
 
 def printLinkCExeBatchInfo():
   #
-  print 'Require a batch file {' +LINK_C_EXE_BATCH_FILE_NAME +'}'
-  print '-- The batch file should link object files compiled via ' +COMPILE_C_BATCH_FILE_NAME
-  print '-- The batch file should produce a command-line executable'
-  print '-- The batch file should accept at least two arguments, in this order:'
-  print '  ** the name of the output executable'
-  print '  ** the name(s) of the object files to link'
-  print '-- Place the batch file in the system-specific batch directory'
+  print('Require a batch file {' +LINK_C_EXE_BATCH_FILE_NAME +'}')
+  print('-- The batch file should link object files compiled via ' +COMPILE_C_BATCH_FILE_NAME)
+  print('-- The batch file should produce a command-line executable')
+  print('-- The batch file should accept at least two arguments, in this order:')
+  print('  ** the name of the output executable')
+  print('  ** the name(s) of the object files to link')
+  print('-- Place the batch file in the system-specific batch directory')
   #
   # End fcn printLinkCExeBatchInfo().
 
@@ -133,7 +133,7 @@ def printLinkCExeBatchInfo():
 #
 def printDiagnostic(messageStr):
   #
-  print '!', os.path.basename(__file__), '--', messageStr
+  print('!', os.path.basename(__file__), '--', messageStr)
   #
   # End fcn printDiagnostic().
 
@@ -142,13 +142,13 @@ def printDiagnostic(messageStr):
 #
 def quitWithError(messageStr, showCmdLine):
   #
-  print 'ERROR from script file {' +os.path.basename(__file__) +'}'
+  print('ERROR from script file {' +os.path.basename(__file__) +'}')
   #
   if( messageStr is not None ):
-    print messageStr
+    print(messageStr)
   #
   if( showCmdLine ):
-    print
+    print()
     printCmdLineUsage()
   #
   sys.exit(1)
