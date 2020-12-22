@@ -52,11 +52,11 @@ def run_fmu(fmu_path, api, exa):
     final_time=60*60*72
     #time_step=900
     if (api=="1"):
-        print ('Running FMU file={!s}, API={!s}.'.format(fmu_path, api))
+        print(('Running FMU file={!s}, API={!s}.'.format(fmu_path, api)))
         #model.setup_experiment(False, 0, 0, True, final_time)
         model.initialize(0, final_time)
     elif(api=="2"):
-        print ('Running FMU file={!s}, API={!s}.'.format(fmu_path, api))
+        print(('Running FMU file={!s}, API={!s}.'.format(fmu_path, api)))
         model.setup_experiment(False, 0, 0, True, final_time)
         model.initialize(0, final_time)
     else:
@@ -67,19 +67,19 @@ def run_fmu(fmu_path, api, exa):
         if(exa=='Schedule'):
             model.set ('Q', tim/50)
             model.do_step(tim, 900, True)
-            print(model.get ('TRooMea'));
+            print((model.get ('TRooMea')));
             tim=tim+900
         elif(exa=='Actuator'):
             # change input variable (default in .idf is given to be 6)
             model.set('yShade', 6.0)
             model.do_step(tim, 600, True)
-            print(model.get ('TRoo'));
+            print((model.get ('TRoo')));
             tim=tim+600
         else:
             # change input variable (default in .idf is given to be 6)
             model.set('yShadeFMU', 6.0)
             model.do_step(tim, 600, True)
-            print(model.get ('TRoo'));
+            print((model.get ('TRoo')));
             tim=tim+600
     model.terminate()
     # model.free_instance(). This causes the simulation
@@ -105,9 +105,9 @@ def run_fmu(fmu_path, api, exa):
     # run simulation and return results
     res = model.simulate(start_time=0., final_time=final_time, options=opts)
     if(exa=='Schedule'):
-        print('The computed room temperature={!s}'.format(res['TRooMea'])) # show result variables names
+        print(('The computed room temperature={!s}'.format(res['TRooMea']))) # show result variables names
     else:
-        print('The computed room temperature={!s}'.format(res['TRoo'])) # show result variables names
+        print(('The computed room temperature={!s}'.format(res['TRoo']))) # show result variables names
   #
   # End fcn run_fmu().
 unittest_path = os.path.dirname(os.path.realpath(__file__))
@@ -115,9 +115,9 @@ root_path = os.path.abspath(os.path.join(unittest_path, '..'))
 SCRIPT_PATH=os.path.join(root_path, "Scripts", "EnergyPlusToFMU.py")
 # Check if the script file exists
 if (os.path.exists(SCRIPT_PATH)):
-    print ('The Path to the script file={!s}.'.format(SCRIPT_PATH))
+    print(('The Path to the script file={!s}.'.format(SCRIPT_PATH)))
 else:
-    print ('The script file={!s} does not exist.'.format(SCRIPT_PATH))
+    print(('The script file={!s} does not exist.'.format(SCRIPT_PATH)))
     exit(1)
 
 # Get the environment variables
@@ -128,29 +128,29 @@ spl_pat=pat.split(';')
 for i in range(len(spl_pat)):
     if ("EnergyPlus" in spl_pat[i]):
         EP_SYS = True
-        ep_alt = raw_input('EnergyPlus version ' + spl_pat[i] + ' was found.' +
+        ep_alt = input('EnergyPlus version ' + spl_pat[i] + ' was found.' +
         ' This version will be used for exporting and running EnergyPlus FMUs. '
         ' If you want to use a different version, provide the full path of the version now.' +
         ' Otherwise press return: ')
         if (ep_alt is not None):
             # Check if the provided path exists
             if (os.path.exists(ep_alt)):
-                print ('The Path to the EnergyPlus version provided={!s}.'.format(ep_alt))
+                print(('The Path to the EnergyPlus version provided={!s}.'.format(ep_alt)))
             else:
-                print ('The Path to the EnergyPlus version provided={!s} does not exist.'
-                'The EnergyPlus version found={!s} will be used.'.format(ep_alt, spl_pat[i]))
+                print(('The Path to the EnergyPlus version provided={!s} does not exist.'
+                'The EnergyPlus version found={!s} will be used.'.format(ep_alt, spl_pat[i])))
         # CONSTRUCT THE IDD-PATH
         IDD_PATH=os.path.join(spl_pat[i], "Energy+.idd")
         # CONSTRUCT THE IDD-PATH
         WEA_PATH=os.path.join(spl_pat[i], "WeatherData", "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw")
         break;
 if(EP_SYS==False):
-    ep_alt = raw_input('EnergyPlus version was not found.' +
+    ep_alt = input('EnergyPlus version was not found.' +
     ' Please provide the full path of the installation folder of EnergyPlus: ')
     if (ep_alt is not None):
         # Check if the provided path exists
         if (os.path.exists(ep_alt)):
-            print ('The Path to the EnergyPlus version provided={!s}.'.format(ep_alt))
+            print(('The Path to the EnergyPlus version provided={!s}.'.format(ep_alt)))
         else:
             print ('The Path to the EnergyPlus version provided={!s} does not exist.')
             exit(1)
@@ -161,15 +161,15 @@ if(EP_SYS==False):
 
 # Check if the IDD file exists
 if (os.path.exists(IDD_PATH)):
-    print ('The Path to the IDD file={!s}.'.format(IDD_PATH))
+    print(('The Path to the IDD file={!s}.'.format(IDD_PATH)))
 else:
-    print ('The IDD file={!s} does not exist.'.format(IDD_PATH))
+    print(('The IDD file={!s} does not exist.'.format(IDD_PATH)))
     exit(1)
 # Check if the IDD file exists
 if (os.path.exists(WEA_PATH)):
-    print ('The Path to the Weather file={!s}.'.format(WEA_PATH))
+    print(('The Path to the Weather file={!s}.'.format(WEA_PATH)))
 else:
-    print ('The Weather file={!s} does not exist.'.format(WEA_PATH))
+    print(('The Weather file={!s} does not exist.'.format(WEA_PATH)))
     exit(1)
 
 # Check if the example file exists
@@ -182,9 +182,9 @@ for exa in ['Schedule', 'Actuator', 'Variable']:
         EXAMPLE_PATH=os.path.join(root_path, "Examples", "Variable", "_fmu-export-variable.idf")
     #EXAMPLE_PATH=os.path.join(root_path, "Examples", "Schedule", "_fmu-export-schedule.idf")
     if (os.path.exists(EXAMPLE_PATH)):
-        print ('The Path to the example file={!s}.'.format(EXAMPLE_PATH))
+        print(('The Path to the example file={!s}.'.format(EXAMPLE_PATH)))
     else:
-        print ('The example file={!s} does not exist.'.format(EXAMPLE_PATH))
+        print(('The example file={!s} does not exist.'.format(EXAMPLE_PATH)))
         exit(1)
 
     # Loop to export the idfs and the idds files for FMI version 1 and 2.
@@ -192,10 +192,10 @@ for exa in ['Schedule', 'Actuator', 'Variable']:
         for i in ["2", "1"]:
             tmp=os.path.join(unittest_path,'v_'+i)
             if not os.path.exists(tmp):
-                print ('Create directory={!s} to run the unit test.'.format(tmp))
+                print(('Create directory={!s} to run the unit test.'.format(tmp)))
                 os.makedirs(tmp)
             elif (os.path.exists(tmp)):
-                print ('Directory={!s} exists and will be deleted and recreated.'.format(tmp))
+                print(('Directory={!s} exists and will be deleted and recreated.'.format(tmp)))
                 import shutil
                 shutil.rmtree(tmp)
                 os.makedirs(tmp)
@@ -206,6 +206,6 @@ for exa in ['Schedule', 'Actuator', 'Variable']:
             base=os.path.basename(EXAMPLE_PATH)
             filename=os.path.splitext(base)[0]
             FMU_PATH=os.path.join(os.getcwd(), sanitizeIdentifier(filename))+".fmu"
-            print ('The generated FMU file={!s}.'.format(FMU_PATH))
+            print(('The generated FMU file={!s}.'.format(FMU_PATH)))
             # Running the FMUs
             run_fmu(FMU_PATH, i, exa)
