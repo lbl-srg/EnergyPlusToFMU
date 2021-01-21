@@ -188,24 +188,24 @@ for exa in ['Schedule', 'Actuator', 'Variable']:
         exit(1)
 
     # Loop to export the idfs and the idds files for FMI version 1 and 2.
-    if (sys.version_info.major==2):
-        for i in ["2", "1"]:
-            tmp=os.path.join(unittest_path,'v_'+i)
-            if not os.path.exists(tmp):
-                print(('Create directory={!s} to run the unit test.'.format(tmp)))
-                os.makedirs(tmp)
-            elif (os.path.exists(tmp)):
-                print(('Directory={!s} exists and will be deleted and recreated.'.format(tmp)))
-                import shutil
-                shutil.rmtree(tmp)
-                os.makedirs(tmp)
-            # Change directory to run the unit test
-            os.chdir(tmp)
-            # export the FMUs
-            sp.call(["python", SCRIPT_PATH, "-i", IDD_PATH, "-w", WEA_PATH, "-a", i, EXAMPLE_PATH])
-            base=os.path.basename(EXAMPLE_PATH)
-            filename=os.path.splitext(base)[0]
-            FMU_PATH=os.path.join(os.getcwd(), sanitizeIdentifier(filename))+".fmu"
-            print(('The generated FMU file={!s}.'.format(FMU_PATH)))
-            # Running the FMUs
-            run_fmu(FMU_PATH, i, exa)
+    #if (sys.version_info.major==2):
+    for i in ["2", "1"]:
+        tmp=os.path.join(unittest_path,'v_'+i)
+        if not os.path.exists(tmp):
+            print(('Create directory={!s} to run the unit test.'.format(tmp)))
+            os.makedirs(tmp)
+        elif (os.path.exists(tmp)):
+            print(('Directory={!s} exists and will be deleted and recreated.'.format(tmp)))
+            import shutil
+            shutil.rmtree(tmp)
+            os.makedirs(tmp)
+        # Change directory to run the unit test
+        os.chdir(tmp)
+        # export the FMUs
+        sp.call(["python", SCRIPT_PATH, "-i", IDD_PATH, "-w", WEA_PATH, "-a", i, EXAMPLE_PATH])
+        base=os.path.basename(EXAMPLE_PATH)
+        filename=os.path.splitext(base)[0]
+        FMU_PATH=os.path.join(os.getcwd(), sanitizeIdentifier(filename))+".fmu"
+        print(('The generated FMU file={!s}.'.format(FMU_PATH)))
+        # Running the FMUs
+        run_fmu(FMU_PATH, i, exa)
