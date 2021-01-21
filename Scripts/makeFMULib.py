@@ -447,8 +447,12 @@ def makeFmuSharedLib(showDiagnostics, litter,
   try:
     runList = [os.path.join(os.path.curdir, getAddressSizeExeName)]
     addressSizeProc = subprocess.Popen(runList, stdout=subprocess.PIPE)
-    for addressSize in addressSizeProc.stdout:
-      True
+    if (sys.version_info.major==2):
+        std_output=addressSizeProc.stdout.readline()
+        addressSize = std_output[-2:]
+    if (sys.version_info.major==3):
+        std_output=addressSizeProc.stdout.readline().decode()
+        addressSize = std_output[-2:]
     if( showDiagnostics ):
       printDiagnostic('FMU shared library {' +fmuSharedLibName +'} has address size {' +addressSize +'}')
     if( addressSize!='32' and addressSize!='64' ):
@@ -459,8 +463,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
     # unknown problem.
     getAddressSizeExeName = findFileOrQuit('utility application', getAddressSizeExeName)
     quitWithError('Failed to run utility application {' +getAddressSizeExeName +'}: reason unknown', False)
-  #
-  # Clean up intermediates.
+  #Clean up intermediates.
   if( not litter ):
     if( showDiagnostics ):
       printDiagnostic('Cleaning up intermediate files')
