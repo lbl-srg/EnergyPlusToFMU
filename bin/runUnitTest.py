@@ -94,12 +94,14 @@ def run_fmu(fmu_path, api, exa):
     opts = model.simulate_options()
 
     # set number of communication points dependent on final_time and .idf steps per hour
-    final_time = 60*60*72. # 72 hour simulation
+    final_time = 60*60*72 # 72 hour simulation
     if(exa=='Schedule'):
         idf_steps_per_hour = 4
+        ncp = 288
     else:
         idf_steps_per_hour = 6
-    ncp = final_time/(3600./idf_steps_per_hour)
+        ncp = 432
+    #ncp = final_time/(3600./idf_steps_per_hour)
     opts['ncp'] = ncp
 
     # run simulation and return results
