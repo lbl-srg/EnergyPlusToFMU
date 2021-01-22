@@ -135,7 +135,7 @@ for i in range(len(spl_pat)):
             ' This version will be used for exporting and running EnergyPlus FMUs. '
             ' If you want to use a different version, provide the full path of the version now.' +
             ' Otherwise press return: ')
-        if (sys.version_info.major==3):
+        elif (sys.version_info.major==3):
             ep_alt = input('EnergyPlus version ' + spl_pat[i] + ' was found.' +
             ' This version will be used for exporting and running EnergyPlus FMUs. '
             ' If you want to use a different version, provide the full path of the version now.' +
