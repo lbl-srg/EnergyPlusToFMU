@@ -130,10 +130,16 @@ spl_pat=pat.split(';')
 for i in range(len(spl_pat)):
     if ("EnergyPlus" in spl_pat[i]):
         EP_SYS = True
-        ep_alt = input('EnergyPlus version ' + spl_pat[i] + ' was found.' +
-        ' This version will be used for exporting and running EnergyPlus FMUs. '
-        ' If you want to use a different version, provide the full path of the version now.' +
-        ' Otherwise press return: ')
+        if (sys.version_info.major==2):
+            ep_alt = raw_input('EnergyPlus version ' + spl_pat[i] + ' was found.' +
+            ' This version will be used for exporting and running EnergyPlus FMUs. '
+            ' If you want to use a different version, provide the full path of the version now.' +
+            ' Otherwise press return: ')
+        else:
+            ep_alt = input('EnergyPlus version ' + spl_pat[i] + ' was found.' +
+            ' This version will be used for exporting and running EnergyPlus FMUs. '
+            ' If you want to use a different version, provide the full path of the version now.' +
+            ' Otherwise press return: ')
         if (ep_alt is not None):
             # Check if the provided path exists
             if (os.path.exists(ep_alt)):
@@ -147,8 +153,12 @@ for i in range(len(spl_pat)):
         WEA_PATH=os.path.join(spl_pat[i], "WeatherData", "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw")
         break;
 if(EP_SYS==False):
-    ep_alt = raw_input('EnergyPlus version was not found.' +
-    ' Please provide the full path of the installation folder of EnergyPlus: ')
+    if (sys.version_info.major==2):
+        ep_alt = raw_input('EnergyPlus version was not found.' +
+        ' Please provide the full path of the installation folder of EnergyPlus: ')
+    else:
+        ep_alt = input('EnergyPlus version was not found.' +
+        ' Please provide the full path of the installation folder of EnergyPlus: ')
     if (ep_alt is not None):
         # Check if the provided path exists
         if (os.path.exists(ep_alt)):
