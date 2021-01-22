@@ -17,18 +17,18 @@
 from subprocess import call
 def printCmdLineUsage():
   #
-  print 'USAGE:', os.path.basename(__file__), \
-    '[Path to folder with source files]  [Release version number]'
+  print('USAGE:', os.path.basename(__file__), \
+    '[Path to folder with source files]  [Release version number]')
 
 def quitWithError(messageStr, showCmdLine):
   #
-  print 'ERROR from script file {' + os.path.basename(__file__) + '}'
+  print('ERROR from script file {' + os.path.basename(__file__) + '}')
   #
   if(messageStr is not None):
-    print messageStr
+    print(messageStr)
   #
   if(showCmdLine):
-    print
+    print()
     printCmdLineUsage()
   #
   sys.exit(1)
@@ -51,25 +51,25 @@ def zipdir(basedir, archivename):
             #    dirs.remove('bin')
             if '.git' in dirs:
                 n_gits=n_gits+1
-                print "found .git folder in " + str(dirs)
+                print("found .git folder in " + str(dirs))
                 #continue
                 dirs.remove('.git')
             for fn in files:
                 if (fn.endswith('.md')):
                     absfn = os.path.join(root, fn)
-                    print "found file with extension '.md'. The file is in " + absfn
+                    print("found file with extension '.md'. The file is in " + absfn)
                     n_md=n_md+1
                     continue
                 elif (fn.endswith('.pyc')):
                     absfn = os.path.join(root, fn)
-                    print "found file with extension '.pyc'. The file is in " + absfn
+                    print("found file with extension '.pyc'. The file is in " + absfn)
                     continue
                 else:
                     absfn = os.path.join(root, fn)
                     zfn = absfn[len(basedir) + len(os.sep):]
                     z.write(absfn, zfn)
     if(n_md>1):
-        print "found more than one file (" + str(n_md) + ")" + " with extension .md. Program terminated."
+        print("found more than one file (" + str(n_md) + ")" + " with extension .md. Program terminated.")
         sys.exit()
 
 
@@ -84,7 +84,7 @@ if __name__ == '__main__':
         archivename = 'EnergyPlusToFMU-' + releasenumber + '.zip'
         zipdir(basedir, archivename)
 print("************************************************************")
-print("Create tag for release with version number: " + releasenumber)
+print(("Create tag for release with version number: " + releasenumber))
 print("************************************************************")
 
 #call(['rsync', archivename, "thierry@simulationresearch.lbl.gov:/usr/local/www/simulationresearch/fmu/EnergyPlus/export/releases/" + #releasenumber + "/"])
