@@ -106,7 +106,7 @@
 <h2>3.1. Software requirements<a class="headerlink" href="#software-requirements" title="Permalink to this headline">¶</a></h2>
 <p>To export an EnergyPlus simulation as an FMU, EnergyPlusToFMU needs:</p>
 <ol class="arabic simple">
-<li>Python 2.6 or 2.7.</li>
+<li>Python 2.6, 2.7, or 3.x</li>
 <li>A C compiler and linker.</li>
 <li>A C++ compiler and linker.</li>
 </ol>
@@ -116,6 +116,7 @@
 <li>Windows 10.</li>
 <li>Mac OS X 10.15.</li>
 </ul>
+<p>with Python 2.7, 3.7 and 3.8</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">FMI for Co-Simulation version 2.0 is not supported on Linux 32 bit.</p>
@@ -155,7 +156,7 @@
 </dd>
 </dl>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">fmu-export-prep/</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">fmu-export-prep-shared/</span></code></li>
 <li><code class="docutils literal notranslate"><span class="pre">read-ep-file/</span></code></li>
 <li><code class="docutils literal notranslate"><span class="pre">socket/</span></code></li>
 <li><code class="docutils literal notranslate"><span class="pre">utility/</span></code></li>
@@ -604,7 +605,7 @@ the full path to the EnergyPlus installation directory (e.g. D:EnergyPlusV9-0-1)
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2013-2020, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
+        &#169; Copyright 2013-2021, The Regents of the University of California (through Lawrence Berkeley National Laboratory).
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
