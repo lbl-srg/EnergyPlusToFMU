@@ -147,7 +147,7 @@ for i in range(len(spl_pat)):
         WEA_PATH=os.path.join(spl_pat[i], "WeatherData", "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw")
         break;
 if(EP_SYS==False):
-    ep_alt = input('EnergyPlus version was not found.' +
+    ep_alt = raw_input('EnergyPlus version was not found.' +
     ' Please provide the full path of the installation folder of EnergyPlus: ')
     if (ep_alt is not None):
         # Check if the provided path exists
