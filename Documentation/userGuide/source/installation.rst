@@ -13,7 +13,7 @@ Software requirements
 
 To export an EnergyPlus simulation as an FMU, EnergyPlusToFMU needs:
 
-1. Python 2.6 or 2.7.
+1. Python 2.6, 2.7, or 3.x
 
 2. A C compiler and linker.
 
@@ -26,6 +26,8 @@ EnergyPlusToFMU has been tested on:
 - Windows 10.
 
 - Mac OS X 10.15.
+
+with Python 2.7, 3.7 and 3.8
 
 .. note:: FMI for Co-Simulation version 2.0 is not supported on Linux 32 bit.
 
