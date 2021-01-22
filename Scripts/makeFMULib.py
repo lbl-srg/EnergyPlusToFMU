@@ -453,6 +453,8 @@ def makeFmuSharedLib(showDiagnostics, litter,
     if (sys.version_info.major==3):
         std_output=addressSizeProc.stdout.readline().decode()
         addressSize = std_output[-2:]
+    if (sys.version_info.major< 2 and sys.version_info.major > 3):
+        raise Exception('Unexpected Python version {' +str(sys.version_info.major) +'}')
     if( showDiagnostics ):
       printDiagnostic('FMU shared library {' +fmuSharedLibName +'} has address size {' +addressSize +'}')
     if( addressSize!='32' and addressSize!='64' ):

@@ -135,11 +135,14 @@ for i in range(len(spl_pat)):
             ' This version will be used for exporting and running EnergyPlus FMUs. '
             ' If you want to use a different version, provide the full path of the version now.' +
             ' Otherwise press return: ')
-        else:
+        if (sys.version_info.major==3):
             ep_alt = input('EnergyPlus version ' + spl_pat[i] + ' was found.' +
             ' This version will be used for exporting and running EnergyPlus FMUs. '
             ' If you want to use a different version, provide the full path of the version now.' +
             ' Otherwise press return: ')
+        else:
+            raise Exception('Unexpected Python version {' +str(sys.version_info.major) +'}')
+
         if (ep_alt is not None):
             # Check if the provided path exists
             if (os.path.exists(ep_alt)):
@@ -156,9 +159,12 @@ if(EP_SYS==False):
     if (sys.version_info.major==2):
         ep_alt = raw_input('EnergyPlus version was not found.' +
         ' Please provide the full path of the installation folder of EnergyPlus: ')
-    else:
+    elif(sys.version_info.major==3):
         ep_alt = input('EnergyPlus version was not found.' +
         ' Please provide the full path of the installation folder of EnergyPlus: ')
+    else:
+        raise Exception('Unexpected Python version {' +str(sys.version_info.major) +'}')
+
     if (ep_alt is not None):
         # Check if the provided path exists
         if (os.path.exists(ep_alt)):
