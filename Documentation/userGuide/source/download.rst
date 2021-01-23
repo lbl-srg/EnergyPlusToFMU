@@ -18,7 +18,7 @@ Download `EnergyPlusToFMU-v3.1.0.zip <https://github.com/lbl-srg/EnergyplusToFMU
 
 **Release notes**
 
-* This version is a major release that adds support for Python3.
+* This version is a minor release that adds support for Python 3.x.
   This addresses `issue#43 <https://github.com/lbl-srg/EnergyPlusToFMU/issues/43/>`_ on github.
 
 * This version fixes a bug which was causing an incorrect parsing of the Runperiod.
@@ -49,7 +49,7 @@ Download `EnergyPlusToFMU-v2.1.0.zip <https://github.com/lbl-srg/EnergyplusToFMU
 
 **Release notes**
 
-This version is a major release which adds supports for EnergyPlus version 9.0 and higher.
+This version is a minor release which adds supports for EnergyPlus version 9.0 and higher.
 This release addresses `issue#24 <https://github.com/lbl-srg/EnergyPlusToFMU/issues/24/>`_ on github.
 
 Release 2.0.3 (April 26, 2018)
