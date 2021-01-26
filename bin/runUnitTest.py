@@ -107,7 +107,7 @@ def run_fmu(fmu_path, api, exa):
     res_f.append(a_end)
 
     # Checking against reference results
-    thrs = 1e-4
+    thrs = 5e-2
     for i in range(len(lines)):
         val = abs(res[i] - res_f[i])
         if(val > thrs):
