@@ -47,16 +47,17 @@ def sanitizeIdentifier(identifier):
 #
 def run_fmu(fmu_path, api, exa):
     model="model_1_"+api
-    model = load_fmu(fmu=fmu_path)
+    model = load_fmu(fmu=fmu_path, log_level=4)
     final_time = 60*60*72
     res=[]
     if (api == "1"):
         print(('Running FMU file={!s}, API={!s}.'.format(fmu_path, api)))
-        model.initialize(0, final_time)
+        #model.initialize(0, final_time, 1)
+        model.initialize(start_time=0, stop_time=final_time, stop_time_defined=True)
     elif(api=="2"):
         print(('Running FMU file={!s}, API={!s}.'.format(fmu_path, api)))
-        model.setup_experiment(False, 0, 0, True, final_time)
-        model.initialize(0, final_time)
+        #model.setup_experiment(tolerance_defined=, tolerance="Default", start_time=0, stop_time_defined=True, stop_time=final_time)
+        model.initialize(tolerance_defined=False, tolerance=0, start_time=0, stop_time_defined=True, stop_time=final_time)
     else:
         raise Exception ('Only FMI version 1.0 and 2.0 are supported')
     tim = 0
@@ -121,13 +122,24 @@ def run_fmu(fmu_path, api, exa):
     # RERUN the FMUs
     # load .fmu with pyfmi
     model = "model_2_"+api
-    model = load_fmu(fmu=fmu_path)
-
+    model = load_fmu(fmu=fmu_path, log_level=4)
     # get options object
     opts = model.simulate_options()
 
     # set number of communication points dependent on final_time and .idf steps per hour
     final_time = 60*60*72 # 72 hour simulation
+
+    if (api == "1"):
+        print(('Running FMU file={!s}, API={!s}.'.format(fmu_path, api)))
+        #model.initialize(0, final_time, 1)
+        model.initialize(start_time=0, stop_time=final_time, stop_time_defined=True)
+    elif(api=="2"):
+        print(('Running FMU file={!s}, API={!s}.'.format(fmu_path, api)))
+        #model.setup_experiment(tolerance_defined=, tolerance="Default", start_time=0, stop_time_defined=True, stop_time=final_time)
+        model.initialize(tolerance_defined=False, tolerance=0, start_time=0, stop_time_defined=True, stop_time=final_time)
+    else:
+        raise Exception ('Only FMI version 1.0 and 2.0 are supported')
+
     if(exa =='Schedule'):
         ncp = 288
     else:
@@ -135,6 +147,14 @@ def run_fmu(fmu_path, api, exa):
     #ncp = final_time/(3600./idf_steps_per_hour)
     opts['ncp'] = ncp
 
+    # Specified that the stop time is defined.
+    # Defining stop time defined doesn't seem to be picked up by the simulate()
+    # method. Hence we call the initialize method to enfore it.
+    # opts['stop_time_defined'] = True
+
+    # We disable the additional call of the initialize method since it has
+    # already been called.
+    opts['initialize'] = False
     # run simulation and return results
     res = model.simulate(start_time=0., final_time=final_time, options=opts)
     if(exa == 'Schedule'):

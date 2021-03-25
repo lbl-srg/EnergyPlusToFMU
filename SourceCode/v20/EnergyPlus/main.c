@@ -1379,11 +1379,11 @@ DllExport fmi2Status fmi2DoStep(fmi2Component c, fmi2Real currentCommunicationPo
 	// check if FMU needs to support rollback
 	if(!noSetFMUStatePriorToCurrentPoint)
 	{
-		_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Warning, "warning",
+		_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Error, "error",
 			"fmi2DoStep: noSetFMUStatePriorToCurrentPoint has been set to %d."
-			" EnergyPlus FMU does however not support this option. The flag will be ignored.",
+			" EnergyPlus FMU does however not support the rollback option.",
 			noSetFMUStatePriorToCurrentPoint);
-		return fmi2Warning;
+		return fmi2Error;
 	}
 
 	// check whether the communication step size is different from null
@@ -1516,6 +1516,8 @@ DllExport fmi2Status fmi2SetupExperiment(fmi2Component c, fmi2Boolean toleranceD
 			"fmi2SetupExperiment: The StopTimeDefined parameter is set to %d. This is not valid"
 			" for EnergyPlus FMU. EnergyPlus FMU requires the StopTimeDefined parameter to be 1 and"
 			" the simulation stop time must be set to a positive real value.\n", stopTimeDefined);
+			_c->setupExperiment = 1;
+			//return fmi2Error;
 	}
 
 	if (toleranceDefined == fmi2True) {
@@ -1523,6 +1525,8 @@ DllExport fmi2Status fmi2SetupExperiment(fmi2Component c, fmi2Boolean toleranceD
 			"fmi2SetupExperiment: The toleranceDefined parameter is set to %d."
 			" However, EnergyPlus FMU won't use the tolerance %f which is provided.\n",
 			toleranceDefined, tolerance);
+			_c->setupExperiment = 1;
+			return fmi2Warning;
 	}
 	_c->setupExperiment = 1;
 	return fmi2OK;
