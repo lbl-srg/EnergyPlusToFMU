@@ -25,6 +25,7 @@ For FMI 2.0 compliant EnergyPlus FMUs, it also ensures that master algorithms
 set the parameter `noSetFMUStatePriorToCurrentPoint` to `True`. This is because
 EnergyPlus FMUs do not support rollback in time.
 
+
 Release 3.1.0 (January 25, 2021)
 ---------------------------------
 
