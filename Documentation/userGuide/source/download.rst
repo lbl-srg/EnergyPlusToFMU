@@ -11,6 +11,20 @@ See the release notes for additional information on the FMI version 2.0 for Co-S
 
 To install EnergyPlusToFMU, follow the section :doc:`installation`.
 
+Release 3.1.1 (xxx 25, 2021)
+---------------------------------
+
+Download `EnergyPlusToFMU-v3.1.1.zip <https://github.com/lbl-srg/EnergyplusToFMU/releases/download/v3.1.1/EnergyPlusToFMU-v3.1.1.zip>`_.
+
+**Release notes**
+
+This version ensures that master algorithms which import EnergyPlus FMUs
+set the `stopTimeDefined` parameter to `True`. This is to guarantee that
+valid stop times are provided to the FMUs.
+For FMI 2.0 compliant EnergyPlus FMUs, it also ensures that master algorithms
+set the parameter `noSetFMUStatePriorToCurrentPoint` to `True`. This is because
+EnergyPlus FMUs do not support rollback in time.
+
 Release 3.1.0 (January 25, 2021)
 ---------------------------------
 
