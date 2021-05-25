@@ -53,11 +53,11 @@ def run_fmu(fmu_path, api, exa):
     if (api == "1"):
         print(('Running FMU file={!s}, API={!s}.'.format(fmu_path, api)))
         #model.initialize(0, final_time, 1)
-        model.initialize(start_time=0, stop_time=final_time, stop_time_defined=True)
+        model.initialize(start_time=0, stop_time=final_time)
     elif(api=="2"):
         print(('Running FMU file={!s}, API={!s}.'.format(fmu_path, api)))
         #model.setup_experiment(tolerance_defined=, tolerance="Default", start_time=0, stop_time_defined=True, stop_time=final_time)
-        model.initialize(tolerance_defined=False, tolerance=0, start_time=0, stop_time_defined=True, stop_time=final_time)
+        model.initialize(start_time=0, stop_time=final_time)
     else:
         raise Exception ('Only FMI version 1.0 and 2.0 are supported')
     tim = 0
@@ -132,11 +132,11 @@ def run_fmu(fmu_path, api, exa):
     if (api == "1"):
         print(('Running FMU file={!s}, API={!s}.'.format(fmu_path, api)))
         #model.initialize(0, final_time, 1)
-        model.initialize(start_time=0, stop_time=final_time, stop_time_defined=True)
+        #model.initialize(start_time=0, stop_time=final_time, stop_time_defined=True)
     elif(api=="2"):
         print(('Running FMU file={!s}, API={!s}.'.format(fmu_path, api)))
         #model.setup_experiment(tolerance_defined=, tolerance="Default", start_time=0, stop_time_defined=True, stop_time=final_time)
-        model.initialize(tolerance_defined=False, tolerance=0, start_time=0, stop_time_defined=True, stop_time=final_time)
+        #model.initialize(start_time=0, stop_time=final_time)
     else:
         raise Exception ('Only FMI version 1.0 and 2.0 are supported')
 
@@ -154,7 +154,7 @@ def run_fmu(fmu_path, api, exa):
 
     # We disable the additional call of the initialize method since it has
     # already been called.
-    opts['initialize'] = False
+    #opts['initialize'] = False
     # run simulation and return results
     res = model.simulate(start_time=0., final_time=final_time, options=opts)
     if(exa == 'Schedule'):

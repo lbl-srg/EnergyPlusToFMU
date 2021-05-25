@@ -850,22 +850,22 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 	replace_char (_c->fmuResourceLocation, '//', '\\');
 	replace_char (_c->fmuUnzipLocation, '//', '\\');
 #endif
-
+	
 	// create content of resources folder in created output directory
 	// "\"" is to make sure that we have quotation at the end of the path for variables.cfg.
 	_c->tmpResCon=(char *)_c->functions->allocateMemory(strlen (_c->fmuResourceLocation) + strlen (VARCFG) + strlen ("\"") + 1, sizeof(char));
 	sprintf(_c->tmpResCon, "%s%s%s", _c->fmuResourceLocation, "\"", VARCFG);
-
+	
 	// create the output directory
 	retVal=create_res(_c);
 	if (retVal!=0){
 		_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Error, "error", "fmi2Instantiate: Could not create the output"
 			" directory %s. Instantiation of %s failed.\n", _c->fmuOutput, _c->instanceName);
 	}
-
+	
 	// add the end slash to the fmuOutput
 	sprintf(_c->fmuOutput, "%s%s", _c->fmuOutput, PATH_SEP);
-
+	
 	// copy the variables cfg into the output directory
 	retVal=copy_var_cfg(_c);
 	if (retVal!=0){
@@ -876,7 +876,7 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 		freeInstanceResources (_c);
 		return NULL;
 	}
-
+	
 	// change the directory to make sure that FMUs are not overwritten
 #ifdef _MSC_VER
 	retVal=_chdir(_c->fmuOutput);
@@ -890,13 +890,13 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 		freeInstanceResources (_c);
 		return NULL;
 	}
-
+	
 	// create path to xml file
 	_c->xml_file=(char *)_c->functions->allocateMemory(strlen (_c->fmuUnzipLocation) + strlen (XML_FILE) + 1, sizeof(char));
 	sprintf(_c->xml_file, "%s%s", _c->fmuUnzipLocation, XML_FILE);
 	_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2OK, "ok",
 		"fmi2Instantiate: Path to model description file is %s.\n", _c->xml_file);
-
+	
 	// get model description of the FMU
 	_c->md=parse(_c->xml_file);
 	if (!_c->md) {
@@ -906,23 +906,23 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 		freeInstanceResources (_c);
 		return NULL;
 	}
-
+	
 	// get the modelID of the FMU
 	mID = getAttributeValue((Element *)getCoSimulation(_c->md), att_modelIdentifier);
-
+	
 	// copy model ID to FMU
 	_c->mID=(char *)_c->functions->allocateMemory(strlen(mID) + 1, sizeof(char));
 	strcpy(_c->mID, mID);
 	_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2OK, "ok", "fmi2Instantiate: The FMU modelIdentifier is %s.\n", _c->mID);
-
+	
 	// get the model GUID of the FMU
 	mGUID = getAttributeValue((Element *)(_c->md), att_guid);
-
+	
 	// copy model GUID to FMU
 	_c->mGUID=(char *)_c->functions->allocateMemory(strlen (mGUID) + 1,sizeof(char));
 	strcpy(_c->mGUID, mGUID);
 	_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2OK, "ok", "fmi2Instantiate: The FMU modelGUID is %s.\n", _c->mGUID);
-
+	
 	// check whether GUIDs are consistent with modelDescription file
 	if(strcmp(fmuGUID, _c->mGUID) !=0)
 	{
@@ -932,7 +932,7 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 		freeInstanceResources (_c);
 		return NULL;
 	}
-
+	
 	// check whether the model is exported for FMI version 1.0
 	mFmiVers = extractVersion(_c->xml_file);
 	if(strcmp(mFmiVers, FMIVERSION) !=0){
@@ -944,7 +944,7 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 	}
 	_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2OK, "ok",
 		"fmi2Instantiate: Slave %s is instantiated.\n", _c->instanceName);
-
+	
 	// reset the current working directory. This is particularly important for Dymola
 	// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER
@@ -959,7 +959,7 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 		freeInstanceResources (_c);
 		return NULL;
 	}
-
+	
 	// This is required to prevent Dymola to call fmi2SetReal before the initialization
 	_c->firstCallIni=1;
 	_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2OK, "ok",
@@ -1379,11 +1379,11 @@ DllExport fmi2Status fmi2DoStep(fmi2Component c, fmi2Real currentCommunicationPo
 	// check if FMU needs to support rollback
 	if(!noSetFMUStatePriorToCurrentPoint)
 	{
-		_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Error, "error",
+		_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Warning, "warning",
 			"fmi2DoStep: noSetFMUStatePriorToCurrentPoint has been set to %d."
-			" EnergyPlus FMU does however not support the rollback option.",
+			" EnergyPlus FMU does however not support this option. The flag will be ignored.",
 			noSetFMUStatePriorToCurrentPoint);
-		return fmi2Error;
+		return fmi2Warning;
 	}
 
 	// check whether the communication step size is different from null
@@ -1512,12 +1512,10 @@ DllExport fmi2Status fmi2SetupExperiment(fmi2Component c, fmi2Boolean toleranceD
 	_c->tStopFMU = stopTime;
 
 	if (stopTimeDefined == fmi2False) {
-		_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Error, "error",
-			"fmi2SetupExperiment: The StopTimeDefined parameter is set to %d. This is not valid"
-			" for EnergyPlus FMU. EnergyPlus FMU requires the StopTimeDefined parameter to be 1 and"
-			" the simulation stop time must be set to a positive real value.\n", stopTimeDefined);
-			_c->setupExperiment = 1;
-			//return fmi2Error;
+		_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Warning, "warning",
+			"fmi2SetupExperiment: The StopTimeDefined parameter is set to %d. This is not valid."
+			" EnergyPlus FMU requires a stop time and will use the stop time %f which is provided.\n",
+			stopTimeDefined, stopTime);
 	}
 
 	if (toleranceDefined == fmi2True) {
@@ -1525,8 +1523,6 @@ DllExport fmi2Status fmi2SetupExperiment(fmi2Component c, fmi2Boolean toleranceD
 			"fmi2SetupExperiment: The toleranceDefined parameter is set to %d."
 			" However, EnergyPlus FMU won't use the tolerance %f which is provided.\n",
 			toleranceDefined, tolerance);
-			_c->setupExperiment = 1;
-			return fmi2Warning;
 	}
 	_c->setupExperiment = 1;
 	return fmi2OK;
@@ -2117,7 +2113,7 @@ DllExport fmi2Status fmi2FreeFMUstate(fmi2Component c, fmi2FMUstate* FMUstate)
 ///\param size_t *size.
 ///\return fmi2Warning if no error occured.
 ////////////////////////////////////////////////////////////////
-DllExport fmi2Status fmi2SerializedFMUstateSize(fmi2Component c,
+DllExport fmi2Status fmi2SerializedFMUstateSize(fmi2Component c, 
 	fmi2FMUstate FMUstate, size_t *size)
 {
 	ModelInstance* _c = (ModelInstance *)c;

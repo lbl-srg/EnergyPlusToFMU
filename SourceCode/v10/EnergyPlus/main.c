@@ -28,9 +28,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "util.h"
-#include "utilSocket.h"
+#include "utilSocket.h" 
 #include "defines.h"
-//#include "reader.h"
+//#include "reader.h" 
 #include <errno.h>
 #include <sys/stat.h>
 
@@ -65,7 +65,7 @@ int fmuLocCoun=0;
 #define DELTA 10
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This function deletes temporary created files.
+/// This function deletes temporary created files. 
 ///////////////////////////////////////////////////////////////////////////////
 void findFileDelete()
 {
@@ -99,11 +99,11 @@ void findFileDelete()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This function calculates the modulo of two doubles.
+/// This function calculates the modulo of two doubles. 
 ///
 ///\param a First input double.
 ///\param b Second input double.
-///\return The modulo of two doubles.
+///\return The modulo of two doubles. 
 ///////////////////////////////////////////////////////////////////////////////
 static double modulusOp(double a, double b)
 {
@@ -144,13 +144,13 @@ void addfmuInstances(ModelInstance* s){
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This function finds a file with a specific extension in a folder.
+/// This function finds a file with a specific extension in a folder. 
 /// It returns the name of the found file with its extension.
 ///
 ///\param path The path to a file.
 ///\param pattern The pattern to search.
-///\return The name of the file found with extension.
-///        Otherwise, return 1 to indicate error.
+///\return The name of the file found with extension. 
+///        Otherwise, return 1 to indicate error. 
 ///////////////////////////////////////////////////////////////////////////////
 int findNameFile(ModelInstance * _c, char* in_file, fmiString pattern)
 {
@@ -159,7 +159,7 @@ int findNameFile(ModelInstance * _c, char* in_file, fmiString pattern)
 	DIR *dirp = opendir(_c->fmuResourceLocation);
 	struct dirent entry;
 	struct dirent *dp = &entry;
-	// read directory
+	// read directory 
 	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
 		"Searching for following pattern %s\n", pattern);
 	while ((dp = readdir(dirp)))
@@ -184,14 +184,14 @@ int findNameFile(ModelInstance * _c, char* in_file, fmiString pattern)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This function finds a file with a specific extension in a folder.
+/// This function finds a file with a specific extension in a folder. 
 /// It returns the name of the found file with its extension.
 ///
 ///\param file The input file.
 ///\param path The path to a file.
 ///\param pattern The pattern to search.
-///\return The name of the file found with extension.
-///        Otherwise, return 1 to indicate error.
+///\return The name of the file found with extension. 
+///        Otherwise, return 1 to indicate error. 
 ///////////////////////////////////////////////////////////////////////////////
 int getResFile(ModelInstance *_c, fmiString pattern)
 {
@@ -298,7 +298,7 @@ int copy_var_cfg(ModelInstance *_c)
 #else
 	printf ("Cannot execute %s. The FMU export is only supported on Windows, Linux and Mac OS.\n", tmp_str);
 #endif
-	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",  
 		"Command executes to copy content of resources folder: %s\n", tmp_str);
 	retVal=system (tmp_str);
 	_c->functions.freeMemory(tmp_str);
@@ -306,7 +306,7 @@ int copy_var_cfg(ModelInstance *_c)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-/// create results folder
+/// create results folder 
 ///
 ///\param _c The FMU instance.
 ///\return 0 if no error occurred.
@@ -337,7 +337,7 @@ int removeFMUDir (ModelInstance* _c)
 	char *tmp_str;
 	// The 30 are for the additional characters in tmp_str
 	tmp_str=(char*)(_c->functions.allocateMemory(strlen(_c->fmuOutput) + 30, sizeof(char)));
-	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
 		"This is the output folder %s\n", _c->fmuOutput);
 
 #ifdef _MSC_VER
@@ -345,7 +345,7 @@ int removeFMUDir (ModelInstance* _c)
 #else
 	sprintf(tmp_str, "rm -rf %s%s%s", "\"", _c->fmuOutput, "\"");
 #endif
-	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",  
 		"This is the command to be executed to delete existing directory %s\n", tmp_str);
 	retVal=system (tmp_str);
 	_c->functions.freeMemory (tmp_str);
@@ -373,26 +373,26 @@ int start_sim(ModelInstance* _c)
 #endif
 	int retVal;
 #endif
-	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
 		"This version uses the **energyplus** command line interface to "
-		" call the EnergyPlus executable. **RunEPlus.bat** and **runenergyplus** ,"
+		" call the EnergyPlus executable. **RunEPlus.bat** and **runenergyplus** ," 
 		" which were used in earlier versions, were deprecated as of August 2015.");
 #ifdef _MSC_VER
 	fpBat=fopen("EP.bat", "w");
 	if (stat(FRUNWEAFILE, &stat_p)>=0){
 		// write the command string
-		fprintf(fpBat, "energyplus %s %s %s %s %s %s %s %s %s %s",
+		fprintf(fpBat, "energyplus %s %s %s %s %s %s %s %s %s %s", 
 			"-w", FRUNWEAFILE, "-p", _c->mID, "-s", "C", "-x", "-m",
 			"-r", _c->in_file_name);
 	}
 	else
 	{
 		// write the command string
-		fprintf(fpBat, "energyplus %s %s %s %s %s %s %s %s",
+		fprintf(fpBat, "energyplus %s %s %s %s %s %s %s %s", 
 			"-p", _c->mID, "-s", "C", "-x", "-m", "-r", _c->in_file_name);
 	}
 	fclose (fpBat);
-	_c->pid=(HANDLE)_spawnl(P_NOWAIT, "EP.bat", "EP.bat", NULL);
+	_c->pid=(HANDLE)_spawnl(P_NOWAIT, "EP.bat", "EP.bat", NULL); 
 	if (_c->pid > 0 ) {
 		return 0;
 	}
@@ -402,7 +402,7 @@ int start_sim(ModelInstance* _c)
 #else
 	if (stat (FRUNWEAFILE, &stat_p)>=0){
 		//char *const argv[]={"runenergyplus", _c->mID, FRUNWEAFILE, NULL};
-		char *const argv[]={"energyplus", "-w", FRUNWEAFILE, "-p", _c->mID,
+		char *const argv[]={"energyplus", "-w", FRUNWEAFILE, "-p", _c->mID, 
 			"-s", "C", "-x", "-m", "-r", _c->in_file_name, NULL};
 		// execute the command string
 		retVal=posix_spawnp( &_c->pid, argv[0], NULL, NULL, argv, environ);
@@ -411,7 +411,7 @@ int start_sim(ModelInstance* _c)
 	else
 	{
 		//char *const argv[]={"runenergyplus", _c->mID, NULL};
-		char *const argv[]={"energyplus", "-p", _c->mID, "-s", "C", "-x",
+		char *const argv[]={"energyplus", "-p", _c->mID, "-s", "C", "-x", 
 			"-m", "-r", _c->in_file_name, NULL};
 		// execute the command string
 		retVal=posix_spawnp( &_c->pid, argv[0], NULL, NULL, argv, environ);
@@ -432,8 +432,8 @@ int start_sim(ModelInstance* _c)
 //	case fmiOK:      return "ok";
 //	case fmiWarning: return "warning";
 //	case fmiDiscard: return "discard";
-//	case fmiError:   return "error";
-//	case fmiPending: return "pending";
+//	case fmiError:   return "error";		
+//	case fmiPending: return "pending";	
 //	default:         return "?";
 //	}
 //}
@@ -491,7 +491,7 @@ DllExport const char* fmiGetVersion()
 ///// Print formatted debug message
 /////
 /////\param _c The FMU instance.
-/////\param str1 Message to be printed for debugging
+/////\param str1 Message to be printed for debugging 
 /////\param str2 String variable to be printed for debugging
 ////////////////////////////////////////////////////////////////////////////////
 //void printfDebug(ModelInstance *_c, const char* str1, const char* str2){
@@ -508,7 +508,7 @@ DllExport const char* fmiGetVersion()
 ///\param _c The FMU instance.
 ////////////////////////////////////////////////////////////////
 void freeInstanceResources(ModelInstance* _c) {
-	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
 		"freeInstanceResources: %s will be freed.\n", _c->instanceName);
 	// free model ID
 	if (_c->mID!=NULL) _c->functions.freeMemory(_c->mID);
@@ -552,13 +552,13 @@ void freeInstanceResources(ModelInstance* _c) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This function writes the path to the fmu resource location.
+/// This function writes the path to the fmu resource location. 
 ///
 ///\param _c The FMU instance.
 ///\param path The path to the resource location.
 ///\return 0 if no error.
 ///////////////////////////////////////////////////////////////////////////////
-int getResourceLocation(ModelInstance *_c, fmiString fmuLocation)
+int getResourceLocation(ModelInstance *_c, fmiString fmuLocation)      
 {
 	char tmpResLoc[5]={0};
 	struct stat st;
@@ -567,8 +567,8 @@ int getResourceLocation(ModelInstance *_c, fmiString fmuLocation)
 	// copy first 5 characters of fmuLocation
 	strncpy (tmpResLoc, fmuLocation, 5);
 
-	// allocate memory for fmuUnzipLocation
-	_c->fmuUnzipLocation=(char *)_c->functions.allocateMemory(strlen (fmuLocation)
+	// allocate memory for fmuUnzipLocation 
+	_c->fmuUnzipLocation=(char *)_c->functions.allocateMemory(strlen (fmuLocation) 
 		+ strlen(PATH_SEP) + 1, sizeof(char));
 
 	// extract the URI information from the fmuUnzipLocation path
@@ -587,7 +587,7 @@ int getResourceLocation(ModelInstance *_c, fmiString fmuLocation)
 		if (errDir<0)
 		{
 			_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
-				"fmiInstantiateSlave: Path to fmuUnzipLocation is not %s.\n", _c->fmuUnzipLocation);
+				"fmiInstantiateSlave: Path to fmuUnzipLocation is not %s.\n", _c->fmuUnzipLocation);	
 			_c->functions.freeMemory (_c->fmuUnzipLocation);
 			_c->fmuUnzipLocation=NULL;
 			// allocate memory for fmuUnzipLocation
@@ -596,32 +596,32 @@ int getResourceLocation(ModelInstance *_c, fmiString fmuLocation)
 			strncpy(_c->fmuUnzipLocation, fmuLocation + 6, strlen(fmuLocation + 6));
 			// check whether fmuUnzipLocation exists
 			errDir=stat(_c->fmuUnzipLocation, &st);
-			if(errDir<0)
+			if(errDir<0) 
 			{
 				_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
-					"fmiInstantiateSlave: Path to fmuUnzipLocation is not %s.\n", _c->fmuUnzipLocation);
+					"fmiInstantiateSlave: Path to fmuUnzipLocation is not %s.\n", _c->fmuUnzipLocation);	
 				_c->functions.freeMemory(_c->fmuUnzipLocation);
 				_c->fmuUnzipLocation=NULL;
-				// allocate memory for fmuUnzipLocation
+				// allocate memory for fmuUnzipLocation 
 				_c->fmuUnzipLocation=(char *)_c->functions.allocateMemory(strlen (fmuLocation) + 1, sizeof(char));
 				// case file://
 				strncpy(_c->fmuUnzipLocation, fmuLocation + 7, strlen(fmuLocation + 7));
 
 				// check whether fmuUnzipLocation exists
 				errDir=stat(_c->fmuUnzipLocation, &st);
-				if(errDir<0)
+				if(errDir<0) 
 				{
 					_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
-						"fmiInstantiateSlave: Path to fmuUnzipLocation is not %s.\n", _c->fmuUnzipLocation);
+						"fmiInstantiateSlave: Path to fmuUnzipLocation is not %s.\n", _c->fmuUnzipLocation);	
 					_c->functions.freeMemory(_c->fmuUnzipLocation);
 					_c->fmuUnzipLocation=NULL;
-					// allocate memory for fmuUnzipLocation
+					// allocate memory for fmuUnzipLocation 
 					_c->fmuUnzipLocation=(char *)_c->functions.allocateMemory(strlen (fmuLocation) + 1, sizeof(char));
 					// case file:///
 					strncpy(_c->fmuUnzipLocation, fmuLocation + 8, strlen(fmuLocation + 8));
 					// check whether fmuUnzipLocation exists
 					errDir=stat(_c->fmuUnzipLocation, &st);
-					if(errDir<0)
+					if(errDir<0) 
 					{
 						_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiInstantiateSlave: The path to the unzipped"
 							" folder %s is not valid. The path does not start with file: file:/, file:// or file:///\n", fmuLocation);
@@ -639,8 +639,8 @@ int getResourceLocation(ModelInstance *_c, fmiString fmuLocation)
 	else if ((strncasecmp (tmpResLoc, "ftp", 3)==0) || (strncasecmp (tmpResLoc, "fmi", 3)==0))
 #endif
 	{
-		strncpy(_c->fmuUnzipLocation, fmuLocation + 6, strlen(fmuLocation + 6));
-		_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+		strncpy(_c->fmuUnzipLocation, fmuLocation + 6, strlen(fmuLocation + 6));		
+		_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
 			"fmiInstantiateSlave: Path to fmuUnzipLocation without ftp:// or fmi:// %s\n", _c->fmuUnzipLocation);
 	}
 
@@ -651,20 +651,20 @@ int getResourceLocation(ModelInstance *_c, fmiString fmuLocation)
 #endif
 	{
 		strncpy(_c->fmuUnzipLocation, fmuLocation + 8, strlen(fmuLocation + 8));
-		_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+		_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
 			"fmiInstantiateSlave: Path to fmuUnzipLocation without https:// %s\n", _c->fmuUnzipLocation);
 	}
 	else
 	{
 		strcpy(_c->fmuUnzipLocation, fmuLocation);
-		_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+		_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
 			"fmiInstantiateSlave: Path to fmuUnzipLocation %s\n", _c->fmuUnzipLocation);
 	}
 	// Add back slash so we can copy files to the fmuUnzipLocation folder afterwards
 	sprintf(_c->fmuUnzipLocation, "%s%s", _c->fmuUnzipLocation, PATH_SEP);
 
 	// allocate memory for fmuResourceLocation
-	_c->fmuResourceLocation=(char *)_c->functions.allocateMemory(strlen (_c->fmuUnzipLocation)
+	_c->fmuResourceLocation=(char *)_c->functions.allocateMemory(strlen (_c->fmuUnzipLocation) 
 		+ strlen (RESOURCES) + strlen(PATH_SEP) + 1, sizeof(char));
 	sprintf(_c->fmuResourceLocation, "%s%s%s", _c->fmuUnzipLocation, RESOURCES, PATH_SEP);
 	return 0;
@@ -750,24 +750,24 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	}
 
 	// create the output folder for current FMU in working directory
-	_c->fmuOutput=(char *)_c->functions.allocateMemory(strlen ("Output_EPExport_") + strlen (_c->instanceName)
+	_c->fmuOutput=(char *)_c->functions.allocateMemory(strlen ("Output_EPExport_") + strlen (_c->instanceName) 
 		+ strlen (_c->cwd) + 5, sizeof(char));
 	sprintf(_c->fmuOutput, "%s%s%s%s", _c->cwd, PATH_SEP, "Output_EPExport_", _c->instanceName);
 
-	// check if directory exists and deletes it
+	// check if directory exists and deletes it 
 	errDir=stat(_c->fmuOutput, &st);
 	if(errDir>=0) {
 		_c->functions.logger(NULL, _c->instanceName, fmiWarning, "warning",
 			"fmiInstantiate: The fmuOutput directory %s exists. It will now be deleted.\n", _c->fmuOutput);
 		if(removeFMUDir (_c)!=0){
 			_c->functions.logger(NULL, _c->instanceName, fmiWarning, "warning",
-				"fmiInstantiate: The fmuOutput directory %s could not be deleted\n", _c->fmuOutput);
+				"fmiInstantiate: The fmuOutput directory %s could not be deleted\n", _c->fmuOutput); 
 		}
 	}
 
 	// check whether the path to the resource folder has been provided
 	// note that in FMI 1.0 the resource location (fmuLocation) is actaully the folder where
-	// the FMU has been unzipped whereas in 2.0, the resource location is the folder
+	// the FMU has been unzipped whereas in 2.0, the resource location is the folder 
 	// where the resource files are. So it is important to know this to avoid
 	// looking for files in the wrong location.
 	if((fmuLocation==NULL) || (strlen(fmuLocation)==0)) {
@@ -837,7 +837,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// create path to xml file
 	_c->xml_file=(char *)_c->functions.allocateMemory(strlen (_c->fmuUnzipLocation) + strlen (XML_FILE) + 1, sizeof(char));
 	sprintf(_c->xml_file, "%s%s", _c->fmuUnzipLocation, XML_FILE);
-	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
 		"fmiInstantiateSlave: Path to model description file is %s.\n", _c->xml_file);
 
 	// get model description of the FMU
@@ -868,7 +868,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	// check whether GUIDs are consistent with modelDescription file
 	if(strcmp(fmuGUID, _c->mGUID) !=0)
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "error",
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", 
 			" fmiInstantiateSlave: Wrong GUID %s. Expected %s. Instantiation of %s failed.\n", fmuGUID, _c->mGUID, _c->instanceName);
 		// Free resources allocated to instance.
 		freeInstanceResources (_c);
@@ -884,7 +884,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 		freeInstanceResources (_c);
 		return NULL;
 	}
-	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
 		"fmiInstantiateSlave: Slave %s is instantiated.\n", _c->instanceName);
 	// reset the current working directory. This is particularly important for Dymola
 	// otherwise Dymola will write results at wrong place
@@ -902,9 +902,9 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString instanceName,
 	}
 	// This is required to prevent Dymola to call fmiSetReal before the initialization
 	_c->firstCallIni=1;
-	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",
+	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok", 
 		"fmiInstantiateSlave: Instantiation of %s succeded.\n", _c->instanceName);
-	return(_c);
+	return(_c); 
 }
 
 ////////////////////////////////////////////////////////////////
@@ -947,7 +947,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 
 #ifndef _MSC_VER
 	mode_t process_mask=umask(0);
-#endif
+#endif 
 
 	// save start of the simulation time step
 	_c->tStartFMU=tStart;
@@ -976,10 +976,10 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	_c->numOutVar=-1;
 
 	if (StopTimeDefined==fmiFalse){
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", 
+		_c->functions.logger(NULL, _c->instanceName, fmiWarning, "warning", 
 			"fmiInitializeSlave: The StopTimeDefined parameter is set to %d. This is not valid."
-      " EnergyPlus FMU requires a stop time.\n", StopTimeDefined);
-			return fmiError;
+                        " EnergyPlus FMU requires a stop time and will use the stop time %f which is provided.\n", 
+                        StopTimeDefined, tStop);
 	}
 
 	// change the directory to make sure that FMUs are not overwritten
@@ -989,7 +989,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	retVal=chdir(_c->fmuOutput);
 #endif
 	if (retVal!=0){
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "error",
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", 
 			"fmiInitializeSlave: The path to the output folder %s is not valid.\n", _c->fmuOutput);
 		return fmiError;
 	}
@@ -1000,7 +1000,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	// initialize winsock  /************* Windows specific code ********/
 	if (WSAStartup(wVersionRequested, &wsaData)!=0)
 	{
-		_c->functions.logger(NULL, _c->instanceName , fmiError,
+		_c->functions.logger(NULL, _c->instanceName , fmiError, 
 			"error", "fmiInitializeSlave: WSAStartup failed with error %ld.\n", WSAGetLastError());
 		WSACleanup();
 		return fmiError;
@@ -1008,7 +1008,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	// check if the version is supported
 	if (LOBYTE(wsaData.wVersion)!=2 || HIBYTE(wsaData.wVersion)!=2 )
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError,
+		_c->functions.logger(NULL, _c->instanceName, fmiError, 
 			"error", "fmiInitializeSlave: Could not find a usable WinSock DLL for WinSock version %u.%u.\n",
 			LOBYTE(wsaData.wVersion), HIBYTE(wsaData.		wVersion));
 		WSACleanup();
@@ -1020,7 +1020,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	// check for errors to ensure that the socket is a valid socket.
 	if (_c->sockfd==INVALID_SOCKET)
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError,
+		_c->functions.logger(NULL, _c->instanceName, fmiError, 
 			"error", "fmiInitializeSlave: Opening socket failed"
 			" sockfd=%d.\n", _c->sockfd);
 		return fmiError;
@@ -1035,7 +1035,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	// bind the socket
 	if (bind(_c->sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr))==SOCKET_ERROR)
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError,
+		_c->functions.logger(NULL, _c->instanceName, fmiError, 
 			"error", "fmiInitializeSlave: bind() failed.\n");
 		closeipcFMU (&(_c->sockfd));
 		return fmiError;
@@ -1056,7 +1056,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	// get the hostname information
 	gethostname(ThisHost, MAXHOSTNAME);
 	if  ((hp=gethostbyname(ThisHost))==NULL ) {
-		_c->functions.logger(NULL,  _c->instanceName, fmiError,
+		_c->functions.logger(NULL,  _c->instanceName, fmiError, 
 			"error", "fmiInitializeSlave: Get host by name failed.\n");
 		return fmiError;
 	}
@@ -1065,7 +1065,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	retVal=write_socket_cfg (_c, port_num, ThisHost);
 	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",  "fmiInitializeSlave: This hostname is %s.\n", ThisHost);
 	if  (retVal !=0) {
-		_c->functions.logger(NULL,  _c->instanceName, fmiError,
+		_c->functions.logger(NULL,  _c->instanceName, fmiError, 
 			"error", "fmiInitializeSlave: Write socket cfg failed.\n");
 		return fmiError;
 	}
@@ -1097,13 +1097,13 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",  "fmiInitializeSlave: The number of output variables is %d.\n", _c->numOutVar);
 
 	if ( (_c->numInVar + _c->numOutVar)==0){
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "error",
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", 
 			"fmiInitializeSlave: The FMU instance %s has no input and output variables. Please check the model description file.\n",
 			_c->instanceName);
 		return fmiError;
 	}
 	// create the input and weather file for the run
-	// Need to see how we will parste the start and stop time so
+	// Need to see how we will parste the start and stop time so 
 	// they become strings and can be used by str when calling the system command.
 
 	// get input file from the folder. There must be only one input file in the folder.
@@ -1144,7 +1144,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	sprintf(tStopFMUstr, "%f", _c->tStopFMU);
 
 	//retVal=createRunInfile(_c);
-
+	
 #ifdef _MSC_VER
 	strcpy(command, "idf-to-fmu-export-prep-win.exe");
 #elif __linux__
@@ -1189,7 +1189,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		}
 		_c->functions.freeMemory(cmdstrEXE);
 #endif
-		tmpstr = (char *)_c->functions.allocateMemory(strlen(cmdstr) +
+		tmpstr = (char *)_c->functions.allocateMemory(strlen(cmdstr) + 
 			strlen(_c->idd_file) + strlen(_c->in_file) + strlen(tStartFMUstr) + strlen(tStopFMUstr) + 50, sizeof(char));
 		sprintf(tmpstr, "%s -b %s -e %s %s %s", cmdstr, tStartFMUstr, tStopFMUstr, _c->idd_file, _c->in_file);
 		retVal = system(tmpstr);
@@ -1222,15 +1222,15 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 		fclose (fp);
 		// check if the timeStepIDF is null to avoid division by zero
 		if (_c->timeStepIDF==0){
-			_c->functions.logger(NULL, _c->instanceName, fmiError, "error",
+			_c->functions.logger(NULL, _c->instanceName, fmiError, "error", 
 				"fmiInitializeSlave: The time step in IDF cannot be null.\n");
 			_c->functions.logger(NULL, _c->instanceName, fmiError, "error",   "fmiInitializeSlave: Time step in IDF is null.\n");
 			return fmiError;
-		}
+		}	
 	}
 	else
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "error",
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", 
 			"fmiInitializeSlave: A valid time step could not be determined.\n");
 		_c->functions.logger(NULL, _c->instanceName, fmiError, "error",   "fmiInitializeSlave: Can't read time step file.\n");
 		return fmiError;
@@ -1245,15 +1245,15 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	_c->functions.logger(NULL, _c->instanceName, fmiOK, "ok",  "fmiInitializeSlave: The connection has been accepted.\n");
 	// check whether the simulation could start successfully
 	if  (retVal !=0) {
-		_c->functions.logger(NULL, _c->instanceName, fmiError,
+		_c->functions.logger(NULL, _c->instanceName, fmiError, 
 			"error", "fmiInitializeSlave: The FMU instance could %s not be initialized. "
-			"EnergyPlus can't start . Check if EnergyPlus is installed and on the system path.\n",
+			"EnergyPlus can't start . Check if EnergyPlus is installed and on the system path.\n", 
 			_c->instanceName);
 		return fmiError;
 	}
 
 	// reset firstCallIni
-	if (_c->firstCallIni)
+	if (_c->firstCallIni) 
 	{
 		_c->firstCallIni=0;
 	}
@@ -1266,7 +1266,7 @@ DllExport fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal tStart, fmiBoolea
 	retVal=chdir(_c->cwd);
 #endif
 	return fmiOK;
-}
+} 
 
 ////////////////////////////////////////////////////////////////
 ///  This method is used to do the time stepping the FMU
@@ -1294,10 +1294,10 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	}
 
 	// check for the first communication instant
-	if (_c->firstCallDoStep && (fabs(_c->curComm -
+	if (_c->firstCallDoStep && (fabs(_c->curComm - 
 		_c->tStartFMU) > 1e-10))
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "error",
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", 
 			"fmiDoStep: An error occured in a previous call. First communication time: %f !=tStart: %f.\n",
 			_c->curComm, _c->tStartFMU);
 		return fmiError;
@@ -1305,7 +1305,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	// check if FMU needs to reject time step
 	if(!newStep)
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "error",
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "error", 
 			"fmiDoStep: FMU can not reject time steps.");
 		return fmiError;
 	}
@@ -1313,7 +1313,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	// check whether the communication step size is different from null
 	if (_c->communicationStepSize==0)
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError,
+		_c->functions.logger(NULL, _c->instanceName, fmiError, 
 			"error", "fmiDoStep: An error occured in a previous call. CommunicationStepSize cannot be null.\n");
 		return fmiError;
 	}
@@ -1328,7 +1328,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	}
 
 	// check whether communication point is valid
-	if ((_c->curComm) < 0 || ((_c->firstCallDoStep==0)
+	if ((_c->curComm) < 0 || ((_c->firstCallDoStep==0) 
 		&& (_c->curComm > _c->nexComm))){
 			_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiDoStep:"
 				" An error occured in a previous call. Communication point must be positive and monoton increasing.\n");
@@ -1342,7 +1342,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error", "fmiDoStep: "
 			"Current communication point: %f is not equals to the previous simulation time + "
 			"communicationStepSize: %f + %f.\n",
-			_c->curComm, _c->nexComm,
+			_c->curComm, _c->nexComm, 
 			_c->communicationStepSize);
 		return fmiError;
 	}
@@ -1350,9 +1350,9 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	// check end of simulation
 	if (_c->curComm==_c->tStopFMU){
 		// set the communication flags to 1 to send stop signal to EnergyPlus
-		_c->functions.logger(NULL, _c->instanceName, fmiWarning,
+		_c->functions.logger(NULL, _c->instanceName, fmiWarning, 
 			"Warning", "fmiDoStep: Current communication point: %f of FMU instance: %s "
-			"is equals to end of simulation: %f.\n",
+			"is equals to end of simulation: %f.\n", 
 			_c->curComm, _c->instanceName, _c->tStopFMU);
 		return fmiWarning;
 	}
@@ -1361,18 +1361,18 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	if (_c->curComm > _c->tStopFMU){
 		// set the communication flags to 1 to send stop signal to EnergyPlus
 		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error", "fmiDoStep:"
-			" Current communication point: %f is larger than end of simulation time: %f.\n",
+			" Current communication point: %f is larger than end of simulation time: %f.\n", 
 			_c->curComm, _c->tStopFMU);
 		return fmiError;
 	}
 	// check end of simulation
-	if (_c->curComm +
+	if (_c->curComm + 
 		_c->communicationStepSize > _c->tStopFMU){
 			// set the communication flags to 1 to send stop signal to EnergyPlus
 			_c->functions.logger(NULL, _c->instanceName, fmiError, "error", "fmiDoStep: "
 				"Current communication point: %f  + communicationStepsize: %f  is larger than "
-				"end of simulation time: %f.\n",
-				_c->curComm, _c->communicationStepSize,
+				"end of simulation time: %f.\n", 
+				_c->curComm, _c->communicationStepSize,  
 				_c->tStopFMU);
 			return fmiError;
 	}
@@ -1380,15 +1380,15 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	// check whether all input and outputs are available and then do the time stepping
 	if (_c->firstCallDoStep
 		||
-		(_c->firstCallDoStep==0)
-		&& _c->curComm <=(_c->tStopFMU -
+		(_c->firstCallDoStep==0) 
+		&& _c->curComm <=(_c->tStopFMU - 
 		_c->communicationStepSize)) {
 			if (_c->flaWri !=1){
 				_c->flaGetRea=1;
 				if (_c->flaGetRealCall==0)
 				{
 					retVal=readfromsocketFMU(&(_c->newsockfd), &(_c->flaRea),
-						&(_c->numOutVar), &zI, &zI, &(_c->simTimRec),
+						&(_c->numOutVar), &zI, &zI, &(_c->simTimRec), 
 						_c->outVec, NULL, NULL);
 				}
 				retVal=writetosocketFMU(&(_c->newsockfd), &(_c->flaWri),
@@ -1407,15 +1407,15 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 	}
 
 	// calculate next communication point
-	_c->nexComm=_c->curComm
+	_c->nexComm=_c->curComm 
 		+ _c->communicationStepSize;
 	// set the firstcall flag to zero
 	if (_c->firstCallDoStep)
 	{
 		_c->firstCallDoStep=0;
-	}
+	}		
 	return fmiOK;
-}
+}  
 
 ////////////////////////////////////////////////////////////////
 ///  This method is used to cancel a step in the FMU
@@ -1426,7 +1426,7 @@ DllExport fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint,
 DllExport fmiStatus fmiCancelStep(fmiComponent c)
 {
 	ModelInstance* _c=(ModelInstance *)c;
-	_c->functions.logger(NULL, _c->instanceName, fmiWarning,
+	_c->functions.logger(NULL, _c->instanceName, fmiWarning, 
 		"Warning", "fmiCancelStep: The function fmiCancelStep: is not provided.\n");
 	return fmiWarning;
 }
@@ -1440,7 +1440,7 @@ DllExport fmiStatus fmiCancelStep(fmiComponent c)
 DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 {
 		ModelInstance* _c=(ModelInstance *)c;
-		_c->functions.logger(NULL, _c->instanceName, fmiOK,
+		_c->functions.logger(NULL, _c->instanceName, fmiOK, 
 		"ok", "fmiTerminateSlave: fmiFreeInstanceSlave must be called to free the FMU instance.\n");
 		return fmiOK;
 }
@@ -1454,7 +1454,7 @@ DllExport fmiStatus fmiTerminateSlave(fmiComponent c)
 DllExport fmiStatus fmiResetSlave(fmiComponent c)
 {
 	ModelInstance* _c=(ModelInstance *)c;
-	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning",
+	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiResetSlave: fmiResetSlave:: is not provided.\n");
 	return fmiOK;
 }
@@ -1479,15 +1479,15 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 #else
 		retVal=chdir(_c->fmuOutput);
 #endif
-		_c->functions.logger(NULL, _c->instanceName, fmiOK,
-		"ok", "fmiFreeSlaveInstance: The function fmiFreeSlaveInstance of instance %s is executed.\n",
+		_c->functions.logger(NULL, _c->instanceName, fmiOK, 
+		"ok", "fmiFreeSlaveInstance: The function fmiFreeSlaveInstance of instance %s is executed.\n", 
 		_c->instanceName);
 		// send end of simulation flag
 		_c->flaWri=1;
 		_c->flaRea=1;
-		retVal=exchangedoubleswithsocketFMUex (&(_c->newsockfd), &(_c->flaWri),
-			&(_c->flaRea), &(_c->numOutVar), &(_c->numInVar),
-			&(_c->simTimRec), _c->outVec, &(_c->simTimSen),
+		retVal=exchangedoubleswithsocketFMUex (&(_c->newsockfd), &(_c->flaWri), 
+			&(_c->flaRea), &(_c->numOutVar), &(_c->numInVar), 
+			&(_c->simTimRec), _c->outVec, &(_c->simTimSen), 
 			_c->inVec);
 		// close socket
 		closeipcFMU(&(_c->sockfd));
@@ -1535,7 +1535,7 @@ DllExport void fmiFreeSlaveInstance(fmiComponent c)
 DllExport fmiStatus fmiSetDebugLogging (fmiComponent c, fmiBoolean loggingOn)
 {
 	ModelInstance* _c=(ModelInstance *)c;
-	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning",
+	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiSetDebugLogging: fmiSetDebugLogging(): fmiSetDebugLogging is not provided.\n");
 	return fmiOK;
 }
@@ -1568,10 +1568,10 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
 				for (k=0; vars[k]; k++) {
 					ScalarVariable* svTemp=vars [k];
 					if (getAlias(svTemp)!=enu_noAlias) continue;
-					if (getCausality(svTemp) !=enu_input) continue;
+					if (getCausality(svTemp) !=enu_input) continue; 
 					vrTemp=getValueReference(svTemp);
 					if (vrTemp==vr[i]){
-						_c->inVec[vr[i]-1]=value[i];
+						_c->inVec[vr[i]-1]=value[i]; 
 						_c->setCounter++;
 					}
 				}
@@ -1603,7 +1603,7 @@ DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], 
 	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error",
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error", 
 			"fmiSetInteger: fmiSetInteger: was called. The FMU does not contain integer variables to set.\n");
 		return fmiError;
 	}
@@ -1624,7 +1624,7 @@ DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], 
 	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error",
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error", 
 			"fmiSetBoolean: fmiSetBoolean: was called. The FMU does not contain boolean variables to set.\n");
 		return fmiError;
 	}
@@ -1645,7 +1645,7 @@ DllExport fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], s
 	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError,
+		_c->functions.logger(NULL, _c->instanceName, fmiError, 
 			"Error", "fmiSetString: fmiSetString: was called. The FMU does not contain string variables to set.\n");
 		return fmiError;
 	}
@@ -1674,11 +1674,11 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 		vars=_c->md->modelVariables;
 		_c->flaGetRealCall=1;
 
-		if (_c->firstCallGetReal||((_c->firstCallGetReal==0)
+		if (_c->firstCallGetReal||((_c->firstCallGetReal==0) 
 			&& (_c->flaGetRea)))  {
 				// read the values from the server
 				retVal=readfromsocketFMU(&(_c->newsockfd), &(_c->flaRea),
-					&(_c->numOutVar), &zI, &zI, &(_c->simTimRec),
+					&(_c->numOutVar), &zI, &zI, &(_c->simTimRec), 
 					_c->outVec, NULL, NULL);
 				// reset flaGetRea
 				_c->flaGetRea=0;
@@ -1690,7 +1690,7 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 				for (k=0; vars[k]; k++) {
 					ScalarVariable* svTemp=vars [k];
 					if (getAlias(svTemp)!=enu_noAlias) continue;
-					if (getCausality(svTemp) !=enu_output) continue;
+					if (getCausality(svTemp) !=enu_output) continue; 
 					vrTemp=getValueReference(svTemp);
 					if (vrTemp==vr[i]){
 						value[i]=_c->outVec[vr[i]-100001];
@@ -1702,7 +1702,7 @@ DllExport fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], siz
 			{
 				_c->readReady=1;
 			}
-		}
+		} 
 		if(_c->firstCallGetReal)
 		{
 			_c->firstCallGetReal=0;
@@ -1726,7 +1726,7 @@ DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], 
 	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error",
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error", 
 			"fmiGetInteger: fmiGetInteger: was called. The FMU does not contain integer variables to get.\n");
 		return fmiError;
 	}
@@ -1747,7 +1747,7 @@ DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], 
 	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error",
+		_c->functions.logger(NULL, _c->instanceName, fmiError, "Error", 
 			"fmiGetBoolean: fmiGetBoolean: was called. The FMU does not contain boolean variables to get.\n");
 		return fmiError;
 	}
@@ -1768,7 +1768,7 @@ DllExport fmiStatus fmiGetString (fmiComponent c, const fmiValueReference vr[], 
 	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
-		_c->functions.logger(NULL, _c->instanceName, fmiError,
+		_c->functions.logger(NULL, _c->instanceName, fmiError, 
 			"Error", "fmiGetString: fmiGetString: was called. The FMU does not contain string variables to get.\n");
 		return fmiError;
 	}
@@ -1786,11 +1786,11 @@ DllExport fmiStatus fmiGetString (fmiComponent c, const fmiValueReference vr[], 
 ///\param value The values of variables to get.
 ///\return fmiWarning if no error occurred.
 ////////////////////////////////////////////////////////////////
-DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr,
+DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, 
 	const fmiInteger order[], fmiReal value[])
 {
 	ModelInstance* _c=(ModelInstance *)c;
-	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning",
+	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetRealOutputDerivatives: fmiGetRealOutputDerivatives: Real Output Derivatives are not provided.\n");
 	return fmiWarning;
 }
@@ -1806,11 +1806,11 @@ DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueRe
 ///\param value The values of variables to set.
 ///\return fmiWarning if no error occurred.
 ////////////////////////////////////////////////////////////////
-DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr,
+DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, 
 	const fmiInteger order[], const fmiReal value[])
 {
 	ModelInstance* _c=(ModelInstance *)c;
-	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning",
+	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiSetRealInputDerivatives: fmiSetRealInputDerivatives: Real Input Derivatives are not provided.\n");
 	return fmiWarning;
 }
@@ -1826,7 +1826,7 @@ DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueRef
 DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatus* value)
 {
 	ModelInstance* _c=(ModelInstance *)c;
-	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning",
+	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetStatus: fmiGetStatus: is not provided.\n");
 	return fmiWarning;
 }
@@ -1842,7 +1842,7 @@ DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatu
 DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiReal* value)
 {
 	ModelInstance* _c=(ModelInstance *)c;
-	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning",
+	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetRealStatus: fmiGetRealStatus: is not provided.\n");
 	return fmiWarning;
 }
@@ -1858,7 +1858,7 @@ DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiR
 DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, fmiInteger* value)
 {
 	ModelInstance* _c=(ModelInstance *)c;
-	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning",
+	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetIntegerStatus: fmiGetIntegerStatus: is not provided.\n");
 	return fmiWarning;
 }
@@ -1873,7 +1873,7 @@ DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, f
 DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, fmiBoolean* value)
 {
 	ModelInstance* _c=(ModelInstance *)c;
-	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning",
+	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetBooleanStatus: fmiGetBooleanStatus: is not provided.\n");
 	return fmiWarning;
 }
@@ -1887,9 +1887,9 @@ DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, f
 ////////////////////////////////////////////////////////////////
 
 DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, fmiString* value)
-{
+{	
 	ModelInstance* _c=(ModelInstance *)c;
-	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning",
+	_c->functions.logger(NULL, _c->instanceName, fmiWarning, "Warning", 
 		"fmiGetStringStatus: fmiGetStringStatus: is not provided.\n");
 	return fmiWarning;
 }
@@ -1899,7 +1899,7 @@ DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, f
 //	double tStart=0;               // start time
 //	double tStop=86400;               // start time
 //	const char* guid="b2bb88a46354b2a1a56ca004d67bb91a";                // global unique id of the fmu
-//	fmiComponent c;                  // instance of the fmu
+//	fmiComponent c;                  // instance of the fmu 
 //	fmiStatus fmiFlag;               // return code of the fmu functions
 //	const char* fmuLocation="file:///Z:\\linux\\proj\\fmi\\src\\svn\\fmu\\EnergyPlus\\export\\trunk\\Scripts\\_fmu_export_schedule"; // path to the fmu as URL, "file://C:\QTronic\sales"
 //	const char* mimeType="application/x-fmu-sharedlibrary"; // denotes tool in case of tool coupling
@@ -1917,7 +1917,7 @@ DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, f
 //	fmiReal valIn[1]={0};
 //	fmiReal valOut[1];
 //
-//
+//	
 //	callbacks.logger=fmuLogger;
 //	callbacks.allocateMemory=calloc;
 //	callbacks.freeMemory=free;
@@ -1951,33 +1951,33 @@ DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, f
 Copyright Notice
 ----------------
 
-Functional Mock-up Unit Export of EnergyPlus \A92013, The Regents of
-the University of California, through Lawrence Berkeley National
-Laboratory (subject to receipt of any required approvals from
+Functional Mock-up Unit Export of EnergyPlus \A92013, The Regents of 
+the University of California, through Lawrence Berkeley National 
+Laboratory (subject to receipt of any required approvals from 
 the U.S. Department of Energy). All rights reserved.
 
-If you have questions about your rights to use or distribute this software,
-please contact Berkeley Lab's Technology Transfer Department at
-TTD@lbl.gov.referring to "Functional Mock-up Unit Export
+If you have questions about your rights to use or distribute this software, 
+please contact Berkeley Lab's Technology Transfer Department at 
+TTD@lbl.gov.referring to "Functional Mock-up Unit Export 
 of EnergyPlus (LBNL Ref 2013-088)".
 
-NOTICE: This software was produced by The Regents of the
-University of California under Contract No. DE-AC02-05CH11231
+NOTICE: This software was produced by The Regents of the 
+University of California under Contract No. DE-AC02-05CH11231 
 with the Department of Energy.
 For 5 years from November 1, 2012, the Government is granted for itself
-and others acting on its behalf a nonexclusive, paid-up, irrevocable
+and others acting on its behalf a nonexclusive, paid-up, irrevocable 
 worldwide license in this data to reproduce, prepare derivative works,
 and perform publicly and display publicly, by or on behalf of the Government.
-There is provision for the possible extension of the term of this license.
+There is provision for the possible extension of the term of this license. 
 Subsequent to that period or any extension granted, the Government is granted
-for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable
-worldwide license in this data to reproduce, prepare derivative works,
-distribute copies to the public, perform publicly and display publicly,
-and to permit others to do so. The specific term of the license can be identified
-by inquiry made to Lawrence Berkeley National Laboratory or DOE. Neither
-the United States nor the United States Department of Energy, nor any of their employees,
+for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable 
+worldwide license in this data to reproduce, prepare derivative works, 
+distribute copies to the public, perform publicly and display publicly, 
+and to permit others to do so. The specific term of the license can be identified 
+by inquiry made to Lawrence Berkeley National Laboratory or DOE. Neither 
+the United States nor the United States Department of Energy, nor any of their employees, 
 makes any warranty, express or implied, or assumes any legal liability or responsibility
-for the accuracy, completeness, or usefulness of any data, apparatus, product,
+for the accuracy, completeness, or usefulness of any data, apparatus, product, 
 or process disclosed, or represents that its use would not infringe privately owned rights.
 
 
@@ -1985,43 +1985,43 @@ Copyright (c) 2013, The Regents of the University of California, Department
 of Energy contract-operators of the Lawrence Berkeley National Laboratory.
 All rights reserved.
 
-1. Redistribution and use in source and binary forms, with or without modification,
+1. Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
 
-(1) Redistributions of source code must retain the copyright notice, this list
+(1) Redistributions of source code must retain the copyright notice, this list 
 of conditions and the following disclaimer.
 
 (2) Redistributions in binary form must reproduce the copyright notice, this list
-of conditions and the following disclaimer in the documentation and/or other
+of conditions and the following disclaimer in the documentation and/or other 
 materials provided with the distribution.
 
-(3) Neither the name of the University of California, Lawrence Berkeley
-National Laboratory, U.S. Dept. of Energy nor the names of its contributors
-may be used to endorse or promote products derived from this software without
+(3) Neither the name of the University of California, Lawrence Berkeley 
+National Laboratory, U.S. Dept. of Energy nor the names of its contributors 
+may be used to endorse or promote products derived from this software without 
 specific prior written permission.
 
 2. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
 OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 POSSIBILITY OF SUCH DAMAGE.
 
-3. You are under no obligation whatsoever to provide any bug fixes, patches,
+3. You are under no obligation whatsoever to provide any bug fixes, patches, 
 or upgrades to the features, functionality or performance of the source code
 ("Enhancements") to anyone; however, if you choose to make your Enhancements
-available either publicly, or directly to Lawrence Berkeley National Laboratory,
-without imposing a separate written license agreement for such Enhancements,
-then you hereby grant the following license: a non-exclusive, royalty-free
+available either publicly, or directly to Lawrence Berkeley National Laboratory, 
+without imposing a separate written license agreement for such Enhancements, 
+then you hereby grant the following license: a non-exclusive, royalty-free 
 perpetual license to install, use, modify, prepare derivative works, incorporate
-into other computer software, distribute, and sublicense such enhancements or
+into other computer software, distribute, and sublicense such enhancements or 
 derivative works thereof, in binary and source code form.
 
-NOTE: This license corresponds to the "revised BSD" or "3-clause BSD"
+NOTE: This license corresponds to the "revised BSD" or "3-clause BSD" 
 License and includes the following modification: Paragraph 3. has been added.
 
 
