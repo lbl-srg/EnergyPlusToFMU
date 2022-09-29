@@ -513,7 +513,7 @@ DllExport const char* fmi2GetTypesPlatform()
 ///\return fmiVersion.
 ////////////////////////////////////////////////////////////////
 DllExport const char* fmi2GetVersion()
-{   // This function always returns 1.0
+{   // This function always returns 2.0
 	return FMIVERSION;
 }
 
@@ -933,11 +933,11 @@ DllExport fmi2Component fmi2Instantiate(fmi2String instanceName,
 		return NULL;
 	}
 	
-	// check whether the model is exported for FMI version 1.0
+	// check whether the model is exported for FMI version 2.0
 	mFmiVers = extractVersion(_c->xml_file);
 	if(strcmp(mFmiVers, FMIVERSION) !=0){
 		_c->functions->logger(_c->componentEnvironment, _c->instanceName, fmi2Error, "error", "fmi2Instantiate: Wrong FMI version %s."
-			" FMI version 1.0 is currently supported. Instantiation of %s failed.\n", mFmiVers, _c->instanceName);
+			" FMI version 2.0 is currently supported. Instantiation of %s failed.\n", mFmiVers, _c->instanceName);
 		// Free resources allocated to instance.
 		freeInstanceResources (_c);
 		return NULL;

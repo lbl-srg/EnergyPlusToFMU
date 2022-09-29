@@ -312,7 +312,7 @@ if __name__ == '__main__':
       currIdx += 1
       fmiVersion = sys.argv[currIdx]
       if( showDiagnostics ):
-        printDiagnostic('Setting FMI API version (1 or 2) to {' +fmiVersion +'}')
+        printDiagnostic('Setting FMI API version (1, 2, or 3) to {' +fmiVersion +'}')
     elif( currArg.startswith('-d') ):
       showDiagnostics = True
     elif( currArg.startswith('-L') ):
@@ -340,7 +340,7 @@ if __name__ == '__main__':
   if( fmiVersion is None ):
       fmiVersion = "1.0"
       printDiagnostic('FMI version is unspecified. It will be set to {' +fmiVersion +'}')
-  if not (fmiVersion in [1, 2, "1", "2", "1.0", "2.0"]):
+  if not (fmiVersion in [1, 2, 3, "1", "2", "3", "1.0", "2.0", "3.0" ]):
       quitWithError('FMI version "1" and "2" are supported, got FMI version {' +fmiVersion +'}', True)
   if (int(float(fmiVersion))==2):
       import struct

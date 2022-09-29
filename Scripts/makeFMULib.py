@@ -333,6 +333,10 @@ def makeFmuSharedLib(showDiagnostics, litter,
   # Define the version number
   if (fmiVersion == 2):
       vers = 'v20'
+  # Define the version number
+  if (fmiVersion == 2):
+      vers = 'v30'
+  # Insert model ide
   # Insert model identifier into source code files (not really needed here).
   origMainName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus/main.c')
   modMainName  = os.path.join(scriptDirName, '../SourceCode/'+vers+'/EnergyPlus', 'temp-'+modelIdSanitizedName+'.c')
@@ -371,7 +375,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
         ]:
         srcFileNameList.append(os.path.join(srcDirName, theRootName +'.c'))
 
-  if(fmiVersion==2):
+  if(fmiVersion==2 or fmiVersion==3):
       srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/fmusdk-shared')
       for theRootName in [
         'xmlVersionParser'
@@ -396,7 +400,7 @@ def makeFmuSharedLib(showDiagnostics, litter,
   #
   # Build {fmuSharedLibName}.
   incLinkerLibs = None
-  if (fmiVersion == 2):
+  if (fmiVersion == 2 or fmiVersion == 3):
       dirname, filename = os.path.split(os.path.abspath(__file__))
       import struct
       nbits=8 * struct.calcsize("P")

@@ -211,6 +211,9 @@ def makeExportPrepApp(showDiagnostics, litter, forceRebuild, fmiVersion):
   # Define the version number
   if (fmiVersion == 2):
       vers = 'v20'
+# Define the version number
+  if (fmiVersion == 3):
+      vers = 'v30'
   srcDirName = os.path.join(scriptDirName, '../SourceCode/'+vers+'/fmu-export-prep')
   for theRootName in [
     'fmu-export-write-model-desc'
