@@ -208,16 +208,16 @@ int findNameFile(ModelInstance * _c, char* in_file, fmi3String pattern)
 	struct dirent entry;
 	struct dirent *dp = &entry;
 	// read directory
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"Searching for following pattern %s\n", pattern);
 	while ((dp = readdir(dirp)))
 	{
-		_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+		logEvent(_c,
 			"Read directory and search for *.idf, *.epw, or *.idd file.\n");
 		// search pattern the filename
 		if ((strstr(dp->d_name, pattern)) != 0)
 		{
-			_c->logger(_c->componentEnvironment, fmi3OK, "ok", "Found matching file %s.\n", dp->d_name);
+			logEvent(_c, "Found matching file %s.\n", dp->d_name);
 			found++;
 			strcpy(name, dp->d_name);
 			// copy filename to be returned
@@ -241,17 +241,20 @@ int findNameFile(ModelInstance * _c, char* in_file, fmi3String pattern)
 ///\return The name of the file found with extension.
 ///        Otherwise, return 1 to indicate error.
 ///////////////////////////////////////////////////////////////////////////////
+
+void logEvent(ModelInstance* comp, const char* message, ...);
+
 int getResFile(ModelInstance *_c, fmi3String pattern)
 {
 	char in_file[MAXBUFFSIZE] = { 0 };
 	int found;
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"Get input file from resource folder %s.\n", _c->fmuResourceLocation);
 	found = findNameFile(_c, in_file, pattern);
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"done searching pattern %s\n", pattern);
 	if (found > 1){
-		_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3InstantiateCosimulation: Found more than "
+		logError(_c, "fmi3InstantiateCosimulation: Found more than "
 			" (%d) with extension %s in directory %s. This is not valid.\n", found, pattern, _c->fmuResourceLocation);
 		return 1;
 	}
@@ -273,20 +276,20 @@ int getResFile(ModelInstance *_c, fmi3String pattern)
 	else
 	{
 		if (strncmp(pattern, ".idf", 4) == 0){
-			_c->logger(_c->componentEnvironment, fmi3OK, "ok", "Input file not found.");
-			_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3InstantiateCosimulation: No file with extension"
+			logEvent(_c, "Input file not found.");
+			logError(_c, "fmi3InstantiateCosimulation: No file with extension"
 				" .idf found in the resource location %s. This is not valid.\n", _c->fmuResourceLocation);
 			return 1;
 		}
 		if (strncmp(pattern, ".idd", 4) == 0){
-			_c->logger(_c->componentEnvironment, fmi3OK, "ok", "IDD file not found.\n");
-			_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3InstantiateCosimulation: No file with extension"
+			logEvent(_c, "IDD file not found.\n");
+			logError(_c, "fmi3InstantiateCosimulation: No file with extension"
 				" .idd found in the resource location %s. This is not valid.\n", _c->fmuResourceLocation);
 			return 1;
 		}
 		if (strncmp(pattern, ".epw", 4) == 0){
-			_c->logger(_c->componentEnvironment, fmi3OK, "ok", "Weather file not found.\n");
-			_c->logger(_c->componentEnvironment, fmi3Warning, "warning", "fmi3InstantiateCosimulation: No file with extension"
+			logEvent(_c, "Weather file not found.\n");
+			logWarning(_c, "fmi3InstantiateCosimulation: No file with extension"
 				" .epw found in the resource location %s.\n", _c->fmuResourceLocation);
 			return 0;
 		}
@@ -308,7 +311,7 @@ int write_socket_cfg(ModelInstance *_c, int portNum, const char* hostName)
 	FILE *fp;
 	fp=fopen("socket.cfg", "w");
 	if (fp==NULL) {
-		_c->logger(_c->componentEnvironment, fmi3Error, "error",  "Can't open socket.cfg file.\n");
+		logError(_c,  "Can't open socket.cfg file.\n");
 		return 1;  // STL error code: File not open.
 	}
 
@@ -346,7 +349,7 @@ int copy_var_cfg(ModelInstance *_c)
 #else
 	printf ("Cannot execute %s. The FMU export is only supported on Windows, Linux and Mac OS.\n", tmp_str);
 #endif
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"Command executes to copy content of resources folder: %s\n", tmp_str);
 	retVal=system (tmp_str);
 	free(tmp_str);
@@ -385,7 +388,7 @@ int removeFMUDir (ModelInstance* _c)
 	char *tmp_str;
 	// The 30 are for the additional characters in tmp_str
 	tmp_str=(char*)(calloc(strlen(_c->fmuOutput) + 30, sizeof(char)));
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"This is the output folder %s\n", _c->fmuOutput);
 
 #ifdef _MSC_VER
@@ -393,7 +396,7 @@ int removeFMUDir (ModelInstance* _c)
 #else
 	sprintf(tmp_str, "rm -rf %s%s%s", "\"", _c->fmuOutput, "\"");
 #endif
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"This is the command to be executed to delete existing directory %s\n", tmp_str);
 	retVal=system (tmp_str);
 	free (tmp_str);
@@ -421,7 +424,7 @@ int start_sim(ModelInstance* _c)
 #endif
 	int retVal;
 #endif
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"This version uses the **energyplus** command line interface to "
 		" call the EnergyPlus executable. **RunEPlus.bat** and **runenergyplus** ,"
 		" which were used in earlier versions, were deprecated as of August 2015.");
@@ -467,54 +470,54 @@ int start_sim(ModelInstance* _c)
 	}
 #endif
 }
-
-// The methods below should be used only when testing the main program below.
-///////////////////////////////////////////////////////////////////////////////
-/// FMI status
-///
-///\param status FMI status.
-///////////////////////////////////////////////////////////////////////////////
-//#if 0
-const char* fmi3StatusToString(fmi3Status status){
-	switch (status){
-	case fmi3OK:      return "ok";
-	case fmi3Warning: return "warning";
-	case fmi3Discard: return "discard";
-	case fmi3Error:   return "error";
-	default:         return "?";
-	}
-}
-//#endif
-////
-////
+//
+//// The methods below should be used only when testing the main program below.
 /////////////////////////////////////////////////////////////////////////////////
-///// FMU logger
+///// FMI status
 /////
-/////\param c The FMU instance.
-/////\param instanceName FMI string.
 /////\param status FMI status.
-/////\param category FMI string.
-/////\param message Message to be recorded.
 /////////////////////////////////////////////////////////////////////////////////
-void fmuLogger(fmi3Instance c, fmi3String instanceName, fmi3Status status,
-	fmi3String category, fmi3String message, ...) {
-		char msg[MAX_MSG_SIZE];
-		char* copy;
-		va_list argp;
-
-		// Replace C format strings
-		va_start(argp, message);
-		vsprintf(msg, message, argp);
-
-		// Replace e.g. ## and #r12#
-		copy=strdup(msg);
-		free(copy);
-
-		// Print the final message
-		if (!instanceName) instanceName="?";
-		if (!category) category="?";
-		printf("%s %s (%s): %s\n", fmi3StatusToString(status), instanceName, category, msg);
-}
+////#if 0
+//const char* fmi3StatusToString(fmi3Status status){
+//	switch (status){
+//	case fmi3OK:      return "ok";
+//	case fmi3Warning: return "warning";
+//	case fmi3Discard: return "discard";
+//	case fmi3Error:   return "error";
+//	default:         return "?";
+//	}
+//}
+////#endif
+////
+////
+///////////////////////////////////////////////////////////////////////////////////
+/////// FMU logger
+///////
+///////\param c The FMU instance.
+///////\param instanceName FMI string.
+///////\param status FMI status.
+///////\param category FMI string.
+///////\param message Message to be recorded.
+///////////////////////////////////////////////////////////////////////////////////
+//void fmuLogger(fmi3Instance c, fmi3String instanceName, fmi3Status status,
+//	fmi3String category, fmi3String message, ...) {
+//		char msg[MAX_MSG_SIZE];
+//		char* copy;
+//		va_list argp;
+//
+//		// Replace C format strings
+//		va_start(argp, message);
+//		vsprintf(msg, message, argp);
+//
+//		// Replace e.g. ## and #r12#
+//		copy=strdup(msg);
+//		free(copy);
+//
+//		// Print the final message
+//		if (!instanceName) instanceName="?";
+//		if (!category) category="?";
+//		printf("%s %s (%s): %s\n", fmi3StatusToString(status), instanceName, category, msg);
+//}
 
 //////////////////////////////////////////////////////////////
 ///  This method is used to get the fmi types of platform
@@ -555,7 +558,7 @@ DllExport const char* fmi3GetVersion()
 ///\param _c The FMU instance.
 ////////////////////////////////////////////////////////////////
 int freeInstanceResources(ModelInstance* _c) {
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"freeInstanceResources: %s will be freed.\n", _c->instanceName);
 	// free model ID
 	if (_c->mID!=NULL) free(_c->mID);
@@ -618,9 +621,9 @@ int getResourceLocation(ModelInstance *_c, fmi3String fmuLocation)
 
 	// store the fmuResourceLocation
 	sprintf(_c->fmuResourceLocation, "%s", fmuLocation);
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"fmi3InstantiateCosimulation: Path to fmuResourceLocation %s\n", _c->fmuResourceLocation);
-	return 0;
+	//return 0;
 
 	// length of fmuUnzipLocation
 	lenUnzLoc = strlen(fmuLocation) - ((strlen(RESOURCES) + strlen(PATH_SEP)));
@@ -635,14 +638,14 @@ int getResourceLocation(ModelInstance *_c, fmi3String fmuLocation)
 	errDir=stat(_c->fmuUnzipLocation, &st);
 	if (errDir < 0)
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error, "error",
+		logError(_c,
 			"fmi3InstantiateCosimulation: Path to fmuUnzipLocation %s does not exist.\n", _c->fmuUnzipLocation);
 		free(_c->fmuUnzipLocation);
 		return 1;
 
 	}
 	else {
-		_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+		logEvent(_c,
 			"fmi3InstantiateCosimulation: Path to fmuUnzipLocation %s exists.\n", _c->fmuUnzipLocation);
 		return 0;
 	}
@@ -666,7 +669,7 @@ int getResourceLocation(ModelInstance *_c, fmi3String fmuLocation)
 //		errDir=stat(_c->fmuUnzipLocation, &st);
 //		if (errDir<0)
 //		{
-//			_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+//			logEvent(_c,
 //				"fmi3InstantiateCosimulation: Path to fmuUnzipLocation is not %s.\n", _c->fmuUnzipLocation);
 //			free (_c->fmuUnzipLocation);
 //			_c->fmuUnzipLocation=NULL;
@@ -678,7 +681,7 @@ int getResourceLocation(ModelInstance *_c, fmi3String fmuLocation)
 //			errDir=stat(_c->fmuUnzipLocation, &st);
 //			if(errDir<0)
 //			{
-//				_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+//				logEvent(_c,
 //					"fmi3InstantiateCosimulation: Path to fmuUnzipLocation is not %s.\n", _c->fmuUnzipLocation);
 //				free(_c->fmuUnzipLocation);
 //				_c->fmuUnzipLocation=NULL;
@@ -691,7 +694,7 @@ int getResourceLocation(ModelInstance *_c, fmi3String fmuLocation)
 //				errDir=stat(_c->fmuUnzipLocation, &st);
 //				if(errDir<0)
 //				{
-//					_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+//					logEvent(_c,
 //						"fmi3InstantiateCosimulation: Path to fmuUnzipLocation is not %s.\n", _c->fmuUnzipLocation);
 //					free(_c->fmuUnzipLocation);
 //					_c->fmuUnzipLocation=NULL;
@@ -703,7 +706,7 @@ int getResourceLocation(ModelInstance *_c, fmi3String fmuLocation)
 //					errDir=stat(_c->fmuUnzipLocation, &st);
 //					if(errDir<0)
 //					{
-//						_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3InstantiateCosimulation: The path to the unzipped"
+//						logError(_c, "fmi3InstantiateCosimulation: The path to the unzipped"
 //							" folder %s is not valid. The path does not start with file: file:/, file:// or file:///\n", fmuLocation);
 //						free(_c->fmuUnzipLocation);
 //						_c->fmuUnzipLocation=NULL;
@@ -720,7 +723,7 @@ int getResourceLocation(ModelInstance *_c, fmi3String fmuLocation)
 //#endif
 //	{
 //		strncpy(_c->fmuUnzipLocation, fmuLocation + 6, strlen(fmuLocation + 6)-10);
-//		_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+//		logEvent(_c,
 //			"fmi3InstantiateCosimulation: Path to fmuUnzipLocation without ftp:// or fmi:// %s\n", _c->fmuUnzipLocation);
 //	}
 //
@@ -731,19 +734,19 @@ int getResourceLocation(ModelInstance *_c, fmi3String fmuLocation)
 //#endif
 //	{
 //		strncpy(_c->fmuUnzipLocation, fmuLocation + 8, strlen(fmuLocation + 8)-10);
-//		_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+//		logEvent(_c,
 //			"fmi3InstantiateCosimulation: Path to fmuUnzipLocation without https:// %s\n", _c->fmuUnzipLocation);
 //	}
 //	else
 //	{
 //		strcpy(_c->fmuUnzipLocation, fmuLocation);
-//		_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+//		logEvent(_c,
 //			"fmi3InstantiateCosimulation: Path to fmuUnzipLocation %s\n", _c->fmuUnzipLocation);
 //	}
 //
 //	// Add back slash so we can copy files to the fmuUnzipLocation folder afterwards
 //	sprintf(_c->fmuUnzipLocation, "%s%s", _c->fmuUnzipLocation, PATH_SEP);
-//	_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+//	logEvent(_c,
 //		"fmi3InstantiateCosimulation: Path to fmuUnzipLocation %s\n", _c->fmuUnzipLocation);
 //
 //	// allocate memory for fmuResourceLocation
@@ -751,7 +754,7 @@ int getResourceLocation(ModelInstance *_c, fmi3String fmuLocation)
 //		+ strlen(RESOURCES) + strlen(PATH_SEP) + 1, sizeof(char));
 //
 //	sprintf(_c->fmuResourceLocation, "%s%s%s", _c->fmuUnzipLocation, RESOURCES, PATH_SEP);
-//	_c->logger(_c->componentEnvironment, fmi3OK, "ok",
+//	logEvent(_c,
 //		"fmi3InstantiateCosimulation: Path to fmuResourceLocation %s\n", _c->fmuResourceLocation);
 //	return 0;
 }
@@ -798,61 +801,6 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	UNUSED(nRequiredIntermediateVariables);
 
 
-	// check instance name -- fixme, check in createModelInstance for the actual implementation
-	if (!instanceName || strlen(instanceName)==0 || (strlen(instanceName) > MAX_VARNAME_LEN)) {
-		logMessage(instanceEnvironment, fmi3Error, "error",
-			"fmi3InstantiateCosimulation: Missing instance name or instance name longer than 300 characters."
-			" Instantiation of %s failed.\n", instanceName);
-		return NULL;
-	}
-	// indicate the instance name
-	logMessage(instanceEnvironment, fmi3OK, "ok",
-		"fmi3InstantiateCosimulation: The FMU instance name is %s.\n",
-		instanceName);
-
-	// check whether the path to the resource folder has been provided
-	if ((resourcePath == NULL) || (strlen(resourcePath) == 0)) {
-		logMessage(instanceEnvironment, fmi3Error, "error",
-			"fmi3InstantiateCosimulation: The path"
-			" to the folder where the FMU is unzipped is not specified. This is not valid."
-			" Instantiation of %s failed.\n", instanceName);
-		// Free resources allocated to instance.
-		//freeInstanceResources(_c);
-		return NULL;
-	}
-
-	// check if resource path of FMU is defined
-	if (!resourcePath || strlen(resourcePath) == 0) {
-		if (logMessage) {
-			logMessage(instanceEnvironment, fmi3Error, "error", 
-			"fmi3InstantiateCosimulation: Missing resource path."
-			" Instantiation of %s failed.\n", instanceName);
-		}
-		return NULL;
-	}
-	// indicate the resource path
-	logMessage(instanceEnvironment, fmi3OK, "ok",
-		"fmi3InstantiateCosimulation: The Resource location of FMU with instance name %s is %s.\n",
-		instanceName, resourcePath);
-
-	// Check the visible parameter
-	if (visible == fmi3True) {
-		logMessage(instanceEnvironment, fmi3Warning, "warning",
-			"fmi3InstantiateCosimulation: Argument visible is set to %d\n."
-			" This is not supported. visible will default to '0'.\n", visible);
-	}
-
-	visible = fmi3False;
-
-	// check the logging parameter
-	if (loggingOn == fmi3True) {
-		logMessage(instanceEnvironment, fmi3Warning, "warning",
-			"fmi3InstantiateCosimulation: Argument loggingOn is set to %d\n."
-			" This is not supported. loggingOn will default to '0'.\n", loggingOn);
-	}
-
-	loggingOn = fmi3False;
-
 	//initialize the model instance
 	ModelInstance* _c = createModelInstance(
 		(loggerType)logMessage,
@@ -863,6 +811,58 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 		resourcePath,
 		loggingOn,
 		CoSimulation);
+
+	if (!_c) {
+		logError(_c,
+			"fmi3InstantiateCosimulation: Instantiation of %s failed.\n", instanceName);
+		return NULL;
+	}
+
+
+	//// check instance name -- fixme, check in createModelInstance for the actual implementation
+	//if (!instanceName || strlen(instanceName) == 0 || (strlen(instanceName) > MAX_VARNAME_LEN)) {
+	//	logError(_c,
+	//		"fmi3InstantiateCosimulation: Missing instance name or instance name longer than 300 characters."
+	//		" Instantiation of %s failed.\n", instanceName);
+	//	return NULL;
+	//}
+	// indicate the instance name
+	logEvent(_c,
+		"fmi3InstantiateCosimulation: The FMU instance name is %s.\n",
+		instanceName);
+
+	// check whether the path to the resource folder has been provided
+	if ((resourcePath == NULL) || (strlen(resourcePath) == 0)) {
+		logError(_c, 
+			"fmi3InstantiateCosimulation: The path"
+			" to the folder where the FMU is unzipped is not specified. This is not valid."
+			" Instantiation of %s failed.\n", instanceName);
+		// Free resources allocated to instance.
+		//freeInstanceResources(_c);
+		return NULL;
+	}
+
+	// indicate the resource path
+	logEvent(_c,
+		"fmi3InstantiateCosimulation: The Resource location of FMU with instance name %s is %s.\n",
+		instanceName, resourcePath);
+
+	// Check the visible parameter
+	if (visible == fmi3True) {
+		logWarning(_c,
+			"fmi3InstantiateCosimulation: Argument visible is set to %d\n."
+			" This is not supported. visible will default to '0'.\n", visible);
+	}
+
+
+	//// check the logging parameter
+	//if (loggingOn == fmi3True) {
+	//	logWarning(_c,
+	//		"fmi3InstantiateCosimulation: Argument loggingOn is set to %d\n."
+	//		" This is not supported. loggingOn will default to '0'.\n", loggingOn);
+	//}
+
+	//loggingOn = fmi3False;
 
 
 	// Assign default values to model instance
@@ -880,7 +880,7 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	if (getcwd(_c->cwd, sizeof(_c->cwd))==NULL)
 #endif
 	{
-		logMessage(instanceEnvironment, fmi3Error, "error",
+		logError(_c,
 			"fmi3InstantiateCosimulation: Cannot get current working directory."
 			" Instantiation of %s failed.\n", _c->instanceName);
 		// Free resources allocated to instance.
@@ -889,7 +889,7 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	}
 	else
 	{
-		logMessage(instanceEnvironment, fmi3OK, "ok", "The current working directory is %s\n", _c->cwd);
+		logEvent(_c, "The current working directory is %s\n", _c->cwd);
 	}
 
 	// create the output folder for current FMU in working directory
@@ -900,10 +900,10 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	// check if directory exists and deletes it
 	errDir=stat(_c->fmuOutput, &st);
 	if(errDir>=0) {
-		logMessage(instanceEnvironment, fmi3Warning, "warning",
+		logWarning(_c,
 			"fmi3InstantiateCosimulation: The fmuOutput directory %s exists. It will now be deleted.\n", _c->fmuOutput);
 		if(removeFMUDir (_c)!=0){
-			logMessage(instanceEnvironment, fmi3Warning, "warning",
+			logWarning(_c,
 				"fmi3InstantiateCosimulation: The fmuOutput directory %s could not be deleted\n", _c->fmuOutput);
 		}
 	}
@@ -912,8 +912,8 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	// get the FMU resource location
 	retVal=getResourceLocation (_c, resourcePath);
 	if (retVal!=0 ){
-		logMessage(instanceEnvironment, fmi3Error,
-			"error", "fmi3InstantiateCosimulation: Could not get the resource or unzip location."
+		logError(_c,
+		"fmi3InstantiateCosimulation: Could not get the resource or unzip location."
 			" Instantiation of %s failed.\n", _c->instanceName);
 		// Free resources allocated to instance.
 		freeInstanceResources (_c);
@@ -933,7 +933,7 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	// create the output directory
 	retVal=create_res(_c);
 	if (retVal!=0){
-		logMessage(instanceEnvironment, fmi3Error, "error", "fmi3InstantiateCosimulation: Could not create the output"
+		logEvent(_c, "fmi3InstantiateCosimulation: Could not create the output"
 			" directory %s. Instantiation of %s failed.\n", _c->fmuOutput, _c->instanceName);
 	}
 	
@@ -943,7 +943,7 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	// copy the variables cfg into the output directory
 	retVal=copy_var_cfg(_c);
 	if (retVal!=0){
-		logMessage(instanceEnvironment, fmi3Error, "error", "fmi3InstantiateCosimulation: Could not copy"
+		logEvent(_c, "fmi3InstantiateCosimulation: Could not copy"
 			" variables.cfg to the output directory folder %s. Instantiation of %s failed.\n", _c->cwd, _c->instanceName);
 		// Free resources allocated to instance.
 		//return NULL;
@@ -958,7 +958,7 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	retVal=chdir(_c->fmuOutput);
 #endif
 	if (retVal!=0){
-		logMessage(instanceEnvironment, fmi3Error, "error", "fmi3InstantiateCosimulation: Could not switch"
+		logEvent(_c, "fmi3InstantiateCosimulation: Could not switch"
 			" to the output folder %s. Instantiation of %s failed.\n", _c->fmuOutput, _c->instanceName);
 		// Free resources allocated to instance.
 		freeInstanceResources (_c);
@@ -968,13 +968,13 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	// create path to xml file
 	_c->xml_file=(char *)calloc(strlen (_c->fmuUnzipLocation) + strlen (XML_FILE) + 1, sizeof(char));
 	sprintf(_c->xml_file, "%s%s", _c->fmuUnzipLocation, XML_FILE);
-	logMessage(instanceEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"fmi3InstantiateCosimulation: Path to model description file is %s.\n", _c->xml_file);
 	
 	// get model description of the FMU
 	_c->md=parse(_c->xml_file);
 	if (!_c->md) {
-		logMessage(instanceEnvironment, fmi3Error, "error", "fmi3InstantiateCosimulation: Failed to parse the model description"
+		logEvent(_c, "fmi3InstantiateCosimulation: Failed to parse the model description"
 			" found in directory %s. Instantiation of %s failed\n", _c->xml_file, _c->instanceName);
 		// Free resources allocated to instance.
 		freeInstanceResources (_c);
@@ -987,20 +987,20 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	// copy model ID to FMU
 	_c->mID=(char *)calloc(strlen(mID) + 1, sizeof(char));
 	strcpy(_c->mID, mID);
-	logMessage(instanceEnvironment, fmi3OK, "ok", "fmi3InstantiateCosimulation: The FMU modelIdentifier is %s.\n", _c->mID);
+	logEvent(_c, "fmi3InstantiateCosimulation: The FMU modelIdentifier is %s.\n", _c->mID);
 	
 	// get the model instanceToken (GUID in FMI 2.0) of the FMU
-	mInstTok = getAttributeValue((Element *)(_c->md), att_instantiationToken);
+	mInstTok = getAttributeValue((Element *)getCoSimulation(_c->md), att_instantiationToken);
 	
 	// copy model instanceToken to FMU
 	_c->mInstTok=(char *)calloc(strlen (mInstTok) + 1,sizeof(char));
 	strcpy(_c->mInstTok, mInstTok);
-	logMessage(instanceEnvironment, fmi3OK, "ok", "fmi3InstantiateCosimulation: The FMU modelinstanceToken is %s.\n", _c->mInstTok);
+	logEvent(_c, "fmi3InstantiateCosimulation: The FMU modelinstanceToken is %s.\n", _c->mInstTok);
 	
 	// check whether instanceTokens are consistent with modelDescription file
 	if(strcmp(instantiationToken, _c->mInstTok) !=0)
 	{
-		logMessage(instanceEnvironment, fmi3Error, "error",
+		logEvent(_c,
 			" fmi3InstantiateCosimulation: Wrong instanceToken %s. Expected %s. Instantiation of %s failed.\n", instantiationToken, _c->mInstTok, _c->instanceName);
 		// Free resources allocated to instance.
 		freeInstanceResources (_c);
@@ -1010,13 +1010,13 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	// check whether the model is exported for FMI version 1.0
 	mFmiVers = extractVersion(_c->xml_file);
 	if(strcmp(mFmiVers, FMIVERSION) !=0){
-		logMessage(instanceEnvironment, fmi3Error, "error", "fmi3InstantiateCosimulation: Wrong FMI version %s."
+		logEvent(_c, "fmi3InstantiateCosimulation: Wrong FMI version %s."
 			" FMI version 3.0 is currently supported. Instantiation of %s failed.\n", mFmiVers, _c->instanceName);
 		// Free resources allocated to instance.
 		freeInstanceResources (_c);
 		return NULL;
 	}
-	logMessage(instanceEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"fmi3InstantiateCosimulation: Slave %s is instantiated.\n", _c->instanceName);
 	
 	// reset the current working directory. This is particularly important for Dymola
@@ -1027,7 +1027,7 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	retVal=chdir(_c->cwd);
 #endif
 	if (retVal!=0){
-		logMessage(instanceEnvironment, fmi3Error, "error", "fmi3InstantiateCosimulation: Could not switch to"
+		logEvent(_c, "fmi3InstantiateCosimulation: Could not switch to"
 			" the working directory folder %s. Instantiation of %s failed.\n", _c->cwd, _c->instanceName);
 		// Free resources allocated to instance.
 		freeInstanceResources (_c);
@@ -1036,7 +1036,7 @@ DllExport fmi3Instance fmi3InstantiateCosimulation(fmi3String instanceName,
 	
 	// This is required to prevent Dymola to call fmi3SetReal before the initialization
 	_c->firstCallIni=1;
-	logMessage(instanceEnvironment, fmi3OK, "ok",
+	logEvent(_c,
 		"fmi3InstantiateCosimulation: Instantiation of %s succeded.\n", _c->instanceName);
 
 	return(_c);
@@ -1096,7 +1096,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 
 	//// Check if setup experiment has been called
 	//if (_c->setupExperiment != 1) {
-	//	_c->logger(_c->componentEnvironment, fmi3Error, "error",
+	//	logError(_c,
 	//		"fmi3EnterInitializationMode: fmi3SetupExperiment must be called at least once prior "
 	//		" to calling fmi3EnterInitializationMode\n");
 	//	return fmi3Error;
@@ -1128,7 +1128,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 
 	// check the stopTimeDefined parameter
 	if (stopTimeDefined == fmi3False) {
-		_c->logger(_c->componentEnvironment, fmi3Warning, "warning",
+		logWarning(_c,
 			"fmi3EnterInitializationMode: The StopTimeDefined parameter is set to %d. This is not valid."
 			" EnergyPlus FMU requires a stop time and will use the stop time %f which is provided.\n",
 			stopTimeDefined, stopTime);
@@ -1136,7 +1136,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 
 	// check the toleranceDefined parameter
 	if (toleranceDefined == fmi3True) {
-		_c->logger(_c->componentEnvironment, fmi3Warning, "warning",
+		logWarning(_c,
 			"fmi3EnterInitializationMode: The toleranceDefined parameter is set to %d."
 			" However, EnergyPlus FMU won't use the tolerance %f which is provided.\n",
 			toleranceDefined, tolerance);
@@ -1149,7 +1149,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	retVal=chdir(_c->fmuOutput);
 #endif
 	if (retVal!=0){
-		_c->logger(_c->componentEnvironment, fmi3Error, "error",
+		logError(_c,
 			"fmi3EnterInitializationMode: The path to the output folder %s is not valid.\n", _c->fmuOutput);
 		return fmi3Error;
 	}
@@ -1160,16 +1160,16 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	// initialize winsock  /************* Windows specific code ********/
 	if (WSAStartup(wVersionRequested, &wsaData)!=0)
 	{
-		_c->logger(_c->componentEnvironment , fmi3Error,
-			"error", "fmi3EnterInitializationMode: WSAStartup failed with error %ld.\n", WSAGetLastError());
+		logError(_c,
+		"fmi3EnterInitializationMode: WSAStartup failed with error %ld.\n", WSAGetLastError());
 		WSACleanup();
 		return fmi3Error;
 	}
 	// check if the version is supported
 	if (LOBYTE(wsaData.wVersion)!=2 || HIBYTE(wsaData.wVersion)!=2 )
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error,
-			"error", "fmi3EnterInitializationMode: Could not find a usable WinSock DLL for WinSock version %u.%u.\n",
+		logError(_c,
+		"fmi3EnterInitializationMode: Could not find a usable WinSock DLL for WinSock version %u.%u.\n",
 			LOBYTE(wsaData.wVersion), HIBYTE(wsaData.		wVersion));
 		WSACleanup();
 		return fmi3Error;
@@ -1180,12 +1180,12 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	// check for errors to ensure that the socket is a valid socket.
 	if (_c->sockfd==INVALID_SOCKET)
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error,
-			"error", "fmi3EnterInitializationMode: Opening socket failed"
+		logError(_c,
+		"fmi3EnterInitializationMode: Opening socket failed"
 			" sockfd=%d.\n", _c->sockfd);
 		return fmi3Error;
 	}
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",  "fmi3EnterInitializationMode: The sockfd is %d.\n", _c->sockfd);
+	logEvent(_c, "fmi3EnterInitializationMode: The sockfd is %d.\n", _c->sockfd);
 	// initialize socket structure server address information
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family=AF_INET;                 // Address family to use
@@ -1195,8 +1195,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	// bind the socket
 	if (bind(_c->sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr))==SOCKET_ERROR)
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error,
-			"error", "fmi3EnterInitializationMode: bind() failed.\n");
+		logError(_c, "fmi3EnterInitializationMode: bind() failed.\n");
 		closeipcFMU (&(_c->sockfd));
 		return fmi3Error;
 	}
@@ -1204,39 +1203,39 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	// get socket information information
 	sockLength=sizeof(server_addr);
 	if ( getsockname (_c->sockfd, (struct sockaddr *)&server_addr, &sockLength)) {
-		_c->logger(_c->componentEnvironment, fmi3Error,
-			"error", "fmi3EnterInitializationMode: Get socket name failed.\n");
+		logError(_c,
+		"fmi3EnterInitializationMode: Get socket name failed.\n");
 		return fmi3Error;
 	}
 
 	// get the port number
 	port_num=ntohs(server_addr.sin_port);
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",  "fmi3EnterInitializationMode: The port number is %d.\n", port_num);
+	logEvent(_c, "fmi3EnterInitializationMode: The port number is %d.\n", port_num);
 
 	// get the hostname information
 	gethostname(ThisHost, MAXHOSTNAME);
 	if  ((hp=gethostbyname(ThisHost))==NULL ) {
-		_c->logger(_c->componentEnvironment, fmi3Error,
-			"error", "fmi3EnterInitializationMode: Get host by name failed.\n");
+		logError(_c,
+		"fmi3EnterInitializationMode: Get host by name failed.\n");
 		return fmi3Error;
 	}
 
 	// write socket cfg file
 	retVal=write_socket_cfg (_c, port_num, ThisHost);
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",  "fmi3EnterInitializationMode: This hostname is %s.\n", ThisHost);
+	logEvent(_c, "fmi3EnterInitializationMode: This hostname is %s.\n", ThisHost);
 	if  (retVal !=0) {
-		_c->logger(_c->componentEnvironment, fmi3Error,
-			"error", "fmi3EnterInitializationMode: Write socket cfg failed.\n");
+		logError(_c,
+		"fmi3EnterInitializationMode: Write socket cfg failed.\n");
 		return fmi3Error;
 	}
 	// listen to the port
 	if (listen(_c->sockfd, 1)==SOCKET_ERROR)
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3EnterInitializationMode: listen() failed.\n");
+		logError(_c, "fmi3EnterInitializationMode: listen() failed.\n");
 		closeipcFMU (&(_c->sockfd));
 		return fmi3Error;
 	}
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",  "fmi3EnterInitializationMode: TCPServer Server waiting for clients on port: %d.\n", port_num);
+	logEvent(_c, "fmi3EnterInitializationMode: TCPServer Server waiting for clients on port: %d.\n", port_num);
 
 	// Initialize the number of inputs and output variables
 	_c->numInVar = 0;
@@ -1250,7 +1249,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 		// initialize the input vectors
 		_c->inVec=(fmi3Float64*)calloc(_c->numInVar, sizeof(fmi3Float64));
 	}
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",  "fmi3EnterInitializationMode: The number of input variables is %d.\n", _c->numInVar);
+	logEvent(_c, "fmi3EnterInitializationMode: The number of input variables is %d.\n", _c->numInVar);
 
 	// get the number of output variables of the FMU
 	if (_c->numOutVar!=0)
@@ -1258,10 +1257,10 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 		// initialize the output vector
 		_c->outVec=(fmi3Float64*)calloc(_c->numOutVar, sizeof(fmi3Float64));
 	}
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",  "fmi3EnterInitializationMode: The number of output variables is %d.\n", _c->numOutVar);
+	logEvent(_c, "fmi3EnterInitializationMode: The number of output variables is %d.\n", _c->numOutVar);
 
 	if ( (_c->numInVar + _c->numOutVar)==0){
-		_c->logger(_c->componentEnvironment, fmi3Error, "error",
+		logError(_c,
 			"fmi3EnterInitializationMode: The FMU instance %s has no input and output variables. Please check the model description file.\n",
 			_c->instanceName);
 		return fmi3Error;
@@ -1273,7 +1272,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	// get input file from the folder. There must be only one input file in the folder.
 	retVal = getResFile(_c, ".idf");
 	if (retVal != 0){
-		_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3EnterInitializationMode: Could not get"
+		logError(_c, "fmi3EnterInitializationMode: Could not get"
 			" the .idf input file. Instantiation of %s failed.\n",
 			_c->instanceName);
 		return fmi3Error;
@@ -1281,7 +1280,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	// get the weather file from the folder. there must be only one weather file in the folder.
 	retVal = getResFile(_c, ".epw");
 	if (retVal != 0){
-		_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3EnterInitializationMode: Could not"
+		logError(_c, "fmi3EnterInitializationMode: Could not"
 			" get the .epw weather file. Instantiation of %s failed.\n",
 			_c->instanceName);
 		return fmi3Error;
@@ -1289,7 +1288,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	// get the idd file from the folder. there must be only one idd file in the folder.
 	retVal = getResFile(_c, ".idd");
 	if (retVal != 0){
-		_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3EnterInitializationMode: Could not"
+		logError(_c, "fmi3EnterInitializationMode: Could not"
 			" get the .idd dictionary file. Instantiation of %s failed.\n",
 			_c->instanceName);
 		return fmi3Error;
@@ -1297,7 +1296,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 
 	// Check the validity of the FMU start and stop time
 	if (modulusOp((_c->tStopFMU - _c->tStartFMU), 86400) != 0){
-		_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3EnterInitializationMode: The delta"
+		logError(_c, "fmi3EnterInitializationMode: The delta"
 			" between the FMU stop time %f and the FMU start time %f must be a multiple of 86400."
 			" This is required by EnergyPlus. The current delta is %f. Instantiation of %s failed.\n",
 			_c->tStopFMU, _c->tStartFMU, _c->tStopFMU - _c->tStartFMU, _c->instanceName);
@@ -1326,7 +1325,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 		sprintf(cmdstrEXE, "%s %s", "chmod +x", cmdstr);
 		retVal = system(cmdstrEXE);
 		if (retVal != 0){
-			_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3EnterInitializationMode: Could not"
+			logError(_c, "fmi3EnterInitializationMode: Could not"
 				" make preprocessor executable. Initialization of %s failed.\n",
 				_c->instanceName);
 			return fmi3Error;
@@ -1346,7 +1345,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 		sprintf(cmdstrEXE, "%s %s", "chmod +x", cmdstr);
 		retVal = system(cmdstrEXE);
 		if (retVal != 0){
-			_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3EnterInitializationMode: Could not"
+			logError(_c, "fmi3EnterInitializationMode: Could not"
 				" make preprocessor executable. Initialization of %s failed.\n",
 				_c->instanceName);
 			return fmi3Error;
@@ -1361,7 +1360,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	free(cmdstr);
 	free(tmpstr);
 	if (retVal != 0){
-		_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3EnterInitializationMode: Could not"
+		logError(_c, "fmi3EnterInitializationMode: Could not"
 			" create the input and weather file. Initialization of %s failed.\n",
 			_c->instanceName);
 		return fmi3Error;
@@ -1375,7 +1374,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	free(tmpstr);
 	retVal = rename(FRUNINFILE, _c->in_file_name);
 	if (retVal != 0){
-		_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3EnterInitializationMode: Could not"
+		logError(_c, "fmi3EnterInitializationMode: Could not"
 			" rename the temporary input file. Initialization of %s failed.\n",
 			_c->instanceName);
 		return fmi3Error;
@@ -1386,17 +1385,17 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 		fclose (fp);
 		// check if the timeStepIDF is null to avoid division by zero
 		if (_c->timeStepIDF==0){
-			_c->logger(_c->componentEnvironment, fmi3Error, "error",
+			logError(_c,
 				"fmi3EnterInitializationMode: The time step in IDF cannot be null.\n");
-			_c->logger(_c->componentEnvironment, fmi3Error, "error",   "fmi3EnterInitializationMode: Time step in IDF is null.\n");
+			logError(_c,   "fmi3EnterInitializationMode: Time step in IDF is null.\n");
 			return fmi3Error;
 		}
 	}
 	else
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error, "error",
+		logError(_c,
 			"fmi3EnterInitializationMode: A valid time step could not be determined.\n");
-		_c->logger(_c->componentEnvironment, fmi3Error, "error",   "fmi3EnterInitializationMode: Can't read time step file.\n");
+		logError(_c,   "fmi3EnterInitializationMode: Can't read time step file.\n");
 		return fmi3Error;
 	}
 
@@ -1406,11 +1405,11 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	// start the simulation
 	retVal=start_sim(_c);
 	_c->newsockfd=accept(_c->sockfd, NULL, NULL);
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",  "fmi3EnterInitializationMode: The connection has been accepted.\n");
+	logEvent(_c, "fmi3EnterInitializationMode: The connection has been accepted.\n");
 	// check whether the simulation could start successfully
 	if  (retVal !=0) {
-		_c->logger(_c->componentEnvironment, fmi3Error,
-			"error", "fmi3EnterInitializationMode: The FMU instance could %s not be initialized. "
+		logError(_c,
+		"fmi3EnterInitializationMode: The FMU instance could %s not be initialized. "
 			"EnergyPlus can't start . Check if EnergyPlus is installed and on the system path.\n",
 			_c->instanceName);
 		return fmi3Error;
@@ -1421,7 +1420,7 @@ DllExport fmi3Status fmi3EnterInitializationMode(fmi3Instance c,
 	{
 		_c->firstCallIni=0;
 	}
-	_c->logger(_c->componentEnvironment, fmi3OK, "ok",  "fmi3EnterInitializationMode: Slave %s is initialized.\n", _c->instanceName);
+	logEvent(_c, "fmi3EnterInitializationMode: Slave %s is initialized.\n", _c->instanceName);
 	// reset the current working directory. This is particularly important for Dymola
 	// otherwise Dymola will write results at wrong place
 #ifdef _MSC_VER
@@ -1482,7 +1481,7 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 		// check for the first communication instant
 		if (eventHandlingNeeded)
 		{
-			_c->logger(_c->componentEnvironment, fmi3Warning, "warning",
+			logWarning(_c,
 				"fmi3DoStep: eventHandlingNeeded has been set to %d. "
 				" EnergyPlus FMU does however not support this option. The flag will be ignored..\n",
 				eventHandlingNeeded);
@@ -1491,7 +1490,7 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 
 		if (earlyReturn)
 		{
-			_c->logger(_c->componentEnvironment, fmi3Warning, "warning",
+			logWarning(_c,
 				"fmi3DoStep: earlyReturn has been set to %d. "
 				" EnergyPlus FMU does however not support this option. The flag will be ignored..\n",
 				eventHandlingNeeded);
@@ -1501,7 +1500,7 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 		// check if FMU needs to support rollback
 		if (!noSetFMUStatePriorToCurrentPoint)
 		{
-			_c->logger(_c->componentEnvironment, fmi3Warning, "warning",
+			logWarning(_c,
 				"fmi3DoStep: noSetFMUStatePriorToCurrentPoint has been set to %d."
 				" EnergyPlus FMU does however not support this option. The flag will be ignored.",
 				noSetFMUStatePriorToCurrentPoint);
@@ -1514,7 +1513,7 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 	if (_c->firstCallDoStep && (fabs(_c->curComm -
 		_c->tStartFMU) > 1e-10))
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error, "error",
+		logError(_c,
 			"fmi3DoStep: An error occured in a previous call. First communication time: %f !=tStart: %f.\n",
 			_c->curComm, _c->tStartFMU);
 		return fmi3Error;
@@ -1524,15 +1523,15 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 	// check whether the communication step size is different from null
 	if (_c->communicationStepSize==0)
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error,
-			"error", "fmi3DoStep: An error occured in a previous call. CommunicationStepSize cannot be null.\n");
+		logError(_c,
+		"fmi3DoStep: An error occured in a previous call. CommunicationStepSize cannot be null.\n");
 		return fmi3Error;
 	}
 
 	// check whether the communication step size is different from time step in input file
 	if ( fabs(_c->communicationStepSize - (3600/_c->timeStepIDF)) > 1e-10)
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3DoStep:"
+		logError(_c, "fmi3DoStep:"
 			" An error occured in a previous call. CommunicationStepSize: %f is different from time step: %d in input file.\n",
 			_c->communicationStepSize, _c->timeStepIDF);
 		return fmi3Error;
@@ -1541,7 +1540,7 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 	// check whether communication point is valid
 	if ((_c->curComm) < 0 || ((_c->firstCallDoStep==0)
 		&& (_c->curComm > _c->nexComm))){
-			_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3DoStep:"
+			logError(_c, "fmi3DoStep:"
 				" An error occured in a previous call. Communication point must be positive and monoton increasing.\n");
 			return fmi3Error;
 	}
@@ -1550,7 +1549,7 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 	if ((_c->firstCallDoStep==0)
 		&& (fabs(_c->curComm - _c->nexComm) > 1e-10))
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error, "Error", "fmi3DoStep: "
+		logError(_c, "fmi3DoStep: "
 			"Current communication point: %f is not equals to the previous simulation time + "
 			"communicationStepSize: %f + %f.\n",
 			_c->curComm, _c->nexComm,
@@ -1561,7 +1560,7 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 	// check end of simulation
 	if (_c->curComm==_c->tStopFMU){
 		// set the communication flags to 1 to send stop signal to EnergyPlus
-		_c->logger(_c->componentEnvironment, fmi3Warning,
+		logWarning(_c,
 			"Warning", "fmi3DoStep: Current communication point: %f of FMU instance: %s "
 			"is equals to end of simulation: %f.\n",
 			_c->curComm, _c->instanceName, _c->tStopFMU);
@@ -1571,7 +1570,7 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 	// check if current communication is larger than end of simulation
 	if (_c->curComm > _c->tStopFMU){
 		// set the communication flags to 1 to send stop signal to EnergyPlus
-		_c->logger(_c->componentEnvironment, fmi3Error, "Error", "fmi3DoStep:"
+		logError(_c, "fmi3DoStep:"
 			" Current communication point: %f is larger than end of simulation time: %f.\n",
 			_c->curComm, _c->tStopFMU);
 		return fmi3Error;
@@ -1580,7 +1579,7 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 	if (_c->curComm +
 		_c->communicationStepSize > _c->tStopFMU){
 			// set the communication flags to 1 to send stop signal to EnergyPlus
-			_c->logger(_c->componentEnvironment, fmi3Error, "error", "fmi3DoStep: "
+			logError(_c, "fmi3DoStep: "
 				"Current communication point: %f  + communicationStepsize: %f  is larger than "
 				"end of simulation time: %f.\n",
 				_c->curComm, _c->communicationStepSize,
@@ -1647,14 +1646,14 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 //	_c->tStopFMU = stopTime;
 //
 //	if (stopTimeDefined == fmi3False) {
-//		_c->logger(_c->componentEnvironment, fmi3Warning, "warning",
+//		logWarning(_c,
 //			"fmi3SetupExperiment: The StopTimeDefined parameter is set to %d. This is not valid."
 //			" EnergyPlus FMU requires a stop time and will use the stop time %f which is provided.\n",
 //			stopTimeDefined, stopTime);
 //	}
 //
 //	if (toleranceDefined == fmi3True) {
-//		_c->logger(_c->componentEnvironment, fmi3Warning, "warning",
+//		logWarning(_c,
 //			"fmi3SetupExperiment: The toleranceDefined parameter is set to %d."
 //			" However, EnergyPlus FMU won't use the tolerance %f which is provided.\n",
 //			toleranceDefined, tolerance);
@@ -1672,8 +1671,8 @@ DllExport fmi3Status fmi3DoStep(fmi3Instance c,
 DllExport fmi3Status fmi3Terminate(fmi3Instance c)
 {
 		ModelInstance* _c=(ModelInstance *)c;
-		_c->logger(_c->componentEnvironment, fmi3OK,
-		"ok", "fmi3Terminate: fmiFreeInstanceSlave must be called to free the FMU instance.\n");
+		logEvent(_c,
+		"fmi3Terminate: fmiFreeInstanceSlave must be called to free the FMU instance.\n");
 		return fmi3OK;
 }
 
@@ -1686,7 +1685,7 @@ DllExport fmi3Status fmi3Terminate(fmi3Instance c)
 DllExport fmi3Status fm2ResetSlave(fmi3Instance c)
 {
 	ModelInstance* _c=(ModelInstance *)c;
-	_c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	logWarning(_c,
 		"fm2ResetSlave: fm2ResetSlave:: is not provided.\n");
 	return fmi3OK;
 }
@@ -1711,8 +1710,8 @@ DllExport void fmi3FreeInstance(fmi3Instance c)
 #else
 		retVal=chdir(_c->fmuOutput);
 #endif
-		_c->logger(_c->componentEnvironment, fmi3OK,
-		"ok", "fmi3FreeInstance: The function fmi3FreeInstance of instance %s is executed.\n",
+		logEvent(_c,
+		"fmi3FreeInstance: The function fmi3FreeInstance of instance %s is executed.\n",
 		_c->instanceName);
 		// send end of simulation flag
 		_c->flaWri=1;
@@ -1826,7 +1825,7 @@ DllExport fmi3Status fmi3SetInt64(fmi3Instance c, const fmi3ValueReference vr[],
 	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		logError(_c,
 			"fmi3SetInt64: fmi3SetInt64: was called. The FMU does not contain integer variables to set.\n");
 		return fmi3Error;
 	}
@@ -1847,7 +1846,7 @@ DllExport fmi3Status fmi3SetBoolean(fmi3Instance c, const fmi3ValueReference vr[
 	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		logError(_c,
 			"fmi3SetBoolean: fmi3SetBoolean: was called. The FMU does not contain boolean variables to set.\n");
 		return fmi3Error;
 	}
@@ -1868,8 +1867,8 @@ DllExport fmi3Status fmi3SetString(fmi3Instance c, const fmi3ValueReference vr[]
 	ModelInstance* _c=(ModelInstance *)c;
 	if(nvr>0)
 	{
-		_c->logger(_c->componentEnvironment, fmi3Error,
-			"Error", "fmi3SetString: fmi3SetString: was called. The FMU does not contain string variables to set.\n");
+		logError(_c,
+		"fmi3SetString: fmi3SetString: was called. The FMU does not contain string variables to set.\n");
 		return fmi3Error;
 	}
 	return fmi3OK;
@@ -1938,6 +1937,48 @@ DllExport fmi3Status fmi3GetFloat64(fmi3Instance c, const fmi3ValueReference vr[
 	return fmi3OK;
 }
 
+////////////////////////////////////////////////////////////////
+///  This method is used to set debug logging
+///
+///\param c The FMU instance.
+///\param loggingOn The FMU loggingOn flag.
+///\param nCategories The number of categories.
+///\param categories The categories.
+///\return fmi3Warning if no error occurred.
+////////////////////////////////////////////////////////////////
+Status fmi3SetDebugLogging(ModelInstance* comp, bool loggingOn, size_t nCategories, const char* const categories[]) {
+
+	if (loggingOn) {
+		for (size_t i = 0; i < nCategories; i++) {
+			if (categories[i] == NULL) {
+				logError(comp, "Log category[%d] must not be NULL", i);
+				return Error;
+			}
+			else if (strcmp(categories[i], "logEvents") == 0) {
+				comp->logEvents = true;
+			}
+			else if (strcmp(categories[i], "logStatusError") == 0) {
+				comp->logErrors = true;
+			}
+			else if (strcmp(categories[i], "logStatusWarning") == 0) {
+				comp->logWarnings = true;
+			}
+			else {
+				logError(comp, "Log category[%d] must be one of logEvents, logStatusError, or logStatusWarning but was %s", i, categories[i]);
+				return Error;
+			}
+		}
+	}
+	else {
+		// disable logging
+		comp->logEvents = false;
+		comp->logErrors = false;
+		comp->logWarnings = false;
+	}
+
+	return OK;
+}
+
 
 /***************************************************
 Types for Common Functions (UNUSED)
@@ -1945,6 +1986,18 @@ Types for Common Functions (UNUSED)
 
 
 /* tag::Instantiate[] */
+
+////////////////////////////////////////////////////////////////
+///  This method is used to instantiated the FMU
+///
+///\param instanceName A unique identifier for the FMU instance..
+///\param instantiationToken The instantiationToken.
+///\param resourcePath The FMU resource location path.
+///\param visible The flag to executes the FMU in windowless mode.
+///\param loggingOn The flag to enable or disable debug.
+///\param instanceEnvironment A pointer that must be passed to fmi3IntermediateUpdateCallback
+///\param logMessage The callback function to log messages
+////////////////////////////////////////////////////////////////
 DllExport fmi3Instance fmi3InstantiateModelExchange(
 	fmi3String                 instanceName,
 	fmi3String                 instantiationToken,
@@ -1954,14 +2007,26 @@ DllExport fmi3Instance fmi3InstantiateModelExchange(
 	fmi3InstanceEnvironment    instanceEnvironment,
 	fmi3LogMessageCallback     logMessage) 
 {
-	logMessage(instanceName, fmi3Error, "error",
+	logMessage(instanceEnvironment, fmi3Error, "error",
 		"fmi3InstantiateModelExchange: fmi3InstantiateModelExchange has been called but "
-		" the FMU implements the Co-Simulation API."
-		" Instantiation of %s failed.\n", instanceName); /*fixme*/
+		" the FMU implements the Co-Simulation API."); 
 	return NULL;
 }
 
-
+////////////////////////////////////////////////////////////////
+///  This method is used to instantiated the FMU
+///
+///\param instanceName A unique identifier for the FMU instance..
+///\param instantiationToken The instantiationToken.
+///\param resourcePath The FMU resource location path.
+///\param visible The flag to executes the FMU in windowless mode.
+///\param loggingOn The flag to enable or disable debug.
+///\param instanceEnvironment A pointer that must be passed to fmi3IntermediateUpdateCallback
+///\param logMessage The callback function to log messages
+///\param clockUpdate The callback to clock update
+///\param lockPreemption The callback to for lock preemption
+///\param unlockPreemption The callback to for unlock preemption
+////////////////////////////////////////////////////////////////
 DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	fmi3String                     instanceName,
 	fmi3String                     instantiationToken,
@@ -1974,10 +2039,9 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	fmi3LockPreemptionCallback     lockPreemption,
 	fmi3UnlockPreemptionCallback   unlockPreemption)
 {
-	logMessage(instanceName, fmi3Error, "error",
+	logMessage(instanceEnvironment, fmi3Error, "error",
 		"fmi3InstantiateModelExchange: fmi3InstantiateModelExchange has been called but "
-		" the FMU implements the Co-Simulation API."
-		" Instantiation of %s failed.\n", instanceName); /*fixme*/
+		" the FMU implements the Co-Simulation API."); /*fixme*/
 	return NULL;
 };
 /* end::Instantiate[] */
@@ -1995,8 +2059,10 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
  DllExport fmi3Status fmi3EnterEventMode(fmi3Instance c)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3EnterEventMode: fmi3EnterEventMode: is not provided.\n");
+	 return fmi3Warning;
+
  };
 /* end::EnterEventMode[] */
 
@@ -2023,7 +2089,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nValues > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3GetFloat32: fmi3GetFloat32: was called. The FMU does not contain Float32 variables to get.\n");
 		 return fmi3Error;
 	 }
@@ -2049,7 +2115,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nValues > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3GetInt8: fmi3GetInt8: was called. The FMU does not contain Int8 variables to get.\n");
 		 return fmi3Error;
 	 }
@@ -2076,7 +2142,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nValues > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3GetUInt8: fmi3GetUInt8: was called. The FMU does not contain UInt8 variables to get.\n");
 		 return fmi3Error;
 	 }
@@ -2102,7 +2168,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nValues > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3GetInt16: fmi3GetInt16: was called. The FMU does not contain Int16 variables to get.\n");
 		 return fmi3Error;
 	 }
@@ -2129,7 +2195,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nValues > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3GetUInt16: fmi3GetUInt16: was called. The FMU does not contain UInt16 variables to get.\n");
 		 return fmi3Error;
 	 }
@@ -2156,7 +2222,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nValues > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3GetInt32: fmi3GetInt32: was called. The FMU does not contain Int32 variables to get.\n");
 		 return fmi3Error;
 	 }
@@ -2182,7 +2248,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nValues > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3GetUInt32: fmi3GetUInt32: was called. The FMU does not contain UInt32 variables to get.\n");
 		 return fmi3Error;
 	 }
@@ -2209,7 +2275,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nValues > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3GetUInt64: fmi3GetUInt64: was called. The FMU does not contain UInt64 variables to get.\n");
 		 return fmi3Error;
 	 }
@@ -2237,7 +2303,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nValues > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3GetBinary: fmi3GetBinary: was called. The FMU does not contain Binary variables to get.\n");
 		 return fmi3Error;
 	 }
@@ -2263,7 +2329,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
  {
 	 ModelInstance* _c = (ModelInstance*)c;
 
-	_c->logger(_c->componentEnvironment, fmi3Warning, "warning",
+	logWarning(_c,
 		"fmi3GetClock: fmi3GetClock: was called. The FMU does not contain any Clock variables to get.\n");
 
 	 return fmi3Warning;
@@ -2292,7 +2358,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 {
 		 ModelInstance* _c = (ModelInstance*)c;
 
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3SetFloat32: fmi3SetFloat32: was called. The FMU does not contain Float32 variables to set.\n");
 		 return fmi3Error;
 	 }
@@ -2320,7 +2386,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 {
 		 ModelInstance* _c = (ModelInstance*)c;
 
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3SetInt8: fmi3SetInt8: was called. The FMU does not contain Int8 variables to set.\n");
 		 return fmi3Error;
 	 }
@@ -2347,7 +2413,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 {
 		 ModelInstance* _c = (ModelInstance*)c;
 
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3SetUInt8: fmi3SetUInt8: was called. The FMU does not contain UInt8 variables to set.\n");
 		 return fmi3Error;
 	 }
@@ -2374,7 +2440,7 @@ DllExport fmi3Instance fmi3InstantiateScheduledExecution(
 	 {
 		 ModelInstance* _c = (ModelInstance*)c;
 
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3SetInt16: fmi3SetInt16: was called. The FMU does not contain Int16 variables to set.\n");
 		 return fmi3Error;
 	 }
@@ -2401,7 +2467,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 {
 		 ModelInstance* _c = (ModelInstance*)c;
 
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3SetUInt16: fmi3SetUInt16: was called. The FMU does not contain UInt16 variables to set.\n");
 		 return fmi3Error;
 	 }
@@ -2429,7 +2495,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 {
 		 ModelInstance* _c = (ModelInstance*)c;
 
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3SetInt32: fmi3SetInt32: was called. The FMU does not contain Int32 variables to set.\n");
 		 return fmi3Error;
 	 }
@@ -2456,7 +2522,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 {
 		 ModelInstance* _c = (ModelInstance*)c;
 
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3SetUInt32: fmi3SetUInt32: was called. The FMU does not contain UInt32 variables to set.\n");
 		 return fmi3Error;
 	 }
@@ -2483,7 +2549,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 {
 		 ModelInstance* _c = (ModelInstance*)c;
 
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3SetUInt64: fmi3SetUInt64: was called. The FMU does not contain UInt64 variables to set.\n");
 		 return fmi3Error;
 	 }
@@ -2513,7 +2579,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 {
 		 ModelInstance* _c = (ModelInstance*)c;
 
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3SetBinary: fmi3SetBinary: was called. The FMU does not contain Binary variables to set.\n");
 		 return fmi3Error;
 	 }
@@ -2539,7 +2605,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
  {
 	 ModelInstance* _c = (ModelInstance*)c;
 
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "warning",
+	 logWarning(_c,
 		 "fmi3SetClock: fmi3SetClock: was called. The FMU does not contain any Clock variables to set.\n");
 
 	 return fmi3Warning;
@@ -2564,7 +2630,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                                            size_t* nDependencies)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3GetNumberOfVariableDependencies: fmi3GetNumberOfVariableDependencies:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2592,7 +2658,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                                    size_t nDependencies)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3GetVariableDependencies: fmi3GetVariableDependencies:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2625,7 +2691,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                                 size_t nSensitivity)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3GetAdjointDerivative: fmi3GetAdjointDerivative:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2643,7 +2709,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
  DllExport fmi3Status fmi3EnterConfigurationMode(fmi3Instance c)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3EnterConfigurationMode: fmi3EnterConfigurationMode:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2659,7 +2725,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
  DllExport fmi3Status fmi3ExitConfigurationMode(fmi3Instance c)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3ExitConfigurationMode: fmi3ExitConfigurationMode:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2673,7 +2739,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                               fmi3IntervalQualifier qualifiers[])
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3GetIntervalDecimal: fmi3GetIntervalDecimal:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2688,7 +2754,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                                fmi3IntervalQualifier qualifiers[])
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3GetIntervalFraction: fmi3GetIntervalFraction:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2701,7 +2767,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                            fmi3Float64 shifts[])
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3GetShiftDecimal: fmi3GetShiftDecimal:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2715,7 +2781,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                             fmi3UInt64 resolutions[])
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3GetShiftFraction: fmi3GetShiftFraction:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2728,7 +2794,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                               const fmi3Float64 intervals[])
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3SetIntervalDecimal: fmi3SetIntervalDecimal:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2742,7 +2808,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                                const fmi3UInt64 resolutions[])
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3SetIntervalFraction: fmi3SetIntervalFraction:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2755,7 +2821,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                            const fmi3Float64 shifts[])
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3SetShiftDecimal: fmi3SetShiftDecimal:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2769,7 +2835,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                             const fmi3UInt64 resolutions[])
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3SetShiftFraction: fmi3SetShiftFraction:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2785,7 +2851,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
  DllExport fmi3Status fmi3EvaluateDiscreteStates(fmi3Instance c)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3EvaluateDiscreteStates: fmi3EvaluateDiscreteStates:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2801,7 +2867,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
                                                 fmi3Float64* nextEventTime)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3UpdateDiscreteStates: fmi3UpdateDiscreteStates:: is not provided.\n");
 	 return fmi3OK;
  }
@@ -2822,7 +2888,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nvr > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3GetInt64: fmi3GetInt64: was called. The FMU does not contain integer variables to get.\n");
 		 return fmi3Error;
 	 }
@@ -2843,7 +2909,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nvr > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error, "Error",
+		 logError(_c,
 			 "fmi3GetBoolean: fmi3GetBoolean: was called. The FMU does not contain boolean variables to get.\n");
 		 return fmi3Error;
 	 }
@@ -2864,8 +2930,8 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 ModelInstance* _c = (ModelInstance*)c;
 	 if (nvr > 0)
 	 {
-		 _c->logger(_c->componentEnvironment, fmi3Error,
-			 "Error", "fmi3GetString: fmi3GetString: was called. The FMU does not contain string variables to get.\n");
+		 logError(_c,
+			 "fmi3GetString: fmi3GetString: was called. The FMU does not contain string variables to get.\n");
 		 return fmi3Error;
 	 }
 	 return fmi3OK;
@@ -2899,7 +2965,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3GetDirectionalDerivative: fmi3GetDirectionalDerivative: Directional derivatives are not provided.\n");
 	 return fmi3Warning;
  }
@@ -2919,27 +2985,8 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 const fmi3Int32 order[], fmi3Float64 value[])
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3GetFloat64OutputDerivatives: fmi3GetFloat64OutputDerivatives: Real Output Derivatives are not provided.\n");
-	 return fmi3Warning;
- }
-
-
- ////////////////////////////////////////////////////////////////
- ///  This method is used to set debug logging
- ///
- ///\param c The FMU instance.
- ///\param loggingOn The FMU loggingOn flag.
- ///\param nCategories The number of categories.
- ///\param categories The categories.
- ///\return fmi3Warning if no error occurred.
- ////////////////////////////////////////////////////////////////
- fmi3Status fmi3SetDebugLogging(fmi3Instance c, fmi3Boolean loggingOn,
-	 size_t nCategories,
-	 const fmi3String categories[]) {
-	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
-		 "fmi3SetDebugLogging: fmi3SetDebugLogging: is not provided.\n");
 	 return fmi3Warning;
  }
 
@@ -2953,7 +3000,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
  DllExport fmi3Status fmi3Reset(fmi3Instance c)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning,
+	 logWarning(_c,
 		 "Warning", "fmi3Reset: The function fmi3Reset: is not provided.\n");
 	 return fmi3Warning;
  }
@@ -2969,7 +3016,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
  //DllExport fmi3Status fmi3GetStatus(fmi3Instance c, const fmi3StatusKind s, fmi3Status* value)
  //{
  //	ModelInstance* _c=(ModelInstance *)c;
- //	_c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+ //	logWarning(_c,
  //		"fmi3GetStatus: fmi3GetStatus: is not provided.\n");
  //	return fmi3Warning;
  //}
@@ -2985,7 +3032,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
  DllExport fmi3Status fmi3GetFMUState(fmi3Instance c, fmi3FMUState* FMUState)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3GetFMUState: fmi3GetFMUState: is not provided.\n");
 	 return fmi3Warning;
  }
@@ -3000,7 +3047,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
  DllExport fmi3Status fmi3SetFMUState(fmi3Instance c, fmi3FMUState FMUState)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3SetFMUState: fmi3SetFMUState: is not provided.\n");
 	 return fmi3Warning;
  }
@@ -3015,7 +3062,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
  DllExport fmi3Status fmi3FreeFMUState(fmi3Instance c, fmi3FMUState* FMUState)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3FreeFMUState: fmi3FreeFMUState: is not provided.\n");
 	 return fmi3Warning;
  }
@@ -3034,7 +3081,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 fmi3FMUState FMUState, size_t* size)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3SerializedFMUStateSize: fmi3SerializedFMUStateSize: is not provided.\n");
 	 return fmi3Warning;
  }
@@ -3052,7 +3099,7 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 fmi3Byte serializedState[], size_t size)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3SerializeFMUState: fmi3SerializeFMUState: is not provided.\n");
 	 return fmi3Warning;
  }
@@ -3070,120 +3117,119 @@ DllExport fmi3Status fmi3SetUInt16 (fmi3Instance c,
 	 const fmi3Byte serializedState[], size_t size, fmi3FMUState* FMUState)
  {
 	 ModelInstance* _c = (ModelInstance*)c;
-	 _c->logger(_c->componentEnvironment, fmi3Warning, "Warning",
+	 logWarning(_c,
 		 "fmi3DeSerializeFMUState: fmi3DeSerializeFMUState: is not provided.\n");
 	 return fmi3Warning;
  }
 
 
 
- void main() {
- }
 
+void main(){
+	double time;
+	double tStart=0;               // start time
+	double tStop=86400;               // start time
+	const char* instanceToken="{19751346-37ce-4422-86bf-bd1609f0d579}";                // global unique id of the fmu
+	fmi3Instance c;                  // instance of the fmu
+	//fmi3Status fmiFlag;               // return code of the fmu functions
+	const char* fmuResourceLocation ="D:\proj\\lbnl\\eplustofmu\\_fmu_export_schedule\\resources\\"; // path to the unzipped fmu location as URL
+	const char* modelDescriptionPath = "D:\\proj\\lbnl\\eplustofmu\\_fmu_export_schedule\\modelDescription.xml"; // path to the unzipped fmu location as URL
+	const char* mimeType="application/x-fmu-sharedlibrary"; // denotes tool in case of tool coupling
+	fmi3Float64 timeout=1000;          // wait period in milli seconds, 0 for unlimited wait period"
+	fmi3Boolean visible=fmi3False;   // no simulator user interface
+	fmi3Boolean interactive=fmi3False; // simulation run without user interaction
+	//fmi3CallbackFunctions callbacks= {fmuLogger, calloc, free, NULL, NULL};  // called by the model during simulation
+	ModelDescription* md;            // handle to the parsed XML file
+	fmi3String instanceName;          // instance name of the FMU
+	int nSteps=0;
+	int loggingOn=0;
+	int retVal;
+	//FILE* file;
+	const fmi3ValueReference valRefIn[]={1};
+	const fmi3ValueReference valRefOut[]={100001};
+	fmi3Float64 valIn[1]={50000};
+	fmi3Float64 valOut[1];
+	char* fmiVersionStr;
+	Element *defaultExp;
+	fmi3Status fmi3Flag;                    // return code of the fmu functions
+	fmi3Boolean toleranceDefined = fmi3False;  // true if model description define tolerance
+	//int nCategories;
+	//char **categories;
+	fmi3Float64 tolerance = 0;                    // used in setting up the experiment
+	ValueStatus vs = valueMissing;
+	double tEnd=86400;
 
-//void main(){
-//	double time;
-//	double tStart=0;               // start time
-//	double tStop=86400;               // start time
-//	const char* instanceToken="{19751346-37ce-4422-86bf-bd1609f0d579}";                // global unique id of the fmu
-//	fmi3Instance c;                  // instance of the fmu
-//	//fmi3Status fmiFlag;               // return code of the fmu functions
-//	const char* fmuResourceLocation ="file:///D:\\proj\\lbnl\\eplustofmu\\_fmu_export_schedule"; // path to the unzipped fmu location as URL
-//	const char* modelDescriptionPath = "file:///D:\\proj\\lbnl\\eplustofmu\\_fmu_export_schedule\\modelDescription.xml"; // path to the unzipped fmu location as URL
-//	const char* mimeType="application/x-fmu-sharedlibrary"; // denotes tool in case of tool coupling
-//	fmi3Float64 timeout=1000;          // wait period in milli seconds, 0 for unlimited wait period"
-//	fmi3Boolean visible=fmi3False;   // no simulator user interface
-//	fmi3Boolean interactive=fmi3False; // simulation run without user interaction
-//	fmi3CallbackFunctions callbacks= {fmuLogger, calloc, free, NULL, NULL};  // called by the model during simulation
-//	ModelDescription* md;            // handle to the parsed XML file
-//	fmi3String instanceName;          // instance name of the FMU
-//	int nSteps=0;
-//	int loggingOn=0;
-//	int retVal;
-//	//FILE* file;
-//	const fmi3ValueReference valRefIn[]={1};
-//	const fmi3ValueReference valRefOut[]={100001};
-//	fmi3Float64 valIn[1]={50000};
-//	fmi3Float64 valOut[1];
-//	char* fmiVersionStr;
-//	Element *defaultExp;
-//	fmi3Status fmi3Flag;                    // return code of the fmu functions
-//	fmi3Boolean toleranceDefined = fmi3False;  // true if model description define tolerance
-//	//int nCategories;
-//	//char **categories;
-//	fmi3Float64 tolerance = 0;                    // used in setting up the experiment
-//	ValueStatus vs = valueMissing;
-//	double tEnd=86400;
-//
-//	// allocate memory for md
-//	//md = (ModelDescription*)malloc(sizeof(ModelDescription*));
-//
-//	//md = parse(modelDescriptionPath);
-//
-//	// get the GUID
-//	//guid = getAttributeValue((Element *)md, att_guid);
-//
-//	// get the instance name
-//	//instanceName = getAttributeValue((Element *)getCoSimulation(md), att_modelIdentifier);
-//
-//	// instantiate the fmu
-//	c=fmi3InstantiateCosimulation("_fmu_export_schedule", fmi3CoSimulation,
-//		guid, fmuResourceLocation, &callbacks, visible, loggingOn);
-//
-//	//if (nCategories > 0) {
-//	//	fmi3Flag = fmu->setDebugLogging(c, fmi3True, nCategories, categories);
-//	//	if (fmi3Flag > fmi3Warning) {
-//	//		return error("could not initialize model; failed FMI set debug logging");
-//	//	}
-//	//}
-//
-//	//defaultExp = getDefaultExperiment(md);
-//	//if (defaultExp) tolerance = getAttributeDouble(defaultExp, att_tolerance, &vs);
-//	//if (vs == valueDefined) {
-//	//	toleranceDefined = fmi3True;
-//	//}
-//
-//	// setup experiment parameters in the FMU
-//	fmi3Flag = fmi3SetupExperiment(c, toleranceDefined, tolerance, tStart, fmi3True, tEnd);
-//	if (fmi3Flag > fmi3Warning) {
-//		 printf("could not initialize model; failed FMI setup experiment");
-//		 return;
-//	}
-//
-//	// enter initialization in the FMU
-//	fmi3Flag = fmi3EnterInitializationMode(c);
-//	if (fmi3Flag > fmi3Warning) {
-//		printf("could not initialize model; failed FMI enter initialization mode");
-//		return;
-//	}
-//
-//	// exit initialization in the FMU
-//	fmi3Flag = fmi3ExitInitializationMode(c);
-//	if (fmi3Flag > fmi3Warning) {
-//		 printf("could not initialize model; failed FMI exit initialization mode");
-//		 return;
-//	}
-//
-//	time=0;
-//
-//	fmiVersionStr = extractVersion(modelDescriptionPath);
-//	printf("This is the fmi version %s\n", fmiVersionStr);
-//	while (time < tStop) {
-//		// set the inputs
-//		retVal = fmi3SetReal(c, valRefIn, 1, valIn);
-//		// do step
-//		retVal= fmi3DoStep(c, time, 900, 1);
-//		// get the outputs
-//		retVal = fmi3GetFloat64(c, valRefOut, 1, valOut);
-//		printf ("This is the value of output %f\n", valOut);
-//		time=time+900;
-//	}
-//	// terminate the FMU
-//	retVal=fmi3Terminate(c);
-//	// free te FMU
-//	fmi3FreeInstance(c);
-//	printf ("Simulation successfully terminated\n");
-//}
+	// allocate memory for md
+	md = (ModelDescription*)malloc(sizeof(ModelDescription*));
+
+	md = parse(modelDescriptionPath);
+
+	// get the GUID
+	//guid = getAttributeValue((Element *)md, att_instatia);
+
+	// get the instance name
+	instanceName = getAttributeValue((Element *)getCoSimulation(md), att_modelIdentifier);
+
+	//// instantiate the fmu
+	c=fmi3InstantiateCosimulation("_fmu_export_schedule", instanceToken, fmuResourceLocation,
+		visible, loggingOn, "False", "False", NULL, 0, NULL, NULL, NULL);
+
+	tEnd = 12000;
+
+	////if (nCategories > 0) {
+	////	fmi3Flag = fmu->setDebugLogging(c, fmi3True, nCategories, categories);
+	////	if (fmi3Flag > fmi3Warning) {
+	////		return error("could not initialize model; failed FMI set debug logging");
+	////	}
+	////}
+
+	////defaultExp = getDefaultExperiment(md);
+	////if (defaultExp) tolerance = getAttributeDouble(defaultExp, att_tolerance, &vs);
+	////if (vs == valueDefined) {
+	////	toleranceDefined = fmi3True;
+	////}
+
+	//// setup experiment parameters in the FMU
+	//fmi3Flag = fmi3SetupExperiment(c, toleranceDefined, tolerance, tStart, fmi3True, tEnd);
+	//if (fmi3Flag > fmi3Warning) {
+	//	 printf("could not initialize model; failed FMI setup experiment");
+	//	 return;
+	//}
+
+	//// enter initialization in the FMU
+	//fmi3Flag = fmi3EnterInitializationMode(c);
+	//if (fmi3Flag > fmi3Warning) {
+	//	printf("could not initialize model; failed FMI enter initialization mode");
+	//	return;
+	//}
+
+	//// exit initialization in the FMU
+	//fmi3Flag = fmi3ExitInitializationMode(c);
+	//if (fmi3Flag > fmi3Warning) {
+	//	 printf("could not initialize model; failed FMI exit initialization mode");
+	//	 return;
+	//}
+
+	//time=0;
+
+	//fmiVersionStr = extractVersion(modelDescriptionPath);
+	//printf("This is the fmi version %s\n", fmiVersionStr);
+	//while (time < tStop) {
+	//	// set the inputs
+	//	retVal = fmi3SetReal(c, valRefIn, 1, valIn);
+	//	// do step
+	//	retVal= fmi3DoStep(c, time, 900, 1);
+	//	// get the outputs
+	//	retVal = fmi3GetFloat64(c, valRefOut, 1, valOut);
+	//	printf ("This is the value of output %f\n", valOut);
+	//	time=time+900;
+	//}
+	//// terminate the FMU
+	//retVal=fmi3Terminate(c);
+	//// free te FMU
+	//fmi3FreeInstance(c);
+	//printf ("Simulation successfully terminated\n");
+}
 
 /*
 

@@ -43,11 +43,11 @@ class XmlParser {
         elm_Enumeration, elm_Item, elm_LogCategories, elm_Category, elm_DefaultExperiment,
         elm_VendorAnnotations, elm_Tool, elm_ModelVariables, elm_ScalarVariable, elm_Annotations,
         elm_ModelStructure, elm_Outputs, elm_Derivatives, elm_DiscreteStates, elm_InitialUnknowns,
-        elm_Unknown
+        elm_Unknown, elm_Float64, elm_Output
     };
 
     // Attributes
-    static const int SIZEOF_ATT = 70;  // 61;
+    static const int SIZEOF_ATT = 74;  // 61;
     static const char *attNames[SIZEOF_ATT];
     enum Att {
         att_BAD_DEFINED = -1,
@@ -62,12 +62,16 @@ class XmlParser {
         att_previous, att_canHandleMultipleSetPerTimeInstant, att_declaredType, att_start, att_derivative,
         att_reinit, att_index, att_dependencies, att_dependenciesKind, att_modelIdentifier,
         att_needsExecutionTool, att_completedIntegratorStepNotNeeded, att_canBeInstantiatedOnlyOncePerProcess,
-            att_canNotUseMemoryManagementFunctions, att_canGetAndSetFMUstate,
-        att_canSerializeFMUstate, att_providesDirectionalDerivative, att_canHandleVariableCommunicationStepSize,
+            att_canNotUseMemoryManagementFunctions, att_canGetAndSetFMUState,
+        att_canSerializeFMUState, att_providesDirectionalDerivative, att_canHandleVariableCommunicationStepSize,
             att_canInterpolateInputs, att_maxOutputDerivativeOrder,
-        att_canRunAsynchronuously,
+        att_canRunAsynchronuously, 
 
-        att_xmlnsXsi, att_providesDirectionalDerivatives, att_canHandleEvents, att_instantiationToken
+        att_xmlnsXsi, att_providesDirectionalDerivatives, att_canHandleEvents, 
+        att_instantiationToken, att_hasEventMode, att_providesIntermediateUpdate,
+        att_mightReturnEarlyFromDoStep, att_canReturnEarlyAfterIntermediateUpdate, 
+        att_providesAdjointDerivatives, att_providesPerElementDependencies, 
+        att_providesEvaluateDiscreteStates
     };
 
     // Enumeration values

@@ -129,6 +129,7 @@ typedef struct {
 
     bool logEvents;
     bool logErrors;
+    bool logWarnings;
 
     void *componentEnvironment;
     ModelState state;
@@ -283,7 +284,8 @@ bool nullPointer(ModelInstance* comp, const char *f, const char *arg, const void
 void logError(ModelInstance *comp, const char *message, ...);
 Status setDebugLogging(ModelInstance *comp, bool loggingOn, size_t nCategories, const char * const categories[]);
 void logEvent(ModelInstance *comp, const char *message, ...);
-void logError(ModelInstance *comp, const char *message, ...);
+void logWarning(ModelInstance* comp, const char* message, ...);
+
 
 void* getFMUState(ModelInstance* comp);
 void setFMUState(ModelInstance* comp, void* FMUState);

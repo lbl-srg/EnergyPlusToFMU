@@ -57,16 +57,16 @@ ModelInstance *createModelInstance(
         return NULL;
     }
 
-    if (strcmp(instantiationToken, INSTANTIATION_TOKEN)) {
-        if (cbLogger) {
-#if FMI_VERSION < 3
-            cbLogger(componentEnvironment, instanceName, Error, "error", "Wrong GUID.");
-#else
-            cbLogger(componentEnvironment, Error, "error", "Wrong instantiationToken.");
-#endif
-        }
-        return NULL;
-    }
+//    if (strcmp(instantiationToken, INSTANTIATION_TOKEN)) {
+//        if (cbLogger) {
+//#if FMI_VERSION < 3
+//            cbLogger(componentEnvironment, instanceName, Error, "error", "Wrong GUID.");
+//#else
+//            cbLogger(componentEnvironment, Error, "error", "Wrong instantiationToken.");
+//#endif
+//        }
+//        return NULL;
+//    }
 
     comp = (ModelInstance *)calloc(1, sizeof(ModelInstance));
 
@@ -79,8 +79,9 @@ ModelInstance *createModelInstance(
         comp->instanceName         = strdup(instanceName);
         comp->resourceLocation     = resourceLocation ? strdup(resourceLocation) : NULL;
         comp->status               = OK;
-        comp->logEvents            = loggingOn;
-        comp->logErrors            = true; // always log errors
+        comp->logEvents            = loggingOn; // is currently logging on everything fixme
+        comp->logErrors            = true; // always log errors, 
+        comp->logWarnings          = true; // always log warnings
         comp->nSteps               = 0;
         comp->earlyReturnAllowed   = false;
         comp->eventModeUsed        = false;
@@ -178,8 +179,11 @@ Status setDebugLogging(ModelInstance *comp, bool loggingOn, size_t nCategories, 
                 comp->logEvents = true;
             } else if (strcmp(categories[i], "logStatusError") == 0) {
                 comp->logErrors = true;
+            }
+            else if (strcmp(categories[i], "logStatusWarning") == 0) {
+                comp->logWarnings = true;
             } else {
-                logError(comp, "Log category[%d] must be one of logEvents or logStatusError but was %s", i, categories[i]);
+                logError(comp, "Log category[%d] must be one of logEvents, logStatusError, or logStatusWarning but was %s", i, categories[i]);
                 return Error;
             }
         }
@@ -187,6 +191,7 @@ Status setDebugLogging(ModelInstance *comp, bool loggingOn, size_t nCategories, 
         // disable logging
         comp->logEvents = false;
         comp->logErrors = false;
+        comp->logWarnings = false;
     }
 
     return OK;
@@ -238,6 +243,16 @@ void logError(ModelInstance *comp, const char *message, ...) {
     va_list args;
     va_start(args, message);
     logMessage(comp, Error, "logStatusError", message, args);
+    va_end(args);
+}
+
+void logWarning(ModelInstance* comp, const char* message, ...) {
+
+    if (!comp || !comp->logErrors) return;
+
+    va_list args;
+    va_start(args, message);
+    logMessage(comp, Error, "logStatusWarning", message, args);
     va_end(args);
 }
 

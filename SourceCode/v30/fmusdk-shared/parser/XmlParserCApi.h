@@ -39,7 +39,7 @@ typedef enum {
     elm_Enumeration, elm_Item, elm_LogCategories, elm_Category, elm_DefaultExperiment,
     elm_VendorAnnotations, elm_Tool, elm_ModelVariables, elm_ScalarVariable, elm_Annotations,
     elm_ModelStructure, elm_Outputs, elm_Derivatives, elm_DiscreteStates, elm_InitialUnknowns,
-    elm_Unknown
+    elm_Unknown, elm_Float64, elm_Output
 } Elm;
 
 // Attributes names used in ModelDescription.xml
@@ -55,9 +55,12 @@ typedef enum {
     att_stepSize, att_valueReference, att_causality, att_variability, att_initial,
     att_previous, att_canHandleMultipleSetPerTimeInstant, att_declaredType, att_start, att_derivative,
     att_reinit, att_index, att_dependencies, att_dependenciesKind, att_modelIdentifier,
-    att_needsExecutionTool, att_completedIntegratorStepNotNeeded, att_canBeInstantiatedOnlyOncePerProcess, att_canNotUseMemoryManagementFunctions, att_canGetAndSetFMUstate,
-    att_canSerializeFMUstate, att_providesDirectionalDerivative, att_canHandleVariableCommunicationStepSize, att_canInterpolateInputs, att_maxOutputDerivativeOrder,
-    att_canRunAsynchronuously, att_instantiationToken
+    att_needsExecutionTool, att_completedIntegratorStepNotNeeded, att_canBeInstantiatedOnlyOncePerProcess, att_canNotUseMemoryManagementFunctions, att_canGetAndSetFMUState,
+    att_canSerializeFMUState, att_providesDirectionalDerivative, att_canHandleVariableCommunicationStepSize, att_canInterpolateInputs, att_maxOutputDerivativeOrder,
+    att_canRunAsynchronuously, att_instantiationToken,
+    att_hasEventMode, att_mightReturnEarlyFromDoStep, att_providesIntermediateUpdate,
+    att_canReturnEarlyAfterIntermediateUpdate, att_providesAdjointDerivatives,
+    att_providesPerElementDependencies, att_providesEvaluateDiscreteStates
 } Att;
 
 // Enumerated values names used in ModelDescription.xml

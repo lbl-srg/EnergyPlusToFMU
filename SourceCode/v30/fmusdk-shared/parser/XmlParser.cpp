@@ -39,7 +39,7 @@ const char *XmlParser::elmNames[SIZEOF_ELM] = {
     "Enumeration", "Item", "LogCategories", "Category", "DefaultExperiment",
     "VendorAnnotations", "Tool", "ModelVariables", "ScalarVariable", "Annotations",
     "ModelStructure", "Outputs", "Derivatives", "DiscreteStates", "InitialUnknowns",
-    "Unknown"
+    "Unknown", "Float64", "Output"
 };
 
 const char *XmlParser::attNames[SIZEOF_ATT] = {
@@ -54,8 +54,8 @@ const char *XmlParser::attNames[SIZEOF_ATT] = {
     "previous", "canHandleMultipleSetPerTimeInstant", "declaredType", "start", "derivative",
     "reinit", "index", "dependencies", "dependenciesKind", "modelIdentifier",
     "needsExecutionTool", "completedIntegratorStepNotNeeded", "canBeInstantiatedOnlyOncePerProcess",
-        "canNotUseMemoryManagementFunctions", "canGetAndSetFMUstate",
-    "canSerializeFMUstate", "providesDirectionalDerivative", "canHandleVariableCommunicationStepSize",
+        "canNotUseMemoryManagementFunctions", "canGetAndSetFMUState",
+    "canSerializeFMUState", "providesDirectionalDerivative", "canHandleVariableCommunicationStepSize",
         "canInterpolateInputs", "maxOutputDerivativeOrder",
     "canRunAsynchronuously",
 
@@ -65,8 +65,10 @@ const char *XmlParser::attNames[SIZEOF_ATT] = {
     "canHandleEvents",                  // Dymola examples from 2014 FD01
 
     // Elements added for FMI 3.0 //
-    "instantiationToken", "providesIntermediateUpdate", "canReturnEarlyAfterIntermediateUpdate",
-    "hasEventMode"
+    "instantiationToken", "hasEventMode", "providesIntermediateUpdate",
+     "mightReturnEarlyFromDoStep","canReturnEarlyAfterIntermediateUpdate",
+     "providesAdjointDerivatives", "providesPerElementDependencies",
+     "providesEvaluateDiscreteStates"
 };
 
 const char *XmlParser::enuNames[SIZEOF_ENU] = {
@@ -279,27 +281,27 @@ ModelDescription *XmlParser::validate(ModelDescription *md) {
             continue;
         }
 
-        if (!(*it)->typeSpec) {
-            logThis(ERROR_ERROR, "Scalar variable %s miss type specification in modelDescription.xml",
-                varName);
-            errors++;
-            continue;
-        }
-        if ((*it)->typeSpec->type == XmlParser::elm_Enumeration) {
-            const char *typeName = (*it)->typeSpec->getAttributeValue(XmlParser::att_declaredType);
-            if (!typeName) {
-                logThis(ERROR_ERROR, "Scalar variable %s with enum type specification miss required %s attribute in "
-                        "modelDescription.xml", varName, XmlParser::attNames[XmlParser::att_declaredType]);
-                errors++;
-                continue;
-            }
-            if (!md->getSimpleType(typeName)) {
-                logThis(ERROR_ERROR, "Declared type %s of variable %s not found in modelDescription.xml",
-                     typeName, varName);
-                errors++;
-                continue;
-            }
-        }
+        //if (!(*it)->typeSpec) {
+        //    logThis(ERROR_ERROR, "Scalar variable %s miss type specification in modelDescription.xml",
+        //        varName);
+        //    errors++;
+        //    continue;
+        //}
+        //if ((*it)->typeSpec->type == XmlParser::elm_Enumeration) {
+        //    const char *typeName = (*it)->typeSpec->getAttributeValue(XmlParser::att_declaredType);
+        //    if (!typeName) {
+        //        logThis(ERROR_ERROR, "Scalar variable %s with enum type specification miss required %s attribute in "
+        //                "modelDescription.xml", varName, XmlParser::attNames[XmlParser::att_declaredType]);
+        //        errors++;
+        //        continue;
+        //    }
+        //    if (!md->getSimpleType(typeName)) {
+        //        logThis(ERROR_ERROR, "Declared type %s of variable %s not found in modelDescription.xml",
+        //             typeName, varName);
+        //        errors++;
+        //        continue;
+        //    }
+        //}
     }
 
     // check existence of model structure

@@ -349,6 +349,8 @@ ModelStructure::ModelStructure() {
 
 ModelStructure::~ModelStructure() {
     deleteListOfElements(outputs);
+    // Added for FMI 3.0
+    deleteListOfElements(output);
     deleteListOfElements(derivatives);
     deleteListOfElements(discreteStates);
     deleteListOfElements(initialUnknowns);
@@ -357,6 +359,8 @@ void ModelStructure::handleElement(XmlParser *parser, const char *childName, int
     XmlParser::Elm childType = parser->checkElement(childName);
     switch (childType) {
     case XmlParser::elm_Outputs:
+    // Added for FMI 3.0 
+    case XmlParser::elm_Output:
     case XmlParser::elm_Derivatives:
     case XmlParser::elm_DiscreteStates:
     case XmlParser::elm_InitialUnknowns:
@@ -380,6 +384,10 @@ void ModelStructure::handleElement(XmlParser *parser, const char *childName, int
                 case XmlParser::elm_Outputs:
                     outputs.push_back(unknown);
                     break;
+                // Added for FMI 3.0
+                case XmlParser::elm_Output:
+                    outputs.push_back(unknown);
+                    break;
                 case XmlParser::elm_Derivatives:
                     derivatives.push_back(unknown);
                     break;
@@ -394,6 +402,8 @@ void ModelStructure::handleElement(XmlParser *parser, const char *childName, int
                     "Element '%s' must be inside of '%s' | '%s' | '%s' | '%s'.",
                     XmlParser::elmNames[XmlParser::elm_Unknown],
                     XmlParser::elmNames[XmlParser::elm_Outputs],
+                    // Added for FMI 3.0
+                    XmlParser::elmNames[XmlParser::elm_Outputs],
                     XmlParser::elmNames[XmlParser::elm_Derivatives],
                     XmlParser::elmNames[XmlParser::elm_DiscreteStates],
                     XmlParser::elmNames[XmlParser::elm_InitialUnknowns]);
@@ -406,6 +416,8 @@ void ModelStructure::handleElement(XmlParser *parser, const char *childName, int
             throw XmlParserException(
                 "Expected '%s' | '%s' | '%s' | '%s' | '%s' element inside '%s'. Found instead: '%s'.",
                 XmlParser::elmNames[XmlParser::elm_Outputs],
+                // Added for FMI 3.0
+                XmlParser::elmNames[XmlParser::elm_Output],
                 XmlParser::elmNames[XmlParser::elm_Derivatives],
                 XmlParser::elmNames[XmlParser::elm_DiscreteStates],
                 XmlParser::elmNames[XmlParser::elm_InitialUnknowns],
@@ -419,6 +431,8 @@ void ModelStructure::printElement(int indent) {
     Element::printElement(indent);
     int childIndent = indent + 1;
     printListOfElements(childIndent, outputs);
+    // Added for FMI 3.0
+    printListOfElements(childIndent, output);
     printListOfElements(childIndent, derivatives);
     printListOfElements(childIndent, discreteStates);
     printListOfElements(childIndent, initialUnknowns);
@@ -560,6 +574,17 @@ void ModelDescription::handleElement(XmlParser *parser, const char *childName, i
             modelVariables.push_back(variable);
             break;
         }
+    case XmlParser::elm_Float64:
+    {
+        ScalarVariable* variable = new ScalarVariable;
+        variable->type = childType;
+        parser->parseElementAttributes(variable);
+        if (!isEmptyElement) {
+            parser->parseChildElements(variable);
+        }
+        modelVariables.push_back(variable);
+        break;
+    }
     case XmlParser::elm_ModelStructure:
         {
             modelStructure = new ModelStructure;

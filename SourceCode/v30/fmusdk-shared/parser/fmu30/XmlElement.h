@@ -116,6 +116,7 @@ class ModelStructure : public Element {
 
  public:
     std::vector<Element *> outputs;            // list of Unknown
+    std::vector<Element*>  output;             // list of Unknown // Added for FMI 3.0
     std::vector<Element *> derivatives;        // list of Unknown
     std::vector<Element *> discreteStates;     // list of Unknown
     std::vector<Element *> initialUnknowns;    // list of Unknown
